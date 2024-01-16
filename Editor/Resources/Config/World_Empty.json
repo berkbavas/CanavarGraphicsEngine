@@ -39,10 +39,10 @@
             "visible": true
         },
         {
-            "albedo": 0.10000000149011612,
+            "albedo": 0.014999999664723873,
             "enabled": true,
             "name": "Sky",
-            "normalized_sun_y": 1.149999976158142,
+            "normalized_sun_y": 0.15399999916553497,
             "position": {
                 "x": 0,
                 "y": 0,
@@ -139,15 +139,15 @@
             "h_fov": 35.9833984375,
             "name": "Free Camera",
             "position": {
-                "x": -1.807557463645935,
-                "y": 14.963335990905762,
-                "z": 5.210290431976318
+                "x": -30.298702239990234,
+                "y": 1.6673239469528198,
+                "z": 27.915925979614258
             },
             "rotation": {
-                "w": -0.865408718585968,
-                "x": 0.4926315248012543,
-                "y": 0.07952040433883667,
-                "z": 0.045263178646564484
+                "w": -0.9005398750305176,
+                "x": -0.024946391582489014,
+                "y": 0.43388545513153076,
+                "z": -0.012026548385620117
             },
             "scale": {
                 "x": 1,
@@ -163,86 +163,29 @@
             "z_near": 1
         },
         {
-            "ambient": 0.30000001192092896,
-            "color": {
-                "a": 1,
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "diffuse": 0.75,
-            "model_name": "JetFighter",
-            "name": "Model JetFighter",
-            "overlay_color": {
-                "a": 1,
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "overlay_color_factor": 0,
+            "name": "",
             "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
             "rotation": {
-                "w": 1,
+                "w": 0,
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
             "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 0,
+                "y": 0,
+                "z": 0
             },
-            "selectable": true,
-            "shininess": 32,
-            "specular": 0.25,
-            "type": 1,
-            "uuid": "c06c100e-c6c6-4003-87b3-d3dc87917cbd",
-            "visible": true
+            "selectable": false,
+            "type": 0,
+            "uuid": "",
+            "visible": false
         },
         {
-            "ambient": 0.30000001192092896,
-            "color": {
-                "a": 1,
-                "b": 0,
-                "g": 1,
-                "r": 0
-            },
-            "diffuse": 0.75,
-            "model_name": "Cube",
-            "name": "Model Cube",
-            "overlay_color": {
-                "a": 1,
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "overlay_color_factor": 0,
-            "position": {
-                "x": -0.009763503447175026,
-                "y": 0.6330137848854065,
-                "z": 0.009774891659617424
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 9.999999747378752e-05,
-                "y": 9.999999747378752e-05,
-                "z": 9.999999747378752e-05
-            },
-            "selectable": true,
-            "shininess": 32,
-            "specular": 0.25,
-            "type": 1,
-            "uuid": "11a9a88f-ce99-4159-94f1-6148141248c4",
-            "visible": true
         }
     ]
 }

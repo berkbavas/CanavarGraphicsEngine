@@ -16,6 +16,9 @@
 #include "Sky.h"
 #include "Sun.h"
 #include "Terrain.h"
+#include "LightningStrikeGenerator.h"
+#include "LightningStrikeAttractor.h"
+#include "LightningStrikeSpherical.h"
 
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -34,6 +37,9 @@ Canavar::Engine::NodeManager::NodeManager()
     mTypeToName.insert(Node::NodeType::NozzleEffect, "Nozzle Effect");
     mTypeToName.insert(Node::NodeType::FirecrackerEffect, "Firecracker Effect");
     mTypeToName.insert(Node::NodeType::PersecutorCamera, "Persecutor Camera");
+    mTypeToName.insert(Node::NodeType::LightningStrikeGenerator, "Lightning Strike Generator");
+    mTypeToName.insert(Node::NodeType::LightningStrikeAttractor, "Lightning Strike Attractor");
+    mTypeToName.insert(Node::NodeType::LightningStrikeSpherical, "Lightning Strike Spherical");
 }
 
 bool Canavar::Engine::NodeManager::Init()
@@ -169,6 +175,21 @@ Canavar::Engine::Node* Canavar::Engine::NodeManager::CreateNode(Node::NodeType t
     case Node::NodeType::PersecutorCamera: {
         node = new PersecutorCamera;
         mCameraManager->AddCamera(dynamic_cast<PersecutorCamera*>(node));
+        break;
+    }
+    case Node::NodeType::LightningStrikeGenerator: {
+        auto* lsg = new LightningStrikeGenerator;
+        node = lsg;
+        break;
+    }
+    case Node::NodeType::LightningStrikeAttractor: {
+        auto* lsg = new LightningStrikeAttractor;
+        node = lsg;
+        break;
+    }
+    case Node::NodeType::LightningStrikeSpherical: {
+        auto* lsg = new LightningStrikeSpherical;
+        node = lsg;
         break;
     }
     default: {

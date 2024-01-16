@@ -30,6 +30,19 @@ bool Canavar::Engine::Shader::Init()
         }
     }
 
+    if (mType == ShaderType::LightningStrikeShader)
+    {
+        const GLchar* Varyings[2];
+        Varyings[0] = "outWorldPosition";
+        Varyings[1] = "outForkLevel";
+
+        mProgram->create();
+        qDebug() << Q_FUNC_INFO << "Calling glTransformFeedbackVaryings()..." << "Program ID is" << mProgram->programId();
+        qDebug() << mProgram->log();
+        glTransformFeedbackVaryings(mProgram->programId(), 2, Varyings, GL_INTERLEAVED_ATTRIBS);
+
+    }
+
     if (!mProgram->link())
     {
         qWarning() << Q_FUNC_INFO << "Could not link shader program.";
@@ -64,6 +77,11 @@ void Canavar::Engine::Shader::Release()
 void Canavar::Engine::Shader::AddPath(QOpenGLShader::ShaderTypeBit type, const QString& path)
 {
     mPaths.insert(type, path);
+}
+
+void Canavar::Engine::Shader::AddTransformFeedbackVarying(const QString& varying)
+{
+    mTransformFeedbackVaryings << varying;
 }
 
 void Canavar::Engine::Shader::SetUniformValue(const QString& name, int value)

@@ -36,7 +36,10 @@ Canavar::Engine::Gui::Gui(QObject* parent)
         << "Point Light"
         << "Nozzle Effect"
         << "Firecracker Effect"
-        << "Persecutor Camera";
+        << "Persecutor Camera"
+        << "Lightning Strike Generator"
+        << "Lightning Strike Attractor"
+        << "Lightning Strike Spherical";
 
     mNodeManager = NodeManager::Instance();
 
@@ -63,11 +66,11 @@ Canavar::Engine::Gui::Gui(QObject* parent)
         },
         Qt::QueuedConnection);
 
-    mLineStrip = new LineStrip;
-    mLineStrip->AppendPoint(QVector3D(0, 10, 0));
-    mLineStrip->AppendPoint(QVector3D(0, 0, 0));
+    //mLineStrip = new LineStrip;
+    //mLineStrip->AppendPoint(QVector3D(0, 10, 0));
+    //mLineStrip->AppendPoint(QVector3D(0, 0, 0));
 
-    RendererManager::Instance()->AddLineStrip(mLineStrip);
+    //RendererManager::Instance()->AddLineStrip(mLineStrip);
 
     mCube = NodeManager::Instance()->CreateModel("Cube");
     mCube->SetColor(QVector4D(0, 1, 0, 1));
@@ -79,27 +82,27 @@ void Canavar::Engine::Gui::Draw()
 {
     // Intersection Debug
     {
-        ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-        ImGui::Begin("Intersection Manager Debug");
+        //ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+        //ImGui::Begin("Intersection Manager Debug");
 
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Origin");
-        ImGui::DragFloat("x##IntersectionManagerOrigin", &mLineStrip->GetPoints_NonConst()[0][0], 0.1f, -100, 100);
-        ImGui::DragFloat("y##IntersectionManagerOrigin", &mLineStrip->GetPoints_NonConst()[0][1], 0.1f, -100, 100);
-        ImGui::DragFloat("z##IntersectionManagerOrigin", &mLineStrip->GetPoints_NonConst()[0][2], 0.1f, -100, 100);
+        //ImGui::TextColored(ImVec4(1, 1, 0, 1), "Origin");
+        //ImGui::DragFloat("x##IntersectionManagerOrigin", &mLineStrip->GetPoints_NonConst()[0][0], 0.1f, -100, 100);
+        //ImGui::DragFloat("y##IntersectionManagerOrigin", &mLineStrip->GetPoints_NonConst()[0][1], 0.1f, -100, 100);
+        //ImGui::DragFloat("z##IntersectionManagerOrigin", &mLineStrip->GetPoints_NonConst()[0][2], 0.1f, -100, 100);
 
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ray Direction");
-        ImGui::SliderFloat("x##IntersectionManagerRayDirection", &mRayDirection[0], -1, 1);
-        ImGui::SliderFloat("y##IntersectionManagerRayDirection", &mRayDirection[1], -1, 1);
-        ImGui::SliderFloat("z##IntersectionManagerRayDirection", &mRayDirection[2], -1, 1);
+        //ImGui::TextColored(ImVec4(1, 1, 0, 1), "Ray Direction");
+        //ImGui::SliderFloat("x##IntersectionManagerRayDirection", &mRayDirection[0], -1, 1);
+        //ImGui::SliderFloat("y##IntersectionManagerRayDirection", &mRayDirection[1], -1, 1);
+        //ImGui::SliderFloat("z##IntersectionManagerRayDirection", &mRayDirection[2], -1, 1);
 
-        auto result = IntersectionManager::Instance()->Raycast(mLineStrip->GetPoints().at(0), mRayDirection, QList<Model*>(), { mCube });
+        //auto result = IntersectionManager::Instance()->Raycast(mLineStrip->GetPoints().at(0), mRayDirection, QList<Model*>(), { mCube });
 
-        mLineStrip->GetPoints_NonConst()[1] = 1000 * mRayDirection;
+        //mLineStrip->GetPoints_NonConst()[1] = 1000 * mRayDirection;
 
-        if (result.success)
-            mCube->SetWorldPosition(result.point);
+        //if (result.success)
+        //    mCube->SetWorldPosition(result.point);
 
-        ImGui::End();
+        //ImGui::End();
     }
 
     // Render Settings
@@ -160,6 +163,12 @@ void Canavar::Engine::Gui::Draw()
                 node = NodeManager::Instance()->CreateNode(Node::NodeType::NozzleEffect);
             else if (mSelectedNodeName == "Firecracker Effect")
                 node = NodeManager::Instance()->CreateNode(Node::NodeType::FirecrackerEffect);
+            else if (mSelectedNodeName == "Lightning Strike Generator")
+                node = NodeManager::Instance()->CreateNode(Node::NodeType::LightningStrikeGenerator);
+            else if (mSelectedNodeName == "Lightning Strike Attractor")
+                node = NodeManager::Instance()->CreateNode(Node::NodeType::LightningStrikeAttractor);
+            else if (mSelectedNodeName == "Lightning Strike Spherical")
+                node = NodeManager::Instance()->CreateNode(Node::NodeType::LightningStrikeSpherical);
             else if (mSelectedNodeName == "Persecutor Camera")
                 node = NodeManager::Instance()->CreateNode(Node::NodeType::PersecutorCamera);
             else if (mSelectedNodeName == "Model" && !mSelectedModelName.isEmpty())
@@ -373,6 +382,18 @@ void Canavar::Engine::Gui::Draw()
                 break;
             case Canavar::Engine::Node::NodeType::FirecrackerEffect:
                 Draw(dynamic_cast<FirecrackerEffect*>(mSelectedNode));
+                Draw(dynamic_cast<Node*>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::LightningStrikeGenerator:
+                Draw(dynamic_cast<LightningStrikeGenerator*>(mSelectedNode));
+                Draw(dynamic_cast<Node*>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::LightningStrikeAttractor:
+                Draw(dynamic_cast<LightningStrikeAttractor*>(mSelectedNode));
+                Draw(dynamic_cast<Node*>(mSelectedNode));
+                break;
+            case Canavar::Engine::Node::NodeType::LightningStrikeSpherical:
+                Draw(dynamic_cast<LightningStrikeSpherical*>(mSelectedNode));
                 Draw(dynamic_cast<Node*>(mSelectedNode));
                 break;
             default:
@@ -692,6 +713,61 @@ void Canavar::Engine::Gui::Draw(FirecrackerEffect* node)
         ImGui::SliderFloat("Damping##Firecracker", &node->GetDamping_NonConst(), 0.000f, 10.0f, "%.2f");
         ImGui::SliderFloat("Scale##Firecracker", &node->GetScale_NonConst(), 0.001f, 10.0f, "%.4f");
         ImGui::Checkbox("Loop##Firecracker", &node->GetLoop_NonConst());
+    }
+}
+
+void Canavar::Engine::Gui::Draw(Canavar::Engine::LightningStrikeGenerator* node)
+{
+    if (!ImGui::CollapsingHeader("Lightning Strike Generator##LightningStrikeGenerator"))
+    {
+        ImGui::SliderFloat("Base Value##LightningStrikeGenerator", &node->GetBaseValue_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Decay##LightningStrikeGenerator", &node->GetDecay_NonConst(), 0.1f, 2.0f, "%.3f");
+        ImGui::SliderFloat("Jitter Displacement Multiplier##LightningStrikeGenerator", &node->GetJitterDisplacementMultiplier_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Fork Length Multiplier##LightningStrikeGenerator", &node->GetForkLengthMultiplier_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Quad Width##LightningStrikeGenerator", &node->GetQuadWidth_NonConst(), 0.01f, 0.1f, "%.4f");
+        ImGui::SliderInt("Subdivision Level##LightningStrikeGenerator", &node->GetSubdivisionLevel_NonConst(), 1, 8);
+        ImGui::Checkbox("Freeze", &node->GetFreeze_NonConst());
+    }
+}
+
+void Canavar::Engine::Gui::Draw(Canavar::Engine::LightningStrikeAttractor* node)
+{
+
+    if (!ImGui::CollapsingHeader("Lightning Strike Attractor##LightningStrikeAttractor"))
+    {
+        if (ImGui::BeginCombo("Assign to a generator", "-"))
+        {
+            const auto Nodes = mNodeManager->GetNodes();
+
+            for (int i = 0; i < Nodes.size(); ++i)
+            {
+                if (auto Generator = dynamic_cast<LightningStrikeGenerator*>(Nodes[i]))
+                {
+                    if (ImGui::Selectable(Generator->GetName().toStdString().c_str()))
+                    {
+                        Generator->AddAttractor(node);
+                    }
+                }
+
+            }
+
+            ImGui::EndCombo();
+        }
+    }
+}
+
+void Canavar::Engine::Gui::Draw(Canavar::Engine::LightningStrikeSpherical* node)
+{
+    if (!ImGui::CollapsingHeader("Lightning Strike Spherical##LightningStrikeSpherical"))
+    {
+        int NumberOfContactPoints = node->GetNumberOfContactPoints();
+
+        if (!ImGui::SliderInt("Number Of Contact Points##LightningStrikeSpherical", &NumberOfContactPoints, 1, 16))
+        {
+            node->SetNumberOfContactPoints(NumberOfContactPoints);
+        }
+
+        ImGui::SliderFloat("Radius##LightningStrikeSpherical", &node->GetRadius_NonConst(), 0.1f, 20.0f, "%.3f");
     }
 }
 

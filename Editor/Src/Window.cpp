@@ -16,13 +16,13 @@ Window::Window(QWindow *parent)
     : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
 
 {
-    QSurfaceFormat format = QSurfaceFormat::defaultFormat();
-    format.setMajorVersion(4);
-    format.setMinorVersion(3);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setSamples(0);
-    format.setSwapInterval(1);
-    setFormat(format);
+    //QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+    //format.setMajorVersion(4);
+    //format.setMinorVersion(3);
+    //format.setProfile(QSurfaceFormat::CoreProfile);
+    //format.setSamples(0);
+    //format.setSwapInterval(1);
+    //setFormat(format);
 
     connect(this, &QOpenGLWindow::frameSwapped, this, [=]() { update(); });
 }

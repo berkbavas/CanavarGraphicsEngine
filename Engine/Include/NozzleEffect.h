@@ -14,8 +14,8 @@ namespace Canavar {
             NozzleEffect();
             ~NozzleEffect();
 
-            virtual void ToJson(QJsonObject& object) override;
-            virtual void FromJson(const QJsonObject& object) override;
+            void ToJson(QJsonObject& object) override;
+            void FromJson(const QJsonObject& object) override;
 
             void Create();
 

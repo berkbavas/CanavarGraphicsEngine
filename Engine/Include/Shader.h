@@ -3,12 +3,12 @@
 #include "Common.h"
 
 #include <QObject>
-#include <QOpenGLFunctions>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLShader>
 
 namespace Canavar {
     namespace Engine {
-        class Shader : public QObject, protected QOpenGLFunctions
+        class Shader : public QObject, protected QOpenGLExtraFunctions
         {
         public:
             Shader(ShaderType type);
@@ -18,6 +18,7 @@ namespace Canavar {
             void Release();
 
             void AddPath(QOpenGLShader::ShaderTypeBit type, const QString& path);
+            void AddTransformFeedbackVarying(const QString& varying);
 
             void SetUniformValue(const QString& name, int value);
             void SetUniformValue(const QString& name, unsigned int value);
@@ -41,7 +42,7 @@ namespace Canavar {
             ShaderType mType;
             QString mShaderName;
 
-            QStringList mAttributes;
+            QStringList mTransformFeedbackVaryings;
         };
     } // namespace Engine
 } // namespace Canavar

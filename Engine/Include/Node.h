@@ -37,7 +37,10 @@ namespace Canavar {
                 PointLight,
                 NozzleEffect,
                 FirecrackerEffect,
-                PersecutorCamera
+                PersecutorCamera,
+                LightningStrikeGenerator,
+                LightningStrikeAttractor,
+                LightningStrikeSpherical,
             };
 
             const QMatrix4x4 WorldTransformation() const;

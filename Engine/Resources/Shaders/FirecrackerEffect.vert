@@ -19,6 +19,4 @@ void main()
     fsDeadAfter = deadAfter;
 
     gl_Position = MVP * vec4(position + scale * cubeVertexPosition, life >= deadAfter ? 0.0f : 1.0f);
-
-
 }

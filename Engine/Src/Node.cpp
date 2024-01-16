@@ -44,12 +44,17 @@ const QMatrix4x4 Canavar::Engine::Node::WorldTransformation() const
     if (mParent)
     {
         // Remove scaling
-        auto pos = mParent->WorldPosition();
-        auto rot = mParent->WorldRotation();
+        const auto ParentScale = mParent->Scale();
+        mParent->SetScale(QVector3D(1.0f / ParentScale.x(), 1.0f / ParentScale.y(), 1.0f / ParentScale.z()));
+
+        const auto WorldPosition = mParent->WorldPosition();
+        auto WorldRotation = mParent->WorldRotation();
 
         QMatrix4x4 tr;
-        tr.rotate(rot);
-        tr.setColumn(3, QVector4D(pos, 1.0f));
+        tr.rotate(WorldRotation.normalized());
+        tr.setColumn(3, QVector4D(WorldPosition, 1.0f));
+
+        mParent->SetScale(ParentScale);
 
         return tr * mTransformation;
     }
@@ -213,8 +218,10 @@ void Canavar::Engine::Node::AddChild(Node* node)
         return;
     }
 
+    const auto NodeWorldPosition = node->WorldPosition();
     mChildren << node;
     node->SetParent(this);
+    node->SetWorldPosition(NodeWorldPosition);
 }
 
 void Canavar::Engine::Node::RemoveChild(Node* node)

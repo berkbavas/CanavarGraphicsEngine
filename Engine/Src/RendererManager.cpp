@@ -14,6 +14,7 @@
 #include "Sky.h"
 #include "Sun.h"
 #include "Terrain.h"
+#include "LightningStrikeGenerator.h"
 
 #include <QDir>
 
@@ -169,6 +170,14 @@ void Canavar::Engine::RendererManager::Render(float ifps)
 
         if (auto effect = dynamic_cast<FirecrackerEffect*>(node))
             effect->Render(ifps);
+    }
+
+    for (const auto& node : nodes)
+    {
+        if (auto lsg = dynamic_cast<LightningStrikeBase*>(node))
+        {
+            lsg->Render(ifps);
+        }
     }
 
     // Selectables

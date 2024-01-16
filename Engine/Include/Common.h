@@ -42,7 +42,9 @@ namespace Canavar {
             MeshVertexRendererShader,
             VertexInfoShader,
             LineStripShader,
-            RaycasterShader
+            RaycasterShader,
+            LightningStrikeShader,
+            LightningStrikeQuadGeneratorShader,
         };
 
         enum class RenderMode { //

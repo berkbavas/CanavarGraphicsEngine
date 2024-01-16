@@ -195,6 +195,39 @@ bool Canavar::Engine::ShaderManager::Init()
             return false;
     }
 
+    // Lightning Strike Shader
+    {
+        Shader* shader = new Shader(ShaderType::LightningStrikeShader);
+        mShaders.insert(shader->GetType(), shader);
+
+        shader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LightningStrike.vert");
+        shader->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/LightningStrike.geom");
+
+        shader->AddTransformFeedbackVarying("outWorldPosition");
+        shader->AddTransformFeedbackVarying("outForkLevel");
+
+        if (false == shader->Init())
+        {
+            return false;
+        }
+
+    }
+
+    // Lightning Strike Quad Generator Shader
+    {
+        Shader* shader = new Shader(ShaderType::LightningStrikeQuadGeneratorShader);
+        mShaders.insert(shader->GetType(), shader);
+
+        shader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LightningStrikeQuadGenerator.vert");
+        shader->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/LightningStrikeQuadGenerator.geom");
+        shader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/LightningStrikeQuadGenerator.frag");
+
+        if (false == shader->Init())
+        {
+            return false;
+        }
+    }
+
     return true;
 }
 

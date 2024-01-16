@@ -11,6 +11,9 @@
 #include "Sky.h"
 #include "Sun.h"
 #include "Terrain.h"
+#include "LightningStrikeGenerator.h"
+#include "LightningStrikeAttractor.h"
+#include "LightningStrikeSpherical.h"
 
 #include <imgui.h>
 #include <QtImGui.h>
@@ -38,6 +41,9 @@ namespace Canavar {
             void Draw(Canavar::Engine::Haze* node);
             void Draw(Canavar::Engine::NozzleEffect* node);
             void Draw(Canavar::Engine::FirecrackerEffect* node);
+            void Draw(Canavar::Engine::LightningStrikeGenerator* node);
+            void Draw(Canavar::Engine::LightningStrikeAttractor* node);
+            void Draw(Canavar::Engine::LightningStrikeSpherical* node);
 
             Canavar::Engine::Node* GetSelectedNode() const;
             void SetSelectedNode(Canavar::Engine::Node* newSelectedNode);

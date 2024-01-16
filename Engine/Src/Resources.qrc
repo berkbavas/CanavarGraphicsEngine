@@ -16,6 +16,11 @@
         <file>../Resources/Shaders/PostProcess.frag</file>
         <file>../Resources/Shaders/Screen.frag</file>
         <file>../Resources/Shaders/Screen.vert</file>
+		<file>../Resources/Shaders/LightningStrike.vert</file>
+		<file>../Resources/Shaders/LightningStrike.geom</file>
+		<file>../Resources/Shaders/LightningStrikeQuadGenerator.vert</file>
+		<file>../Resources/Shaders/LightningStrikeQuadGenerator.geom</file>
+		<file>../Resources/Shaders/LightningStrikeQuadGenerator.frag</file>
         <file>../Resources/Shaders/NodeInfo.vert</file>
         <file>../Resources/Shaders/NodeInfo.frag</file>
         <file>../Resources/Shaders/NozzleEffect.vert</file>
