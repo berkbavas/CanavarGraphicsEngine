@@ -762,7 +762,7 @@ void Canavar::Engine::Gui::Draw(Canavar::Engine::LightningStrikeSpherical* node)
     {
         int NumberOfContactPoints = node->GetNumberOfContactPoints();
 
-        if (!ImGui::SliderInt("Number Of Contact Points##LightningStrikeSpherical", &NumberOfContactPoints, 1, 16))
+        if (ImGui::SliderInt("Number Of Contact Points##LightningStrikeSpherical", &NumberOfContactPoints, 1, 16))
         {
             node->SetNumberOfContactPoints(NumberOfContactPoints);
         }
