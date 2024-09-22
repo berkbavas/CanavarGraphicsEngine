@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/Shaders/ModelColored.frag</file>
+        <file>Resources/Shaders/ModelColored.vert</file>
+        <file>Resources/Shaders/ModelTextured.frag</file>
+        <file>Resources/Shaders/ModelTextured.vert</file>
+        <file>Resources/Shaders/Sky.frag</file>
+        <file>Resources/Shaders/Sky.vert</file>
+        <file>Resources/Shaders/Terrain.frag</file>
+        <file>Resources/Shaders/Terrain.tcs</file>
+        <file>Resources/Shaders/Terrain.tes</file>
+        <file>Resources/Shaders/Terrain.vert</file>
+        <file>Resources/Shaders/Common.glsl</file>
+        <file>Resources/Shaders/Quad.vert</file>
+        <file>Resources/Shaders/Blur.frag</file>
+        <file>Resources/Shaders/PostProcess.frag</file>
+        <file>Resources/Shaders/Screen.frag</file>
+        <file>Resources/Shaders/Screen.vert</file>
+		<file>Resources/Shaders/LightningStrike.vert</file>
+		<file>Resources/Shaders/LightningStrike.geom</file>
+		<file>Resources/Shaders/LightningStrikeQuadGenerator.vert</file>
+		<file>Resources/Shaders/LightningStrikeQuadGenerator.geom</file>
+		<file>Resources/Shaders/LightningStrikeQuadGenerator.frag</file>
+        <file>Resources/Shaders/NodeInfo.vert</file>
+        <file>Resources/Shaders/NodeInfo.frag</file>
+        <file>Resources/Shaders/NozzleEffect.vert</file>
+        <file>Resources/Shaders/NozzleEffect.frag</file>
+        <file>Resources/Shaders/FirecrackerEffect.vert</file>
+        <file>Resources/Shaders/FirecrackerEffect.frag</file>
+        <file>Resources/Shaders/Basic.frag</file>
+        <file>Resources/Shaders/Basic.vert</file>
+        <file>Resources/Shaders/MeshVertexRenderer.frag</file>
+        <file>Resources/Shaders/MeshVertexRenderer.vert</file>
+        <file>Resources/Shaders/LineStrip.frag</file>
+        <file>Resources/Shaders/LineStrip.vert</file>
+        <file>Resources/Shaders/Raycaster.frag</file>
+        <file>Resources/Shaders/Raycaster.vert</file>
+        <file>Resources/Sky/SkyRGB.data</file>
+        <file>Resources/Sky/SkyRGBRad.data</file>
+    </qresource>
+</RCC>
