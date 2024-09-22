@@ -1,0 +1,289 @@
+{
+    "nodes": [
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": 1.224556803703308,
+                "y": -0.03022841550409794,
+                "z": 1.224556803703308
+            },
+            "enabled": true,
+            "name": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": false,
+            "specular": 1,
+            "type": 4,
+            "uuid": "58059c02-ed93-4b66-8c8f-5b8f8f73536b",
+            "visible": true
+        },
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": true,
+            "name": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": false,
+            "turbidity": 4,
+            "type": 5,
+            "uuid": "6753c94c-46cf-4857-8d07-6a685d47e8b0",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "name": "Haze",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": false,
+            "type": 6,
+            "uuid": "173f02eb-5bb5-47ad-a708-f52feffe18e9",
+            "visible": true
+        },
+        {
+            "ambient": 0.5,
+            "amplitude": 20,
+            "diffuse": 0.6000000238418579,
+            "enabled": false,
+            "frequency": 0.009999999776482582,
+            "grass_coverage": 0.44999998807907104,
+            "name": "Terrain",
+            "octaves": 13,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "power": 3,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 0,
+                "z": 1
+            },
+            "seed": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": false,
+            "shininess": 8,
+            "specular": 0.05000000074505806,
+            "tessellation_multiplier": 1,
+            "type": 7,
+            "uuid": "3b604a4d-c4f6-47e6-9dec-3ded43c1eb2c",
+            "visible": true
+        },
+        {
+            "h_fov": 35.9833984375,
+            "name": "Free Camera",
+            "position": {
+                "x": 51.11963653564453,
+                "y": 13.572166442871094,
+                "z": -7.8903093338012695
+            },
+            "rotation": {
+                "w": -0.470669150352478,
+                "x": 0.07844945788383484,
+                "y": -0.8668618202209473,
+                "z": -0.1444838047027588
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": false,
+            "type": 2,
+            "uuid": "6d291b3c-f01b-40c6-a17e-4bae6d52b2eb",
+            "v_fov": 60,
+            "visible": true,
+            "z_far": 1000000,
+            "z_near": 1
+        },
+        {
+            "ambient": 0.800000011920929,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "model_name": "Cube",
+            "name": "Model Cube",
+            "overlay_color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "overlay_color_factor": 0,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "shininess": 32,
+            "specular": 0.25,
+            "type": 1,
+            "uuid": "757a7bc1-2945-4027-948a-3a0b1826efe9",
+            "visible": true
+        },
+        {
+            "ambient": 0.800000011920929,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "model_name": "JetFighter",
+            "name": "Model JetFighter",
+            "overlay_color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "overlay_color_factor": 0,
+            "position": {
+                "x": 23.091955184936523,
+                "y": 1.983245849609375,
+                "z": 6.63798713684082
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "shininess": 32,
+            "specular": 0.25,
+            "type": 1,
+            "uuid": "5038af5f-433b-46ad-bffa-c91609ee2cd4",
+            "visible": true
+        },
+        {
+            "ambient": 0.800000011920929,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "model_name": "Plane",
+            "name": "Model Plane",
+            "overlay_color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "overlay_color_factor": 0,
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "shininess": 32,
+            "specular": 0.25,
+            "type": 1,
+            "uuid": "2e8148f9-fbe7-48be-b0bf-89a135d600f2",
+            "visible": true
+        }
+    ]
+}

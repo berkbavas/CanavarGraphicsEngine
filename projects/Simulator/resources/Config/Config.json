@@ -1,0 +1,6 @@
+{
+  "models_root_folder": "resources/Models",
+  "model_formats": ["*.obj", "*.blend", "*.fbx"],
+  "world_file_path" : "resources/Config/World.json",
+  "node_selection_enabled": true
+}
