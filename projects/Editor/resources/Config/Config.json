@@ -1,6 +1,0 @@
-{
-  "models_root_folder": "resources/Models",
-  "model_formats": ["*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf"],
-  "world_file_path" : "resources/Config/World_Crossfire.json",
-  "node_selection_enabled": true
-}
