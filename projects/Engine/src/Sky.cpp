@@ -43,7 +43,7 @@ Canavar::Engine::Sky::Sky()
     mRGBRad[2] = new double[120];
 
     {
-        QFile file(":/resources/sky/SkyRGB.data");
+        QFile file(":/resources/Sky/SkyRGB.data");
         QDataStream stream(&file);
 
         if (file.open(QIODevice::ReadOnly))
@@ -60,7 +60,7 @@ Canavar::Engine::Sky::Sky()
     }
 
     {
-        QFile file(":/resources/sky/SkyRGBRad.data");
+        QFile file(":/resources/Sky/SkyRGBRad.data");
         QDataStream stream(&file);
 
         if (file.open(QIODevice::ReadOnly))

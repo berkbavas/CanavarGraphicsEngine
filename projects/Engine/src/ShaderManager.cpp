@@ -18,8 +18,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::ModelColoredShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/ModelColored.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/ModelColored.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/ModelColored.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/ModelColored.frag");
 
         if (!shader->Init())
             return false;
@@ -30,8 +30,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::ModelTexturedShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/ModelTextured.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/ModelTextured.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/ModelTextured.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/ModelTextured.frag");
 
         if (!shader->Init())
             return false;
@@ -42,8 +42,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::SkyShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Sky.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/Sky.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Sky.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/Sky.frag");
 
         if (!shader->Init())
             return false;
@@ -54,10 +54,10 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::TerrainShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Terrain.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/Terrain.frag");
-        shader->AddPath(QOpenGLShader::TessellationControl, ":/resources/shaders/Terrain.tcs");
-        shader->AddPath(QOpenGLShader::TessellationEvaluation, ":/resources/shaders/Terrain.tes");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Terrain.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/Terrain.frag");
+        shader->AddPath(QOpenGLShader::TessellationControl, ":/resources/Shaders/Terrain.tcs");
+        shader->AddPath(QOpenGLShader::TessellationEvaluation, ":/resources/Shaders/Terrain.tes");
 
         if (!shader->Init())
             return false;
@@ -68,8 +68,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::BlurShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Quad.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/Blur.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Quad.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/Blur.frag");
 
         if (!shader->Init())
             return false;
@@ -80,8 +80,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::PostProcessShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Quad.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/PostProcess.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Quad.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/PostProcess.frag");
 
         if (!shader->Init())
             return false;
@@ -92,8 +92,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::ScreenShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Screen.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/Screen.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Screen.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/Screen.frag");
 
         if (!shader->Init())
             return false;
@@ -104,8 +104,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::NodeInfoShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/NodeInfo.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/NodeInfo.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/NodeInfo.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/NodeInfo.frag");
 
         if (!shader->Init())
             return false;
@@ -116,8 +116,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::NozzleEffectShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/NozzleEffect.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/NozzleEffect.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/NozzleEffect.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/NozzleEffect.frag");
 
         if (!shader->Init())
             return false;
@@ -128,8 +128,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::FirecrackerEffectShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/FirecrackerEffect.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/FirecrackerEffect.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/FirecrackerEffect.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/FirecrackerEffect.frag");
 
         if (!shader->Init())
             return false;
@@ -140,8 +140,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::BasicShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Basic.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/Basic.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Basic.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/Basic.frag");
 
         if (!shader->Init())
             return false;
@@ -152,8 +152,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::MeshVertexRendererShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/MeshVertexRenderer.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/MeshVertexRenderer.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/MeshVertexRenderer.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/MeshVertexRenderer.frag");
 
         if (!shader->Init())
             return false;
@@ -164,8 +164,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::VertexInfoShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/MeshVertexRenderer.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/NodeInfo.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/MeshVertexRenderer.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/NodeInfo.frag");
 
         if (!shader->Init())
             return false;
@@ -176,8 +176,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::LineStripShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/LineStrip.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/LineStrip.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/LineStrip.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/LineStrip.frag");
 
         if (!shader->Init())
             return false;
@@ -188,8 +188,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::RaycasterShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/Raycaster.vert");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/Raycaster.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/Raycaster.vert");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/Raycaster.frag");
 
         if (!shader->Init())
             return false;
@@ -200,8 +200,8 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::LightningStrikeShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/LightningStrike.vert");
-        shader->AddPath(QOpenGLShader::Geometry, ":/resources/shaders/LightningStrike.geom");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/LightningStrike.vert");
+        shader->AddPath(QOpenGLShader::Geometry, ":/resources/Shaders/LightningStrike.geom");
 
         shader->AddTransformFeedbackVarying("outWorldPosition");
         shader->AddTransformFeedbackVarying("outForkLevel");
@@ -218,9 +218,9 @@ bool Canavar::Engine::ShaderManager::Init()
         Shader* shader = new Shader(ShaderType::LightningStrikeQuadGeneratorShader);
         mShaders.insert(shader->GetType(), shader);
 
-        shader->AddPath(QOpenGLShader::Vertex, ":/resources/shaders/LightningStrikeQuadGenerator.vert");
-        shader->AddPath(QOpenGLShader::Geometry, ":/resources/shaders/LightningStrikeQuadGenerator.geom");
-        shader->AddPath(QOpenGLShader::Fragment, ":/resources/shaders/LightningStrikeQuadGenerator.frag");
+        shader->AddPath(QOpenGLShader::Vertex, ":/resources/Shaders/LightningStrikeQuadGenerator.vert");
+        shader->AddPath(QOpenGLShader::Geometry, ":/resources/Shaders/LightningStrikeQuadGenerator.geom");
+        shader->AddPath(QOpenGLShader::Fragment, ":/resources/Shaders/LightningStrikeQuadGenerator.frag");
 
         if (false == shader->Init())
         {
