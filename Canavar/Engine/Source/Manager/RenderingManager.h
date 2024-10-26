@@ -1,0 +1,62 @@
+#pragma once
+
+#include "Core/Constants.h"
+#include "Manager/Manager.h"
+#include "Node/Camera/Camera.h"
+#include "Node/Model/Model.h"
+#include "Util/Shader.h"
+
+#include <map>
+#include <memory>
+
+#include <QOpenGLExtraFunctions>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLFramebufferObjectFormat>
+
+namespace Canavar::Engine
+{
+    class ShaderManager;
+    class NodeManager;
+    class CameraManager;
+    class LightManager;
+
+    enum E_Framebuffer
+    {
+        Default,
+        Temp
+    };
+
+    class RenderingManager : public Manager, protected QOpenGLExtraFunctions
+    {
+      public:
+        explicit RenderingManager(QObject *parent = nullptr);
+
+        void Initialize() override;
+        void PostInitialize() override;
+
+        void Render(float ifps);
+        void Resize(int width, int height);
+
+      private:
+        void RenderModel(ModelPtr pModel);
+
+        void SetCommonUniforms(Shader *pShader);
+
+        void ResizeFramebuffers();
+
+        ShaderManager *mShaderManager;
+        NodeManager *mNodeManager;
+        CameraManager *mCameraManager;
+        LightManager *mLightManager;
+
+        CameraPtr mActiveCamera{ nullptr };
+
+        Shader *mModelShader{ nullptr };
+
+        std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
+        std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
+
+        int mWidth{ INITIAL_WIDTH };
+        int mHeight{ INITIAL_HEIGHT };
+    };
+};

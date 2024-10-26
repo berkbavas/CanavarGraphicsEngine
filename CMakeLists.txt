@@ -31,3 +31,4 @@ link_directories(${LIBS_DIR})
 include_directories(${INCLUDE_DIR})
 
 add_subdirectory(Canavar/Engine Canavar/Engine)
+add_subdirectory(Canavar/Editor Canavar/Editor)

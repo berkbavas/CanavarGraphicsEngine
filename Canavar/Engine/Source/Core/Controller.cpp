@@ -1,6 +1,14 @@
 #include "Controller.h"
 
+#include "Constants.h"
 #include "Core/Window.h"
+#include "Manager/CameraManager.h"
+#include "Manager/LightManager.h"
+#include "Manager/NodeManager.h"
+#include "Manager/RenderingManager.h"
+#include "Manager/ShaderManager.h"
+#include "Node/Model/Model.h"
+#include "Util/Logger.h"
 
 #include <imgui.h>
 
@@ -21,6 +29,18 @@ Canavar::Engine::Controller::Controller(QObject* parent)
     connect(mWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
     connect(mWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
     connect(mWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
+
+    mNodeManager = new NodeManager(nullptr);
+    mCameraManager = new CameraManager(nullptr);
+    mShaderManager = new ShaderManager(nullptr);
+    mRenderingManager = new RenderingManager(nullptr);
+    mLightManager = new LightManager(nullptr);
+
+    mManagers.push_back(mShaderManager);
+    mManagers.push_back(mNodeManager);
+    mManagers.push_back(mCameraManager);
+    mManagers.push_back(mRenderingManager);
+    mManagers.push_back(mLightManager);
 }
 
 Canavar::Engine::Controller::~Controller()
@@ -33,31 +53,62 @@ void Canavar::Engine::Controller::Run()
 {
     qDebug() << "Controller::Controller: Application starting...";
 
-    mWindow->resize(1600, 900);
+    Q_INIT_RESOURCE(Engine);
+
     mWindow->show();
+    mWindow->resize(INITIAL_WIDTH, INITIAL_HEIGHT);
 }
 
 void Canavar::Engine::Controller::Initialize()
 {
-    initializeOpenGLFunctions();
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_DEPTH_TEST);
+    qInstallMessageHandler(Logger::QtMessageOutputCallback);
 
+    for (const auto pManager : mManagers)
+    {
+        pManager->SetManagerProvider(this);
+        pManager->Initialize();
+    }
+
+    for (const auto pManager : mManagers)
+    {
+        pManager->PostInitialize();
+    }
 
     QtImGui::initialize(mWindow);
+
+    // Test
+    ModelPtr pModel = std::make_shared<Model>("f16c");
+    mNodeManager->AddNode(pModel);
 }
 
 void Canavar::Engine::Controller::Render(float ifps)
 {
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    for (const auto pManager : mManagers)
+    {
+        pManager->PreUpdate(ifps);
+    }
+
+    for (const auto pManager : mManagers)
+    {
+        pManager->Update(ifps);
+    }
+
+    for (const auto pManager : mManagers)
+    {
+        pManager->PostUpdate(ifps);
+    }
+
+    for (const auto pManager : mManagers)
+    {
+        pManager->Render(ifps);
+    }
 
     QtImGui::newFrame();
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, mWindow->width(), mWindow->height());
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // glViewport(0, 0, mWindow->width(), mWindow->height());
 
-    ImGui::ShowDemoWindow();
+    // ImGui::ShowDemoWindow();
 
     ImGui::Render();
     QtImGui::render();
@@ -65,14 +116,20 @@ void Canavar::Engine::Controller::Render(float ifps)
 
 void Canavar::Engine::Controller::OnKeyPressed(QKeyEvent* event)
 {
+    mCameraManager->OnKeyPressed(event);
 }
 
 void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
 {
+    mCameraManager->OnKeyReleased(event);
 }
 
 void Canavar::Engine::Controller::Resize(int width, int height)
 {
+    mWindow->makeCurrent();
+    mRenderingManager->Resize(width, height);
+    mCameraManager->Resize(width, height);
+    mWindow->doneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
@@ -81,10 +138,13 @@ void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
     {
         return;
     }
+
+    mCameraManager->OnMousePressed(event);
 }
 
 void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
 {
+    mCameraManager->OnMouseReleased(event);
 }
 
 void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
@@ -93,6 +153,8 @@ void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
     {
         return;
     }
+
+    mCameraManager->OnMouseMoved(event);
 }
 
 void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
@@ -101,4 +163,6 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
     {
         return;
     }
+
+    mCameraManager->OnWheelMoved(event);
 }

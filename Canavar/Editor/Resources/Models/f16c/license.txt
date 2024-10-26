@@ -1,0 +1,11 @@
+Model Information:
+* title:	F16-C Falcon
+* source:	https://sketchfab.com/3d-models/f16-c-falcon-4bc2ff75dc584af2afd0aa6bd8b79015
+* author:	Carlos.Maciel (https://sketchfab.com/Carlos.Maciel)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "F16-C Falcon" (https://sketchfab.com/3d-models/f16-c-falcon-4bc2ff75dc584af2afd0aa6bd8b79015) by Carlos.Maciel (https://sketchfab.com/Carlos.Maciel) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

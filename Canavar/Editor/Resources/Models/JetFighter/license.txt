@@ -1,0 +1,11 @@
+Model Information:
+* title:	Jet_fighter
+* source:	https://sketchfab.com/3d-models/jet-fighter-ba8c9ca82b204222834997996dfc1e1e
+* author:	Ameer Studio (https://sketchfab.com/uchiha.321abc)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Jet_fighter" (https://sketchfab.com/3d-models/jet-fighter-ba8c9ca82b204222834997996dfc1e1e) by Ameer Studio (https://sketchfab.com/uchiha.321abc) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
