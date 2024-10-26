@@ -5,5 +5,9 @@
         <file>Resources/Shaders/Quad.vert</file>
         <file>Resources/Shaders/Blur.frag</file>
         <file>Resources/Shaders/PostProcess.frag</file>
+        <file>Resources/Shaders/Sky.vert</file>
+        <file>Resources/Shaders/Sky.frag</file>
+        <file>Resources/Sky/SkyRGB.data</file>
+        <file>Resources/Sky/SkyRGBRad.data</file>
     </qresource>
 </RCC>

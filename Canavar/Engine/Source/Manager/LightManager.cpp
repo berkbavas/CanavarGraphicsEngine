@@ -6,9 +6,9 @@ Canavar::Engine::LightManager::LightManager(QObject* parent)
 
 void Canavar::Engine::LightManager::Initialize()
 {
-    DirectionalLightPtr pSun = std::make_shared<DirectionalLight>();
-    pSun->SetDirection(QVector3D(-1, 0, -1).normalized());
-    AddLight(pSun);
+    mSun = std::make_shared<DirectionalLight>();
+    mSun->SetDirection(QVector3D(-1.0f, 0.75f, -1.0f).normalized());
+    AddLight(mSun);
 }
 
 std::vector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D targetPosition, float radius)

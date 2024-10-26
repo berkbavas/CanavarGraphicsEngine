@@ -20,6 +20,8 @@ namespace Canavar::Engine
         virtual int GetWidth() const = 0;
         virtual int GetHeight() const = 0;
 
+        virtual float CalculateSkyYOffset(float horizonDistance);
+
         virtual void Update(float ifps);
         virtual void Reset();
         virtual void Resize(int w, int h);
@@ -30,6 +32,9 @@ namespace Canavar::Engine
         virtual void MouseReleased(QMouseEvent *);
         virtual void MouseMoved(QMouseEvent *);
         virtual void WheelMoved(QWheelEvent *);
+
+      private:
+        QMatrix4x4 mTransformCacheForSkyYOffset;
     };
 
     using CameraPtr = std::shared_ptr<Camera>;

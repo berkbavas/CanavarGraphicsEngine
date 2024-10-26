@@ -39,6 +39,10 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mLightManager = mManagerProvider->GetLightManager();
 
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
+    mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
+
+    mSky = mNodeManager->GetSky();
+    mSun = mLightManager->GetSun();
 }
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
@@ -50,10 +54,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    // QOpenGLFramebufferObject::bindDefault();
-    // glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
-    // glClearColor(0, 0, 0, 1);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    mSky->Render(mSkyShader, mSun.get(), mActiveCamera.get());
 
     SetCommonUniforms(mModelShader);
 

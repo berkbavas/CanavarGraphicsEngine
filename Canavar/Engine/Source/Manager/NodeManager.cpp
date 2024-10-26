@@ -14,12 +14,19 @@ void Canavar::Engine::NodeManager::Initialize()
 
     mScenes = ModelImporter::Import("Resources/Models", { "*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf" });
 
+    mSky = std::make_shared<Sky>();
+
+    LOG_DEBUG("NodeManager::Initialize: Initialization is done.");
+}
+
+void Canavar::Engine::NodeManager::PostInitialize()
+{
+    mSky->Initialize();
+
     for (const auto [name, pScene] : mScenes)
     {
         pScene->Initialize();
     }
-
-    LOG_DEBUG("NodeManager::Initialize: Initialization is done.");
 }
 
 void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)

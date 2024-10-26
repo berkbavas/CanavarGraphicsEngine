@@ -3,7 +3,9 @@
 #include "Core/Constants.h"
 #include "Manager/Manager.h"
 #include "Node/Camera/Camera.h"
+#include "Node/Light/DirectionalLight.h"
 #include "Node/Model/Model.h"
+#include "Node/Sky/Sky.h"
 #include "Util/Shader.h"
 
 #include <map>
@@ -52,6 +54,10 @@ namespace Canavar::Engine
         CameraPtr mActiveCamera{ nullptr };
 
         Shader *mModelShader{ nullptr };
+        Shader *mSkyShader{ nullptr };
+
+        SkyPtr mSky;
+        DirectionalLightPtr mSun;
 
         std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;

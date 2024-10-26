@@ -11,7 +11,13 @@ void Canavar::Engine::ShaderManager::Initialize()
     mModelShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Model.frag");
     mModelShader->Initialize();
 
+    mSkyShader = new Shader("Sky Shader");
+    mSkyShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Sky.vert");
+    mSkyShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
+    mSkyShader->Initialize();
+
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
+    mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)

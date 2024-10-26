@@ -26,6 +26,8 @@ namespace Canavar::Engine
       private:
         std::set<PointLightPtr> mPointLights;
         QVector<DirectionalLightPtr> mDirectionalLights;
+
+        DEFINE_MEMBER_CONST(DirectionalLightPtr, Sun);
     };
 
 }

@@ -3,6 +3,8 @@
 #include "Manager/Manager.h"
 #include "Node/Model/Model.h"
 #include "Node/Scene/Scene.h"
+#include "Node/Sky/Sky.h"
+#include "Util/Macros.h"
 
 #include <map>
 #include <set>
@@ -17,6 +19,7 @@ namespace Canavar::Engine
         explicit NodeManager(QObject *parent = nullptr);
 
         void Initialize() override;
+        void PostInitialize() override;
 
         void AddNode(NodePtr pNode);
         void RemoveNode(NodePtr pNode);
@@ -34,5 +37,7 @@ namespace Canavar::Engine
         std::set<NodePtr> mNodes;
 
         LightManager *mLightManager{ nullptr };
+
+        DEFINE_MEMBER_CONST(SkyPtr, Sky);
     };
 }

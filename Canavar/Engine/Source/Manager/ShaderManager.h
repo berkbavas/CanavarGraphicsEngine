@@ -10,6 +10,7 @@ namespace Canavar::Engine
     enum class ShaderType
     {
         Model,
+        Sky
     };
 
     class ShaderManager : public Manager
@@ -25,5 +26,6 @@ namespace Canavar::Engine
         std::map<ShaderType, Shader*> mShaders;
 
         Shader* mModelShader{ nullptr };
+        Shader* mSkyShader{ nullptr };
     };
 }
