@@ -1,5 +1,5 @@
 # Canavar Graphics Engine
-A basic graphics engine written in `C++` using `OpenGL API` ant `Qt 6`.
+A basic graphics engine written in `C++` using `OpenGL API` and `Qt 6`.
 I use `Qt 6` for window and event management.
 All 3D math operations are handled by `Qt 6`'s math module.
 
