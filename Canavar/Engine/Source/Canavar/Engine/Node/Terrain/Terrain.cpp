@@ -14,12 +14,14 @@ void Canavar::Engine::Terrain::Initialize()
 
     mTileGenerator = new TileGenerator(3, 128, 1024.0f);
 
+    mTextures.insert("Terrain", ModelImporter::CreateTexture(":/Resources/Terrain/terrain.jpg"));
     mTextures.insert("Sand", ModelImporter::CreateTexture(":/Resources/Terrain/sand.jpg"));
-    mTextures.insert("Grass", ModelImporter::CreateTexture(":/Resources/Terrain/grass0.jpg"));
+    mTextures.insert("Grass", ModelImporter::CreateTexture(":/Resources/Terrain/grass2.jpg"));
     mTextures.insert("Snow", ModelImporter::CreateTexture(":/Resources/Terrain/snow0.jpg"));
     mTextures.insert("RockDiffuse", ModelImporter::CreateTexture(":/Resources/Terrain/rock0.jpg"));
     mTextures.insert("RockNormal", ModelImporter::CreateTexture(":/Resources/Terrain/rnormal.jpg"));
-    mTextures.insert("Terrain", ModelImporter::CreateTexture(":/Resources/Terrain/terrain.jpg"));
+
+    mTextures.value("Terrain")->setWrapMode(QOpenGLTexture::WrapMode::MirroredRepeat);
 
     SetScale(QVector3D(1, 0, 1));
 }
@@ -56,7 +58,6 @@ void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
     pShader->SetSampler("sand", 1, mTextures.value("Sand")->textureId());
     pShader->SetSampler("grass", 2, mTextures.value("Grass")->textureId());
     pShader->SetSampler("terrainTexture", 3, mTextures.value("Terrain")->textureId());
-    // pShader->SetSampler("snow", 4, mTextures.value("Snow")->textureId());
     pShader->SetSampler("rock", 5, mTextures.value("RockDiffuse")->textureId());
     pShader->SetSampler("rockNormal", 6, mTextures.value("RockNormal")->textureId());
     mTileGenerator->Render(GL_PATCHES);
