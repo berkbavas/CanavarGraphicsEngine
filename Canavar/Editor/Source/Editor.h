@@ -6,6 +6,7 @@
 #include <Canavar/Engine/Core/EventReceiver.h>
 #include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/NodeManager.h>
+#include <Canavar/Engine/Node/Camera/DummyCamera.h>
 #include <Canavar/Engine/Node/Camera/FreeCamera.h>
 #include <Canavar/Engine/Node/Camera/PersecutorCamera.h>
 
@@ -43,5 +44,6 @@ namespace Canavar::Editor
 
         Engine::FreeCameraPtr mFreeCamera;
         Engine::PersecutorCameraPtr mPersecutorCamera;
+        Engine::DummyCameraPtr mDummyCamera;
     };
 }

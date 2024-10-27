@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Canavar/Engine/Node/Node.h"
+#include "Canavar/Engine/Node/Camera/PerspectiveCamera.h"
 
 namespace Canavar::Engine
 {
-    class DummyCamera : public Node
+    class DummyCamera : public PerspectiveCamera
     {
       public:
         DummyCamera();

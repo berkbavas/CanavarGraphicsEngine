@@ -11,7 +11,6 @@ void Canavar::Engine::CameraManager::Initialize()
     LOG_DEBUG("CameraManager::Initialize: Initializing...");
 
     mFreeCamera = std::make_shared<FreeCamera>();
-    mFreeCamera->SetZFar(1'000'000.0f);
     mFreeCamera->SetPosition(0, 0, -3);
 
     SetActiveCamera(mFreeCamera);
@@ -38,6 +37,11 @@ void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr pCamera)
 {
     LOG_DEBUG("CameraManager::SetActiveCamera: mActiveCamera: {}, pCamera: {}", PRINT_ADDRESS(pCamera.get()), PRINT_ADDRESS(mActiveCamera.get()));
     CGE_ASSERT(pCamera != nullptr);
+
+    if (mActiveCamera == pCamera)
+    {
+        return;
+    }
 
     if (mActiveCamera)
     {

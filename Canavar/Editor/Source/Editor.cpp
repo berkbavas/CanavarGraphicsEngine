@@ -101,6 +101,13 @@ void Canavar::Editor::Editor::Initialize()
         pRootNode->AddChild(pNozzleEffect);
     }
 
+    // Dummy Camera
+    {
+        mDummyCamera = std::make_shared<DummyCamera>();
+        mDummyCamera->SetPosition(0, 7.5f, 60);
+        pRootNode->AddChild(mDummyCamera);
+    }
+
     mNodeManager->AddNode(pRootNode);
 }
 
@@ -129,6 +136,10 @@ bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
     else if (pEvent->key() == Qt::Key_2)
     {
         mCameraManager->SetActiveCamera(mPersecutorCamera);
+    }
+    else if (pEvent->key() == Qt::Key_3)
+    {
+        mCameraManager->SetActiveCamera(mDummyCamera);
     }
 
     return false;

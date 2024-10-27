@@ -222,9 +222,9 @@ void Canavar::Engine::Node::SetParent(NodeWeakPtr pParentNode)
 
     mParent = pParentNode;
 
-    if (pParent)
+    if (mParent.lock())
     {
-        pParent->AddChild(shared_from_this());
+        mParent.lock()->AddChild(shared_from_this());
     }
 }
 

@@ -60,15 +60,15 @@ void Canavar::Engine::PerspectiveCamera::UpdateProjection()
 void Canavar::Engine::PerspectiveCamera::UpdateCache()
 {
     mViewMatrix.setToIdentity();
-    mViewMatrix.rotate(GetRotation().conjugated());
-    mViewMatrix.translate(-GetPosition());
+    mViewMatrix.rotate(GetWorldRotation().conjugated());
+    mViewMatrix.translate(-GetWorldPosition());
 
     constexpr QVector4D ZERO_TRANSLATION(0, 0, 0, 1);
     mRotationMatrix = mViewMatrix;
     mRotationMatrix.setColumn(3, ZERO_TRANSLATION);
 
     constexpr QVector3D NEGATIVE_Z(0, 0, -1);
-    mViewDirection = GetRotation() * NEGATIVE_Z;
+    mViewDirection = GetWorldRotation() * NEGATIVE_Z;
 
     UpdateProjectionIfDirty();
     mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
