@@ -33,6 +33,5 @@
         <file>Resources/Terrain/snow1.jpg</file>
         <file>Resources/Terrain/terrain.jpg</file>
         <file>Resources/Terrain/waterDUDV.png</file>
-        <file>Resources/Terrain/dirty-dry-ground.jpg</file>
     </qresource>
 </RCC>
