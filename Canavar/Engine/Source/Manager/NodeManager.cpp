@@ -16,6 +16,7 @@ void Canavar::Engine::NodeManager::Initialize()
 
     mSky = std::make_shared<Sky>();
     mTerrain = std::make_shared<Terrain>();
+    mHaze = std::make_shared<Haze>();
 
     LOG_DEBUG("NodeManager::Initialize: Initialization is done.");
 }

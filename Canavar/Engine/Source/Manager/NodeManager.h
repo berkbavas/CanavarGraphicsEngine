@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Manager/Manager.h"
+#include "Node/Haze/Haze.h"
 #include "Node/Model/Model.h"
 #include "Node/Scene/Scene.h"
 #include "Node/Sky/Sky.h"
@@ -41,5 +42,6 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER_CONST(SkyPtr, Sky);
         DEFINE_MEMBER_CONST(TerrainPtr, Terrain);
+        DEFINE_MEMBER_CONST(HazePtr, Haze);
     };
 }

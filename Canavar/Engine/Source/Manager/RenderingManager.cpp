@@ -45,6 +45,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mSky = mNodeManager->GetSky();
     mSun = mLightManager->GetSun();
     mTerrain = mNodeManager->GetTerrain();
+    mHaze = mNodeManager->GetHaze();
 }
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
@@ -140,7 +141,11 @@ void Canavar::Engine::RenderingManager::SetUniforms()
 void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader)
 {
     pShader->Bind();
-    pShader->SetUniformValue("haze.enabled", false);
+    pShader->SetUniformValue("haze.enabled", mHaze->GetEnabled());
+    pShader->SetUniformValue("haze.color", mHaze->GetColor());
+    pShader->SetUniformValue("haze.density", mHaze->GetDensity());
+    pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
+
     pShader->SetUniformValue("VP", mActiveCamera->GetViewProjectionMatrix());
     pShader->Release();
 }

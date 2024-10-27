@@ -3,6 +3,7 @@
 #include "Core/Constants.h"
 #include "Manager/Manager.h"
 #include "Node/Camera/Camera.h"
+#include "Node/Haze/Haze.h"
 #include "Node/Light/DirectionalLight.h"
 #include "Node/Model/Model.h"
 #include "Node/Sky/Sky.h"
@@ -64,6 +65,7 @@ namespace Canavar::Engine
         SkyPtr mSky;
         TerrainPtr mTerrain;
         DirectionalLightPtr mSun;
+        HazePtr mHaze;
 
         std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
