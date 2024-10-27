@@ -39,18 +39,61 @@ void Canavar::Editor::Editor::Initialize()
     mImGuiWidget->SetNodeManager(mNodeManager);
     mImGuiWidget->Initialize();
 
-    DummyNodePtr pDummyNode = std::make_shared<DummyNode>();
+    // Root
+    DummyNodePtr pRootNode = std::make_shared<DummyNode>();
+    pRootNode->SetNodeName("Root Node");
+    pRootNode->SetWorldPosition(0, 20, 0);
 
-    ModelPtr pModel = std::make_shared<Model>("f16c");
+    // F16
+    {
+        ModelPtr pModel = std::make_shared<Model>("f16c");
+        pModel->SetNodeName("F16C");
+        pRootNode->AddChild(pModel);
+    }
 
-    pDummyNode->AddChild(pModel);
+    // Red light
+    {
+        ModelPtr pSphere = std::make_shared<Model>("Sphere");
+        pSphere->SetScale(0.5f, 0.5f, 0.5f);
+        pSphere->SetWorldPosition(-11.42f, 0.16f, -0.83f);
 
-    mNodeManager->AddNode(pDummyNode);
+        PointLightPtr pRedLight = std::make_shared<PointLight>();
+        pRedLight->SetColor(QVector4D(1, 0, 0, 1));
+        pRedLight->SetConstant(0.075f);
+        pRedLight->SetQuadratic(0.1f);
+        pRedLight->SetLinear(0.25f);
+        pRedLight->SetNodeName("Red Light");
 
-    PointLightPtr pPointLight = std::make_shared<PointLight>();
-    pPointLight->SetPosition(0, 3, 0);
-    pPointLight->SetColor(QVector4D(1, 0, 0, 1));
-    mNodeManager->AddNode(pPointLight);
+        pSphere->AddChild(pRedLight);
+        pRootNode->AddChild(pSphere);
+    }
+
+    // Green light
+    {
+        ModelPtr pSphere = std::make_shared<Model>("Sphere");
+        pSphere->SetScale(0.5f, 0.5f, 0.5f);
+        pSphere->SetWorldPosition(11.42f, 0.16f, -0.83f);
+
+        PointLightPtr pGreenLight = std::make_shared<PointLight>();
+        pGreenLight->SetColor(QVector4D(0, 1, 0, 1));
+        pGreenLight->SetConstant(0.075f);
+        pGreenLight->SetQuadratic(0.1f);
+        pGreenLight->SetLinear(0.25f);
+        pGreenLight->SetNodeName("Green Light");
+
+        pSphere->AddChild(pGreenLight);
+        pRootNode->AddChild(pSphere);
+    }
+
+    // Nozzle Effect
+    {
+        NozzleEffectPtr pNozzleEffect = std::make_shared<NozzleEffect>();
+        pNozzleEffect->SetNodeName("Nozzle Effect");
+        pNozzleEffect->SetPosition(0.0f, 0.14f, 11.5f);
+        pRootNode->AddChild(pNozzleEffect);
+    }
+
+    mNodeManager->AddNode(pRootNode);
 }
 
 void Canavar::Editor::Editor::Update(float ifps)
