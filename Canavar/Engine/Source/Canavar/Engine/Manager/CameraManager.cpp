@@ -10,11 +10,11 @@ void Canavar::Engine::CameraManager::Initialize()
 {
     LOG_DEBUG("CameraManager::Initialize: Initializing...");
 
-    FreeCameraPtr pFreeCamera = std::make_shared<FreeCamera>();
-    pFreeCamera->SetZFar(1'000'000.0f);
-    pFreeCamera->SetPosition(0, 0, -3);
+    mFreeCamera = std::make_shared<FreeCamera>();
+    mFreeCamera->SetZFar(1'000'000.0f);
+    mFreeCamera->SetPosition(0, 0, -3);
 
-    SetActiveCamera(pFreeCamera);
+    SetActiveCamera(mFreeCamera);
     LOG_DEBUG("CameraManager::Initialize: Initialization is done.");
 }
 
@@ -34,19 +34,20 @@ void Canavar::Engine::CameraManager::PreUpdate(float ifps)
     }
 }
 
-void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr camera)
+void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr pCamera)
 {
-    LOG_DEBUG("CameraManager::SetActiveCamera: mActiveCamera: {}, camera: {}", PRINT_ADDRESS(camera.get()), PRINT_ADDRESS(mActiveCamera.get()));
-    CGE_ASSERT(camera != nullptr);
+    LOG_DEBUG("CameraManager::SetActiveCamera: mActiveCamera: {}, pCamera: {}", PRINT_ADDRESS(pCamera.get()), PRINT_ADDRESS(mActiveCamera.get()));
+    CGE_ASSERT(pCamera != nullptr);
 
     if (mActiveCamera)
     {
-        camera->Resize(mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
+        pCamera->Resize(mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
     }
 
-    camera->Update(0);
+    mActiveCamera = pCamera;
 
-    mActiveCamera = camera;
+    mActiveCamera->Reset();
+    mActiveCamera->Update(0);
 }
 
 Canavar::Engine::CameraPtr Canavar::Engine::CameraManager::GetActiveCamera() const

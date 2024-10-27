@@ -4,7 +4,10 @@
 
 #include <Canavar/Engine/Core/Controller.h>
 #include <Canavar/Engine/Core/EventReceiver.h>
+#include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/NodeManager.h>
+#include <Canavar/Engine/Node/Camera/FreeCamera.h>
+#include <Canavar/Engine/Node/Camera/PersecutorCamera.h>
 
 namespace Canavar::Editor
 {
@@ -34,7 +37,11 @@ namespace Canavar::Editor
       private:
         Engine::Controller *mController;
         Engine::NodeManager *mNodeManager;
+        Engine::CameraManager *mCameraManager;
 
         ImGuiWidget *mImGuiWidget;
+
+        Engine::FreeCameraPtr mFreeCamera;
+        Engine::PersecutorCameraPtr mPersecutorCamera;
     };
 }

@@ -36,13 +36,21 @@ void Canavar::Editor::Editor::Initialize()
     QtImGui::initialize(mController->GetWindow());
 
     mNodeManager = mController->GetNodeManager();
+    mCameraManager = mController->GetCameraManager();
+
     mImGuiWidget->SetNodeManager(mNodeManager);
     mImGuiWidget->Initialize();
+
+    mFreeCamera = mCameraManager->GetFreeCamera();
+
+    mPersecutorCamera = std::make_shared<PersecutorCamera>();
 
     // Root
     DummyNodePtr pRootNode = std::make_shared<DummyNode>();
     pRootNode->SetNodeName("Root Node");
     pRootNode->SetWorldPosition(0, 20, 0);
+
+    mPersecutorCamera->SetTarget(pRootNode);
 
     // F16
     {
@@ -111,6 +119,16 @@ bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
     if (ImGui::GetIO().WantCaptureKeyboard)
     {
         return true;
+    }
+
+    if (pEvent->key() == Qt::Key_1)
+    {
+        mFreeCamera->SetWorldPosition(mPersecutorCamera->GetWorldPosition());
+        mCameraManager->SetActiveCamera(mFreeCamera);
+    }
+    else if (pEvent->key() == Qt::Key_2)
+    {
+        mCameraManager->SetActiveCamera(mPersecutorCamera);
     }
 
     return false;

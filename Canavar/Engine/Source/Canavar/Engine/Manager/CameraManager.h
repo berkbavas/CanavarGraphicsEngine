@@ -22,11 +22,13 @@ namespace Canavar::Engine
         void OnMouseMoved(QMouseEvent *);
         void OnWheelMoved(QWheelEvent *);
 
-        void SetActiveCamera(CameraPtr camera);
+        void SetActiveCamera(CameraPtr pCamera);
         CameraPtr GetActiveCamera() const;
 
       private:
         CameraPtr mActiveCamera{ nullptr };
+
+        DEFINE_MEMBER_CONST(FreeCameraPtr, FreeCamera);
     };
 
     using CameraManagerPtr = std::shared_ptr<CameraManager>;

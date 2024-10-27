@@ -1,0 +1,35 @@
+#pragma once
+
+#include "Canavar/Engine/Node/Camera/PerspectiveCamera.h"
+#include "Canavar/Engine/Util/Mouse.h"
+
+namespace Canavar::Engine
+{
+    class PersecutorCamera : public PerspectiveCamera
+    {
+      public:
+        PersecutorCamera();
+
+        void MousePressed(QMouseEvent *) override;
+        void MouseReleased(QMouseEvent *) override;
+        void MouseMoved(QMouseEvent *) override;
+        void WheelMoved(QWheelEvent *) override;
+        void Update(float ifps) override;
+        void Reset() override;
+
+        NodePtr GetTarget() const;
+        void SetTarget(NodePtr newTarget);
+
+      private:
+        NodePtr mTarget;
+        Mouse mMouse;
+
+        DEFINE_MEMBER(float, AngularSpeed, 25.0f);
+        DEFINE_MEMBER(float, AngularSpeedMultiplier, 1.0f);
+        DEFINE_MEMBER_CONST(float, Distance, 10.0f);
+        DEFINE_MEMBER_CONST(float, Yaw, 0.0f);
+        DEFINE_MEMBER_CONST(float, Pitch, 0.0f);
+    };
+
+    using PersecutorCameraPtr = std::shared_ptr<PersecutorCamera>;
+}
