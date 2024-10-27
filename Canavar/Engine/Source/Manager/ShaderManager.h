@@ -10,7 +10,8 @@ namespace Canavar::Engine
     enum class ShaderType
     {
         Model,
-        Sky
+        Sky,
+        Terrain
     };
 
     class ShaderManager : public Manager
@@ -27,5 +28,6 @@ namespace Canavar::Engine
 
         Shader* mModelShader{ nullptr };
         Shader* mSkyShader{ nullptr };
+        Shader* mTerrainShader{ nullptr };
     };
 }

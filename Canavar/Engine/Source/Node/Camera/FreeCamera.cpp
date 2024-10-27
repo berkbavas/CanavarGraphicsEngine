@@ -22,17 +22,17 @@ void Canavar::Engine::FreeCamera::Update(float ifps)
     // Translation
     if (mUpdatePosition)
     {
-        if (mPressedKeys[Qt::Key_Control])
+        if (mPressedKeys[Qt::Key_Space])
         {
             mLinearSpeed = 200.0f;
         }
-        else if (mPressedKeys[Qt::Key_Shift])
+        else if (mPressedKeys[Qt::Key_Control])
         {
-            mLinearSpeed = 10.0f;
+            mLinearSpeed = 1.0f;
         }
         else
         {
-            mLinearSpeed = 5.0f;
+            mLinearSpeed = 10.0f;
         }
 
         const auto keys = mPressedKeys.keys();

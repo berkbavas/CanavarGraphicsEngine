@@ -10,6 +10,8 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Source" ${INCLUDE_DIR})
 
 link_directories(${LIBS_DIR})
 
+add_compile_options(/bigobj)
+
 add_library(CanavarGraphicsEngine STATIC ${SOURCES})
 
 target_include_directories(CanavarGraphicsEngine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source")

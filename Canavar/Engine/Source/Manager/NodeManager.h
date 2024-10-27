@@ -4,6 +4,7 @@
 #include "Node/Model/Model.h"
 #include "Node/Scene/Scene.h"
 #include "Node/Sky/Sky.h"
+#include "Node/Terrain/Terrain.h"
 #include "Util/Macros.h"
 
 #include <map>
@@ -39,5 +40,6 @@ namespace Canavar::Engine
         LightManager *mLightManager{ nullptr };
 
         DEFINE_MEMBER_CONST(SkyPtr, Sky);
+        DEFINE_MEMBER_CONST(TerrainPtr, Terrain);
     };
 }

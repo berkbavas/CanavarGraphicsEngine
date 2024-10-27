@@ -15,6 +15,7 @@ void Canavar::Engine::NodeManager::Initialize()
     mScenes = ModelImporter::Import("Resources/Models", { "*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf" });
 
     mSky = std::make_shared<Sky>();
+    mTerrain = std::make_shared<Terrain>();
 
     LOG_DEBUG("NodeManager::Initialize: Initialization is done.");
 }
@@ -22,6 +23,7 @@ void Canavar::Engine::NodeManager::Initialize()
 void Canavar::Engine::NodeManager::PostInitialize()
 {
     mSky->Initialize();
+    mTerrain->Initialize();
 
     for (const auto [name, pScene] : mScenes)
     {

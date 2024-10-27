@@ -6,6 +6,7 @@
 #include "Node/Light/DirectionalLight.h"
 #include "Node/Model/Model.h"
 #include "Node/Sky/Sky.h"
+#include "Node/Terrain/Terrain.h"
 #include "Util/Shader.h"
 
 #include <map>
@@ -42,7 +43,10 @@ namespace Canavar::Engine
       private:
         void RenderModel(ModelPtr pModel);
 
+        void SetUniforms();
         void SetCommonUniforms(Shader *pShader);
+        void SetDirectionalLights(Shader *pShader);
+        void SetPointLights(Shader *pShader, NodePtr pNode);
 
         void ResizeFramebuffers();
 
@@ -55,8 +59,10 @@ namespace Canavar::Engine
 
         Shader *mModelShader{ nullptr };
         Shader *mSkyShader{ nullptr };
+        Shader *mTerrainShader{ nullptr };
 
         SkyPtr mSky;
+        TerrainPtr mTerrain;
         DirectionalLightPtr mSun;
 
         std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;

@@ -20,12 +20,13 @@ namespace Canavar::Engine
 
         static ScenePtr Import(const QString& sceneName, const QString& fullpath);
 
+        static QOpenGLTexture* CreateTexture(const QString& path);
+
       private:
         static SceneNodePtr ProcessNode(ScenePtr pScene, aiNode* aiNode);
         static MeshPtr ProcessMesh(aiMesh* aiMesh);
         static MaterialPtr ProcessMaterial(aiMaterial* aiMaterial, const QString& directory);
         static bool ProcessTexture(MaterialPtr material, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory);
-        static QOpenGLTexture* CreateTexture(const QString& path);
     };
 
 }

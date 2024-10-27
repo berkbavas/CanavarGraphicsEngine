@@ -146,8 +146,7 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        // result = mix(vec4(haze.color * clamp(sun.direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
-        result = mix(vec4(haze.color, 1), subjectColor, factor);
+        result = mix(vec4(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
     }
 
     return result;

@@ -16,8 +16,16 @@ void Canavar::Engine::ShaderManager::Initialize()
     mSkyShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
     mSkyShader->Initialize();
 
+    mTerrainShader = new Shader("Terrain Shader");
+    mTerrainShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Terrain.vert");
+    mTerrainShader->AddPath(QOpenGLShader::TessellationControl, ":/Resources/Shaders/Terrain.tcs");
+    mTerrainShader->AddPath(QOpenGLShader::TessellationEvaluation, ":/Resources/Shaders/Terrain.tes");
+    mTerrainShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Terrain.frag");
+    mTerrainShader->Initialize();
+
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
+    mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)

@@ -221,8 +221,7 @@ QOpenGLTexture* Canavar::Engine::ModelImporter::CreateTexture(const QString& pat
 
     if (image.isNull())
     {
-        LOG_WARN("ModelImporter::CreateTexture: Image at '{}' is null.", path.toStdString());
-        return nullptr;
+        CGE_EXIT_FAILURE("ModelImporter::CreateTexture: Image at '{}' is null.", path.toStdString());
     }
 
     QOpenGLTexture* pTexture = new QOpenGLTexture(image, QOpenGLTexture::GenerateMipMaps);
