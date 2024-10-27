@@ -73,6 +73,9 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
         return;
     }
 
+    pShader->SetUniformValue("M", pModel->GetWorldTransformation() * pModel->GetMeshTransformation(mMeshName));
+    pShader->SetUniformValue("N", pModel->GetWorldTransformation().normalMatrix() * pModel->GetMeshTransformation(mMeshName).normalMatrix());
+
     // Process textures
     bool hasAnyTexture = false;
 

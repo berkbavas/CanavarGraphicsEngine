@@ -7,7 +7,10 @@ namespace Canavar::Engine
     class Model : public Node
     {
       public:
-        Model(const QString &modelName);
+        Model(const QString& modelName);
+
+        QMatrix4x4 GetMeshTransformation(const QString& meshName);
+        void SetMeshTransformation(const QString& meshName, const QMatrix4x4& transformation);
 
       private:
         DEFINE_MEMBER(bool, ColorEnabled, false);
@@ -19,6 +22,8 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Specular, 0.25f); // TODO: Check if the specular computation is buggy.
         DEFINE_MEMBER(float, Shininess, 8.0f);
         DEFINE_MEMBER_CONST(QString, ModelName);
+
+        QMap<QString, QMatrix4x4> mMeshTransformations;
     };
 
     using ModelPtr = std::shared_ptr<Model>;

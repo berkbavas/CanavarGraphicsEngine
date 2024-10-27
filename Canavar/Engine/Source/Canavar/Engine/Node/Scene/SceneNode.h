@@ -27,6 +27,7 @@ namespace Canavar::Engine
         std::set<MeshPtr> mMeshes;        // We don't own these meshes; we just store pointers. Owner is Scene.
 
         DEFINE_MEMBER(QString, NodeName);
+        DEFINE_MEMBER(QMatrix4x4, Transformation);
     };
 
 }

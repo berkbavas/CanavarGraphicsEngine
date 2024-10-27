@@ -132,7 +132,7 @@ void AircraftController::Update(float ifps)
         t0.translate(-p0);
         t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rudderPos));
         t2.translate(p0);
-        // mJetNode->SetMeshTransformation("Object_40", t2 * t1 * t0);
+        mJetNode->SetMeshTransformation("Object_40", t2 * t1 * t0);
     }
 
     // Left elevator
@@ -145,7 +145,7 @@ void AircraftController::Update(float ifps)
         t0.translate(-p0);
         t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.elevatorPos));
         t2.translate(p0);
-        // mJetNode->SetMeshTransformation("Object_36", t2 * t1 * t0);
+        mJetNode->SetMeshTransformation("Object_36", t2 * t1 * t0);
     }
 
     // Right elevator
@@ -158,7 +158,7 @@ void AircraftController::Update(float ifps)
         t0.translate(-p0);
         t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.elevatorPos));
         t2.translate(p0);
-        // mJetNode->SetMeshTransformation("Object_18", t2 * t1 * t0);
+        mJetNode->SetMeshTransformation("Object_18", t2 * t1 * t0);
     }
 
     // Left aileron
@@ -171,7 +171,7 @@ void AircraftController::Update(float ifps)
         t0.translate(-p0);
         t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.leftAileronPos));
         t2.translate(p0);
-        // mJetNode->SetMeshTransformation("Object_22", t2 * t1 * t0);
+        mJetNode->SetMeshTransformation("Object_22", t2 * t1 * t0);
     }
 
     // Right aileron
@@ -184,7 +184,7 @@ void AircraftController::Update(float ifps)
         t0.translate(-p0);
         t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rightAileronPos));
         t2.translate(p0);
-        // mJetNode->SetMeshTransformation("Object_20", t2 * t1 * t0);
+        mJetNode->SetMeshTransformation("Object_20", t2 * t1 * t0);
     }
 
     DrawImGui();

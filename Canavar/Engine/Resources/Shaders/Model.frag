@@ -93,11 +93,11 @@ vec4 processDirectionalLights(vec4 ambientColor, vec4 diffuseColor, vec4 specula
         vec4 ambient = ambientColor * directionalLights[i].ambient;
 
         // Diffuse
-        vec4 diffuse = max(dot(normal, -directionalLights[i].direction), 0.0) * diffuseColor * directionalLights[i].diffuse;
+        vec4 diffuse = max(dot(normal, directionalLights[i].direction), 0.0) * diffuseColor * directionalLights[i].diffuse;
 
         // Specular
-        vec3 reflectDir = reflect(directionalLights[i].direction, normal);
-        vec3 halfwayDir = normalize(-directionalLights[i].direction + viewDir);
+        vec3 reflectDir = reflect(-directionalLights[i].direction, normal);
+        vec3 halfwayDir = normalize(directionalLights[i].direction + viewDir);
         vec4 specular = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * specularColor * directionalLights[i].specular;
 
         result += (ambient + diffuse + specular) * directionalLights[i].color;
