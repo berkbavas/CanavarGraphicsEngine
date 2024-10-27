@@ -73,7 +73,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     }
 
     QOpenGLFramebufferObject::bindDefault();
-    glClearColor(0, 1, 0, 1);
+    glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Default]);
@@ -145,7 +145,6 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader)
     pShader->SetUniformValue("haze.color", mHaze->GetColor());
     pShader->SetUniformValue("haze.density", mHaze->GetDensity());
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
-
     pShader->SetUniformValue("VP", mActiveCamera->GetViewProjectionMatrix());
     pShader->Release();
 }

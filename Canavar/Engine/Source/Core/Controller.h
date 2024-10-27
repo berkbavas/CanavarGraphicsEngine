@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Core/ManagerProvider.h"
+#include "Core/Constants.h"
 #include "Manager/Manager.h"
 
 #include <QMouseEvent>
@@ -56,5 +56,9 @@ namespace Canavar::Engine
         LightManager* mLightManager;
 
         std::vector<Manager*> mManagers;
+
+        float mDevicePixelRatio{ 1.0f };
+        float mWidth{ INITIAL_WIDTH };
+        float mHeight{ INITIAL_HEIGHT };
     };
 }

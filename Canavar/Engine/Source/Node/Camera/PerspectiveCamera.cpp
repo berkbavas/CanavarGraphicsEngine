@@ -34,7 +34,8 @@ void Canavar::Engine::PerspectiveCamera::Resize(int width, int height)
 {
     mWidth = width;
     mHeight = height;
-    mIsProjectionDirty = true;
+    UpdateProjection();
+    UpdateCache();
 }
 
 float Canavar::Engine::PerspectiveCamera::GetHorizontalFov() const

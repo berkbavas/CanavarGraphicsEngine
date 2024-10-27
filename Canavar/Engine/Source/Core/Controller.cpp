@@ -83,6 +83,8 @@ void Canavar::Engine::Controller::Initialize()
 
 void Canavar::Engine::Controller::Render(float ifps)
 {
+    mDevicePixelRatio = mWindow->devicePixelRatio();
+
     for (const auto pManager : mManagers)
     {
         pManager->PreUpdate(ifps);
@@ -126,9 +128,13 @@ void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
 
 void Canavar::Engine::Controller::Resize(int width, int height)
 {
+    mDevicePixelRatio = mWindow->devicePixelRatio();
+    mWidth = width * mDevicePixelRatio;
+    mHeight = height * mDevicePixelRatio;
+
     mWindow->makeCurrent();
-    mRenderingManager->Resize(width, height);
-    mCameraManager->Resize(width, height);
+    mRenderingManager->Resize(mWidth, mHeight);
+    mCameraManager->Resize(mWidth, mHeight);
     mWindow->doneCurrent();
 }
 
