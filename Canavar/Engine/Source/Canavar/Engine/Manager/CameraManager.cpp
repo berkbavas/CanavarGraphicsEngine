@@ -50,7 +50,6 @@ void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr pCamera)
 
     mActiveCamera = pCamera;
 
-    mActiveCamera->Reset();
     mActiveCamera->Update(0);
 }
 

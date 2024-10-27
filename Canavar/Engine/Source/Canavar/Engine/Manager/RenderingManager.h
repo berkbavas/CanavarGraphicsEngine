@@ -82,6 +82,6 @@ namespace Canavar::Engine
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
 
-        int mBlurPass{ 2 };
+        int mBlurPass{ 4 };
     };
 };

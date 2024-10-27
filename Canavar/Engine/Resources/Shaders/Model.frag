@@ -93,11 +93,11 @@ vec4 processDirectionalLights(vec4 ambientColor, vec4 diffuseColor, vec4 specula
         vec4 ambient = ambientColor * directionalLights[i].ambient;
 
         // Diffuse
-        vec4 diffuse = max(dot(normal, directionalLights[i].direction), 0.0) * diffuseColor * directionalLights[i].diffuse;
+        vec4 diffuse = max(dot(normal, -directionalLights[i].direction), 0.0) * diffuseColor * directionalLights[i].diffuse;
 
         // Specular
-        vec3 reflectDir = reflect(-directionalLights[i].direction, normal);
-        vec3 halfwayDir = normalize(directionalLights[i].direction + viewDir);
+        vec3 reflectDir = reflect(directionalLights[i].direction, normal);
+        vec3 halfwayDir = normalize(-directionalLights[i].direction + viewDir);
         vec4 specular = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * specularColor * directionalLights[i].specular;
 
         result += (ambient + diffuse + specular) * directionalLights[i].color;
@@ -173,17 +173,17 @@ void main()
     {
         if (useTextureAmbient)
         {
-            ambientColor = texture(textureAmbient, fsTextureCoords);
+            ambientColor = model.ambient * texture(textureAmbient, fsTextureCoords);
         }
 
         if (useTextureDiffuse)
         {
-            diffuseColor = texture(textureDiffuse, fsTextureCoords);
+            diffuseColor = model.diffuse * texture(textureDiffuse, fsTextureCoords);
         }
 
         if (useTextureSpecular)
         {
-            specularColor = texture(textureSpecular, fsTextureCoords);
+            specularColor = model.specular * texture(textureSpecular, fsTextureCoords);
         }
     }
 
@@ -197,7 +197,7 @@ void main()
     // result = mix(result, model.overlayColor, model.overlayColorFactor);
     // result = mix(result, model.meshOverlayColor, model.meshOverlayColorFactor);
 
-    fragColor = vec4(result.xyz, 1);
+    fragColor = vec4(result.rgb, 1);
 
     float brightness = dot(result.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
 

@@ -84,7 +84,7 @@ void Canavar::Engine::PerspectiveCamera::UpdateProjectionIfDirty()
 
 void Canavar::Engine::PerspectiveCamera::UpdateCacheIfDirty()
 {
-    if (GetDirty())
+    if (GetTransformationDirty())
     {
         UpdateCache();
     }

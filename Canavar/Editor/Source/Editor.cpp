@@ -47,6 +47,21 @@ void Canavar::Editor::Editor::Initialize()
     mPersecutorCamera = std::make_shared<PersecutorCamera>();
 
     CreateSimulatorModels();
+
+    Test();
+}
+
+void Canavar::Editor::Editor::Test()
+{
+    ModelPtr pCustomModel0 = std::make_shared<Model>("Cyborg");
+    pCustomModel0->SetNodeName("pCustomModel0");
+
+    ModelPtr pCustomModel1 = std::make_shared<Model>("Cyborg");
+    pCustomModel1->SetNodeName("pCustomModel1");
+
+    pCustomModel0->AddChild(pCustomModel1);
+
+    mNodeManager->AddNode(pCustomModel0);
 }
 
 void Canavar::Editor::Editor::CreateSimulatorModels()
@@ -68,6 +83,7 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
         ModelPtr pSphere = std::make_shared<Model>("Sphere");
         pSphere->SetScale(0.5f, 0.5f, 0.5f);
         pSphere->SetWorldPosition(-11.42f, 0.16f, -0.83f);
+        pSphere->SetColor(QVector4D(1, 0, 0, 1));
 
         PointLightPtr pRedLight = std::make_shared<PointLight>();
         pRedLight->SetColor(QVector4D(1, 0, 0, 1));
@@ -85,6 +101,7 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
         ModelPtr pSphere = std::make_shared<Model>("Sphere");
         pSphere->SetScale(0.5f, 0.5f, 0.5f);
         pSphere->SetWorldPosition(11.42f, 0.16f, -0.83f);
+        pSphere->SetColor(QVector4D(0, 1, 0, 1));
 
         PointLightPtr pGreenLight = std::make_shared<PointLight>();
         pGreenLight->SetColor(QVector4D(0, 1, 0, 1));
@@ -158,11 +175,6 @@ bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
 
 bool Canavar::Editor::Editor::KeyReleased(QKeyEvent *pEvent)
 {
-    if (ImGui::GetIO().WantCaptureKeyboard)
-    {
-        return true;
-    }
-
     mSimulator->KeyReleased(pEvent);
 
     return false;
@@ -195,5 +207,10 @@ bool Canavar::Editor::Editor::MouseMoved(QMouseEvent *pEvent)
 
 bool Canavar::Editor::Editor::WheelMoved(QWheelEvent *pEvent)
 {
+    if (ImGui::GetIO().WantCaptureMouse)
+    {
+        return true;
+    }
+
     return false;
 }

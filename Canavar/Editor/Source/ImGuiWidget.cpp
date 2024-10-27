@@ -38,7 +38,7 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
 
 void Canavar::Editor::ImGuiWidget::DrawNodes()
 {
-    const auto& nodes = mNodeManager->GetNodes();
+    const auto &nodes = mNodeManager->GetNodes();
 
     if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->GetNodeName().toStdString().c_str() : "-"))
     {
@@ -62,9 +62,16 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
         {
             ImGui::Text("Node Parameters");
 
-            if (ImGui::InputFloat3("Position##Node", pNode->GetPosition(0), "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+            auto WorldPosition = pNode->GetWorldPosition();
+            if (ImGui::InputFloat3("World Position##Node", &WorldPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
             {
-                pNode->MakeDirty();
+                pNode->SetWorldPosition(WorldPosition);
+            }
+
+            auto LocalPosition = pNode->GetPosition();
+            if (ImGui::InputFloat3("Position##Node", &LocalPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+            {
+                pNode->SetPosition(LocalPosition);
             }
 
             if (ImGui::SliderFloat("Yaw##NodeRotation", &pNode->GetYaw(), 0.0f, 360.0f, "%.3f"))
@@ -74,9 +81,10 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
             if (ImGui::SliderFloat("Roll##NodeRotation", &pNode->GetRoll(), -179.999f, 179.999f, "%.3f"))
                 pNode->UpdateRotationFromEulerDegrees();
 
-            if (ImGui::InputFloat3("Scale##NodeScale", pNode->GetScale(0), "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+            auto Scale = pNode->GetScale();
+            if (ImGui::InputFloat3("Scale##NodeScale", &Scale[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
             {
-                pNode->MakeDirty();
+                pNode->SetScale(Scale);
             }
         }
 
@@ -88,6 +96,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
             ImGui::SliderFloat("Diffuse##Model", &pModel->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
             ImGui::SliderFloat("Specular##Model", &pModel->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
             ImGui::SliderFloat("Shininess##Model", &pModel->GetShininess_NonConst(), 1.0f, 128.0f, "%.3f");
+            ImGui::ColorEdit4("Color##PointLight", &pModel->GetColor_NonConst()[0]);
         }
         else if (Engine::DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<Engine::DirectionalLight>(pNode))
         {
@@ -96,15 +105,15 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
             ImGui::SliderFloat("Ambient##DirectionalLight", &pDirectionalLight->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
             ImGui::SliderFloat("Diffuse##DirectionalLight", &pDirectionalLight->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
             ImGui::SliderFloat("Specular##DirectionalLight", &pDirectionalLight->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
+            ImGui::ColorEdit4("Color##DirectionalLight", (float *) &pDirectionalLight->GetColor_NonConst());
 
             float theta = pDirectionalLight->GetTheta();
             float phi = pDirectionalLight->GetPhi();
             ImGui::SliderFloat("Theta##DirectionalLight", &theta, -179.0f, 179.0f, "%.1f");
             ImGui::SliderFloat("Phi##DirectionalLight", &phi, -89.0f, 89.0f, "%.1f");
             pDirectionalLight->SetDirectionFromThetaPhi(theta, phi);
-
-            ImGui::ColorEdit4("Color##DirectionalLight", (float*) &pDirectionalLight->GetColor_NonConst());
         }
+
         else if (Engine::PointLightPtr pPointLight = std::dynamic_pointer_cast<Engine::PointLight>(pNode))
         {
             ImGui::Text("Point Light Parameters");
@@ -115,8 +124,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
             ImGui::SliderFloat("Constant##PointLight", &pPointLight->GetConstant_NonConst(), 0.0f, 3.0f, "%.3f");
             ImGui::SliderFloat("Linear##PointLight", &pPointLight->GetLinear_NonConst(), 0.0f, 0.1f, "%.3f");
             ImGui::SliderFloat("Quadratic##PointLight", &pPointLight->GetQuadratic_NonConst(), 0.00001f, 0.001f, "%.6f");
-
-            ImGui::ColorEdit4("Color##PointLight", (float*) &pPointLight->GetColor_NonConst());
+            ImGui::ColorEdit4("Color##PointLight", (float *) &pPointLight->GetColor_NonConst());
         }
         else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(pNode))
         {
@@ -156,7 +164,7 @@ void Canavar::Editor::ImGuiWidget::DrawSun()
         ImGui::SliderFloat("Phi##Sun", &phi, -89.0f, 89.0f, "%.1f");
         mSun->SetDirectionFromThetaPhi(theta, phi);
 
-        ImGui::ColorEdit4("Color##Sun", (float*) &mSun->GetColor_NonConst());
+        ImGui::ColorEdit4("Color##Sun", (float *) &mSun->GetColor_NonConst());
     }
 }
 void Canavar::Editor::ImGuiWidget::DrawTerrain()
@@ -192,7 +200,7 @@ void Canavar::Editor::ImGuiWidget::DrawHaze()
     {
         ImGui::SliderFloat("Density##Haze", &mHaze->GetDensity_NonConst(), 0.0f, 4.0f, "%.3f");
         ImGui::SliderFloat("Gradient##Haze", &mHaze->GetGradient_NonConst(), 0.0f, 4.0f, "%.3f");
-        ImGui::ColorEdit4("Color##Haze", (float*) &mHaze->GetColor_NonConst());
+        ImGui::ColorEdit4("Color##Haze", (float *) &mHaze->GetColor_NonConst());
         ImGui::Checkbox("Enabled##Haze", &mHaze->GetEnabled_NonConst());
     }
 }

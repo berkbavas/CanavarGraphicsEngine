@@ -38,6 +38,7 @@ namespace Canavar::Editor
 
       private:
         void CreateSimulatorModels();
+        void Test();
 
         Engine::Controller *mController;
         Engine::NodeManager *mNodeManager;

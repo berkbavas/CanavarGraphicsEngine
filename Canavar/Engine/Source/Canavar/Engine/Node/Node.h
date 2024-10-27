@@ -34,14 +34,9 @@ namespace Canavar::Engine
 
         const QVector3D& GetWorldPosition();
         const QVector3D& GetPosition() const { return mPosition; }
-        const float GetPosition(int coord) const { return mPosition[coord]; }
-        float* GetPosition(int coord) { return &mPosition[coord]; }
 
         const QVector3D& GetScale() const { return mScale; }
-        const float GetScale(int coord) const { return mScale[coord]; }
-        float* GetScale(int coord) { return &mScale[coord]; }
-
-        const QMatrix3x3 GetNormalMatrix() const { return mNormalMatrix; }
+        const QMatrix3x3 GetLocalNormalMatrix() const { return mNormalMatrix; }
 
         void SetWorldRotation(const QQuaternion& newRotation);
         void SetWorldPosition(const QVector3D& newPosition);
@@ -58,9 +53,9 @@ namespace Canavar::Engine
         void RotateLocal(const QVector3D& axis, float angle);
         void Translate(const QVector3D& delta);
 
-        void MakeDirty() { mDirty = true; }
-        bool GetDirty() const { return mDirty; }
-        void Update();
+        void MakeTransformationDirty() { mTransformationDirty = true; }
+        bool GetTransformationDirty() const { return mTransformationDirty; }
+        void UpdateTransformation();
         void UpdateRotationFromEulerDegrees();
 
         float& GetYaw();
@@ -87,7 +82,7 @@ namespace Canavar::Engine
         QQuaternion mWorldRotation;
         QVector3D mWorldPosition;
 
-        bool mDirty{ false };
+        bool mTransformationDirty{ false };
 
         float mYaw{ 0 };
         float mPitch{ 0 };
