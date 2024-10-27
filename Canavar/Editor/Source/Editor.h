@@ -37,6 +37,8 @@ namespace Canavar::Editor
         bool WheelMoved(QWheelEvent *) override;
 
       private:
+        void CreateSimulatorModels();
+
         Engine::Controller *mController;
         Engine::NodeManager *mNodeManager;
         Engine::CameraManager *mCameraManager;

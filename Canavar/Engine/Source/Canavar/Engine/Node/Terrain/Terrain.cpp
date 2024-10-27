@@ -31,7 +31,7 @@ void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
         return;
     }
 
-    QVector2D currentTilePosition = mTileGenerator->WhichTile(pCamera->GetPosition());
+    QVector2D currentTilePosition = mTileGenerator->WhichTile(pCamera->GetWorldPosition());
 
     if (currentTilePosition != mPreviousTilePosition)
     {

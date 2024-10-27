@@ -24,7 +24,6 @@ Canavar::Editor::Editor::Editor()
     mController->AddEventReceiver(this);
 
     mImGuiWidget = new ImGuiWidget;
-
     mSimulator = new Simulator;
 }
 
@@ -47,6 +46,11 @@ void Canavar::Editor::Editor::Initialize()
 
     mPersecutorCamera = std::make_shared<PersecutorCamera>();
 
+    CreateSimulatorModels();
+}
+
+void Canavar::Editor::Editor::CreateSimulatorModels()
+{
     // Root
     DummyNodePtr pRootNode = std::make_shared<DummyNode>();
     pRootNode->SetNodeName("Root Node");

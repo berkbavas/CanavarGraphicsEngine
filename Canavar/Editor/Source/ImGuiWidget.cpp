@@ -1,5 +1,6 @@
 #include "ImGuiWidget.h"
 
+#include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Light/PointLight.h"
 #include "Canavar/Engine/Node/Model/Model.h"
@@ -57,7 +58,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
 {
     if (ImGui::CollapsingHeader("Selected Node##DrawNode", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        if (mSelectedNode)
+        if (pNode)
         {
             ImGui::Text("Node Parameters");
 
@@ -116,6 +117,17 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
             ImGui::SliderFloat("Quadratic##PointLight", &pPointLight->GetQuadratic_NonConst(), 0.00001f, 0.001f, "%.6f");
 
             ImGui::ColorEdit4("Color##PointLight", (float*) &pPointLight->GetColor_NonConst());
+        }
+        else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(pNode))
+        {
+            ImGui::Text("Nozzle Effect Parameters");
+
+            ImGui::SliderFloat("Max Radius##NozzleEffect", &pNozzleEffect->GetMaxRadius_NonConst(), 0.001f, 4.0f, "%.4f");
+            ImGui::SliderFloat("Max Life##NozzleEffect", &pNozzleEffect->GetMaxLife_NonConst(), 0.0000f, 0.1f, "%.5f");
+            ImGui::SliderFloat("Max Distance##NozzleEffect", &pNozzleEffect->GetMaxDistance_NonConst(), 1.0f, 30.0f, "%.3f");
+            ImGui::SliderFloat("Min Distance##NozzleEffect", &pNozzleEffect->GetMinDistance_NonConst(), 1.0f, 30.0f, "%.3f");
+            ImGui::SliderFloat("Speed##NozzleEffect", &pNozzleEffect->GetSpeed_NonConst(), 0.0f, 10.0f, "%.5f");
+            ImGui::SliderFloat("Scale##NozzleEffect", &pNozzleEffect->GetScale_NonConst(), 0.001f, 0.1f, "%.4f");
         }
     }
 }
@@ -181,5 +193,6 @@ void Canavar::Editor::ImGuiWidget::DrawHaze()
         ImGui::SliderFloat("Density##Haze", &mHaze->GetDensity_NonConst(), 0.0f, 4.0f, "%.3f");
         ImGui::SliderFloat("Gradient##Haze", &mHaze->GetGradient_NonConst(), 0.0f, 4.0f, "%.3f");
         ImGui::ColorEdit4("Color##Haze", (float*) &mHaze->GetColor_NonConst());
+        ImGui::Checkbox("Enabled##Haze", &mHaze->GetEnabled_NonConst());
     }
 }

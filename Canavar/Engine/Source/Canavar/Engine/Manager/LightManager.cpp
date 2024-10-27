@@ -17,7 +17,7 @@ std::vector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPo
 
     for (const auto& pLight : mPointLights)
     {
-        float distance = pLight->GetPosition().distanceToPoint(targetPosition);
+        float distance = pLight->GetWorldPosition().distanceToPoint(targetPosition);
 
         if (distance <= radius)
         {

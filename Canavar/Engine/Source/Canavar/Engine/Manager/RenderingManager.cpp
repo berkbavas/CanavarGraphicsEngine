@@ -183,6 +183,7 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader)
     pShader->SetUniformValue("haze.color", mHaze->GetColor());
     pShader->SetUniformValue("haze.density", mHaze->GetDensity());
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
+    pShader->SetUniformValue("cameraPosition", mActiveCamera->GetWorldPosition());
     pShader->SetUniformValue("VP", mActiveCamera->GetViewProjectionMatrix());
     pShader->Release();
 }
