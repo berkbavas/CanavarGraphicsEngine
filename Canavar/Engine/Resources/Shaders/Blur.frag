@@ -15,26 +15,26 @@ void main()
     int height = textureSize(targetTexture, 0).y;
 
     vec2 coords = fsTextureCoords;
-    vec4 totalColor = texture(targetTexture, coords) * weight[0];
+    vec4 color = texture(targetTexture, coords) * weight[0];
 
     if (horizontal)
     {
         for (int i = 1; i < 5; i++)
         {
-            totalColor += texture(targetTexture, coords + vec2(i, 0) / width) * weight[i];
-            totalColor += texture(targetTexture, coords - vec2(i, 0) / width) * weight[i];
+            color += texture(targetTexture, coords + vec2(i, 0) / width) * weight[i];
+            color += texture(targetTexture, coords - vec2(i, 0) / width) * weight[i];
         }
 
-        outColor = totalColor;
+        outColor = vec4(color.rgb, 1.0f);
     }
     else
     {
         for (int i = 1; i < 5; i++)
         {
-            totalColor += texture(targetTexture, coords + vec2(0, i) / height) * weight[i];
-            totalColor += texture(targetTexture, coords - vec2(0, i) / height) * weight[i];
+            color += texture(targetTexture, coords + vec2(0, i) / height) * weight[i];
+            color += texture(targetTexture, coords - vec2(0, i) / height) * weight[i];
         }
 
-        outColor = totalColor;
+        outColor = vec4(color.rgb, 1.0f);
     }
 }

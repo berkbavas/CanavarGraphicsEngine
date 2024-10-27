@@ -22,6 +22,10 @@ namespace Canavar::Engine
         void MouseReleased(QMouseEvent *) override;
         void MouseMoved(QMouseEvent *) override;
 
+        void SetParent(NodeWeakPtr pParentNode) override;
+        void AddChild(NodePtr pNode) override;
+        void RemoveChild(NodePtr pNode) override;
+
       private:
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
         DEFINE_MEMBER(float, LinearSpeed, 5.0f);

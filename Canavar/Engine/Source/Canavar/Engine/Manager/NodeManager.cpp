@@ -48,6 +48,26 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
     }
 
     mNodes.emplace(pNode);
+
+    // > Add parent if not added yet
+    if (const auto pParent = pNode->GetParent())
+    {
+        if (!mNodes.contains(pParent))
+        {
+            AddNode(pParent);
+        }
+    }
+
+    // > Add children if not added yet
+    const auto& children = pNode->GetChildren();
+
+    for (const auto pChild : children)
+    {
+        if (!mNodes.contains(pChild))
+        {
+            AddNode(pChild);
+        }
+    }
 }
 
 void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
@@ -64,6 +84,11 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
     }
 
     mNodes.erase(pNode);
+
+    if (const auto pParent = pNode->GetParent())
+    {
+        pParent->RemoveChild(pNode);
+    }
 }
 
 Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& sceneName)

@@ -119,6 +119,21 @@ void Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
     }
 }
 
+void Canavar::Engine::FreeCamera::SetParent(NodeWeakPtr pParentNode)
+{
+    // TODO: Log
+}
+
+void Canavar::Engine::FreeCamera::AddChild(NodePtr pNode)
+{
+    // TODO: Log
+}
+
+void Canavar::Engine::FreeCamera::RemoveChild(NodePtr pNode)
+{
+    // TODO: Log
+}
+
 const QMap<Qt::Key, QVector3D> Canavar::Engine::FreeCamera::KEY_BINDINGS = //
     {
         { Qt::Key_W, QVector3D(0, 0, -1) }, //

@@ -40,7 +40,7 @@ void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
     }
 
     pShader->Bind();
-    pShader->SetUniformValue("M", GetTransformation());
+    pShader->SetUniformValue("M", GetWorldTransformation());
     pShader->SetUniformValue("terrain.amplitude", mAmplitude);
     pShader->SetUniformValue("terrain.seed", mSeed);
     pShader->SetUniformValue("terrain.octaves", mOctaves);

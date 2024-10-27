@@ -17,16 +17,19 @@ void Canavar::Engine::RenderingManager::Initialize()
 
     mFramebufferFormats[Default].setSamples(8);
     mFramebufferFormats[Default].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
-    mFramebufferFormats[Default].setInternalTextureFormat(GL_RGBA32F);
 
     mFramebufferFormats[Temp].setSamples(0);
-    mFramebufferFormats[Temp].setAttachment(QOpenGLFramebufferObject::Attachment::NoAttachment);
-    mFramebufferFormats[Temp].setInternalTextureFormat(GL_RGBA32F);
 
-    for (const auto type : { Default, Temp })
+    mFramebufferFormats[Ping].setSamples(0);
+
+    mFramebufferFormats[Pong].setSamples(0);
+
+    for (const auto type : { Default, Temp, Ping, Pong })
     {
         mFramebuffers[type] = nullptr;
     }
+
+    mQuad = new Quad;
 
     ResizeFramebuffers();
 }
@@ -41,6 +44,8 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
     mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
     mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
+    mBlurShader = mShaderManager->GetShader(ShaderType::Blur);
+    mPostProcessShader = mShaderManager->GetShader(ShaderType::PostProcess);
 
     mSky = mNodeManager->GetSky();
     mSun = mLightManager->GetSun();
@@ -72,35 +77,41 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         }
     }
 
+    // Default -> Ping
+    QOpenGLFramebufferObject::blitFramebuffer( //
+        mFramebuffers[Ping],
+        QRect(0, 0, mWidth, mHeight),
+        mFramebuffers[Default],
+        QRect(0, 0, mWidth, mHeight),
+        GL_COLOR_BUFFER_BIT,
+        GL_NEAREST,
+        1, // <- Blur location of Default FBO
+        0  // <- Write location of Ping FBO
+    );
+
+    // Ping -> Pong -> Ping -> ... Pxng
+    for (int i = 0; i < qMax(0, mBlurPass); i++)
+    {
+        mFramebuffers[i % 2 == 0 ? Pong : Ping]->bind();
+        mBlurShader->Bind();
+        mBlurShader->SetUniformValue("horizontal", i % 2 == 0);
+        mBlurShader->SetSampler("targetTexture", 0, mFramebuffers[i % 2 == 0 ? Ping : Pong]->texture());
+        mQuad->Render();
+        mBlurShader->Release();
+    }
+
+    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Default]);
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Default]);
-
-    // // Blit to temp
-    // for (int index = 0; index < 2; index++)
-    // {
-    //     QOpenGLFramebufferObject::blitFramebuffer(
-    //         mFramebuffers[Temp],
-    //         QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
-    //         mFramebuffers[Default],
-    //         QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
-    //         GL_COLOR_BUFFER_BIT,
-    //         GL_LINEAR,
-    //         index,
-    //         index);
-    // }
-
-    // mShaderManager->Bind(ShaderType::PostProcessShader);
-    // mShaderManager->SetSampler("sceneTexture", 0, mFBOs[FramebufferType::Temporary]->texture());
-    // mShaderManager->SetSampler("bloomBlurTexture", 1, mFBOs[qMax(0, mBlurPass) % 2 == 0 ? FramebufferType::Ping : FramebufferType::Pong]->texture());
-    // mShaderManager->SetUniformValue("exposure", mExposure);
-    // mShaderManager->SetUniformValue("gamma", mGamma);
-    // glBindVertexArray(mQuad.mVAO);
-    // glDrawArrays(GL_TRIANGLES, 0, 6);
-    // mShaderManager->Release();
+    mPostProcessShader->Bind();
+    mPostProcessShader->SetSampler("sceneTexture", 0, mFramebuffers[Temp]->texture());
+    mPostProcessShader->SetSampler("bloomTexture", 1, mFramebuffers[qMax(0, mBlurPass) % 2 == 0 ? Ping : Pong]->texture());
+    mQuad->Render();
+    mPostProcessShader->Release();
 }
 
 void Canavar::Engine::RenderingManager::Resize(int width, int height)
@@ -116,7 +127,7 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     SetPointLights(mModelShader, pModel);
 
     mModelShader->Bind();
-    mModelShader->SetUniformValue("M", pModel->GetTransformation());
+    mModelShader->SetUniformValue("M", pModel->GetWorldTransformation());
     mModelShader->SetUniformValue("N", pModel->GetNormalMatrix());
     mModelShader->SetUniformValue("model.color", pModel->GetColor());
     mModelShader->SetUniformValue("model.ambient", pModel->GetAmbient());
@@ -195,7 +206,7 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, NodePtr 
 
 void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 {
-    for (const auto type : { Default, Temp })
+    for (const auto type : { Default, Temp, Ping, Pong })
     {
         if (mFramebuffers[type])
         {
@@ -206,7 +217,7 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 
     constexpr GLuint ATTACHMENTS[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
-    for (const auto type : { Default, Temp })
+    for (const auto type : { Default, Temp, Ping, Pong })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
 

@@ -7,6 +7,7 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
+#include "Canavar/Engine/Node/DummyNode.h"
 #include "Canavar/Engine/Node/Light/PointLight.h"
 #include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Util/Logger.h"
@@ -38,8 +39,13 @@ void Canavar::Editor::Editor::Initialize()
     mImGuiWidget->SetNodeManager(mNodeManager);
     mImGuiWidget->Initialize();
 
-    ModelPtr pModel = std::make_shared<Model>("JetFighter");
-    mNodeManager->AddNode(pModel);
+    DummyNodePtr pDummyNode = std::make_shared<DummyNode>();
+
+    ModelPtr pModel = std::make_shared<Model>("f16c");
+
+    pDummyNode->AddChild(pModel);
+
+    mNodeManager->AddNode(pDummyNode);
 
     PointLightPtr pPointLight = std::make_shared<PointLight>();
     pPointLight->SetPosition(0, 3, 0);

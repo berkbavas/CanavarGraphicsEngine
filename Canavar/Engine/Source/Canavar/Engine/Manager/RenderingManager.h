@@ -27,7 +27,9 @@ namespace Canavar::Engine
     enum E_Framebuffer
     {
         Default,
-        Temp
+        Temp,
+        Ping,
+        Pong
     };
 
     class RenderingManager : public Manager, protected QOpenGLExtraFunctions
@@ -61,16 +63,22 @@ namespace Canavar::Engine
         Shader *mModelShader{ nullptr };
         Shader *mSkyShader{ nullptr };
         Shader *mTerrainShader{ nullptr };
+        Shader *mBlurShader{ nullptr };
+        Shader *mPostProcessShader{ nullptr };
 
         SkyPtr mSky;
         TerrainPtr mTerrain;
         DirectionalLightPtr mSun;
         HazePtr mHaze;
 
+        Quad *mQuad;
+
         std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
+
+        int mBlurPass{ 4 };
     };
 };

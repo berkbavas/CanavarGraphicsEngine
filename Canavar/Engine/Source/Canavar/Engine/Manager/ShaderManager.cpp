@@ -23,9 +23,21 @@ void Canavar::Engine::ShaderManager::Initialize()
     mTerrainShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Terrain.frag");
     mTerrainShader->Initialize();
 
+    mBlurShader = new Shader("Blur Shader");
+    mBlurShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
+    mBlurShader->Initialize();
+
+    mPostProcessShader = new Shader("Sky Shader");
+    mPostProcessShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mPostProcessShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcess.frag");
+    mPostProcessShader->Initialize();
+
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
     mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
+    mShaders.emplace(std::pair(ShaderType::Blur, mBlurShader));
+    mShaders.emplace(std::pair(ShaderType::PostProcess, mPostProcessShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)
