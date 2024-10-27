@@ -25,6 +25,10 @@ All 3D math operations are handled by `Qt 6`'s math module.
 
 ## Video
 
+
+https://github.com/user-attachments/assets/05c7d0fc-8817-4e3b-b86d-6e2a919b4110
+
+
 ## Build
 1) Install `CMake 3.25.1`.
 2) Install `Visual Studio 2022 and MSVC C++ Compiler`.
