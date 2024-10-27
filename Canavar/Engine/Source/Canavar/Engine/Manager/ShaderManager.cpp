@@ -28,16 +28,22 @@ void Canavar::Engine::ShaderManager::Initialize()
     mBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
     mBlurShader->Initialize();
 
-    mPostProcessShader = new Shader("Sky Shader");
+    mPostProcessShader = new Shader("Post Process Shader");
     mPostProcessShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
     mPostProcessShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcess.frag");
     mPostProcessShader->Initialize();
+
+    mNozzleEffect = new Shader("Nozzle Effect Shader");
+    mNozzleEffect->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffect.vert");
+    mNozzleEffect->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
+    mNozzleEffect->Initialize();
 
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
     mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
     mShaders.emplace(std::pair(ShaderType::Blur, mBlurShader));
     mShaders.emplace(std::pair(ShaderType::PostProcess, mPostProcessShader));
+    mShaders.emplace(std::pair(ShaderType::NozzleEffect, mNozzleEffect));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)

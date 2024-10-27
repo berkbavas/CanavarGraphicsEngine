@@ -11,6 +11,8 @@
         <file>Resources/Shaders/Terrain.frag</file>
         <file>Resources/Shaders/Terrain.tcs</file>
         <file>Resources/Shaders/Terrain.tes</file>
+        <file>Resources/Shaders/NozzleEffect.vert</file>
+        <file>Resources/Shaders/NozzleEffect.frag</file>
 
         <file>Resources/Sky/SkyRGB.data</file>
         <file>Resources/Sky/SkyRGBRad.data</file>

@@ -13,7 +13,8 @@ namespace Canavar::Engine
         Sky,
         Terrain,
         Blur,
-        PostProcess
+        PostProcess,
+        NozzleEffect
     };
 
     class ShaderManager : public Manager
@@ -33,5 +34,6 @@ namespace Canavar::Engine
         Shader* mTerrainShader{ nullptr };
         Shader* mBlurShader{ nullptr };
         Shader* mPostProcessShader{ nullptr };
+        Shader* mNozzleEffect{ nullptr };
     };
 }

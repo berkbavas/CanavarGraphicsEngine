@@ -41,16 +41,17 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mCameraManager = mManagerProvider->GetCameraManager();
     mLightManager = mManagerProvider->GetLightManager();
 
+    mSky = mNodeManager->GetSky();
+    mSun = mLightManager->GetSun();
+    mTerrain = mNodeManager->GetTerrain();
+    mHaze = mNodeManager->GetHaze();
+
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
     mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
     mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
     mBlurShader = mShaderManager->GetShader(ShaderType::Blur);
     mPostProcessShader = mShaderManager->GetShader(ShaderType::PostProcess);
-
-    mSky = mNodeManager->GetSky();
-    mSun = mLightManager->GetSun();
-    mTerrain = mNodeManager->GetTerrain();
-    mHaze = mNodeManager->GetHaze();
+    mNozzleEffectShader = mShaderManager->GetShader(ShaderType::NozzleEffect);
 }
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
@@ -74,6 +75,19 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         if (pModel->GetEnabled())
         {
             RenderModel(pModel);
+        }
+    }
+
+    const auto& nodes = mNodeManager->GetNodes();
+
+    for (const auto& pNode : nodes)
+    {
+        if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pNode))
+        {
+            if (pEffect->GetEnabled())
+            {
+                RenderNozzleEffect(pEffect, ifps);
+            }
         }
     }
 
@@ -139,6 +153,18 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     mModelShader->Release();
 }
 
+void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffect, float ifps)
+{
+    mNozzleEffectShader->Bind();
+    mNozzleEffectShader->SetUniformValue("MVP", mActiveCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
+    mNozzleEffectShader->SetUniformValue("scale", pEffect->GetScale());
+    mNozzleEffectShader->SetUniformValue("maxRadius", pEffect->GetMaxRadius());
+    mNozzleEffectShader->SetUniformValue("maxDistance", pEffect->GetMaxDistance());
+    mNozzleEffectShader->SetUniformValue("speed", pEffect->GetSpeed());
+    pEffect->Render(ifps);
+    mNozzleEffectShader->Release();
+}
+
 void Canavar::Engine::RenderingManager::SetUniforms()
 {
     SetCommonUniforms(mModelShader);
@@ -183,7 +209,7 @@ void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
 
 void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, NodePtr pNode)
 {
-    const auto& lights = mLightManager->GetPointLightsAround(pNode->GetPosition(), 100'000.0f);
+    const auto& lights = mLightManager->GetPointLightsAround(pNode->GetWorldPosition(), 100'000.0f);
     const auto numberOfPointLights = std::min(8, static_cast<int>(lights.size()));
 
     pShader->Bind();
@@ -192,7 +218,7 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, NodePtr 
     for (int i = 0; i < numberOfPointLights; i++)
     {
         pShader->SetUniformValue("pointLights[" + QString::number(i) + "].color", lights[i]->GetColor());
-        pShader->SetUniformValue("pointLights[" + QString::number(i) + "].position", lights[i]->GetPosition());
+        pShader->SetUniformValue("pointLights[" + QString::number(i) + "].position", lights[i]->GetWorldPosition());
         pShader->SetUniformValue("pointLights[" + QString::number(i) + "].ambient", lights[i]->GetAmbient());
         pShader->SetUniformValue("pointLights[" + QString::number(i) + "].diffuse", lights[i]->GetDiffuse());
         pShader->SetUniformValue("pointLights[" + QString::number(i) + "].specular", lights[i]->GetSpecular());
@@ -221,7 +247,7 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
 
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGB32F);
+        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F);
         mFramebuffers[type]->bind();
         glDrawBuffers(2, ATTACHMENTS);
         mFramebuffers[type]->release();

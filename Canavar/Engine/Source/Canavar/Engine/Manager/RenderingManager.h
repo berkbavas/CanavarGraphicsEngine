@@ -3,6 +3,7 @@
 #include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Node/Camera/Camera.h"
+#include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Haze/Haze.h"
 #include "Canavar/Engine/Node/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Model/Model.h"
@@ -45,6 +46,7 @@ namespace Canavar::Engine
 
       private:
         void RenderModel(ModelPtr pModel);
+        void RenderNozzleEffect(NozzleEffectPtr pEffect, float ifps);
 
         void SetUniforms();
         void SetCommonUniforms(Shader *pShader);
@@ -65,6 +67,7 @@ namespace Canavar::Engine
         Shader *mTerrainShader{ nullptr };
         Shader *mBlurShader{ nullptr };
         Shader *mPostProcessShader{ nullptr };
+        Shader *mNozzleEffectShader{ nullptr };
 
         SkyPtr mSky;
         TerrainPtr mTerrain;
@@ -79,6 +82,6 @@ namespace Canavar::Engine
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
 
-        int mBlurPass{ 4 };
+        int mBlurPass{ 2 };
     };
 };

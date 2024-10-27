@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Haze/Haze.h"
 #include "Canavar/Engine/Node/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Model/Model.h"
