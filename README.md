@@ -25,8 +25,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 
 ## Video
 
-
-https://github.com/user-attachments/assets/05c7d0fc-8817-4e3b-b86d-6e2a919b4110
+https://github.com/user-attachments/assets/d40eb26a-27cb-4fb5-a5d6-3340a24217fd
 
 
 ## Build
