@@ -1,17 +1,15 @@
-#include "Core/Controller.h"
-#include "Node/Model/Model.h"
+#include "Editor.h"
 
 #include <QApplication>
-#include <QImageReader>
 
-using namespace Canavar::Engine;
+using namespace Canavar::Editor;
 
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    Controller controller;
-    controller.Run();
+    Editor editor;
+    editor.Run();
 
     return app.exec();
 }
