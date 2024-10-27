@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ImGuiWidget.h"
+#include "Simulator/Simulator.h"
 
 #include <Canavar/Engine/Core/Controller.h>
 #include <Canavar/Engine/Core/EventReceiver.h>
@@ -45,5 +46,7 @@ namespace Canavar::Editor
         Engine::FreeCameraPtr mFreeCamera;
         Engine::PersecutorCameraPtr mPersecutorCamera;
         Engine::DummyCameraPtr mDummyCamera;
+
+        Simulator *mSimulator;
     };
 }

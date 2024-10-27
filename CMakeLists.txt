@@ -25,6 +25,8 @@ set(LIBS    imgui
             qt_imgui_widgets
             assimp-vc143-mt
             zlibstatic
+            JSBSim
+            ws2_32
 )
 
 link_directories(${LIBS_DIR})

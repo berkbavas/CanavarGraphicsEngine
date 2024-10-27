@@ -24,6 +24,8 @@ Canavar::Editor::Editor::Editor()
     mController->AddEventReceiver(this);
 
     mImGuiWidget = new ImGuiWidget;
+
+    mSimulator = new Simulator;
 }
 
 void Canavar::Editor::Editor::Run()
@@ -53,11 +55,9 @@ void Canavar::Editor::Editor::Initialize()
     mPersecutorCamera->SetTarget(pRootNode);
 
     // F16
-    {
-        ModelPtr pModel = std::make_shared<Model>("f16c");
-        pModel->SetNodeName("F16C");
-        pRootNode->AddChild(pModel);
-    }
+    ModelPtr pModel = std::make_shared<Model>("f16c");
+    pModel->SetNodeName("F16C");
+    pRootNode->AddChild(pModel);
 
     // Red light
     {
@@ -109,6 +109,8 @@ void Canavar::Editor::Editor::Initialize()
     }
 
     mNodeManager->AddNode(pRootNode);
+
+    mSimulator->Initialize(pRootNode, pModel);
 }
 
 void Canavar::Editor::Editor::Update(float ifps)
@@ -116,6 +118,7 @@ void Canavar::Editor::Editor::Update(float ifps)
     QtImGui::newFrame();
 
     mImGuiWidget->DrawWidget();
+    mSimulator->Update(ifps);
 
     ImGui::Render();
     QtImGui::render();
@@ -141,6 +144,10 @@ bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
     {
         mCameraManager->SetActiveCamera(mDummyCamera);
     }
+    else
+    {
+        mSimulator->KeyPressed(pEvent);
+    }
 
     return false;
 }
@@ -151,6 +158,8 @@ bool Canavar::Editor::Editor::KeyReleased(QKeyEvent *pEvent)
     {
         return true;
     }
+
+    mSimulator->KeyReleased(pEvent);
 
     return false;
 }
