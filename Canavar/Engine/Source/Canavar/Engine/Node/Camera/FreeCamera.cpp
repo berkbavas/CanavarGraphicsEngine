@@ -119,6 +119,11 @@ void Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
     }
 }
 
+void Canavar::Engine::FreeCamera::GoToNode(NodePtr pNode)
+{
+    SetWorldPosition(pNode->GetWorldPosition());
+}
+
 void Canavar::Engine::FreeCamera::SetParent(NodeWeakPtr pParentNode)
 {
     // TODO: Log

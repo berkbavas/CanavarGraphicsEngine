@@ -15,8 +15,9 @@ namespace Canavar::Editor
 {
     class Contoller;
 
-    class Editor : Engine::EventReceiver
+    class Editor : public QObject, public Engine::EventReceiver
     {
+        Q_OBJECT
       public:
         Editor();
 

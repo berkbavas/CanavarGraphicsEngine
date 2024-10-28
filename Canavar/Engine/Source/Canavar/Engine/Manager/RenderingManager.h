@@ -79,9 +79,11 @@ namespace Canavar::Engine
         std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
 
+        QMatrix4x4 mPreviousViewProjectionMatrix;
+
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
 
-        int mBlurPass{ 4 };
+        DEFINE_MEMBER(int, BlurPass, 4);
     };
 };

@@ -177,17 +177,17 @@ void Canavar::Engine::Node::SetScale(float x, float y, float z)
 
 void Canavar::Engine::Node::RotateGlobal(const QVector3D& axis, float angle)
 {
-    SetRotation(QQuaternion::fromAxisAndAngle(axis, angle) * GetRotation());
+    SetWorldRotation(QQuaternion::fromAxisAndAngle(axis, angle) * GetWorldRotation());
 }
 
 void Canavar::Engine::Node::RotateLocal(const QVector3D& axis, float angle)
 {
-    SetRotation(GetRotation() * QQuaternion::fromAxisAndAngle(axis, angle));
+    SetWorldRotation(GetWorldRotation() * QQuaternion::fromAxisAndAngle(axis, angle));
 }
 
 void Canavar::Engine::Node::Translate(const QVector3D& delta)
 {
-    SetPosition(mPosition + delta);
+    SetWorldPosition(GetWorldPosition() + delta);
 }
 
 void Canavar::Engine::Node::UpdateTransformation()

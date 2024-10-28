@@ -31,9 +31,18 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
     DrawSun();
     DrawHaze();
     DrawTerrain();
+    DrawRenderSettings();
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
+}
+
+void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
+{
+    if (ImGui::CollapsingHeader("Render Settings", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 24);
+    }
 }
 
 void Canavar::Editor::ImGuiWidget::DrawNodes()
@@ -85,6 +94,17 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
             if (ImGui::InputFloat3("Scale##NodeScale", &Scale[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
             {
                 pNode->SetScale(Scale);
+            }
+
+            auto ScaleMin = std::min(Scale.x(), std::min(Scale.y(), Scale.z()));
+            if (ImGui::DragFloat("Scale##NodeScaleDrag", &ScaleMin, 0.01f, 0.001, 100.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+            {
+                pNode->SetScale(ScaleMin, ScaleMin, ScaleMin);
+            }
+
+            if (ImGui::Button("Go to node"))
+            {
+                emit GoToNode(pNode);
             }
         }
 

@@ -39,12 +39,18 @@ void Canavar::Editor::Editor::Initialize()
     mNodeManager = mController->GetNodeManager();
     mCameraManager = mController->GetCameraManager();
 
+    mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
     mImGuiWidget->SetNodeManager(mNodeManager);
     mImGuiWidget->Initialize();
 
     mFreeCamera = mCameraManager->GetFreeCamera();
 
     mPersecutorCamera = std::make_shared<PersecutorCamera>();
+
+    connect(mImGuiWidget, &ImGuiWidget::GoToNode, this, [=](Engine::NodePtr pNode) {
+        mFreeCamera->GoToNode(pNode);
+        mCameraManager->SetActiveCamera(mFreeCamera);
+    });
 
     CreateSimulatorModels();
 

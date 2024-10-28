@@ -13,7 +13,7 @@ void main()
     vec3 bloomColor = texture(bloomTexture, fsTextureCoords).rgb;
 
     // Additive blending
-    sceneColor += bloomColor;
+    vec3 result = sceneColor + bloomColor;
 
-    outColor = vec4(sceneColor, 1);
+    outColor = vec4(result, 1.0f);
 }

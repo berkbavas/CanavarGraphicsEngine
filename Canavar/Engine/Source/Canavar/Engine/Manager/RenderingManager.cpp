@@ -15,7 +15,7 @@ void Canavar::Engine::RenderingManager::Initialize()
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_DEPTH_TEST);
 
-    mFramebufferFormats[Default].setSamples(8);
+    mFramebufferFormats[Default].setSamples(4);
     mFramebufferFormats[Default].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
 
     mFramebufferFormats[Temp].setSamples(0);

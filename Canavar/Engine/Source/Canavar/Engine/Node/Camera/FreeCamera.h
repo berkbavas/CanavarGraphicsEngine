@@ -26,6 +26,8 @@ namespace Canavar::Engine
         void AddChild(NodePtr pNode) override;
         void RemoveChild(NodePtr pNode) override;
 
+        void GoToNode(NodePtr pNode);
+
       private:
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
         DEFINE_MEMBER(float, LinearSpeed, 5.0f);
@@ -41,6 +43,9 @@ namespace Canavar::Engine
         bool mUpdatePosition{ false };
 
         static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
+
+        static constexpr QVector3D POSITIVE_Z = QVector3D(0, 0, 1);
+        static constexpr QVector3D NEGATIVE_Z = QVector3D(0, 0, -1);
     };
 
     using FreeCameraPtr = std::shared_ptr<FreeCamera>;
