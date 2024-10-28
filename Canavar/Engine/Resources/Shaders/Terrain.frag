@@ -98,7 +98,8 @@ in float fsHeight;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
-layout(location = 2) out vec4 fragPosition;
+layout(location = 2) out vec4 fragLocalPosition;
+layout(location = 3) out vec4 fragWorldPosition;
 
 const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
@@ -387,6 +388,8 @@ void main()
     else
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    // Fragment local position
-    fragPosition = vec4(fsWorldPosition, 1.0f);
+    // Fragment position
+    // Note that terrain has no model matrix so its local and world coordinates are the same.
+    fragLocalPosition = vec4(fsWorldPosition, 1.0f);
+    fragWorldPosition = vec4(fsWorldPosition, 1.0f);
 };

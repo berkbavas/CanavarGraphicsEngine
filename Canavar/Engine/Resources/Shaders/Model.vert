@@ -15,7 +15,7 @@ uniform mat4 VP; // View-Projection matrix
 uniform bool useTextureNormal;
 
 out vec4 fsLocalPosition;
-out vec4 fsPosition;
+out vec4 fsWorldPosition;
 out vec3 fsNormal;
 out vec2 fsTextureCoords;
 out mat3 fsTBN;
@@ -23,7 +23,7 @@ out mat3 fsTBN;
 void main()
 {
     fsLocalPosition = vec4(position, 1.0f);
-    fsPosition = M * fsLocalPosition;
+    fsWorldPosition = M * fsLocalPosition;
     fsNormal = N * normal;
     fsTextureCoords = textureCoords;
 
@@ -35,5 +35,5 @@ void main()
         fsTBN = N * mat3(T3, B3, N3);
     }
 
-    gl_Position = VP * fsPosition;
+    gl_Position = VP * fsWorldPosition;
 }

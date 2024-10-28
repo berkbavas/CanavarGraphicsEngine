@@ -110,6 +110,19 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     // ----------------------- POST PROCESSING BEGINS -------------------
 
+    for (int index = 0; index < NUMBER_OF_FBO_ATTACHMENTS; index++)
+    {
+        QOpenGLFramebufferObject::blitFramebuffer( //
+            mFramebuffers[Temp],
+            QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
+            mFramebuffers[Default],
+            QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
+            GL_COLOR_BUFFER_BIT,
+            GL_LINEAR,
+            index,
+            index);
+    }
+
     // Default -> Ping
     QOpenGLFramebufferObject::blitFramebuffer( //
         mFramebuffers[Ping],
@@ -133,19 +146,6 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         mBlurShader->Release();
     }
 
-    for (int index = 0; index <= 2; index++)
-    {
-        QOpenGLFramebufferObject::blitFramebuffer( //
-            mFramebuffers[Temp],
-            QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
-            mFramebuffers[Default],
-            QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
-            GL_COLOR_BUFFER_BIT,
-            GL_LINEAR,
-            index,
-            index);
-    }
-
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
     glClearColor(0, 0, 0, 1);
@@ -166,11 +166,21 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     ResizeFramebuffers();
 }
 
-QVector3D Canavar::Engine::RenderingManager::GetMouseFragmentLocalPosition(int x, int y)
+QVector3D Canavar::Engine::RenderingManager::GetFragmentLocalPositionFromScreen(int x, int y)
 {
     QVector3D position;
     mFramebuffers[Temp]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT2);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    mFramebuffers[Temp]->release();
+    return position;
+}
+
+QVector3D Canavar::Engine::RenderingManager::GetFragmentWorldPositionFromScreen(int x, int y)
+{
+    QVector3D position;
+    mFramebuffers[Temp]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT3);
     glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
     mFramebuffers[Temp]->release();
     return position;
@@ -291,16 +301,20 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         }
     }
 
-    constexpr GLuint ATTACHMENTS[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-
-    for (const auto type : { Default, Temp, Ping, Pong })
+    for (const auto type : { Default, Temp })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
 
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Bloom effect
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment position
+        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment local position
+        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment world position
         mFramebuffers[type]->bind();
-        glDrawBuffers(3, ATTACHMENTS);
+        glDrawBuffers(NUMBER_OF_FBO_ATTACHMENTS, FBO_ATTACHMENTS);
         mFramebuffers[type]->release();
+    }
+
+    for (const auto type : { Ping, Pong })
+    {
+        mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
     }
 }

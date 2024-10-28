@@ -40,7 +40,8 @@ namespace Canavar::Editor
         Engine::TerrainPtr mTerrain;
         Engine::HazePtr mHaze;
 
-        QVector3D mMouseFragmentLocalPosition;
+        QVector3D mFragmentLocalPosition;
+        QVector3D mFragmentWorldPosition;
 
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);

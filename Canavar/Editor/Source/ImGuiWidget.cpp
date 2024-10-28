@@ -34,7 +34,8 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
     DrawTerrain();
     DrawRenderSettings();
 
-    ImGui::Text("Fragment local position: (%.3f, %.3f, %.3f)", mMouseFragmentLocalPosition.x(), mMouseFragmentLocalPosition.y(), mMouseFragmentLocalPosition.z());
+    ImGui::Text("Fragment world position: (%.3f, %.3f, %.3f)", mFragmentWorldPosition.x(), mFragmentWorldPosition.y(), mFragmentWorldPosition.z());
+    ImGui::Text("Fragment local position: (%.3f, %.3f, %.3f)", mFragmentLocalPosition.x(), mFragmentLocalPosition.y(), mFragmentLocalPosition.z());
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
@@ -62,7 +63,8 @@ bool Canavar::Editor::ImGuiWidget::MouseReleased(QMouseEvent *)
 
 bool Canavar::Editor::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
 {
-    mMouseFragmentLocalPosition = mRenderingManager->GetMouseFragmentLocalPosition(pEvent->position().x(), pEvent->position().y());
+    mFragmentLocalPosition = mRenderingManager->GetFragmentLocalPositionFromScreen(pEvent->position().x(), pEvent->position().y());
+    mFragmentWorldPosition = mRenderingManager->GetFragmentWorldPositionFromScreen(pEvent->position().x(), pEvent->position().y());
 
     return false;
 }

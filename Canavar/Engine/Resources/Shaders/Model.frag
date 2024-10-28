@@ -64,14 +64,15 @@ uniform mat4 VP;  // View-Projection matrix
 uniform mat4 PVP; //Previous View-Projection matrix
 
 in vec4 fsLocalPosition;
-in vec4 fsPosition;
+in vec4 fsWorldPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoords;
 in mat3 fsTBN;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
-layout(location = 2) out vec4 fragPosition;
+layout(location = 2) out vec4 fragLocalPosition;
+layout(location = 3) out vec4 fragWorldPosition;
 
 vec3 getNormal()
 {
@@ -161,8 +162,8 @@ void main()
 {
     // Common variables
     vec3 normal = getNormal();
-    vec3 viewDir = normalize(cameraPosition - fsPosition.xyz);
-    float distance = length(cameraPosition - fsPosition.xyz);
+    vec3 viewDir = normalize(cameraPosition - fsWorldPosition.xyz);
+    float distance = length(cameraPosition - fsWorldPosition.xyz);
 
     vec4 ambientColor = vec4(0);
     vec4 diffuseColor = vec4(0);
@@ -195,10 +196,10 @@ void main()
     // Process
     vec4 result = vec4(0);
     result += processDirectionalLights(ambientColor, diffuseColor, specularColor, normal, viewDir);
-    result += processPointLights(ambientColor, diffuseColor, specularColor, normal, viewDir, fsPosition.xyz);
+    result += processPointLights(ambientColor, diffuseColor, specularColor, normal, viewDir, fsWorldPosition.xyz);
 
     // Final
-    result = processHaze(distance, fsPosition.xyz, result);
+    result = processHaze(distance, fsWorldPosition.xyz, result);
     // result = mix(result, model.overlayColor, model.overlayColorFactor);
     // result = mix(result, model.meshOverlayColor, model.meshOverlayColorFactor);
 
@@ -211,6 +212,7 @@ void main()
     else
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
-    // Fragment local position
-    fragPosition = vec4(fsLocalPosition.xyz, 1.0f);
+    // Fragment position
+    fragLocalPosition = vec4(fsLocalPosition.xyz, 1.0f);
+    fragWorldPosition = fsWorldPosition;
 }
