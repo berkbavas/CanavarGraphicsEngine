@@ -11,7 +11,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 - [x] Haze
 - [x] Point lights
 - [x] Directional lights
-- [x] Spot lights
+- [ ] Spot lights
 - [x] Free camera
 - [x] Persecutor camera
 - [x] Transformation of individual meshes of models
