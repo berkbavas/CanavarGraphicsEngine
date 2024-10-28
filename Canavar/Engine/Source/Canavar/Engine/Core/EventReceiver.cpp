@@ -6,6 +6,8 @@ void Canavar::Engine::EventReceiver::Resize(int w, int h) {}
 
 void Canavar::Engine::EventReceiver::Update(float ifps) {}
 
+void Canavar::Engine::EventReceiver::Render(float ifps) {}
+
 bool Canavar::Engine::EventReceiver::KeyPressed(QKeyEvent *)
 {
     return false;

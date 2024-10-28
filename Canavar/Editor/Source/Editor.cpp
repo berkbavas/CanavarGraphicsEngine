@@ -152,6 +152,8 @@ void Canavar::Editor::Editor::Update(float ifps)
     QtImGui::render();
 }
 
+void Canavar::Editor::Editor::Render(float ifps) {}
+
 bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
 {
     if (ImGui::GetIO().WantCaptureKeyboard)

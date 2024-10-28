@@ -53,6 +53,8 @@ namespace Canavar::Engine
         void OnMouseMoved(QMouseEvent*);
         void OnWheelMoved(QWheelEvent*);
 
+        void onRenderLoop(float ifps);
+
       private:
         Window* mWindow;
 

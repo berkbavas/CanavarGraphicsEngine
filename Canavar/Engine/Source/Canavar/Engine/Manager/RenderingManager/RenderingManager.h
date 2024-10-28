@@ -36,6 +36,7 @@ namespace Canavar::Engine
 
     class RenderingManager : public Manager, protected QOpenGLExtraFunctions
     {
+        Q_OBJECT
       public:
         explicit RenderingManager(QObject *parent = nullptr);
 
@@ -46,6 +47,9 @@ namespace Canavar::Engine
         void Resize(int width, int height);
 
         QVector3D GetMouseFragmentLocalPosition(int x, int y);
+
+      signals:
+        void RenderLoop(float ifps);
 
       private:
         void RenderModel(ModelPtr pModel);

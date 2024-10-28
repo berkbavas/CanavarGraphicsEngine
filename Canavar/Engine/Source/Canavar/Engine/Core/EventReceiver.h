@@ -11,6 +11,7 @@ namespace Canavar::Engine
         virtual void Initialize();
         virtual void Resize(int w, int h);
         virtual void Update(float ifps);
+        virtual void Render(float ifps);
 
         // Input Events
         // Returns true if the event is consumed so that it should not be dispatched others anymore.

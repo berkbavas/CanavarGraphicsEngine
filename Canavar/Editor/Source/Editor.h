@@ -27,6 +27,7 @@ namespace Canavar::Editor
       public:
         // Core Events
         void Initialize() override;
+        void Render(float ifps) override;
         void Update(float ifps) override;
 
         // Input Events

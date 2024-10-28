@@ -39,6 +39,8 @@ Canavar::Engine::Controller::Controller(QObject* parent)
     mManagers.push_back(mCameraManager);
     mManagers.push_back(mRenderingManager);
     mManagers.push_back(mLightManager);
+
+    connect(mRenderingManager, &RenderingManager::RenderLoop, this, &Controller::onRenderLoop, Qt::DirectConnection);
 }
 
 Canavar::Engine::Controller::~Controller()
@@ -109,6 +111,14 @@ void Canavar::Engine::Controller::Render(float ifps)
     for (const auto pReceiver : mEventReceivers)
     {
         pReceiver->Update(ifps);
+    }
+}
+
+void Canavar::Engine::Controller::onRenderLoop(float ifps)
+{
+    for (const auto pReceiver : mEventReceivers)
+    {
+        pReceiver->Render(ifps);
     }
 }
 

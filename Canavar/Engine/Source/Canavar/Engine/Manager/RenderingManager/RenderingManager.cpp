@@ -104,6 +104,8 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         mBoundingBoxRenderer->Render(ifps);
     }
 
+    emit RenderLoop(ifps);
+
     // ----------------------- RENDER LOOP ENDS -------------------
 
     // ----------------------- POST PROCESSING BEGINS -------------------
