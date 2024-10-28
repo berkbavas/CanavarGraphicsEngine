@@ -15,6 +15,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 - [x] Free camera
 - [x] Persecutor camera
 - [x] Transformation of individual meshes of models
+- [x] Lightning Strike Generator
 - [ ] Particle generator
 - [ ] Volumetric clouds
 - [ ] Water

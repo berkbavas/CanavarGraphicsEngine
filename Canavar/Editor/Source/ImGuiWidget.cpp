@@ -3,6 +3,7 @@
 #include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Light/PointLight.h"
+#include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
 #include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Util/Math.h"
 #include "Canavar/Engine/Util/Util.h"
@@ -184,6 +185,18 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
         ImGui::SliderFloat("Min Distance##NozzleEffect", &pNozzleEffect->GetMinDistance_NonConst(), 1.0f, 30.0f, "%.3f");
         ImGui::SliderFloat("Speed##NozzleEffect", &pNozzleEffect->GetSpeed_NonConst(), 0.0f, 10.0f, "%.5f");
         ImGui::SliderFloat("Scale##NozzleEffect", &pNozzleEffect->GetScale_NonConst(), 0.001f, 0.1f, "%.4f");
+    }
+    else if (Engine::LightningStrikeGeneratorPtr pLightningStrike = std::dynamic_pointer_cast<Engine::LightningStrikeGenerator>(pNode))
+    {
+        ImGui::Text("Lightning Strike Generator");
+
+        ImGui::SliderFloat("Base Value##LightningStrikeGenerator", &pLightningStrike->GetBaseValue_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Decay##LightningStrikeGenerator", &pLightningStrike->GetDecay_NonConst(), 0.1f, 2.0f, "%.3f");
+        ImGui::SliderFloat("Jitter Displacement Multiplier##LightningStrikeGenerator", &pLightningStrike->GetJitterDisplacementMultiplier_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Fork Length Multiplier##LightningStrikeGenerator", &pLightningStrike->GetForkLengthMultiplier_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Quad Width##LightningStrikeGenerator", &pLightningStrike->GetQuadWidth_NonConst(), 0.01f, 0.1f, "%.4f");
+        ImGui::SliderInt("Subdivision Level##LightningStrikeGenerator", &pLightningStrike->GetSubdivisionLevel_NonConst(), 1, 8);
+        ImGui::Checkbox("Freeze", &pLightningStrike->GetFreeze_NonConst());
     }
 }
 

@@ -16,7 +16,7 @@ void Canavar::Engine::Shader::Initialize()
 
     initializeOpenGLFunctions();
 
-    mProgram = QSharedPointer<QOpenGLShaderProgram>(new QOpenGLShaderProgram);
+    mProgram = new QOpenGLShaderProgram;
 
     for (const auto [shaderType, path] : mPaths)
     {
@@ -31,6 +31,13 @@ void Canavar::Engine::Shader::Initialize()
         {
             CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be loaded: '{}'", GetShaderTypeString(shaderType).toStdString(), mName.toStdString());
         }
+    }
+
+    if (mCallback != nullptr)
+    {
+        LOG_DEBUG("Shader::Initialize: Calling callback...");
+        mCallback(mProgram);
+        LOG_DEBUG("Shader::Initialize: Callback returned.");
     }
 
     if (!mProgram->link())
@@ -54,6 +61,11 @@ bool Canavar::Engine::Shader::Bind()
 void Canavar::Engine::Shader::Release()
 {
     mProgram->release();
+}
+
+void Canavar::Engine::Shader::SetCallbackBeforeLinking(const Callback& callback)
+{
+    mCallback = callback;
 }
 
 void Canavar::Engine::Shader::AddPath(QOpenGLShader::ShaderTypeBit type, const QString& path)

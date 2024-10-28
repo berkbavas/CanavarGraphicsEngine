@@ -5,6 +5,7 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/BoundingBoxRenderer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
+#include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
 
 Canavar::Engine::RenderingManager::RenderingManager(QObject* parent)
     : Manager(parent)
@@ -58,6 +59,8 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mBlurShader = mShaderManager->GetShader(ShaderType::Blur);
     mPostProcessShader = mShaderManager->GetShader(ShaderType::PostProcess);
     mNozzleEffectShader = mShaderManager->GetShader(ShaderType::NozzleEffect);
+    mLightningStrikeShader = mShaderManager->GetShader(ShaderType::LightningStrike);
+    mLightningStrikeQuadGeneratorShader = mShaderManager->GetShader(ShaderType::LightningStrikeQuadGenerator);
 }
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
@@ -88,12 +91,18 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     for (const auto& pNode : nodes)
     {
+        if (!pNode->GetVisible())
+        {
+            continue;
+        }
+
         if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pNode))
         {
-            if (pEffect->GetVisible())
-            {
-                RenderNozzleEffect(pEffect, ifps);
-            }
+            RenderNozzleEffect(pEffect, ifps);
+        }
+        else if (LightningStrikeBasePtr pLightning = std::dynamic_pointer_cast<LightningStrikeBase>(pNode))
+        {
+            pLightning->Render(mActiveCamera.get(), mLightningStrikeShader, mLightningStrikeQuadGeneratorShader, ifps);
         }
     }
 

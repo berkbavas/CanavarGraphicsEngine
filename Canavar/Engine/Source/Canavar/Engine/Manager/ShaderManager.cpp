@@ -43,6 +43,29 @@ void Canavar::Engine::ShaderManager::Initialize()
     mLineShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Line.frag");
     mLineShader->Initialize();
 
+    mLightningStrikeShader = new Shader("Lightning Strike Shader");
+    mLightningStrikeShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LightningStrike.vert");
+    mLightningStrikeShader->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/LightningStrike.geom");
+
+    mLightningStrikeShader->SetCallbackBeforeLinking([=](QOpenGLShaderProgram* pProgram) {
+        const GLchar* Varyings[2];
+        Varyings[0] = "outWorldPosition";
+        Varyings[1] = "outForkLevel";
+
+        pProgram->create();
+        qDebug() << "Calling glTransformFeedbackVaryings()  with Program ID" << pProgram->programId();
+        qDebug() << "QOpenGLShaderProgram log is: " << pProgram->log();
+        mLightningStrikeShader->glTransformFeedbackVaryings(pProgram->programId(), 2, Varyings, GL_INTERLEAVED_ATTRIBS);
+    });
+
+    mLightningStrikeShader->Initialize();
+
+    mLightningStrikeQuadGeneratorShader = new Shader("Lightning Strike Quad Generator Shader");
+    mLightningStrikeQuadGeneratorShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LightningStrikeQuadGenerator.vert");
+    mLightningStrikeQuadGeneratorShader->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/LightningStrikeQuadGenerator.geom");
+    mLightningStrikeQuadGeneratorShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/LightningStrikeQuadGenerator.frag");
+    mLightningStrikeQuadGeneratorShader->Initialize();
+
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
     mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
@@ -50,6 +73,8 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::PostProcess, mPostProcessShader));
     mShaders.emplace(std::pair(ShaderType::NozzleEffect, mNozzleEffect));
     mShaders.emplace(std::pair(ShaderType::Line, mLineShader));
+    mShaders.emplace(std::pair(ShaderType::LightningStrike, mLightningStrikeShader));
+    mShaders.emplace(std::pair(ShaderType::LightningStrikeQuadGenerator, mLightningStrikeQuadGeneratorShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)

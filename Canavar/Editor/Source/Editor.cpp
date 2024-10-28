@@ -9,6 +9,8 @@
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Node/DummyNode.h"
 #include "Canavar/Engine/Node/Light/PointLight.h"
+#include "Canavar/Engine/Node/LightningStrike/LightningStrikeAttractor.h"
+#include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
 #include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Util/Logger.h"
 
@@ -69,6 +71,15 @@ void Canavar::Editor::Editor::Test()
     pCustomModel1->SetPosition(0, 3, -3);
     mNodeManager->AddNode(pCustomModel1);
     mNodeManager->AddNode(pCustomModel0);
+
+    LightningStrikeAttractorPtr pAttractor = std::make_shared<LightningStrikeAttractor>();
+    pAttractor->SetPosition(0, 10, 0);
+
+    LightningStrikeGeneratorPtr pGenerator = std::make_shared<LightningStrikeGenerator>();
+    pGenerator->AddAttractor(pAttractor);
+
+    mNodeManager->AddNode(pAttractor);
+    mNodeManager->AddNode(pGenerator);
 }
 
 void Canavar::Editor::Editor::CreateSimulatorModels()

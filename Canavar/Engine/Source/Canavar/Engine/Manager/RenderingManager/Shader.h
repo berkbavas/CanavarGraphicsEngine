@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Util/Logger.h"
 
+#include <functional>
 #include <map>
 
 #include <QObject>
@@ -10,14 +11,17 @@
 
 namespace Canavar::Engine
 {
-    class Shader : protected QOpenGLExtraFunctions
+    class Shader : public QOpenGLExtraFunctions
     {
+        using Callback = std::function<void(QOpenGLShaderProgram*)>;
+
       public:
         Shader(const QString& name);
 
         void Initialize();
         bool Bind();
         void Release();
+        void SetCallbackBeforeLinking(const Callback& callback);
 
         void AddPath(QOpenGLShader::ShaderTypeBit type, const QString& path);
 
@@ -58,7 +62,8 @@ namespace Canavar::Engine
         void SetSampler(const QString& name, GLuint unit, GLuint textureId, GLuint target = GL_TEXTURE_2D);
 
       private:
-        QSharedPointer<QOpenGLShaderProgram> mProgram;
+        Callback mCallback{ nullptr };
+        QOpenGLShaderProgram* mProgram;
         std::map<QOpenGLShader::ShaderTypeBit, QString> mPaths;
 
         QString mName;

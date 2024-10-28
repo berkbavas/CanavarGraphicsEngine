@@ -16,6 +16,12 @@
         <file>Resources/Shaders/Line.vert</file>
         <file>Resources/Shaders/Line.frag</file>
 
+        <file>Resources/Shaders/LightningStrike.vert</file>
+        <file>Resources/Shaders/LightningStrike.geom</file>
+        <file>Resources/Shaders/LightningStrikeQuadGenerator.vert</file>
+        <file>Resources/Shaders/LightningStrikeQuadGenerator.geom</file>
+        <file>Resources/Shaders/LightningStrikeQuadGenerator.frag</file>
+        
         <file>Resources/Sky/SkyRGB.data</file>
         <file>Resources/Sky/SkyRGBRad.data</file>
 

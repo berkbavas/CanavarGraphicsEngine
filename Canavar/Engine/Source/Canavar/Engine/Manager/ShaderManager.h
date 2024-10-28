@@ -15,7 +15,9 @@ namespace Canavar::Engine
         Blur,
         PostProcess,
         NozzleEffect,
-        Line
+        Line,
+        LightningStrike,
+        LightningStrikeQuadGenerator,
     };
 
     class ShaderManager : public Manager
@@ -37,5 +39,7 @@ namespace Canavar::Engine
         Shader* mPostProcessShader{ nullptr };
         Shader* mNozzleEffect{ nullptr };
         Shader* mLineShader{ nullptr };
+        Shader* mLightningStrikeShader{ nullptr };
+        Shader* mLightningStrikeQuadGeneratorShader{ nullptr };
     };
 }

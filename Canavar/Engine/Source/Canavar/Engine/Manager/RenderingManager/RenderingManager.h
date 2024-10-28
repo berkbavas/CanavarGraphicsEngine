@@ -80,6 +80,8 @@ namespace Canavar::Engine
         Shader *mBlurShader{ nullptr };
         Shader *mPostProcessShader{ nullptr };
         Shader *mNozzleEffectShader{ nullptr };
+        Shader *mLightningStrikeShader{ nullptr };
+        Shader *mLightningStrikeQuadGeneratorShader{ nullptr };
 
         SkyPtr mSky;
         TerrainPtr mTerrain;
