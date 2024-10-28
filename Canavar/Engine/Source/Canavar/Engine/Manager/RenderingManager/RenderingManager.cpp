@@ -62,8 +62,6 @@ void Canavar::Engine::RenderingManager::PostInitialize()
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
 {
-    // ----------------------- RENDER LOOP BEGINS -------------------
-
     mActiveCamera = mCameraManager->GetActiveCamera();
 
     mFramebuffers[Default]->bind();

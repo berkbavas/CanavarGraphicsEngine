@@ -165,17 +165,14 @@ bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
     {
         mFreeCamera->SetWorldPosition(mPersecutorCamera->GetWorldPosition());
         mCameraManager->SetActiveCamera(mFreeCamera);
-        return true;
     }
     else if (pEvent->key() == Qt::Key_2)
     {
         mCameraManager->SetActiveCamera(mPersecutorCamera);
-        return true;
     }
     else if (pEvent->key() == Qt::Key_3)
     {
         mCameraManager->SetActiveCamera(mDummyCamera);
-        return true;
     }
     else
     {

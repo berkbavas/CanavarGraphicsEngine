@@ -25,20 +25,13 @@ namespace Canavar::Engine
         float GetHorizontalFov() const;
         float GetAspectRatio() const;
 
-        void UpdateProjection();
-        void UpdateCache();
-
       private:
-        void UpdateProjectionIfDirty();
-        void UpdateCacheIfDirty();
-
         // For caching
         QMatrix4x4 mViewProjectionMatrix;
         QMatrix4x4 mProjectionMatrix;
         QMatrix4x4 mViewMatrix;
         QMatrix4x4 mRotationMatrix;
         QVector3D mViewDirection;
-        bool mIsProjectionDirty{ false };
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
