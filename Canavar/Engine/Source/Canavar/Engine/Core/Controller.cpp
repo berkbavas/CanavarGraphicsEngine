@@ -6,7 +6,7 @@
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager.h"
+#include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Util/Logger.h"
@@ -80,6 +80,11 @@ void Canavar::Engine::Controller::Initialize()
 void Canavar::Engine::Controller::Render(float ifps)
 {
     mDevicePixelRatio = mWindow->devicePixelRatio();
+
+    for (const auto pManager : mManagers)
+    {
+        pManager->SetDevicePixelRatio(mDevicePixelRatio);
+    }
 
     for (const auto pManager : mManagers)
     {

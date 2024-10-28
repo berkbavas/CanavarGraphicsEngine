@@ -5,7 +5,7 @@
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager.h"
+#include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Node/DummyNode.h"
 #include "Canavar/Engine/Node/Light/PointLight.h"
@@ -38,6 +38,7 @@ void Canavar::Editor::Editor::Initialize()
 
     mNodeManager = mController->GetNodeManager();
     mCameraManager = mController->GetCameraManager();
+    mRenderingManager = mController->GetRenderingManager();
 
     mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
     mImGuiWidget->SetNodeManager(mNodeManager);
@@ -61,12 +62,12 @@ void Canavar::Editor::Editor::Test()
 {
     ModelPtr pCustomModel0 = std::make_shared<Model>("Cyborg");
     pCustomModel0->SetNodeName("pCustomModel0");
+    pCustomModel0->SetPosition(0, 3, 3);
 
     ModelPtr pCustomModel1 = std::make_shared<Model>("Cyborg");
     pCustomModel1->SetNodeName("pCustomModel1");
-
-    pCustomModel0->AddChild(pCustomModel1);
-
+    pCustomModel1->SetPosition(0, 3, -3);
+    mNodeManager->AddNode(pCustomModel1);
     mNodeManager->AddNode(pCustomModel0);
 }
 
@@ -162,28 +163,31 @@ bool Canavar::Editor::Editor::KeyPressed(QKeyEvent *pEvent)
     {
         mFreeCamera->SetWorldPosition(mPersecutorCamera->GetWorldPosition());
         mCameraManager->SetActiveCamera(mFreeCamera);
+        return true;
     }
     else if (pEvent->key() == Qt::Key_2)
     {
         mCameraManager->SetActiveCamera(mPersecutorCamera);
+        return true;
     }
     else if (pEvent->key() == Qt::Key_3)
     {
         mCameraManager->SetActiveCamera(mDummyCamera);
+        return true;
     }
     else
     {
         mSimulator->KeyPressed(pEvent);
     }
 
-    return false;
+    return mImGuiWidget->KeyPressed(pEvent);
 }
 
 bool Canavar::Editor::Editor::KeyReleased(QKeyEvent *pEvent)
 {
     mSimulator->KeyReleased(pEvent);
 
-    return false;
+    return mImGuiWidget->KeyReleased(pEvent);
 }
 
 bool Canavar::Editor::Editor::MousePressed(QMouseEvent *pEvent)
@@ -193,12 +197,12 @@ bool Canavar::Editor::Editor::MousePressed(QMouseEvent *pEvent)
         return true;
     }
 
-    return false;
+    return mImGuiWidget->MousePressed(pEvent);
 }
 
 bool Canavar::Editor::Editor::MouseReleased(QMouseEvent *pEvent)
 {
-    return false;
+    return mImGuiWidget->MouseReleased(pEvent);
 }
 
 bool Canavar::Editor::Editor::MouseMoved(QMouseEvent *pEvent)
@@ -208,7 +212,7 @@ bool Canavar::Editor::Editor::MouseMoved(QMouseEvent *pEvent)
         return true;
     }
 
-    return false;
+    return mImGuiWidget->MouseMoved(pEvent);
 }
 
 bool Canavar::Editor::Editor::WheelMoved(QWheelEvent *pEvent)

@@ -23,5 +23,6 @@ namespace Canavar::Engine
         virtual void Render(float ifps);
 
         DEFINE_MEMBER_PTR(ManagerProvider, ManagerProvider);
+        DEFINE_MEMBER(float, DevicePixelRatio, 1.0f);
     };
 }

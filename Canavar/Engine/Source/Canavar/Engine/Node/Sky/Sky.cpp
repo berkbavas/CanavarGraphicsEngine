@@ -1,8 +1,8 @@
 #include "Sky.h"
 
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Camera/Camera.h"
 #include "Canavar/Engine/Node/Light/DirectionalLight.h"
-#include "Canavar/Engine/Util/Shader.h"
 
 #include <QFile>
 #include <QVector3D>

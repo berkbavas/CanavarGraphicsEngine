@@ -3,6 +3,7 @@
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
+#include "Canavar/Engine/Manager/RenderingManager/BoundingBoxRenderer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
 
 Canavar::Engine::RenderingManager::RenderingManager(QObject* parent)
@@ -17,11 +18,8 @@ void Canavar::Engine::RenderingManager::Initialize()
 
     mFramebufferFormats[Default].setSamples(4);
     mFramebufferFormats[Default].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
-
     mFramebufferFormats[Temp].setSamples(0);
-
     mFramebufferFormats[Ping].setSamples(0);
-
     mFramebufferFormats[Pong].setSamples(0);
 
     for (const auto type : { Default, Temp, Ping, Pong })
@@ -30,6 +28,8 @@ void Canavar::Engine::RenderingManager::Initialize()
     }
 
     mQuad = new Quad;
+
+    mBoundingBoxRenderer = new BoundingBoxRenderer;
 
     ResizeFramebuffers();
 }
@@ -40,6 +40,12 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mNodeManager = mManagerProvider->GetNodeManager();
     mCameraManager = mManagerProvider->GetCameraManager();
     mLightManager = mManagerProvider->GetLightManager();
+
+    mBoundingBoxRenderer->SetCameraManager(mCameraManager);
+    mBoundingBoxRenderer->SetShaderManager(mShaderManager);
+    mBoundingBoxRenderer->SetNodeManager(mNodeManager);
+
+    mBoundingBoxRenderer->Initialize();
 
     mSky = mNodeManager->GetSky();
     mSun = mLightManager->GetSun();
@@ -56,11 +62,13 @@ void Canavar::Engine::RenderingManager::PostInitialize()
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
 {
+    // ----------------------- RENDER LOOP BEGINS -------------------
+
     mActiveCamera = mCameraManager->GetActiveCamera();
 
     mFramebuffers[Default]->bind();
     glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
-    glClearColor(0, 0, 0, 1);
+    glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     SetUniforms();
@@ -72,7 +80,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     for (const auto& pModel : models)
     {
-        if (pModel->GetEnabled())
+        if (pModel->GetVisible())
         {
             RenderModel(pModel);
         }
@@ -84,12 +92,21 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     {
         if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pNode))
         {
-            if (pEffect->GetEnabled())
+            if (pEffect->GetVisible())
             {
                 RenderNozzleEffect(pEffect, ifps);
             }
         }
     }
+
+    if (mDrawBoundingBoxes)
+    {
+        mBoundingBoxRenderer->Render(ifps);
+    }
+
+    // ----------------------- RENDER LOOP ENDS -------------------
+
+    // ----------------------- POST PROCESSING BEGINS -------------------
 
     // Default -> Ping
     QOpenGLFramebufferObject::blitFramebuffer( //
@@ -114,7 +131,18 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         mBlurShader->Release();
     }
 
-    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Default]);
+    for (int index = 0; index <= 2; index++)
+    {
+        QOpenGLFramebufferObject::blitFramebuffer( //
+            mFramebuffers[Temp],
+            QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
+            mFramebuffers[Default],
+            QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
+            GL_COLOR_BUFFER_BIT,
+            GL_LINEAR,
+            index,
+            index);
+    }
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
@@ -122,7 +150,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     mPostProcessShader->Bind();
-    mPostProcessShader->SetSampler("sceneTexture", 0, mFramebuffers[Temp]->texture());
+    mPostProcessShader->SetSampler("sceneTexture", 0, mFramebuffers[Temp]->textures().at(0));
     mPostProcessShader->SetSampler("bloomTexture", 1, mFramebuffers[qMax(0, mBlurPass) % 2 == 0 ? Ping : Pong]->texture());
     mQuad->Render();
     mPostProcessShader->Release();
@@ -134,6 +162,16 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     mHeight = height;
 
     ResizeFramebuffers();
+}
+
+QVector3D Canavar::Engine::RenderingManager::GetMouseFragmentLocalPosition(int x, int y)
+{
+    QVector3D position;
+    mFramebuffers[Temp]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT2);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    mFramebuffers[Temp]->release();
+    return position;
 }
 
 void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
@@ -153,6 +191,10 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
         pScene->Render(pModel.get(), mModelShader);
+    }
+    else
+    {
+        LOG_FATAL("RenderingManager::RenderModel: Model data is not found for this model: {}", pModel->GetModelName().toStdString());
     }
 
     mModelShader->Release();
@@ -247,15 +289,16 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         }
     }
 
-    constexpr GLuint ATTACHMENTS[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    constexpr GLuint ATTACHMENTS[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 
     for (const auto type : { Default, Temp, Ping, Pong })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
 
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F);
+        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Bloom effect
+        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment position
         mFramebuffers[type]->bind();
-        glDrawBuffers(2, ATTACHMENTS);
+        glDrawBuffers(3, ATTACHMENTS);
         mFramebuffers[type]->release();
     }
 }

@@ -2,10 +2,7 @@
 
 #include "Canavar/Engine/Util/Math.h"
 
-Canavar::Engine::Node::Node()
-{
-    UpdateRotationFromEulerDegrees();
-}
+Canavar::Engine::Node::Node() {}
 
 void Canavar::Engine::Node::SetRotation(const QQuaternion& newRotation)
 {
@@ -279,4 +276,9 @@ void Canavar::Engine::Node::RemoveChild(NodePtr pNode)
 {
     mChildren.extract(pNode);
     pNode->SetParent(std::weak_ptr<Node>()); // Empty Node Ptr
+}
+
+QString Canavar::Engine::Node::GetUniqueNodeName() const
+{
+    return mNodeName + " #" + QString::number(mNodeId);
 }

@@ -13,6 +13,8 @@
         <file>Resources/Shaders/Terrain.tes</file>
         <file>Resources/Shaders/NozzleEffect.vert</file>
         <file>Resources/Shaders/NozzleEffect.frag</file>
+        <file>Resources/Shaders/Line.vert</file>
+        <file>Resources/Shaders/Line.frag</file>
 
         <file>Resources/Sky/SkyRGB.data</file>
         <file>Resources/Sky/SkyRGBRad.data</file>

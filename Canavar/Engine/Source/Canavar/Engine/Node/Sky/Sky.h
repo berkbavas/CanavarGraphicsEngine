@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Canavar/Engine/Manager/RenderingManager/Quad.h"
 #include "Canavar/Engine/Node/Node.h"
 #include "Canavar/Engine/Util/Macros.h"
-#include "Canavar/Engine/Util/Quad.h"
 
 #include <QOpenGLExtraFunctions>
 

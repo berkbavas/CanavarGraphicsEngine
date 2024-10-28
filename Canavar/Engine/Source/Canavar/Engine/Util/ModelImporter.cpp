@@ -1,5 +1,6 @@
 #include "ModelImporter.h"
 
+#include "Canavar/Engine/Node/Scene/AABB.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <QDir>
@@ -91,6 +92,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     {
         MaterialPtr pMaterial = pScene->GetMaterial(aiScene->mMeshes[i]->mMaterialIndex);
         MeshPtr pMesh = ProcessMesh(aiScene->mMeshes[i]);
+        pMesh->SetMeshId(i);
         pMesh->SetMaterial(pMaterial);
         pScene->AddMesh(pMesh);
     }
@@ -98,6 +100,38 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     // Nodes
     SceneNodePtr pRootNode = ProcessNode(pScene, aiScene->mRootNode);
     pScene->SetRootNode(pRootNode);
+    float minX = std::numeric_limits<float>::infinity();
+    float minY = std::numeric_limits<float>::infinity();
+    float minZ = std::numeric_limits<float>::infinity();
+
+    float maxX = -std::numeric_limits<float>::infinity();
+    float maxY = -std::numeric_limits<float>::infinity();
+    float maxZ = -std::numeric_limits<float>::infinity();
+
+    // AABB
+    const auto& meshes = pScene->GetMeshes();
+    for (const auto& pMesh : meshes)
+    {
+        if (minX > pMesh->GetAABB().GetMin().x())
+            minX = pMesh->GetAABB().GetMin().x();
+
+        if (minY > pMesh->GetAABB().GetMin().y())
+            minY = pMesh->GetAABB().GetMin().y();
+
+        if (minZ > pMesh->GetAABB().GetMin().z())
+            minZ = pMesh->GetAABB().GetMin().z();
+
+        if (maxX < pMesh->GetAABB().GetMax().x())
+            maxX = pMesh->GetAABB().GetMax().x();
+
+        if (maxY < pMesh->GetAABB().GetMax().y())
+            maxY = pMesh->GetAABB().GetMax().y();
+
+        if (maxZ < pMesh->GetAABB().GetMax().z())
+            maxZ = pMesh->GetAABB().GetMax().z();
+    }
+
+    pScene->SetAABB(AABB{ QVector3D(minX, minY, minZ), QVector3D(maxX, maxY, maxZ) });
 
     return pScene;
 }
@@ -173,6 +207,10 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
     }
 
     pMesh->SetMeshName(aiMesh->mName.C_Str());
+
+    const auto min = aiMesh->mAABB.mMin;
+    const auto max = aiMesh->mAABB.mMax;
+    pMesh->SetAABB(AABB{ QVector3D(min.x, min.y, min.z), QVector3D(max.x, max.y, max.z) });
 
     return pMesh;
 }

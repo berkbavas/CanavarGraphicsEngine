@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Scene/SceneNode.h"
 #include "Canavar/Engine/Util/Macros.h"
-#include "Canavar/Engine/Util/Shader.h"
 
 #include <QVector>
 
@@ -23,6 +23,9 @@ namespace Canavar::Engine
         MeshPtr GetMesh(int index);
         MaterialPtr GetMaterial(int index);
 
+        const QVector<MeshPtr> &GetMeshes() const { return mMeshes; }
+        const QVector<MaterialPtr> &GetMaterials() const { return mMaterials; }
+
       private:
         // Scene class own these meshes and materials.
         QVector<MeshPtr> mMeshes;
@@ -30,8 +33,8 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(SceneNodePtr, RootNode);
         DEFINE_MEMBER(QString, SceneName);
+        DEFINE_MEMBER(AABB, AABB);
     };
 
     using ScenePtr = std::shared_ptr<Scene>;
-
 }

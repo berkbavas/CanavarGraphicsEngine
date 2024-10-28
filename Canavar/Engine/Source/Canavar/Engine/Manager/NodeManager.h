@@ -47,5 +47,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER_CONST(TerrainPtr, Terrain);
         DEFINE_MEMBER_CONST(HazePtr, Haze);
         DEFINE_MEMBER_CONST(DirectionalLightPtr, Sun);
+
+        uint32_t mCurrentNodeId{ 0 };
     };
 }

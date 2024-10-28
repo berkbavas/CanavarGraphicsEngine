@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Node/Scene/Mesh.h"
-#include "Canavar/Engine/Util/Shader.h"
 
 #include <memory>
 #include <set>
+
 
 namespace Canavar::Engine
 {

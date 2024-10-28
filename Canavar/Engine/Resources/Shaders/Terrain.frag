@@ -87,6 +87,9 @@ uniform sampler2D snow;
 uniform sampler2D rock;
 uniform sampler2D rockNormal;
 
+uniform mat4 VP;  // View-Projection matrix
+uniform mat4 PVP; //Previous View-Projection matrix
+
 in vec3 fsWorldPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoord;
@@ -95,6 +98,7 @@ in float fsHeight;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
+layout(location = 2) out vec4 fragPosition;
 
 const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
@@ -382,4 +386,7 @@ void main()
         brightColor = vec4(fragColor.rgb, 1.0f);
     else
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // Fragment local position
+    fragPosition = vec4(fsWorldPosition, 1.0f);
 };

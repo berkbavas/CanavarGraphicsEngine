@@ -40,7 +40,6 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, MinDistance, 4.0f);
         DEFINE_MEMBER(float, Speed, 7.0f);
         DEFINE_MEMBER(float, Scale, 0.04f);
-        DEFINE_MEMBER(bool, Enabled, true);
 
         DEFINE_MEMBER(bool, Initialized, false);
     };

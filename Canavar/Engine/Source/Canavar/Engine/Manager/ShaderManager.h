@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Util/Shader.h"
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 
 #include <map>
 
@@ -14,7 +14,8 @@ namespace Canavar::Engine
         Terrain,
         Blur,
         PostProcess,
-        NozzleEffect
+        NozzleEffect,
+        Line
     };
 
     class ShaderManager : public Manager
@@ -35,5 +36,6 @@ namespace Canavar::Engine
         Shader* mBlurShader{ nullptr };
         Shader* mPostProcessShader{ nullptr };
         Shader* mNozzleEffect{ nullptr };
+        Shader* mLineShader{ nullptr };
     };
 }

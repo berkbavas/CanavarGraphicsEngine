@@ -21,6 +21,7 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug");
+
     DrawNodes();
 
     ImGui::BeginDisabled(mSelectedNode == nullptr);
@@ -33,8 +34,37 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
     DrawTerrain();
     DrawRenderSettings();
 
+    ImGui::Text("Fragment position: (%.3f, %.3f, %.3f)", mMouseFragmentLocalPosition.x(), mMouseFragmentLocalPosition.y(), mMouseFragmentLocalPosition.z());
+
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
+}
+
+bool Canavar::Editor::ImGuiWidget::KeyPressed(QKeyEvent *)
+{
+    return false;
+}
+
+bool Canavar::Editor::ImGuiWidget::KeyReleased(QKeyEvent *)
+{
+    return false;
+}
+
+bool Canavar::Editor::ImGuiWidget::MousePressed(QMouseEvent *)
+{
+    return false;
+}
+
+bool Canavar::Editor::ImGuiWidget::MouseReleased(QMouseEvent *)
+{
+    return false;
+}
+
+bool Canavar::Editor::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
+{
+    mMouseFragmentLocalPosition = mRenderingManager->GetMouseFragmentLocalPosition(pEvent->position().x(), pEvent->position().y());
+
+    return false;
 }
 
 void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
@@ -42,6 +72,7 @@ void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
     if (ImGui::CollapsingHeader("Render Settings", ImGuiTreeNodeFlags_DefaultOpen))
     {
         ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 24);
+        ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
     }
 }
 
@@ -49,11 +80,11 @@ void Canavar::Editor::ImGuiWidget::DrawNodes()
 {
     const auto &nodes = mNodeManager->GetNodes();
 
-    if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->GetNodeName().toStdString().c_str() : "-"))
+    if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->GetUniqueNodeName().toStdString().c_str() : "-"))
     {
         for (const auto pNode : nodes)
         {
-            if (ImGui::Selectable(pNode->GetNodeName().toStdString().c_str()))
+            if (ImGui::Selectable(pNode->GetUniqueNodeName().toStdString().c_str()))
             {
                 mSelectedNode = pNode;
             }

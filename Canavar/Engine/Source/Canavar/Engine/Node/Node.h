@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Node/Scene/AABB.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
@@ -70,6 +71,8 @@ namespace Canavar::Engine
 
         const std::set<NodePtr>& GetChildren() const { return mChildren; }
 
+        QString GetUniqueNodeName() const;
+
       private:
         QMatrix4x4 mTransformation;
         QMatrix3x3 mNormalMatrix;
@@ -94,6 +97,10 @@ namespace Canavar::Engine
         std::set<NodePtr> mChildren;
 
         DEFINE_MEMBER(QString, NodeName);
+        DEFINE_MEMBER(uint32_t, NodeId, 0);
+        DEFINE_MEMBER(bool, Visible, true);
+        DEFINE_MEMBER(bool, Selectable, true);
+        DEFINE_MEMBER(AABB, AABB, QVector3D(-1, -1, -1), QVector3D(1, 1, 1));
     };
 
 }

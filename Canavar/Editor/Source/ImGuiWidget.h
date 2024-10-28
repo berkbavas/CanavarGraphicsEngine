@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Canavar/Engine/Manager/NodeManager.h>
-#include <Canavar/Engine/Manager/RenderingManager.h>
+#include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
 #include <Canavar/Engine/Node/Light/DirectionalLight.h>
 #include <Canavar/Engine/Util/Macros.h>
 
@@ -13,6 +13,12 @@ namespace Canavar::Editor
       public:
         void Initialize();
         void DrawWidget();
+
+        bool KeyPressed(QKeyEvent *);
+        bool KeyReleased(QKeyEvent *);
+        bool MousePressed(QMouseEvent *);
+        bool MouseReleased(QMouseEvent *);
+        bool MouseMoved(QMouseEvent *);
 
       signals:
         void GoToNode(Engine::NodePtr pNode);
@@ -33,6 +39,8 @@ namespace Canavar::Editor
         Engine::SkyPtr mSky;
         Engine::TerrainPtr mTerrain;
         Engine::HazePtr mHaze;
+
+        QVector3D mMouseFragmentLocalPosition;
 
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);

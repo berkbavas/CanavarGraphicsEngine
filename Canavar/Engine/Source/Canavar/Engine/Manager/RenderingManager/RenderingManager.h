@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Camera/Camera.h"
 #include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Haze/Haze.h"
@@ -9,7 +10,6 @@
 #include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Node/Sky/Sky.h"
 #include "Canavar/Engine/Node/Terrain/Terrain.h"
-#include "Canavar/Engine/Util/Shader.h"
 
 #include <map>
 #include <memory>
@@ -24,6 +24,7 @@ namespace Canavar::Engine
     class NodeManager;
     class CameraManager;
     class LightManager;
+    class BoundingBoxRenderer;
 
     enum E_Framebuffer
     {
@@ -44,6 +45,8 @@ namespace Canavar::Engine
         void Render(float ifps);
         void Resize(int width, int height);
 
+        QVector3D GetMouseFragmentLocalPosition(int x, int y);
+
       private:
         void RenderModel(ModelPtr pModel);
         void RenderNozzleEffect(NozzleEffectPtr pEffect, float ifps);
@@ -59,6 +62,8 @@ namespace Canavar::Engine
         NodeManager *mNodeManager;
         CameraManager *mCameraManager;
         LightManager *mLightManager;
+
+        BoundingBoxRenderer *mBoundingBoxRenderer;
 
         CameraPtr mActiveCamera{ nullptr };
 
@@ -79,11 +84,10 @@ namespace Canavar::Engine
         std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
 
-        QMatrix4x4 mPreviousViewProjectionMatrix;
-
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
 
         DEFINE_MEMBER(int, BlurPass, 4);
+        DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
     };
 };

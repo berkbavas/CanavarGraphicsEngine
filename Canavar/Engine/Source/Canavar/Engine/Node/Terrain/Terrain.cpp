@@ -1,10 +1,11 @@
 #include "Terrain.h"
 
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Camera/Camera.h"
 #include "Canavar/Engine/Util/ModelImporter.h"
-#include "Canavar/Engine/Util/Shader.h"
 
 #include <QMatrix4x4>
+
 
 void Canavar::Engine::Terrain::Initialize()
 {

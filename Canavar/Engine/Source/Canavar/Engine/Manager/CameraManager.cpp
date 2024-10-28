@@ -45,6 +45,7 @@ void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr pCamera)
 
     if (mActiveCamera)
     {
+        mActiveCamera->Reset();
         pCamera->Resize(mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
     }
 

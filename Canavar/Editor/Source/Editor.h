@@ -7,6 +7,7 @@
 #include <Canavar/Engine/Core/EventReceiver.h>
 #include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/NodeManager.h>
+#include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
 #include <Canavar/Engine/Node/Camera/DummyCamera.h>
 #include <Canavar/Engine/Node/Camera/FreeCamera.h>
 #include <Canavar/Engine/Node/Camera/PersecutorCamera.h>
@@ -44,6 +45,7 @@ namespace Canavar::Editor
         Engine::Controller *mController;
         Engine::NodeManager *mNodeManager;
         Engine::CameraManager *mCameraManager;
+        Engine::RenderingManager *mRenderingManager;
 
         ImGuiWidget *mImGuiWidget;
 

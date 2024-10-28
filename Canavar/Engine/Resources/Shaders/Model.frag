@@ -60,6 +60,10 @@ uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
 uniform sampler2D textureNormal;
 
+uniform mat4 VP;  // View-Projection matrix
+uniform mat4 PVP; //Previous View-Projection matrix
+
+in vec4 fsLocalPosition;
 in vec4 fsPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoords;
@@ -67,6 +71,7 @@ in mat3 fsTBN;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
+layout(location = 2) out vec4 fragPosition;
 
 vec3 getNormal()
 {
@@ -205,4 +210,7 @@ void main()
         brightColor = vec4(result.rgb, 1.0f);
     else
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+    // Fragment local position
+    fragPosition = vec4(fsLocalPosition.xyz, 1.0f);
 }

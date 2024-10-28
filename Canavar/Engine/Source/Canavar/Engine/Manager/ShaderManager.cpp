@@ -38,12 +38,18 @@ void Canavar::Engine::ShaderManager::Initialize()
     mNozzleEffect->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
     mNozzleEffect->Initialize();
 
+    mLineShader = new Shader("Line Shader");
+    mLineShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Line.vert");
+    mLineShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Line.frag");
+    mLineShader->Initialize();
+
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
     mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
     mShaders.emplace(std::pair(ShaderType::Blur, mBlurShader));
     mShaders.emplace(std::pair(ShaderType::PostProcess, mPostProcessShader));
     mShaders.emplace(std::pair(ShaderType::NozzleEffect, mNozzleEffect));
+    mShaders.emplace(std::pair(ShaderType::Line, mLineShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)

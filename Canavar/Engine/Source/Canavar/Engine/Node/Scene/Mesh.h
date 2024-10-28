@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Model/Model.h"
+#include "Canavar/Engine/Node/Scene/AABB.h"
 #include "Canavar/Engine/Node/Scene/Material.h"
 #include "Canavar/Engine/Node/Scene/Vertex.h"
 #include "Canavar/Engine/Util/Macros.h"
-#include "Canavar/Engine/Util/Shader.h"
 
 #include <memory>
 #include <vector>
@@ -38,6 +39,8 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(MaterialPtr, Material, nullptr);
         DEFINE_MEMBER(QString, MeshName);
+        DEFINE_MEMBER(uint32_t, MeshId);
+        DEFINE_MEMBER(AABB, AABB);
     };
 
     using MeshPtr = std::shared_ptr<Mesh>;

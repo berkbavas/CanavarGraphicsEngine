@@ -47,6 +47,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
         mLightManager->AddLight(pLight);
     }
 
+    pNode->SetNodeId(mCurrentNodeId++);
     mNodes.emplace(pNode);
 
     // > Add parent if not added yet
