@@ -26,8 +26,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 
 ## Video
 
-https://github.com/user-attachments/assets/d40eb26a-27cb-4fb5-a5d6-3340a24217fd
-
+https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18
 
 ## Build
 1) Install `CMake 3.25.1`.
