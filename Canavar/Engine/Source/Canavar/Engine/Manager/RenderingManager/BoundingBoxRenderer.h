@@ -8,7 +8,6 @@
 
 namespace Canavar::Engine
 {
-
     class NodeManager;
     class CameraManager;
     class ShaderManager;

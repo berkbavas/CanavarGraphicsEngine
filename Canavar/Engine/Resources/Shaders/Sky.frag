@@ -2,6 +2,7 @@
 
 uniform vec3 A, B, C, D, E, F, G, H, I, Z;
 uniform vec3 sunDirection;
+uniform float nodeID;
 
 vec3 hosek_wilkie(float cos_theta, float gamma, float cos_gamma)
 {
@@ -23,6 +24,7 @@ layout(location = 0) in vec3 fsDirection;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
+layout(location = 4) out vec4 nodeInfo;
 
 void main()
 {
@@ -30,4 +32,6 @@ void main()
 
     fragColor = vec4(color, 1.0);
     brightColor = vec4(0);
+
+    nodeInfo = vec4(nodeID, 0, 0, 1);
 }

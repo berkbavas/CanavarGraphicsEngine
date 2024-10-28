@@ -24,23 +24,23 @@ void Canavar::Engine::Shader::Initialize()
 
         if (bytes.size() == 0)
         {
-            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be found.", GetShaderTypeString(shaderType).toStdString());
+            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be found: '{}'", GetShaderTypeString(shaderType).toStdString(), mName.toStdString());
         }
 
         if (!mProgram->addShaderFromSourceCode(shaderType, bytes))
         {
-            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be loaded.", GetShaderTypeString(shaderType).toStdString());
+            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be loaded: '{}'", GetShaderTypeString(shaderType).toStdString(), mName.toStdString());
         }
     }
 
     if (!mProgram->link())
     {
-        CGE_EXIT_FAILURE("Shader::Initialize: Could not link shader program.");
+        CGE_EXIT_FAILURE("Shader::Initialize: Could not link shader program: '{}'", mName.toStdString());
     }
 
     if (!mProgram->bind())
     {
-        CGE_EXIT_FAILURE("Shader::Initialize: Could not bind shader program.");
+        CGE_EXIT_FAILURE("Shader::Initialize: Could not bind shader program: '{}'", mName.toStdString());
     }
 
     LOG_INFO("Shader::Initialize: '{}' has been initialized.", mName.toStdString());

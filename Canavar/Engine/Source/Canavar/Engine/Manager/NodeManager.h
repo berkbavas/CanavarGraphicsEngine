@@ -28,12 +28,15 @@ namespace Canavar::Engine
         void AddNode(NodePtr pNode);
         void RemoveNode(NodePtr pNode);
 
-        ScenePtr GetScene(const QString &sceneName);
-        ScenePtr GetScene(ModelPtr pModel);
+        ScenePtr GetScene(const QString &sceneName) const;
+        ScenePtr GetScene(ModelPtr pModel) const;
 
         const std::map<QString, ScenePtr> &GetScenes() const;
         const std::set<ModelPtr> &GetModels() const;
         const std::set<NodePtr> &GetNodes() const;
+
+        NodePtr GetNodeById(uint32_t nodeId) const;
+        MeshPtr GetMeshById(ModelPtr pModel, uint32_t meshId) const;
 
       private:
         std::map<QString, ScenePtr> mScenes; // 3D model data

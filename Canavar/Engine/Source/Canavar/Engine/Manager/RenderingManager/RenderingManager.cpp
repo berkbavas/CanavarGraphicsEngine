@@ -106,20 +106,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     // ----------------------- RENDER LOOP ENDS -------------------
 
-    // ----------------------- POST PROCESSING BEGINS -------------------
-
-    for (int index = 0; index < NUMBER_OF_FBO_ATTACHMENTS; index++)
-    {
-        QOpenGLFramebufferObject::blitFramebuffer( //
-            mFramebuffers[Temp],
-            QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
-            mFramebuffers[Default],
-            QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
-            GL_COLOR_BUFFER_BIT,
-            GL_LINEAR,
-            index,
-            index);
-    }
+    // ----------------------- POST PROCESSING -------------------
 
     // Default -> Ping
     QOpenGLFramebufferObject::blitFramebuffer( //
@@ -144,6 +131,23 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         mBlurShader->Release();
     }
 
+    // ----------------------- BLIT 4X DEFAULT FBO TO TEMP -------------------
+
+    for (int index = 0; index < NUMBER_OF_FBO_ATTACHMENTS; index++)
+    {
+        QOpenGLFramebufferObject::blitFramebuffer( //
+            mFramebuffers[Temp],
+            QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
+            mFramebuffers[Default],
+            QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
+            GL_COLOR_BUFFER_BIT,
+            GL_LINEAR, // Why not GL_NEAREST?
+            index,
+            index);
+    }
+
+    // ----------------------- RENDER TO DEFAULT FBO -------------------
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
     glClearColor(0, 0, 0, 1);
@@ -162,26 +166,6 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     mHeight = height;
 
     ResizeFramebuffers();
-}
-
-QVector3D Canavar::Engine::RenderingManager::GetFragmentLocalPositionFromScreen(int x, int y)
-{
-    QVector3D position;
-    mFramebuffers[Temp]->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT2);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
-    mFramebuffers[Temp]->release();
-    return position;
-}
-
-QVector3D Canavar::Engine::RenderingManager::GetFragmentWorldPositionFromScreen(int x, int y)
-{
-    QVector3D position;
-    mFramebuffers[Temp]->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT3);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
-    mFramebuffers[Temp]->release();
-    return position;
 }
 
 void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
@@ -306,6 +290,7 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Bloom effect
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment local position
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment world position
+        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Node info
         mFramebuffers[type]->bind();
         glDrawBuffers(NUMBER_OF_FBO_ATTACHMENTS, FBO_ATTACHMENTS);
         mFramebuffers[type]->release();
@@ -315,4 +300,34 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
     }
+}
+
+QVector3D Canavar::Engine::RenderingManager::FetchFragmentLocalPositionFromScreen(int x, int y)
+{
+    QVector3D position;
+    mFramebuffers[Temp]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT2);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    mFramebuffers[Temp]->release();
+    return position;
+}
+
+QVector3D Canavar::Engine::RenderingManager::FetchFragmentWorldPositionFromScreen(int x, int y)
+{
+    QVector3D position;
+    mFramebuffers[Temp]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT3);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    mFramebuffers[Temp]->release();
+    return position;
+}
+
+Canavar::Engine::NodeInfo Canavar::Engine::RenderingManager::FetchNodeInfoFromScreenCoordinates(int x, int y)
+{
+    NodeInfo info;
+    mFramebuffers[Temp]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT4);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &info);
+    mFramebuffers[Temp]->release();
+    return info;
 }

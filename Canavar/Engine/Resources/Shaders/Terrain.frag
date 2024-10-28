@@ -87,8 +87,7 @@ uniform sampler2D snow;
 uniform sampler2D rock;
 uniform sampler2D rockNormal;
 
-uniform mat4 VP;  // View-Projection matrix
-uniform mat4 PVP; //Previous View-Projection matrix
+uniform float nodeID; // WTF? float? QOpenGLFramebuffer fucks up when the internal texture format is GL_RGBA32UI.
 
 in vec3 fsWorldPosition;
 in vec3 fsNormal;
@@ -100,6 +99,7 @@ layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
 layout(location = 2) out vec4 fragLocalPosition;
 layout(location = 3) out vec4 fragWorldPosition;
+layout(location = 4) out vec4 nodeInfo;
 
 const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
@@ -389,7 +389,10 @@ void main()
         brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
     // Fragment position
-    // Note that terrain has no model matrix so its local and world coordinates are the same.
+    // Note that the terrain has no model matrix so its local and world coordinates are equal.
     fragLocalPosition = vec4(fsWorldPosition, 1.0f);
     fragWorldPosition = vec4(fsWorldPosition, 1.0f);
+
+    // Node Info
+    nodeInfo = vec4(nodeID, 0, 0, 1);
 };

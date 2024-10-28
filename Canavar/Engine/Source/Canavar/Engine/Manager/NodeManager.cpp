@@ -15,6 +15,9 @@ void Canavar::Engine::NodeManager::Initialize()
     mSky = std::make_shared<Sky>();
     mTerrain = std::make_shared<Terrain>();
     mHaze = std::make_shared<Haze>();
+
+    AddNode(mSky);
+    AddNode(mTerrain);
 }
 
 void Canavar::Engine::NodeManager::PostInitialize()
@@ -92,7 +95,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
     }
 }
 
-Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& sceneName)
+Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& sceneName) const
 {
     ScenePtr pResult = nullptr;
 
@@ -108,7 +111,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& 
     return pResult;
 }
 
-Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(ModelPtr pModel)
+Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(ModelPtr pModel) const
 {
     return GetScene(pModel->GetModelName());
 }
@@ -126,4 +129,27 @@ const std::set<Canavar::Engine::ModelPtr>& Canavar::Engine::NodeManager::GetMode
 const std::set<Canavar::Engine::NodePtr>& Canavar::Engine::NodeManager::GetNodes() const
 {
     return mNodes;
+}
+
+Canavar::Engine::NodePtr Canavar::Engine::NodeManager::GetNodeById(uint32_t nodeId) const
+{
+    for (const auto& pNode : mNodes)
+    {
+        if (pNode->GetNodeId() == nodeId)
+        {
+            return pNode;
+        }
+    }
+
+    return nullptr;
+}
+
+Canavar::Engine::MeshPtr Canavar::Engine::NodeManager::GetMeshById(ModelPtr pModel, uint32_t meshId) const
+{
+    if (const auto pScene = GetScene(pModel))
+    {
+        return pScene->GetMesh(meshId);
+    }
+
+    return nullptr;
 }

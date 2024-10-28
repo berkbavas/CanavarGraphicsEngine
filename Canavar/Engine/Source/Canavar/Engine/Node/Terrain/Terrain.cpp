@@ -6,9 +6,10 @@
 
 #include <QMatrix4x4>
 
-
 void Canavar::Engine::Terrain::Initialize()
 {
+    SetNodeName("Terrain");
+
     initializeOpenGLFunctions();
 
     Reset();
@@ -43,7 +44,8 @@ void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
     }
 
     pShader->Bind();
-    pShader->SetUniformValue("M", GetWorldTransformation());
+    pShader->SetUniformValue("nodeID", static_cast<float>(GetNodeId()));
+    pShader->SetUniformValue("M", IDENTITY_TRANSFORM);
     pShader->SetUniformValue("terrain.amplitude", mAmplitude);
     pShader->SetUniformValue("terrain.seed", mSeed);
     pShader->SetUniformValue("terrain.octaves", mOctaves);
@@ -80,3 +82,5 @@ void Canavar::Engine::Terrain::Reset()
     mShininess = 8.0f;
     mSpecular = 0.05f;
 }
+
+const QMatrix4x4 Canavar::Engine::Terrain::IDENTITY_TRANSFORM;

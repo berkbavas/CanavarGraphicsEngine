@@ -13,6 +13,8 @@
 
 void Canavar::Engine::Sky::Initialize()
 {
+    SetNodeName("Sky");
+
     initializeOpenGLFunctions();
 
     mQuad = new Quad;
@@ -96,6 +98,7 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
     glDisable(GL_DEPTH_TEST);
 
     pShader->Bind();
+    pShader->SetUniformValue("nodeID", static_cast<float>(GetNodeId()));
     pShader->SetUniformValue("IVP", pCamera->GetRotationMatrix().inverted() * pCamera->GetProjectionMatrix().inverted());
     pShader->SetUniformValue("skyYOffset", pCamera->CalculateSkyYOffset(30000.0f));
     pShader->SetUniformValue("sunDirection", sunDirection);

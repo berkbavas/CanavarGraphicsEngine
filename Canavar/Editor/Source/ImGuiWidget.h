@@ -33,6 +33,8 @@ namespace Canavar::Editor
         void DrawTerrain();
         void DrawHaze();
 
+        void DrawNodeInfo();
+
         Engine::NodePtr mSelectedNode{ nullptr };
 
         Engine::DirectionalLightPtr mSun;
@@ -42,6 +44,7 @@ namespace Canavar::Editor
 
         QVector3D mFragmentLocalPosition;
         QVector3D mFragmentWorldPosition;
+        Engine::NodeInfo mNodeInfo;
 
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);

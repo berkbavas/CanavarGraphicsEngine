@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Manager/RenderingManager/NodeInfo.h"
 #include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Node/Camera/Camera.h"
 #include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
@@ -46,8 +47,9 @@ namespace Canavar::Engine
         void Render(float ifps);
         void Resize(int width, int height);
 
-        QVector3D GetFragmentLocalPositionFromScreen(int x, int y);
-        QVector3D GetFragmentWorldPositionFromScreen(int x, int y);
+        QVector3D FetchFragmentLocalPositionFromScreen(int x, int y);
+        QVector3D FetchFragmentWorldPositionFromScreen(int x, int y);
+        NodeInfo FetchNodeInfoFromScreenCoordinates(int x, int y);
 
       signals:
         void RenderLoop(float ifps);
@@ -95,7 +97,14 @@ namespace Canavar::Engine
         DEFINE_MEMBER(int, BlurPass, 4);
         DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
 
-        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 4;
-        static constexpr GLuint FBO_ATTACHMENTS[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 5;
+        static constexpr GLuint FBO_ATTACHMENTS[] = //
+            {
+                GL_COLOR_ATTACHMENT0, //
+                GL_COLOR_ATTACHMENT1, //
+                GL_COLOR_ATTACHMENT2, //
+                GL_COLOR_ATTACHMENT3, //
+                GL_COLOR_ATTACHMENT4  //
+            };
     };
 };

@@ -20,7 +20,6 @@ void Canavar::Engine::Scene::Destroy()
 
 void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader)
 {
-    CGE_ASSERT(mRootNode != nullptr);
     mRootNode->Render(pModel, pShader);
 }
 
@@ -36,12 +35,24 @@ void Canavar::Engine::Scene::AddMaterial(MaterialPtr pMaterial)
 
 Canavar::Engine::MeshPtr Canavar::Engine::Scene::GetMesh(int index)
 {
-    CGE_ASSERT(0 <= index && index < mMeshes.size());
-    return mMeshes[index];
+    if (0 <= index && index < mMeshes.size())
+    {
+        return mMeshes[index];
+    }
+    else
+    {
+        return nullptr;
+    }
 }
 
 Canavar::Engine::MaterialPtr Canavar::Engine::Scene::GetMaterial(int index)
 {
-    CGE_ASSERT(0 <= index && index < mMeshes.size());
-    return mMaterials[index];
+    if (0 <= index && index < mMaterials.size())
+    {
+        return mMaterials[index];
+    }
+    else
+    {
+        return nullptr;
+    }
 }

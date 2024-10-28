@@ -7,7 +7,6 @@
 void Canavar::Engine::BoundingBoxRenderer::Initialize()
 {
     mCubeStrip = new CubeStrip;
-
     mLineShader = mShaderManager->GetShader(ShaderType::Line);
 }
 

@@ -49,6 +49,8 @@ namespace Canavar::Engine
         DEFINE_MEMBER(bool, Enabled, true);
 
         friend class NodeManager;
+
+        static const QMatrix4x4 IDENTITY_TRANSFORM;
     };
 
     using TerrainPtr = std::shared_ptr<Terrain>;

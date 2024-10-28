@@ -60,8 +60,9 @@ uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
 uniform sampler2D textureNormal;
 
-uniform mat4 VP;  // View-Projection matrix
-uniform mat4 PVP; //Previous View-Projection matrix
+// WTF? float?
+uniform float nodeID;
+uniform float meshID;
 
 in vec4 fsLocalPosition;
 in vec4 fsWorldPosition;
@@ -73,6 +74,7 @@ layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
 layout(location = 2) out vec4 fragLocalPosition;
 layout(location = 3) out vec4 fragWorldPosition;
+layout(location = 4) out vec4 nodeInfo;
 
 vec3 getNormal()
 {
@@ -215,4 +217,7 @@ void main()
     // Fragment position
     fragLocalPosition = vec4(fsLocalPosition.xyz, 1.0f);
     fragWorldPosition = fsWorldPosition;
+
+    // Node Info
+    nodeInfo = vec4(nodeID, meshID, 0, 1);
 }

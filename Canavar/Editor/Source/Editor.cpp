@@ -61,11 +61,11 @@ void Canavar::Editor::Editor::Initialize()
 void Canavar::Editor::Editor::Test()
 {
     ModelPtr pCustomModel0 = std::make_shared<Model>("Cyborg");
-    pCustomModel0->SetNodeName("pCustomModel0");
+    pCustomModel0->SetNodeName("Cyborg 1");
     pCustomModel0->SetPosition(0, 3, 3);
 
     ModelPtr pCustomModel1 = std::make_shared<Model>("Cyborg");
-    pCustomModel1->SetNodeName("pCustomModel1");
+    pCustomModel1->SetNodeName("Cyborg 2");
     pCustomModel1->SetPosition(0, 3, -3);
     mNodeManager->AddNode(pCustomModel1);
     mNodeManager->AddNode(pCustomModel0);
