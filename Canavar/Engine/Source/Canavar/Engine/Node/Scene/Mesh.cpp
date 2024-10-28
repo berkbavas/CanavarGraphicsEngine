@@ -74,7 +74,6 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
     }
 
     pShader->SetUniformValue("M", pModel->GetWorldTransformation() * pModel->GetMeshTransformation(mMeshName));
-    pShader->SetUniformValue("N", pModel->GetWorldTransformation().normalMatrix() * pModel->GetMeshTransformation(mMeshName).normalMatrix());
     pShader->SetUniformValue("nodeID", static_cast<float>(pModel->GetNodeId()));
     pShader->SetUniformValue("meshID", static_cast<float>(mMeshId));
 

@@ -24,7 +24,7 @@ void main()
 {
     fsLocalPosition = vec4(position, 1.0f);
     fsWorldPosition = M * fsLocalPosition;
-    fsNormal = N * normal;
+    fsNormal = normal;
     fsTextureCoords = textureCoords;
 
     if (useTextureNormal)
@@ -32,7 +32,7 @@ void main()
         vec3 T3 = normalize(vec3(M * vec4(tangent, 0.0)));
         vec3 B3 = normalize(vec3(M * vec4(bitangent, 0.0)));
         vec3 N3 = normalize(vec3(M * vec4(normal, 0.0)));
-        fsTBN = N * mat3(T3, B3, N3);
+        fsTBN = mat3(T3, B3, N3);
     }
 
     gl_Position = VP * fsWorldPosition;

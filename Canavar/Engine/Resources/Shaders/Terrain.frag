@@ -304,12 +304,13 @@ vec4 processDirectionalLights(vec4 color, vec3 normal, vec3 viewDir)
         float ambient = terrain.ambient * directionalLights[i].ambient;
 
         // Diffuse
-        float diffuse = max(dot(normal, directionalLights[i].direction), 0.0) * terrain.diffuse * directionalLights[i].diffuse;
+        float diffuseStrength = max(dot(normal, -directionalLights[i].direction), 0.0f);
+        float diffuse = diffuseStrength * terrain.diffuse * directionalLights[i].diffuse;
 
         // Specular
-        vec3 reflectDir = reflect(-directionalLights[i].direction, normal);
-        vec3 halfwayDir = normalize(directionalLights[i].direction + viewDir);
-        float specular = pow(max(dot(normal, halfwayDir), 0.0), terrain.shininess) * terrain.specular * directionalLights[i].specular;
+        vec3 reflectDir = reflect(directionalLights[i].direction, normal);
+        float specularStrength = max(dot(viewDir, reflectDir), 0.0);
+        float specular = pow(specularStrength, terrain.shininess) * terrain.specular * directionalLights[i].specular;
 
         result += (ambient + diffuse + specular) * directionalLights[i].color;
     }
@@ -357,7 +358,7 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(vec4(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
+        result = mix(vec4(haze.color * clamp(-directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
     }
 
     return result;

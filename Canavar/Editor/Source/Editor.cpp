@@ -93,6 +93,7 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
 
     // F16
     ModelPtr pModel = std::make_shared<Model>("f16c");
+    pModel->SetInvertNormals(true);
     pModel->SetNodeName("F16C");
     pRootNode->AddChild(pModel);
 

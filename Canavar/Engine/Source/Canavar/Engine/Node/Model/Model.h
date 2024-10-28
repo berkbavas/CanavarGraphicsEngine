@@ -20,6 +20,8 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Shininess, 8.0f);
         DEFINE_MEMBER_CONST(QString, ModelName);
 
+        DEFINE_MEMBER(bool, InvertNormals, false);
+
         QMap<QString, QMatrix4x4> mMeshTransformations;
     };
 

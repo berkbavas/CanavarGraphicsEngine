@@ -7,7 +7,7 @@ Canavar::Engine::LightManager::LightManager(QObject* parent)
 void Canavar::Engine::LightManager::Initialize()
 {
     mSun = std::make_shared<DirectionalLight>();
-    mSun->SetDirection(QVector3D(-1.0f, 0.75f, -1.0f).normalized());
+    mSun->SetDirection(QVector3D(0, -1, 0).normalized());
     AddLight(mSun);
 }
 

@@ -68,7 +68,7 @@ void Canavar::Engine::Sky::Initialize()
 
 void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camera* pCamera)
 {
-    const auto sunDirection = pSun->GetDirection().normalized();
+    const auto sunDirection = -pSun->GetDirection().normalized();
     const auto sunTheta = std::acos(std::clamp(0.f, sunDirection.y(), 1.f));
 
     for (int i = 0; i < 3; ++i)
@@ -101,7 +101,7 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
     pShader->SetUniformValue("nodeID", static_cast<float>(GetNodeId()));
     pShader->SetUniformValue("IVP", pCamera->GetRotationMatrix().inverted() * pCamera->GetProjectionMatrix().inverted());
     pShader->SetUniformValue("skyYOffset", pCamera->CalculateSkyYOffset(30000.0f));
-    pShader->SetUniformValue("sunDirection", sunDirection);
+    pShader->SetUniformValue("sunDirection", -sunDirection);
     pShader->SetUniformValue("A", A);
     pShader->SetUniformValue("B", B);
     pShader->SetUniformValue("C", C);

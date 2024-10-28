@@ -60,6 +60,8 @@ uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
 uniform sampler2D textureNormal;
 
+uniform bool invertNormals = false;
+
 // WTF? float?
 uniform float nodeID;
 uniform float meshID;
@@ -101,12 +103,13 @@ vec4 processDirectionalLights(vec4 ambientColor, vec4 diffuseColor, vec4 specula
         vec4 ambient = ambientColor * directionalLights[i].ambient;
 
         // Diffuse
-        vec4 diffuse = max(dot(normal, directionalLights[i].direction), 0.0) * diffuseColor * directionalLights[i].diffuse;
+        float diffuseStrength = max(dot(normal, -directionalLights[i].direction), 0.0);
+        vec4 diffuse = diffuseStrength * diffuseColor * directionalLights[i].diffuse;
 
         // Specular
-        vec3 reflectDir = reflect(-directionalLights[i].direction, normal);
-        vec3 halfwayDir = normalize(directionalLights[i].direction + viewDir);
-        vec4 specular = pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * specularColor * directionalLights[i].specular;
+        vec3 reflectDir = reflect(directionalLights[i].direction, normal);
+        float specularStrength = max(dot(viewDir, reflectDir), 0.0);
+        vec4 specular = pow(specularStrength, model.shininess) * specularColor * directionalLights[i].specular;
 
         result += (ambient + diffuse + specular) * directionalLights[i].color;
     }
@@ -154,7 +157,7 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(vec4(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
+        result = mix(vec4(haze.color * clamp(-directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
     }
 
     return result;
@@ -164,6 +167,12 @@ void main()
 {
     // Common variables
     vec3 normal = getNormal();
+
+    if (invertNormals)
+    {
+        normal = -normal;
+    }
+
     vec3 viewDir = normalize(cameraPosition - fsWorldPosition.xyz);
     float distance = length(cameraPosition - fsWorldPosition.xyz);
 

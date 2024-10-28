@@ -181,10 +181,9 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
 {
     SetPointLights(mModelShader, pModel);
 
-    const auto& M = pModel->GetWorldTransformation();
     mModelShader->Bind();
-    mModelShader->SetUniformValue("M", M);
-    mModelShader->SetUniformValue("N", M.normalMatrix());
+    mModelShader->SetUniformValue("M", pModel->GetWorldTransformation());
+    mModelShader->SetUniformValue("invertNormals", pModel->GetInvertNormals());
     mModelShader->SetUniformValue("model.color", pModel->GetColor());
     mModelShader->SetUniformValue("model.ambient", pModel->GetAmbient());
     mModelShader->SetUniformValue("model.diffuse", pModel->GetDiffuse());
