@@ -1,9 +1,11 @@
 # Canavar Graphics Engine
+
 A basic graphics engine written in `C++` using `OpenGL API` and `Qt 6`.
 I use `Qt 6` for window and event management.
 All 3D math operations are handled by `Qt 6`'s math module.
 
 ## Features
+
 - [x] Supports loading several 3D model formats, thanks to `assimp` library
 - [x] Parent - child node hierarchy
 - [x] Procedural terrain
@@ -16,7 +18,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 - [x] Persecutor camera
 - [x] Transformation of individual meshes of models
 - [x] Lightning Strike Generator
-- [x] Nozzle Effect 
+- [x] Nozzle Effect
 - [ ] Particle generator
 - [ ] Volumetric clouds
 - [ ] Water
@@ -30,6 +32,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18
 
 ## Build
+
 1) Install `CMake 3.25.1`.
 2) Install `Visual Studio 2022 and MSVC C++ Compiler`.
 3) Install `Qt 6.7.3 MSVC2022 64bit` kit.
@@ -41,4 +44,5 @@ https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18
 9) Build & Run with `Release` config.
 
 ## Acknowledgements
+
 I thank Federico Vaccaro for his amazing shaders and Joey de Vries for his OpenGL tutorials.
