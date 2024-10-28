@@ -13,7 +13,7 @@ namespace Canavar::Engine
 {
     class Shader : public QOpenGLExtraFunctions
     {
-        using Callback = std::function<void(QOpenGLShaderProgram*)>;
+        using Callback = std::function<void(QOpenGLContext*, QOpenGLShaderProgram*)>;
 
       public:
         Shader(const QString& name);

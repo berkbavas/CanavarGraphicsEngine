@@ -36,7 +36,7 @@ void Canavar::Engine::Shader::Initialize()
     if (mCallback != nullptr)
     {
         LOG_DEBUG("Shader::Initialize: Calling callback...");
-        mCallback(mProgram);
+        mCallback(QOpenGLContext::currentContext(), mProgram);
         LOG_DEBUG("Shader::Initialize: Callback returned.");
     }
 

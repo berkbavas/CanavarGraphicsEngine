@@ -47,7 +47,7 @@ void Canavar::Engine::ShaderManager::Initialize()
     mLightningStrikeShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LightningStrike.vert");
     mLightningStrikeShader->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/LightningStrike.geom");
 
-    mLightningStrikeShader->SetCallbackBeforeLinking([=](QOpenGLShaderProgram* pProgram) {
+    mLightningStrikeShader->SetCallbackBeforeLinking([=](QOpenGLContext* pContext, QOpenGLShaderProgram* pProgram) {
         const GLchar* Varyings[2];
         Varyings[0] = "outWorldPosition";
         Varyings[1] = "outForkLevel";
@@ -55,7 +55,7 @@ void Canavar::Engine::ShaderManager::Initialize()
         pProgram->create();
         qDebug() << "Calling glTransformFeedbackVaryings()  with Program ID" << pProgram->programId();
         qDebug() << "QOpenGLShaderProgram log is: " << pProgram->log();
-        mLightningStrikeShader->glTransformFeedbackVaryings(pProgram->programId(), 2, Varyings, GL_INTERLEAVED_ATTRIBS);
+        pContext->extraFunctions()->glTransformFeedbackVaryings(pProgram->programId(), 2, Varyings, GL_INTERLEAVED_ATTRIBS);
     });
 
     mLightningStrikeShader->Initialize();
