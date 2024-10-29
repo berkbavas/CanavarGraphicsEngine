@@ -5,7 +5,6 @@
 #include "Canavar/Engine/Node/Light/PointLight.h"
 #include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
 #include "Canavar/Engine/Node/Model/Model.h"
-#include "Canavar/Engine/Util/Math.h"
 #include "Canavar/Engine/Util/Util.h"
 
 #include <imgui.h>
@@ -24,17 +23,14 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
     ImGui::Begin("Debug");
 
     DrawNodes();
-
-    DrawNodeInfo();
     DrawSky();
     DrawSun();
     DrawHaze();
     DrawTerrain();
     DrawRenderSettings();
+    DrawNodeInfo();
+    DrawStats();
 
-    ImGui::Text("Fragment world position: (%.3f, %.3f, %.3f)", mFragmentWorldPosition.x(), mFragmentWorldPosition.y(), mFragmentWorldPosition.z());
-    ImGui::Text("Fragment local position: (%.3f, %.3f, %.3f)", mFragmentLocalPosition.x(), mFragmentLocalPosition.y(), mFragmentLocalPosition.z());
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }
 
@@ -77,7 +73,7 @@ void Canavar::Editor::ImGuiWidget::DrawNodes()
 
         if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->GetUniqueNodeName().toStdString().c_str() : "-"))
         {
-            for (const auto pNode : nodes)
+            for (const auto &pNode : nodes)
             {
                 if (ImGui::Selectable(pNode->GetUniqueNodeName().toStdString().c_str()))
                 {
@@ -267,7 +263,7 @@ void Canavar::Editor::ImGuiWidget::DrawHaze()
 
 void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
 {
-    if (ImGui::CollapsingHeader("Render Settings", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Render Settings"))
     {
         ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 24);
         ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
@@ -312,5 +308,15 @@ void Canavar::Editor::ImGuiWidget::DrawNodeInfo()
             ImGui::Text("Mesh Name:  -");
             ImGui::Text("Mesh ID:    -");
         }
+    }
+}
+
+void Canavar::Editor::ImGuiWidget::DrawStats()
+{
+    if (ImGui::CollapsingHeader("Info", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        ImGui::Text("Fragment world position: (%.3f, %.3f, %.3f)", mFragmentWorldPosition.x(), mFragmentWorldPosition.y(), mFragmentWorldPosition.z());
+        ImGui::Text("Fragment local position: (%.3f, %.3f, %.3f)", mFragmentLocalPosition.x(), mFragmentLocalPosition.y(), mFragmentLocalPosition.z());
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     }
 }

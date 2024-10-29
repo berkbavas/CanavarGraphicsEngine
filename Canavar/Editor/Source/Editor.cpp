@@ -80,6 +80,13 @@ void Canavar::Editor::Editor::Test()
 
     mNodeManager->AddNode(pAttractor);
     mNodeManager->AddNode(pGenerator);
+
+    ModelPtr pCrossfire = std::make_shared<Model>("Crossfire");
+    pCrossfire->SetAmbient(0.8f);
+    pCrossfire->GetRoll() = 179.9;
+    pCrossfire->UpdateRotationFromEulerDegrees();
+    pCrossfire->SetWorldPosition(0, 2060, 0);
+    mNodeManager->AddNode(pCrossfire);
 }
 
 void Canavar::Editor::Editor::CreateSimulatorModels()

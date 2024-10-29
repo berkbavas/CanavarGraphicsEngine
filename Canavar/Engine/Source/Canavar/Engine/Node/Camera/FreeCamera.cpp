@@ -1,7 +1,5 @@
 #include "FreeCamera.h"
 
-#include <cmath>
-
 #include <QApplication>
 #include <QKeyEvent>
 #include <QMouseEvent>

@@ -18,7 +18,7 @@ void Canavar::Engine::Shader::Initialize()
 
     mProgram = new QOpenGLShaderProgram;
 
-    for (const auto [shaderType, path] : mPaths)
+    for (const auto& [shaderType, path] : mPaths)
     {
         const auto bytes = Util::GetBytes(path);
 

@@ -35,6 +35,8 @@ namespace Canavar::Editor
 
         void DrawNodeInfo();
 
+        void DrawStats();
+
         Engine::NodePtr mSelectedNode{ nullptr };
 
         Engine::DirectionalLightPtr mSun;

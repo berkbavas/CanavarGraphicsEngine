@@ -8,7 +8,6 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
-#include "Canavar/Engine/Node/Model/Model.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <QThread>
