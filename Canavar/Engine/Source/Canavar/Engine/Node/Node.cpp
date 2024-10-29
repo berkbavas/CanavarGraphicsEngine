@@ -2,5 +2,5 @@
 
 QString Canavar::Engine::Node::GetUniqueNodeName() const
 {
-    return mNodeName + " #" + QString::number(mNodeId);
+    return mNodeName + "##" + QString::number(mNodeId);
 }

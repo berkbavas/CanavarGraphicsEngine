@@ -12,7 +12,7 @@ namespace Canavar::Editor
         Q_OBJECT
       public:
         void Initialize();
-        void DrawWidget();
+        void Draw();
 
         bool KeyPressed(QKeyEvent *);
         bool KeyReleased(QKeyEvent *);
@@ -24,19 +24,19 @@ namespace Canavar::Editor
         void GoToObject(Engine::ObjectPtr pObject);
 
       private:
-        void DrawRenderSettings();
-        void DrawObjects();
-        void DrawObject(Engine::ObjectPtr pObject);
-
         void DrawSun();
         void DrawSky();
         void DrawTerrain();
         void DrawHaze();
-
+        void DrawRenderSettings();
         void DrawNodeInfo();
         void DrawStats();
 
-        void DrawWorldPositions();
+        void DrawWorldPositionsWindow();
+
+        void DrawObjectsWindow();
+        void DrawObject(Engine::ObjectPtr pObject);
+        void DrawObjectsTreeView();
 
         Engine::ObjectPtr mSelectedObject{ nullptr };
 

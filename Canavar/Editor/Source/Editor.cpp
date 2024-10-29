@@ -163,7 +163,7 @@ void Canavar::Editor::Editor::Update(float ifps)
 {
     QtImGui::newFrame();
 
-    mImGuiWidget->DrawWidget();
+    mImGuiWidget->Draw();
     mSimulator->Update(ifps);
 
     ImGui::Render();
