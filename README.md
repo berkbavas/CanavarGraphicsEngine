@@ -29,7 +29,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 
 ## Video
 
-https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18
+<https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18>
 
 ## Build
 
@@ -40,7 +40,7 @@ https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18
 5) Create a folder `mkdir Build`.
 6) Enter the folder `cd Build`.
 7) Run CMake `cmake ..`.
-8) Open `Canavar.sln` with `Visual Studio 2019`.
+8) Open `Canavar.sln` with `Visual Studio 2022`.
 9) Build & Run with `Release` config.
 
 ## Acknowledgements
