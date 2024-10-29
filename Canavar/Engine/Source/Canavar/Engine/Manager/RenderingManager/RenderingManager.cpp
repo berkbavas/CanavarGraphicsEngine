@@ -68,7 +68,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     mActiveCamera = mCameraManager->GetActiveCamera();
 
     mFramebuffers[Default]->bind();
-    glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
+    glViewport(0, 0, mWidth, mHeight);
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 

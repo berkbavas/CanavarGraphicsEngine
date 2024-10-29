@@ -36,6 +36,8 @@ namespace Canavar::Editor
         void DrawNodeInfo();
         void DrawStats();
 
+        void DrawWorldPositions();
+
         Engine::ObjectPtr mSelectedObject{ nullptr };
 
         Engine::DirectionalLightPtr mSun;
@@ -46,6 +48,9 @@ namespace Canavar::Editor
         QVector3D mFragmentLocalPosition;
         QVector3D mFragmentWorldPosition;
         Engine::NodeInfo mNodeInfo;
+
+        QVector<QVector3D> mSavedWorldPositions;
+        int mSelectedWorldPositionIndex{ -1 };
 
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);

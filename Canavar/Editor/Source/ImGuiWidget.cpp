@@ -31,6 +31,15 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
     DrawNodeInfo();
     DrawStats();
 
+    ImGui::ShowDemoWindow();
+
+    ImGui::End();
+
+    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
+    ImGui::Begin("Saved World Positions");
+
+    DrawWorldPositions();
+
     ImGui::End();
 }
 
@@ -44,8 +53,14 @@ bool Canavar::Editor::ImGuiWidget::KeyReleased(QKeyEvent *)
     return false;
 }
 
-bool Canavar::Editor::ImGuiWidget::MousePressed(QMouseEvent *)
+bool Canavar::Editor::ImGuiWidget::MousePressed(QMouseEvent *pEvent)
 {
+    if (pEvent->button() == Qt::RightButton)
+    {
+        mSavedWorldPositions << mFragmentWorldPosition;
+        return true;
+    }
+
     return false;
 }
 
@@ -101,6 +116,15 @@ void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
         {
             pObject->SetWorldPosition(WorldPosition);
         }
+
+        ImGui::TextWrapped("You can select a world position in the 'Saved World Positions' list and assign it to this object.");
+
+        ImGui::BeginDisabled(mSelectedWorldPositionIndex == -1);
+        if (ImGui::Button("Assign"))
+        {
+            pObject->SetWorldPosition(mSavedWorldPositions[mSelectedWorldPositionIndex]);
+        }
+        ImGui::EndDisabled();
 
         auto LocalPosition = pObject->GetPosition();
         if (ImGui::InputFloat3("Position##DrawObject", &LocalPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
@@ -319,5 +343,38 @@ void Canavar::Editor::ImGuiWidget::DrawStats()
         ImGui::Text("Fragment world position: (%.3f, %.3f, %.3f)", mFragmentWorldPosition.x(), mFragmentWorldPosition.y(), mFragmentWorldPosition.z());
         ImGui::Text("Fragment local position: (%.3f, %.3f, %.3f)", mFragmentLocalPosition.x(), mFragmentLocalPosition.y(), mFragmentLocalPosition.z());
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    }
+}
+
+void Canavar::Editor::ImGuiWidget::DrawWorldPositions()
+{
+    ImGui::TextWrapped("Right-click on a fragment adds its world position to this list.");
+    ImGui::Spacing();
+    ImGui::TextWrapped("You can then assign this position to an object in 'Objects' header.");
+    ImGui::Spacing();
+    ImGui::BeginListBox("");
+
+    for (int i = 0; i < mSavedWorldPositions.size(); ++i)
+    {
+        const float x = mSavedWorldPositions[i].x();
+        const float y = mSavedWorldPositions[i].y();
+        const float z = mSavedWorldPositions[i].z();
+
+        const auto text = std::format("{:.6}, {:.6}, {:.6}", x, y, z);
+
+        if (ImGui::Selectable(text.c_str(), i == mSelectedWorldPositionIndex))
+        {
+            mSelectedWorldPositionIndex = i;
+        }
+    }
+
+    ImGui::EndListBox();
+
+    ImGui::Spacing();
+
+    if (ImGui::Button("Clear"))
+    {
+        mSavedWorldPositions.clear();
+        mSelectedWorldPositionIndex = -1;
     }
 }
