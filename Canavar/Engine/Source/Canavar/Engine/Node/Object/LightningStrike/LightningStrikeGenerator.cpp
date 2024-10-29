@@ -7,8 +7,6 @@ Canavar::Engine::LightningStrikeGenerator::LightningStrikeGenerator()
 
 QVector<QVector3D> Canavar::Engine::LightningStrikeGenerator::GetWorldPositionsOfTerminationPoints()
 {
-    // TODO: @berkbavas Adopt to the new design
-
     QVector<QVector3D> Result;
 
     for (const auto pAttractor : mAttractors)

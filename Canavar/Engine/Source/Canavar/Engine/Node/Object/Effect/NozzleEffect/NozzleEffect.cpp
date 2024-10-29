@@ -9,7 +9,6 @@ Canavar::Engine::NozzleEffect::NozzleEffect()
 
 void Canavar::Engine::NozzleEffect::Initialize()
 {
-    // TODO: Log
     if (mInitialized)
     {
         return;

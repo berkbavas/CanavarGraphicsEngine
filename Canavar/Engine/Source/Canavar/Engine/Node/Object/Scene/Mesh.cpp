@@ -25,8 +25,6 @@ void Canavar::Engine::Mesh::Initialize()
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_STATIC_DRAW);
 
-    // TODO: Check buffers' status here.
-
     // Position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
@@ -55,6 +53,8 @@ void Canavar::Engine::Mesh::Initialize()
     glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, weights));
     glEnableVertexAttribArray(6);
 
+    // TODO: Check buffers' status here.
+
     glBindVertexArray(0);
 
     LOG_DEBUG("Mesh::Initialize: Initialization of '{}' is done.", mMeshName.toStdString());
@@ -69,7 +69,7 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
 {
     if (mVAO == 0)
     {
-        LOG_WARN("Mesh::Render: '{}' is not initialized.", mMeshName.toStdString());
+        LOG_FATAL("Mesh::Render: '{}' is not initialized yet. Returning...", mMeshName.toStdString());
         return;
     }
 

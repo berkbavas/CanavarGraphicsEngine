@@ -17,6 +17,10 @@ namespace Canavar::Engine
         void Update(float ifps) override;
         void Reset() override;
 
+        void SetParent(ObjectWeakPtr pParentNode) override;
+        void AddChild(ObjectPtr pNode) override;
+        void RemoveChild(ObjectPtr pNode) override;
+
         ObjectPtr GetTarget() const;
         void SetTarget(ObjectPtr newTarget);
 

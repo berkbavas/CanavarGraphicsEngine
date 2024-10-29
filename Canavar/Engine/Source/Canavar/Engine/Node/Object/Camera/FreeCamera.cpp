@@ -1,5 +1,7 @@
 #include "FreeCamera.h"
 
+#include "Canavar/Engine/Util/Logger.h"
+
 #include <QApplication>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -120,6 +122,21 @@ void Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
 void Canavar::Engine::FreeCamera::GoToObject(ObjectPtr pNode)
 {
     SetWorldPosition(pNode->GetWorldPosition());
+}
+
+void Canavar::Engine::FreeCamera::SetParent(ObjectWeakPtr pParentNode)
+{
+    LOG_WARN("FreeCamera::SetParent: Cannot assign parent to FreeCamera");
+}
+
+void Canavar::Engine::FreeCamera::AddChild(ObjectPtr pNode)
+{
+    LOG_WARN("FreeCamera::AddChild: Cannot add child to FreeCamera.");
+}
+
+void Canavar::Engine::FreeCamera::RemoveChild(ObjectPtr pNode)
+{
+    LOG_WARN("FreeCamera::RemoveChild: FreeCamera cannot have any children.");
 }
 
 const QMap<Qt::Key, QVector3D> Canavar::Engine::FreeCamera::KEY_BINDINGS = //

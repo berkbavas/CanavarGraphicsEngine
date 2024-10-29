@@ -4,8 +4,6 @@
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Light/PointLight.h"
 
-#include <set>
-
 #include <QVector>
 
 namespace Canavar::Engine
@@ -17,15 +15,19 @@ namespace Canavar::Engine
 
         void Initialize() override;
 
-        void AddLight(LightPtr pLight);
-        void RemoveLight(LightPtr pLight);
+        QVector<PointLightPtr> GetPointLightsAround(QVector3D targetPosition, float radius);
 
-        std::vector<PointLightPtr> GetPointLightsAround(QVector3D targetPosition, float radius);
+        const QVector<PointLightPtr> &GetPointLights() const;
         const QVector<DirectionalLightPtr> &GetDirectionalLights() const;
 
       private:
-        std::set<PointLightPtr> mPointLights;
+        void AddLight(LightPtr pLight);
+        void RemoveLight(LightPtr pLight);
+
+        QVector<PointLightPtr> mPointLights;
         QVector<DirectionalLightPtr> mDirectionalLights;
+
+        friend class NodeManager;
     };
 
 }

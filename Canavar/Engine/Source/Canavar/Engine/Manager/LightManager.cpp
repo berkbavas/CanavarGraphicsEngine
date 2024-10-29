@@ -1,14 +1,16 @@
 #include "LightManager.h"
 
+#include "Canavar/Engine/Util/Logger.h"
+
 Canavar::Engine::LightManager::LightManager(QObject* parent)
     : Manager(parent)
 {}
 
 void Canavar::Engine::LightManager::Initialize() {}
 
-std::vector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D targetPosition, float radius)
+QVector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D targetPosition, float radius)
 {
-    std::vector<PointLightPtr> result;
+    QVector<PointLightPtr> result;
 
     for (const auto& pLight : mPointLights)
     {
@@ -25,30 +27,39 @@ std::vector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPo
 
 void Canavar::Engine::LightManager::AddLight(LightPtr pLight)
 {
-    // TODO: Log
+    LOG_DEBUG("LightManager::AddLight: I will add this light to my list: {}", PRINT_ADDRESS(pLight.get()));
 
     if (DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<DirectionalLight>(pLight))
     {
         mDirectionalLights.push_back(pDirectionalLight);
+        LOG_DEBUG("LightManager::AddLight: I have added a DirectionalLight.");
     }
     else if (PointLightPtr pPointLight = std::dynamic_pointer_cast<PointLight>(pLight))
     {
-        mPointLights.emplace(pPointLight);
+        mPointLights.push_back(pPointLight);
+        LOG_DEBUG("LightManager::AddLight: I have added a PointLight.");
     }
 }
 
 void Canavar::Engine::LightManager::RemoveLight(LightPtr pLight)
 {
-    // TODO: Log
+    LOG_DEBUG("LightManager::RemoveLight: I will remove this light from my list: {}", PRINT_ADDRESS(pLight.get()));
 
     if (DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<DirectionalLight>(pLight))
     {
-        mDirectionalLights.removeAll(pDirectionalLight);
+        int count = mDirectionalLights.removeAll(pDirectionalLight);
+        LOG_DEBUG("LightManager::RemoveLight: I have removed {} DirectionalLight(s).", count);
     }
     else if (PointLightPtr pPointLight = std::dynamic_pointer_cast<PointLight>(pLight))
     {
-        mPointLights.erase(pPointLight);
+        int count = mPointLights.removeAll(pPointLight);
+        LOG_DEBUG("LightManager::RemoveLight: I have removed {} PointLight(s).", count);
     }
+}
+
+const QVector<Canavar::Engine::PointLightPtr>& Canavar::Engine::LightManager::GetPointLights() const
+{
+    return mPointLights;
 }
 
 const QVector<Canavar::Engine::DirectionalLightPtr>& Canavar::Engine::LightManager::GetDirectionalLights() const

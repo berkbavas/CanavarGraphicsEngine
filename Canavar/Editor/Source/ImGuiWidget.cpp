@@ -352,6 +352,7 @@ void Canavar::Editor::ImGuiWidget::DrawWorldPositions()
     ImGui::Spacing();
     ImGui::TextWrapped("You can then assign this position to an object in 'Objects' header.");
     ImGui::Spacing();
+
     ImGui::BeginListBox("");
 
     for (int i = 0; i < mSavedWorldPositions.size(); ++i)

@@ -1,5 +1,7 @@
 #include "PersecutorCamera.h"
 
+#include "Canavar/Engine/Util/Logger.h"
+
 Canavar::Engine::PersecutorCamera::PersecutorCamera()
 {
     SetNodeName("Persecutor Camera");
@@ -76,4 +78,19 @@ void Canavar::Engine::PersecutorCamera::SetTarget(ObjectPtr newTarget)
 {
     mTarget = newTarget;
     Reset();
+}
+
+void Canavar::Engine::PersecutorCamera::SetParent(ObjectWeakPtr pParentNode)
+{
+    LOG_WARN("PersecutorCamera::SetParent: Cannot assign parent to PersecutorCamera");
+}
+
+void Canavar::Engine::PersecutorCamera::AddChild(ObjectPtr pNode)
+{
+    LOG_WARN("PersecutorCamera::AddChild: Cannot add child to PersecutorCamera.");
+}
+
+void Canavar::Engine::PersecutorCamera::RemoveChild(ObjectPtr pNode)
+{
+    LOG_WARN("PersecutorCamera::RemoveChild: PersecutorCamera cannot have any children.");
 }

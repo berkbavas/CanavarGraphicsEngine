@@ -1,5 +1,6 @@
 #include "Object.h"
 
+#include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/Math.h"
 
 void Canavar::Engine::Object::SetRotation(const QQuaternion& newRotation)
@@ -234,52 +235,76 @@ Canavar::Engine::ObjectPtr Canavar::Engine::Object::GetParent() const
     return mParent.lock();
 }
 
-void Canavar::Engine::Object::SetParent(ObjectWeakPtr pParentNode)
+void Canavar::Engine::Object::SetParent(ObjectWeakPtr pNewParent)
 {
-    // TODO: Log
+    LOG_DEBUG("Object::SetParent: > Setting a parent to Object at {}", PRINT_ADDRESS(this));
 
-    const auto pParent = mParent.lock();
+    const auto pProspectiveParent = pNewParent.lock();
+    const auto pCurrentParent = mParent.lock();
 
-    if (pParent == pParentNode.lock())
+    if (pProspectiveParent == nullptr)
     {
+        LOG_DEBUG("Object::SetParent: < pProspectiveParent is nullptr. Reseting Weak Pointer...");
+    }
+
+    if (pCurrentParent == nullptr)
+    {
+        LOG_DEBUG("Object::SetParent: < Current parent is nullptr.");
+    }
+
+    if (pCurrentParent == pProspectiveParent)
+    {
+        LOG_WARN("Object::SetParent: < Object has already this parent.. Returning...");
         return;
     }
 
-    if (pParent)
+    if (pProspectiveParent.get() == this)
     {
-        pParent->RemoveChild(shared_from_this());
+        LOG_WARN("Object::SetParent: < Cannot assign itself as a parent. Returning...");
+        return;
     }
 
-    mParent = pParentNode;
+    if (pCurrentParent)
+    {
+        pCurrentParent->RemoveChild(shared_from_this());
+    }
+
+    mParent = pNewParent;
 
     if (mParent.lock())
     {
         mParent.lock()->AddChild(shared_from_this());
     }
+
+    LOG_DEBUG("Object::SetParent: < Parent has been set. I am done.");
 }
 
 void Canavar::Engine::Object::AddChild(ObjectPtr pNode)
 {
-    // TODO: Log
+    LOG_DEBUG("Object::AddChild: > An Object will be added to my children list.");
+
     if (pNode == nullptr)
     {
+        LOG_WARN("Object::AddChild: < pNode is nullptr! Returning...");
         return;
     }
 
     if (pNode.get() == this)
     {
-        // Cannot assign to itself..
+        LOG_WARN("Object::AddChild: < Cannot add itself as a child! Returning...");
         return;
     }
 
     if (pNode->GetParent().get() == this)
     {
-        // pNode is a child of this node already.
+        LOG_WARN("Object::AddChild: < Already child of this Object. Returning...");
         return;
     }
 
     pNode->SetParent(shared_from_this());
     mChildren.emplace(pNode);
+
+    LOG_DEBUG("Object::AddChild: < I am done. Returning...");
 }
 
 void Canavar::Engine::Object::RemoveChild(ObjectPtr pNode)

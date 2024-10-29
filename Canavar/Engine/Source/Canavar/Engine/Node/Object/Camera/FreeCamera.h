@@ -24,6 +24,10 @@ namespace Canavar::Engine
 
         void GoToObject(ObjectPtr pNode);
 
+        void SetParent(ObjectWeakPtr pParentNode) override;
+        void AddChild(ObjectPtr pNode) override;
+        void RemoveChild(ObjectPtr pNode) override;
+
       private:
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
         DEFINE_MEMBER(float, LinearSpeed, 5.0f);
