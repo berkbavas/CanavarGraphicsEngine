@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Canavar/Engine/Node/Scene/Material.h"
-#include "Canavar/Engine/Node/Scene/Scene.h"
+#include "Canavar/Engine/Node/Object/Scene/Material.h"
+#include "Canavar/Engine/Node/Object/Scene/Scene.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>

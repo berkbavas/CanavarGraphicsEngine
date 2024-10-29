@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Node/Camera/FreeCamera.h"
+#include "Canavar/Engine/Node/Object/Camera/FreeCamera.h"
 
 namespace Canavar::Engine
 {

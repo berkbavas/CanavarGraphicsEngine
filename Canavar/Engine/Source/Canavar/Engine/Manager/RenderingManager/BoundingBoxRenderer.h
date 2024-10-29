@@ -2,7 +2,7 @@
 
 #include "Canavar/Engine/Manager/RenderingManager/CubeStrip.h"
 #include "Canavar/Engine/Manager/RenderingManager/Shader.h"
-#include "Canavar/Engine/Node/Camera/Camera.h"
+#include "Canavar/Engine/Node/Object/Camera/Camera.h"
 
 #include <QVector4D>
 

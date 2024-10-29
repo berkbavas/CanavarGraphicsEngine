@@ -3,14 +3,14 @@
 #include "Simulator/Aircraft.h"
 #include "Simulator/AircraftController.h"
 
-#include <Canavar/Engine/Node/Model/Model.h>
+#include <Canavar/Engine/Node/Object/Model/Model.h>
 
 class Simulator
 {
   public:
     Simulator() = default;
 
-    void Initialize(Canavar::Engine::NodePtr pRootNode, Canavar::Engine::ModelPtr pJetModel);
+    void Initialize(Canavar::Engine::ObjectPtr pRootNode, Canavar::Engine::ModelPtr pJetModel);
 
     void Update(float ifps);
 

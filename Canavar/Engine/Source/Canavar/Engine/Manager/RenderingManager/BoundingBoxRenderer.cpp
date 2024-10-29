@@ -15,24 +15,19 @@ void Canavar::Engine::BoundingBoxRenderer::Render(float ifps)
     mActiveCamera = mCameraManager->GetActiveCamera();
 
     const auto& VP = mActiveCamera->GetViewProjectionMatrix();
-    const auto& nodes = mNodeManager->GetNodes();
+    const auto& objects = mNodeManager->GetObjects();
 
     mLineShader->Bind();
     mLineShader->SetUniformValue("color", LINE_COLOR);
 
-    for (const auto& pNode : nodes)
+    for (const auto& pObject : objects)
     {
-        if (!pNode->GetVisible())
+        if (pObject->GetVisible() == false)
         {
             continue;
         }
 
-        if (!pNode->GetSelectable())
-        {
-            continue;
-        }
-
-        if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pNode))
+        if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
         {
             if (const auto pScene = mNodeManager->GetScene(pModel))
             {
@@ -46,8 +41,8 @@ void Canavar::Engine::BoundingBoxRenderer::Render(float ifps)
         }
         else
         {
-            mLineShader->SetUniformValue("MVP", VP * pNode->GetWorldTransformation() * pNode->GetAABB().GetTransformation());
             mCubeStrip->Render();
+            mLineShader->SetUniformValue("MVP", VP * pObject->GetWorldTransformation() * pObject->GetAABB().GetTransformation());
         }
     }
 

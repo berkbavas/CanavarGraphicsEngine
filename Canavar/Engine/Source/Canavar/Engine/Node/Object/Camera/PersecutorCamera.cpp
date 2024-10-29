@@ -1,0 +1,79 @@
+#include "PersecutorCamera.h"
+
+Canavar::Engine::PersecutorCamera::PersecutorCamera()
+{
+    SetNodeName("Persecutor Camera");
+}
+
+void Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
+{
+    mMouse.x = event->position().x();
+    mMouse.y = event->position().y();
+    mMouse.button = event->button();
+}
+
+void Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
+{
+    if (mMouse.button == event->button())
+    {
+        mMouse.Reset();
+    }
+}
+
+void Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
+{
+    if (mMouse.button == Qt::MiddleButton)
+    {
+        mMouse.dx += mMouse.x - event->position().x();
+        mMouse.dy += mMouse.y - event->position().y();
+
+        mMouse.x = event->position().x();
+        mMouse.y = event->position().y();
+    }
+}
+void Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
+{
+    if (event->angleDelta().y() < 0)
+        mDistance += 0.5;
+
+    if (event->angleDelta().y() > 0)
+        mDistance -= 0.5;
+
+    mDistance = qBound(0.1f, mDistance, 100.0f);
+}
+
+void Canavar::Engine::PersecutorCamera::Update(float ifps)
+{
+    if (mTarget)
+    {
+        mYaw += mAngularSpeedMultiplier * mAngularSpeed * mMouse.dx * ifps;
+        mPitch += mAngularSpeedMultiplier * mAngularSpeed * mMouse.dy * ifps;
+
+        auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
+        auto newWorldPosition = mTarget->GetWorldPosition() + mDistance * newRotation * QVector3D(0, 0, 1);
+
+        SetWorldPosition(newWorldPosition);
+        SetWorldRotation(newRotation);
+
+        mMouse.dx = 0.0f;
+        mMouse.dy = 0.0f;
+    }
+}
+
+void Canavar::Engine::PersecutorCamera::Reset()
+{
+    mDistance = 10.0f;
+    mYaw = 0.0f;
+    mPitch = 0.0f;
+}
+
+Canavar::Engine::ObjectPtr Canavar::Engine::PersecutorCamera::GetTarget() const
+{
+    return mTarget;
+}
+
+void Canavar::Engine::PersecutorCamera::SetTarget(ObjectPtr newTarget)
+{
+    mTarget = newTarget;
+    Reset();
+}

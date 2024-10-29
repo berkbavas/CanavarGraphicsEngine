@@ -1,6 +1,6 @@
 #include "Simulator.h"
 
-void Simulator::Initialize(Canavar::Engine::NodePtr pRootNode, Canavar::Engine::ModelPtr pJetModel)
+void Simulator::Initialize(Canavar::Engine::ObjectPtr pRootNode, Canavar::Engine::ModelPtr pJetModel)
 {
     mAircraft = new Aircraft;
     mAircraftController = new AircraftController(mAircraft);

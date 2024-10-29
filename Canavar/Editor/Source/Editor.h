@@ -8,9 +8,9 @@
 #include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/NodeManager.h>
 #include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
-#include <Canavar/Engine/Node/Camera/DummyCamera.h>
-#include <Canavar/Engine/Node/Camera/FreeCamera.h>
-#include <Canavar/Engine/Node/Camera/PersecutorCamera.h>
+#include <Canavar/Engine/Node/Object/Camera/DummyCamera.h>
+#include <Canavar/Engine/Node/Object/Camera/FreeCamera.h>
+#include <Canavar/Engine/Node/Object/Camera/PersecutorCamera.h>
 
 namespace Canavar::Editor
 {

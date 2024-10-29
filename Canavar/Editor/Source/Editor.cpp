@@ -7,11 +7,11 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
-#include "Canavar/Engine/Node/DummyNode.h"
-#include "Canavar/Engine/Node/Light/PointLight.h"
-#include "Canavar/Engine/Node/LightningStrike/LightningStrikeAttractor.h"
-#include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
-#include "Canavar/Engine/Node/Model/Model.h"
+#include "Canavar/Engine/Node/Object/DummyObject/DummyObject.h"
+#include "Canavar/Engine/Node/Object/Light/PointLight.h"
+#include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeAttractor.h"
+#include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
+#include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <imgui.h>
@@ -50,8 +50,8 @@ void Canavar::Editor::Editor::Initialize()
 
     mPersecutorCamera = std::make_shared<PersecutorCamera>();
 
-    connect(mImGuiWidget, &ImGuiWidget::GoToNode, this, [=](Engine::NodePtr pNode) {
-        mFreeCamera->GoToNode(pNode);
+    connect(mImGuiWidget, &ImGuiWidget::GoToObject, this, [=](Engine::ObjectPtr pObject) {
+        mFreeCamera->GoToObject(pObject);
         mCameraManager->SetActiveCamera(mFreeCamera);
     });
 
@@ -83,8 +83,7 @@ void Canavar::Editor::Editor::Test()
 
     ModelPtr pCrossfire = std::make_shared<Model>("Crossfire");
     pCrossfire->SetAmbient(0.8f);
-    pCrossfire->GetRoll() = 179.9;
-    pCrossfire->UpdateRotationFromEulerDegrees();
+    pCrossfire->SetRoll(179.999);
     pCrossfire->SetWorldPosition(0, 2060, 0);
     mNodeManager->AddNode(pCrossfire);
 }
@@ -92,7 +91,7 @@ void Canavar::Editor::Editor::Test()
 void Canavar::Editor::Editor::CreateSimulatorModels()
 {
     // Root
-    DummyNodePtr pRootNode = std::make_shared<DummyNode>();
+    DummyObjectPtr pRootNode = std::make_shared<DummyObject>();
     pRootNode->SetNodeName("Root Node");
     pRootNode->SetWorldPosition(0, 20, 0);
 

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
-#include "Canavar/Engine/Node/Haze/Haze.h"
-#include "Canavar/Engine/Node/Light/DirectionalLight.h"
-#include "Canavar/Engine/Node/Model/Model.h"
-#include "Canavar/Engine/Node/Scene/Scene.h"
-#include "Canavar/Engine/Node/Sky/Sky.h"
-#include "Canavar/Engine/Node/Terrain/Terrain.h"
+#include "Canavar/Engine/Node/GlobalNode/Haze/Haze.h"
+#include "Canavar/Engine/Node/GlobalNode/Sky/Sky.h"
+#include "Canavar/Engine/Node/GlobalNode/Terrain/Terrain.h"
+#include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
+#include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
+#include "Canavar/Engine/Node/Object/Model/Model.h"
+#include "Canavar/Engine/Node/Object/Scene/Scene.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <map>
@@ -34,6 +34,7 @@ namespace Canavar::Engine
         const std::map<QString, ScenePtr> &GetScenes() const;
         const std::set<ModelPtr> &GetModels() const;
         const std::set<NodePtr> &GetNodes() const;
+        const std::set<ObjectPtr> &GetObjects() const;
 
         NodePtr GetNodeById(uint32_t nodeId) const;
         MeshPtr GetMeshById(ModelPtr pModel, uint32_t meshId) const;
@@ -41,8 +42,9 @@ namespace Canavar::Engine
       private:
         std::map<QString, ScenePtr> mScenes; // 3D model data
 
-        std::set<ModelPtr> mModels;
         std::set<NodePtr> mNodes;
+        std::set<ObjectPtr> mObjects;
+        std::set<ModelPtr> mModels;
 
         LightManager *mLightManager{ nullptr };
 

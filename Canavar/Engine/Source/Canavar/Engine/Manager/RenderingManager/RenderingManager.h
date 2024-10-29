@@ -4,13 +4,13 @@
 #include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Manager/RenderingManager/NodeInfo.h"
 #include "Canavar/Engine/Manager/RenderingManager/Shader.h"
-#include "Canavar/Engine/Node/Camera/Camera.h"
-#include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
-#include "Canavar/Engine/Node/Haze/Haze.h"
-#include "Canavar/Engine/Node/Light/DirectionalLight.h"
-#include "Canavar/Engine/Node/Model/Model.h"
-#include "Canavar/Engine/Node/Sky/Sky.h"
-#include "Canavar/Engine/Node/Terrain/Terrain.h"
+#include "Canavar/Engine/Node/GlobalNode/Haze/Haze.h"
+#include "Canavar/Engine/Node/GlobalNode/Sky/Sky.h"
+#include "Canavar/Engine/Node/GlobalNode/Terrain/Terrain.h"
+#include "Canavar/Engine/Node/Object/Camera/Camera.h"
+#include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
+#include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
+#include "Canavar/Engine/Node/Object/Model/Model.h"
 
 #include <map>
 #include <memory>
@@ -55,13 +55,14 @@ namespace Canavar::Engine
         void RenderLoop(float ifps);
 
       private:
+        void RenderObjects(float ifps);
         void RenderModel(ModelPtr pModel);
         void RenderNozzleEffect(NozzleEffectPtr pEffect, float ifps);
 
         void SetUniforms();
         void SetCommonUniforms(Shader *pShader);
         void SetDirectionalLights(Shader *pShader);
-        void SetPointLights(Shader *pShader, NodePtr pNode);
+        void SetPointLights(Shader *pShader, ObjectPtr pObject);
 
         void ResizeFramebuffers();
 

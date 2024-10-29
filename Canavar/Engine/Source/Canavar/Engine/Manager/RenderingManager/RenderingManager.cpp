@@ -5,7 +5,7 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/BoundingBoxRenderer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
-#include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
+#include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
 
 Canavar::Engine::RenderingManager::RenderingManager(QObject* parent)
     : Manager(parent)
@@ -49,7 +49,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mBoundingBoxRenderer->Initialize();
 
     mSky = mNodeManager->GetSky();
-    mSun = mLightManager->GetSun();
+    mSun = mNodeManager->GetSun();
     mTerrain = mNodeManager->GetTerrain();
     mHaze = mNodeManager->GetHaze();
 
@@ -77,34 +77,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     mSky->Render(mSkyShader, mSun.get(), mActiveCamera.get());
     mTerrain->Render(mTerrainShader, mActiveCamera.get());
 
-    const auto& models = mNodeManager->GetModels();
-
-    for (const auto& pModel : models)
-    {
-        if (pModel->GetVisible())
-        {
-            RenderModel(pModel);
-        }
-    }
-
-    const auto& nodes = mNodeManager->GetNodes();
-
-    for (const auto& pNode : nodes)
-    {
-        if (!pNode->GetVisible())
-        {
-            continue;
-        }
-
-        if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pNode))
-        {
-            RenderNozzleEffect(pEffect, ifps);
-        }
-        else if (LightningStrikeBasePtr pLightning = std::dynamic_pointer_cast<LightningStrikeBase>(pNode))
-        {
-            pLightning->Render(mActiveCamera.get(), mLightningStrikeShader, mLightningStrikeQuadGeneratorShader, ifps);
-        }
-    }
+    RenderObjects(ifps);
 
     if (mDrawBoundingBoxes)
     {
@@ -175,6 +148,35 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     mHeight = height;
 
     ResizeFramebuffers();
+}
+
+void Canavar::Engine::RenderingManager::RenderObjects(float ifps)
+{
+    const auto& nodes = mNodeManager->GetNodes();
+
+    for (const auto& pNode : nodes)
+    {
+        if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
+        {
+            if (pObject->GetVisible() == false)
+            {
+                continue;
+            }
+
+            if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
+            {
+                RenderModel(pModel);
+            }
+            else if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pObject))
+            {
+                RenderNozzleEffect(pEffect, ifps);
+            }
+            else if (LightningStrikeBasePtr pLightning = std::dynamic_pointer_cast<LightningStrikeBase>(pObject))
+            {
+                pLightning->Render(mActiveCamera.get(), mLightningStrikeShader, mLightningStrikeQuadGeneratorShader, ifps);
+            }
+        }
+    }
 }
 
 void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
@@ -257,9 +259,9 @@ void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
     pShader->Release();
 }
 
-void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, NodePtr pNode)
+void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, ObjectPtr pObject)
 {
-    const auto& lights = mLightManager->GetPointLightsAround(pNode->GetWorldPosition(), 100'000.0f);
+    const auto& lights = mLightManager->GetPointLightsAround(pObject->GetWorldPosition(), 100'000.0f);
     const auto numberOfPointLights = std::min(8, static_cast<int>(lights.size()));
 
     pShader->Bind();

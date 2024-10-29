@@ -1,20 +1,20 @@
 #include "ImGuiWidget.h"
 
-#include "Canavar/Engine/Node/Effects/NozzleEffect/NozzleEffect.h"
-#include "Canavar/Engine/Node/Light/DirectionalLight.h"
-#include "Canavar/Engine/Node/Light/PointLight.h"
-#include "Canavar/Engine/Node/LightningStrike/LightningStrikeGenerator.h"
-#include "Canavar/Engine/Node/Model/Model.h"
+#include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
+#include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
+#include "Canavar/Engine/Node/Object/Light/PointLight.h"
+#include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
+#include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Util/Util.h"
 
 #include <imgui.h>
 
 void Canavar::Editor::ImGuiWidget::Initialize()
 {
-    mSun = mNodeManager->GetSun();
     mSky = mNodeManager->GetSky();
     mTerrain = mNodeManager->GetTerrain();
     mHaze = mNodeManager->GetHaze();
+    mSun = mNodeManager->GetSun();
 }
 
 void Canavar::Editor::ImGuiWidget::DrawWidget()
@@ -22,7 +22,7 @@ void Canavar::Editor::ImGuiWidget::DrawWidget()
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug");
 
-    DrawNodes();
+    DrawObjects();
     DrawSky();
     DrawSun();
     DrawHaze();
@@ -65,75 +65,75 @@ bool Canavar::Editor::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
     return false;
 }
 
-void Canavar::Editor::ImGuiWidget::DrawNodes()
+void Canavar::Editor::ImGuiWidget::DrawObjects()
 {
-    if (ImGui::CollapsingHeader("Nodes", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Objects", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        const auto &nodes = mNodeManager->GetNodes();
+        const auto &objects = mNodeManager->GetObjects();
 
-        if (ImGui::BeginCombo("Select a node", mSelectedNode ? mSelectedNode->GetUniqueNodeName().toStdString().c_str() : "-"))
+        if (ImGui::BeginCombo("Select a object", mSelectedObject ? mSelectedObject->GetUniqueNodeName().toStdString().c_str() : "-"))
         {
-            for (const auto &pNode : nodes)
+            for (const auto &pNode : objects)
             {
                 if (ImGui::Selectable(pNode->GetUniqueNodeName().toStdString().c_str()))
                 {
-                    mSelectedNode = pNode;
+                    mSelectedObject = pNode;
                 }
             }
 
             ImGui::EndCombo();
         }
 
-        ImGui::BeginDisabled(mSelectedNode == nullptr);
-        DrawNode(mSelectedNode);
+        ImGui::BeginDisabled(mSelectedObject == nullptr);
+        DrawObject(mSelectedObject);
         ImGui::EndDisabled();
     }
 }
 
-void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
+void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
 {
-    if (pNode)
+    if (pObject)
     {
-        ImGui::Text("Node Parameters");
+        ImGui::Text("Object Parameters");
 
-        auto WorldPosition = pNode->GetWorldPosition();
-        if (ImGui::InputFloat3("World Position##Node", &WorldPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+        auto WorldPosition = pObject->GetWorldPosition();
+        if (ImGui::InputFloat3("World Position##DrawObject", &WorldPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            pNode->SetWorldPosition(WorldPosition);
+            pObject->SetWorldPosition(WorldPosition);
         }
 
-        auto LocalPosition = pNode->GetPosition();
-        if (ImGui::InputFloat3("Position##Node", &LocalPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+        auto LocalPosition = pObject->GetPosition();
+        if (ImGui::InputFloat3("Position##DrawObject", &LocalPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            pNode->SetPosition(LocalPosition);
+            pObject->SetPosition(LocalPosition);
         }
 
-        if (ImGui::SliderFloat("Yaw##NodeRotation", &pNode->GetYaw(), 0.0f, 360.0f, "%.3f"))
-            pNode->UpdateRotationFromEulerDegrees();
-        if (ImGui::SliderFloat("Pitch##NodeRotation", &pNode->GetPitch(), -89.999f, 89.999f, "%.3f"))
-            pNode->UpdateRotationFromEulerDegrees();
-        if (ImGui::SliderFloat("Roll##NodeRotation", &pNode->GetRoll(), -179.999f, 179.999f, "%.3f"))
-            pNode->UpdateRotationFromEulerDegrees();
+        if (ImGui::SliderFloat("Yaw##DrawObject", &pObject->GetYaw(), 0.0f, 360.0f, "%.3f"))
+            pObject->SetYaw(pObject->GetYaw());
+        if (ImGui::SliderFloat("Pitch##DrawObject", &pObject->GetPitch(), -89.999f, 89.999f, "%.3f"))
+            pObject->SetPitch(pObject->GetPitch());
+        if (ImGui::SliderFloat("Roll##DrawObject", &pObject->GetRoll(), -179.999f, 179.999f, "%.3f"))
+            pObject->SetRoll(pObject->GetRoll());
 
-        auto Scale = pNode->GetScale();
-        if (ImGui::InputFloat3("Scale##NodeScale", &Scale[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+        auto Scale = pObject->GetScale();
+        if (ImGui::InputFloat3("Scale##DrawObject", &Scale[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            pNode->SetScale(Scale);
+            pObject->SetScale(Scale);
         }
 
         auto ScaleMin = std::min(Scale.x(), std::min(Scale.y(), Scale.z()));
-        if (ImGui::DragFloat("Scale##NodeScaleDrag", &ScaleMin, 0.01f, 0.001, 100.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+        if (ImGui::DragFloat("Scale##DragFloatObjectScale", &ScaleMin, 0.01f, 0.001, 100.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
         {
-            pNode->SetScale(ScaleMin, ScaleMin, ScaleMin);
+            pObject->SetScale(ScaleMin, ScaleMin, ScaleMin);
         }
 
         if (ImGui::Button("Go to node"))
         {
-            emit GoToNode(pNode);
+            emit GoToObject(pObject);
         }
     }
 
-    if (Engine::ModelPtr pModel = std::dynamic_pointer_cast<Engine::Model>(pNode))
+    if (Engine::ModelPtr pModel = std::dynamic_pointer_cast<Engine::Model>(pObject))
     {
         ImGui::Text("Model Parameters");
 
@@ -143,7 +143,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
         ImGui::SliderFloat("Shininess##Model", &pModel->GetShininess_NonConst(), 1.0f, 128.0f, "%.3f");
         ImGui::ColorEdit4("Color##PointLight", &pModel->GetColor_NonConst()[0]);
     }
-    else if (Engine::DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<Engine::DirectionalLight>(pNode))
+    else if (Engine::DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<Engine::DirectionalLight>(pObject))
     {
         ImGui::Text("Directional Light Parameters");
 
@@ -159,7 +159,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
         pDirectionalLight->SetDirectionFromThetaPhi(theta, phi);
     }
 
-    else if (Engine::PointLightPtr pPointLight = std::dynamic_pointer_cast<Engine::PointLight>(pNode))
+    else if (Engine::PointLightPtr pPointLight = std::dynamic_pointer_cast<Engine::PointLight>(pObject))
     {
         ImGui::Text("Point Light Parameters");
 
@@ -171,7 +171,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
         ImGui::SliderFloat("Quadratic##PointLight", &pPointLight->GetQuadratic_NonConst(), 0.00001f, 0.001f, "%.6f");
         ImGui::ColorEdit4("Color##PointLight", (float *) &pPointLight->GetColor_NonConst());
     }
-    else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(pNode))
+    else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(pObject))
     {
         ImGui::Text("Nozzle Effect Parameters");
 
@@ -182,7 +182,7 @@ void Canavar::Editor::ImGuiWidget::DrawNode(Engine::NodePtr pNode)
         ImGui::SliderFloat("Speed##NozzleEffect", &pNozzleEffect->GetSpeed_NonConst(), 0.0f, 10.0f, "%.5f");
         ImGui::SliderFloat("Scale##NozzleEffect", &pNozzleEffect->GetScale_NonConst(), 0.001f, 0.1f, "%.4f");
     }
-    else if (Engine::LightningStrikeGeneratorPtr pLightningStrike = std::dynamic_pointer_cast<Engine::LightningStrikeGenerator>(pNode))
+    else if (Engine::LightningStrikeGeneratorPtr pLightningStrike = std::dynamic_pointer_cast<Engine::LightningStrikeGenerator>(pObject))
     {
         ImGui::Text("Lightning Strike Generator");
 
@@ -203,6 +203,7 @@ void Canavar::Editor::ImGuiWidget::DrawSky()
         ImGui::SliderFloat("Albedo##Sky", &mSky->GetAlbedo_NonConst(), 0.0f, 1.0f, "%.3f");
         ImGui::SliderFloat("Turbidity##Sky", &mSky->GetTurbidity_NonConst(), 0.0f, 10.0f, "%.3f");
         ImGui::SliderFloat("Normalized Sun Y##Sun", &mSky->GetNormalizedSunY_NonConst(), 0.0f, 10.0f, "%.3f");
+        ImGui::Checkbox("Enabled", &mSky->GetEnabled_NonConst());
     }
 }
 

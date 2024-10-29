@@ -224,7 +224,7 @@ void AircraftController::DrawImGui()
     ImGui::End();
 }
 
-void AircraftController::SetRootNode(Canavar::Engine::NodePtr pRootNode)
+void AircraftController::SetRootNode(Canavar::Engine::ObjectPtr pRootNode)
 {
     mRootNode = pRootNode;
 }

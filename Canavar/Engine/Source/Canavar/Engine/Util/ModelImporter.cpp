@@ -1,6 +1,6 @@
 #include "ModelImporter.h"
 
-#include "Canavar/Engine/Node/Scene/AABB.h"
+#include "Canavar/Engine/Node/Object/Scene/AABB.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <QDir>

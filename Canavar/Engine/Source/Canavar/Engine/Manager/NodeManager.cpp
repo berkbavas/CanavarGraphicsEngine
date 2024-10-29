@@ -4,7 +4,9 @@
 #include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/ModelImporter.h"
 
-Canavar::Engine::NodeManager::NodeManager(QObject* parent) {}
+Canavar::Engine::NodeManager::NodeManager(QObject* parent)
+    : Manager(parent)
+{}
 
 void Canavar::Engine::NodeManager::Initialize()
 {
@@ -16,20 +18,24 @@ void Canavar::Engine::NodeManager::Initialize()
     mTerrain = std::make_shared<Terrain>();
     mHaze = std::make_shared<Haze>();
 
+    mSun = std::make_shared<DirectionalLight>();
+    mSun->SetDirection(QVector3D(1, -1, 0).normalized());
+
     AddNode(mSky);
     AddNode(mTerrain);
+    AddNode(mHaze);
+    AddNode(mSun);
 }
 
 void Canavar::Engine::NodeManager::PostInitialize()
 {
     LOG_DEBUG("NodeManager::PostInitialize: Initializing...");
 
-    mSun = mLightManager->GetSun();
-
     mSky->Initialize();
     mTerrain->Initialize();
+    mHaze->Initialize();
 
-    for (const auto [name, pScene] : mScenes)
+    for (const auto& [name, pScene] : mScenes)
     {
         pScene->Initialize();
     }
@@ -41,35 +47,41 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
 {
     // TODO: Log
 
-    if (const auto pModel = std::dynamic_pointer_cast<Model>(pNode))
-    {
-        mModels.emplace(pModel);
-    }
-    else if (const auto pLight = std::dynamic_pointer_cast<Light>(pNode))
+    pNode->SetNodeId(mCurrentNodeId++);
+    mNodes.emplace(pNode);
+
+    if (const auto pLight = std::dynamic_pointer_cast<Light>(pNode))
     {
         mLightManager->AddLight(pLight);
     }
 
-    pNode->SetNodeId(mCurrentNodeId++);
-    mNodes.emplace(pNode);
-
-    // > Add parent if not added yet
-    if (const auto pParent = pNode->GetParent())
+    if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
     {
-        if (!mNodes.contains(pParent))
+        mObjects.emplace(pObject);
+
+        // > Add parent if not added yet
+        if (const auto pParent = pObject->GetParent())
         {
-            AddNode(pParent);
+            if (mNodes.contains(pParent) == false)
+            {
+                AddNode(pParent);
+            }
         }
-    }
 
-    // > Add children if not added yet
-    const auto& children = pNode->GetChildren();
+        // > Add children if not added yet
+        const auto& children = pObject->GetChildren();
 
-    for (const auto pChild : children)
-    {
-        if (!mNodes.contains(pChild))
+        for (const auto& pChild : children)
         {
-            AddNode(pChild);
+            if (mNodes.contains(pChild) == false)
+            {
+                AddNode(pChild);
+            }
+        }
+
+        if (const auto pModel = std::dynamic_pointer_cast<Model>(pObject))
+        {
+            mModels.emplace(pModel);
         }
     }
 }
@@ -78,20 +90,26 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
 {
     // TODO: Log
 
-    if (const auto pModel = std::dynamic_pointer_cast<Model>(pNode))
-    {
-        mModels.erase(pModel);
-    }
-    else if (const auto pLight = std::dynamic_pointer_cast<Light>(pNode))
+    mNodes.erase(pNode);
+
+    if (const auto pLight = std::dynamic_pointer_cast<Light>(pNode))
     {
         mLightManager->RemoveLight(pLight);
     }
 
-    mNodes.erase(pNode);
-
-    if (const auto pParent = pNode->GetParent())
+    if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
     {
-        pParent->RemoveChild(pNode);
+        mObjects.erase(pObject);
+
+        if (const auto pParent = pObject->GetParent())
+        {
+            pParent->RemoveChild(pObject);
+        }
+
+        if (const auto pModel = std::dynamic_pointer_cast<Model>(pObject))
+        {
+            mModels.erase(pModel);
+        }
     }
 }
 
@@ -129,6 +147,11 @@ const std::set<Canavar::Engine::ModelPtr>& Canavar::Engine::NodeManager::GetMode
 const std::set<Canavar::Engine::NodePtr>& Canavar::Engine::NodeManager::GetNodes() const
 {
     return mNodes;
+}
+
+const std::set<Canavar::Engine::ObjectPtr>& Canavar::Engine::NodeManager::GetObjects() const
+{
+    return mObjects;
 }
 
 Canavar::Engine::NodePtr Canavar::Engine::NodeManager::GetNodeById(uint32_t nodeId) const

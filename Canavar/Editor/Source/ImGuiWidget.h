@@ -2,7 +2,7 @@
 
 #include <Canavar/Engine/Manager/NodeManager.h>
 #include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
-#include <Canavar/Engine/Node/Light/DirectionalLight.h>
+#include <Canavar/Engine/Node/Object/Light/DirectionalLight.h>
 #include <Canavar/Engine/Util/Macros.h>
 
 namespace Canavar::Editor
@@ -21,12 +21,12 @@ namespace Canavar::Editor
         bool MouseMoved(QMouseEvent *);
 
       signals:
-        void GoToNode(Engine::NodePtr pNode);
+        void GoToObject(Engine::ObjectPtr pObject);
 
       private:
         void DrawRenderSettings();
-        void DrawNodes();
-        void DrawNode(Engine::NodePtr pNode);
+        void DrawObjects();
+        void DrawObject(Engine::ObjectPtr pObject);
 
         void DrawSun();
         void DrawSky();
@@ -34,10 +34,9 @@ namespace Canavar::Editor
         void DrawHaze();
 
         void DrawNodeInfo();
-
         void DrawStats();
 
-        Engine::NodePtr mSelectedNode{ nullptr };
+        Engine::ObjectPtr mSelectedObject{ nullptr };
 
         Engine::DirectionalLightPtr mSun;
         Engine::SkyPtr mSky;

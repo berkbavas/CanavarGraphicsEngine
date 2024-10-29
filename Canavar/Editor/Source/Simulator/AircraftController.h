@@ -2,7 +2,7 @@
 
 #include "Aircraft.h"
 
-#include <Canavar/Engine/Node/Model/Model.h>
+#include <Canavar/Engine/Node/Object/Model/Model.h>
 #include <imgui.h>
 
 #include <QKeyEvent>
@@ -25,7 +25,7 @@ class AircraftController : public QObject
     void KeyReleased(QKeyEvent*);
 
     void SetJetNode(Canavar::Engine::ModelPtr pJet);
-    void SetRootNode(Canavar::Engine::NodePtr pRoot);
+    void SetRootNode(Canavar::Engine::ObjectPtr pRoot);
 
   signals:
     void Command(Aircraft::Command command, QVariant variant = QVariant());
@@ -48,7 +48,7 @@ class AircraftController : public QObject
     Aircraft::PrimaryFlightData mPfd;
 
     Canavar::Engine::ModelPtr mJetNode;
-    Canavar::Engine::NodePtr mRootNode;
+    Canavar::Engine::ObjectPtr mRootNode;
 
     bool mAutoPilotEnabled{ false };
 

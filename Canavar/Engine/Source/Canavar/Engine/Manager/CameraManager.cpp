@@ -12,7 +12,6 @@ void Canavar::Engine::CameraManager::Initialize()
 
     mFreeCamera = std::make_shared<FreeCamera>();
     mFreeCamera->SetPosition(5, 5, -5);
-
     SetActiveCamera(mFreeCamera);
     LOG_DEBUG("CameraManager::Initialize: Initialization is done.");
 }

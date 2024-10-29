@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Node/Light/DirectionalLight.h"
-#include "Canavar/Engine/Node/Light/PointLight.h"
+#include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
+#include "Canavar/Engine/Node/Object/Light/PointLight.h"
 
 #include <set>
 
@@ -26,8 +26,6 @@ namespace Canavar::Engine
       private:
         std::set<PointLightPtr> mPointLights;
         QVector<DirectionalLightPtr> mDirectionalLights;
-
-        DEFINE_MEMBER_CONST(DirectionalLightPtr, Sun);
     };
 
 }
