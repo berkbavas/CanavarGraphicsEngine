@@ -8,7 +8,7 @@ namespace Canavar::Engine
 {
     class LightningStrikeAttractor : public Object
     {
-        REGISTER_NODE_TYPE(LightningStrikeAttractor);
+        REGISTER_OBJECT_TYPE(LightningStrikeAttractor);
 
       public:
         LightningStrikeAttractor();

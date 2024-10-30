@@ -6,13 +6,14 @@ namespace Canavar::Engine
 {
     class Model : public Object
     {
-        REGISTER_NODE_TYPE(Model);
-
       public:
-        Model(const QString& modelName);
+        Model(const QString& sceneName);
 
         QMatrix4x4 GetMeshTransformation(const QString& meshName);
         void SetMeshTransformation(const QString& meshName, const QMatrix4x4& transformation);
+
+        const char* GetNodeType() const override { return "Model"; }
+        static constexpr const char* NODE_TYPE{ "Model" };
 
       private:
         DEFINE_MEMBER(QVector4D, Color, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
@@ -20,7 +21,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Diffuse, 0.5f);
         DEFINE_MEMBER(float, Specular, 0.25f);
         DEFINE_MEMBER(float, Shininess, 8.0f);
-        DEFINE_MEMBER_CONST(QString, ModelName);
+        DEFINE_MEMBER_CONST(QString, SceneName);
 
         DEFINE_MEMBER(bool, InvertNormals, false);
 

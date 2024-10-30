@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/NodeManager.h>
 #include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
 #include <Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h>
@@ -43,11 +44,15 @@ namespace Canavar::Editor
         void DrawNozzleEffect(Engine::NozzleEffectPtr pEffect);
         void DrawLightningStrike(Engine::LightningStrikeBasePtr pLightning);
 
+        void DrawCreateObjectWidget();
+        void DrawCreateModelWidget();
         void DrawRenderSettings();
         void DrawNodeInfo();
         void DrawStats();
 
         void DrawWorldPositionsWindow();
+
+        QVector3D GetWorldPositionForCreatedObject() const;
 
         Engine::NodePtr mSelectedNode{ nullptr };
 
@@ -63,7 +68,11 @@ namespace Canavar::Editor
         QVector<QVector3D> mSavedWorldPositions;
         int mSelectedWorldPositionIndex{ -1 };
 
+        QString mSelectedSceneName;            // To be created
+        const char *mSelectedObjectName = "-"; // To be created
+
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
+        DEFINE_MEMBER_PTR(Engine::CameraManager, CameraManager);
         DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);
     };
 

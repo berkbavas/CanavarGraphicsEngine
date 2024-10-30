@@ -2,6 +2,8 @@
 
 #include "Canavar/Engine/Util/Macros.h"
 
+#include <functional>
+#include <map>
 #include <memory>
 
 #include <QString>

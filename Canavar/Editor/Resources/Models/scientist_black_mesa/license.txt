@@ -1,0 +1,11 @@
+Model Information:
+* title:	Scientist Black Mesa
+* source:	https://sketchfab.com/3d-models/scientist-black-mesa-91b5a9cb7a714963971d071461e69d1d
+* author:	savounited (https://sketchfab.com/savounited)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Scientist Black Mesa" (https://sketchfab.com/3d-models/scientist-black-mesa-91b5a9cb7a714963971d071461e69d1d) by savounited (https://sketchfab.com/savounited) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -1,0 +1,11 @@
+Model Information:
+* title:	Gas Station - GTA V
+* source:	https://sketchfab.com/3d-models/gas-station-gta-v-89a4c259ee23473e8aab573cd90259ee
+* author:	Islide (https://sketchfab.com/Islide)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Gas Station - GTA V" (https://sketchfab.com/3d-models/gas-station-gta-v-89a4c259ee23473e8aab573cd90259ee) by Islide (https://sketchfab.com/Islide) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

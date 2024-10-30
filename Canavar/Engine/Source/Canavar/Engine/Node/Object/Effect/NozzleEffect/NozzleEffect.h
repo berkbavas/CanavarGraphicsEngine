@@ -8,7 +8,7 @@ namespace Canavar::Engine
 {
     class NozzleEffect : public Object, protected QOpenGLExtraFunctions
     {
-        REGISTER_NODE_TYPE(NozzleEffect);
+        REGISTER_OBJECT_TYPE(NozzleEffect);
 
       public:
         NozzleEffect();

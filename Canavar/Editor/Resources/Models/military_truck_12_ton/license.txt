@@ -1,0 +1,11 @@
+Model Information:
+* title:	Military Truck 1/2 Ton
+* source:	https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1
+* author:	Arion Digital (https://sketchfab.com/andrewswihart)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Military Truck 1/2 Ton" (https://sketchfab.com/3d-models/military-truck-12-ton-5d19c751b12849eeb390d637b2b686a1) by Arion Digital (https://sketchfab.com/andrewswihart) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

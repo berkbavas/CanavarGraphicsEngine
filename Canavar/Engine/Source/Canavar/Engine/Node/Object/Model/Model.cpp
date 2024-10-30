@@ -1,9 +1,9 @@
 #include "Model.h"
 
-Canavar::Engine::Model::Model(const QString& modelName)
-    : mModelName(modelName)
+Canavar::Engine::Model::Model(const QString& sceneName)
+    : mSceneName(sceneName)
 {
-    SetNodeName(mModelName);
+    SetNodeName(sceneName);
 }
 
 QMatrix4x4 Canavar::Engine::Model::GetMeshTransformation(const QString& meshName)

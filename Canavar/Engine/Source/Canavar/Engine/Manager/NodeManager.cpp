@@ -55,7 +55,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
     }
 
     pNode->SetNodeId(mCurrentNodeId++);
-    mNodes.emplace(pNode);
+    mNodes.push_back(pNode);
 
     if (const auto pLight = std::dynamic_pointer_cast<Light>(pNode))
     {
@@ -67,7 +67,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
     {
         LOG_DEBUG("NodeManager::AddNode: This Node is an Object. I am adding it to Object list as well.");
 
-        mObjects.emplace(pObject);
+        mObjects.push_back(pObject);
 
         if (const auto pParent = pObject->GetParent())
         {
@@ -108,7 +108,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
         if (const auto pModel = std::dynamic_pointer_cast<Model>(pObject))
         {
             LOG_DEBUG("NodeManager::AddNode: This Object is a Model. I am adding it to Model list as well");
-            mModels.emplace(pModel);
+            mModels.push_back(pModel);
         }
     }
 
@@ -119,7 +119,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
 {
     LOG_DEBUG("NodeManager::RemoveNode: > I will remove this Node: '{}' at {}", pNode->GetNodeName().toStdString(), PRINT_ADDRESS(pNode.get()));
 
-    int count = mNodes.erase(pNode);
+    int count = mNodes.removeAll(pNode);
 
     if (count == 0)
     {
@@ -137,7 +137,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
     {
         LOG_DEBUG("NodeManager::RemoveNode: This node is an Object. I am removing it from Object list.");
 
-        mObjects.erase(pObject);
+        mObjects.removeAll(pObject);
 
         const auto& children = pObject->GetChildren();
 
@@ -156,7 +156,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
         if (const auto pModel = std::dynamic_pointer_cast<Model>(pObject))
         {
             LOG_DEBUG("NodeManager::RemoveNode: Object is a Model. Removing it from Model list as well.");
-            mModels.erase(pModel);
+            mModels.removeAll(pModel);
         }
     }
 
@@ -181,7 +181,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& 
 
 Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(ModelPtr pModel) const
 {
-    return GetScene(pModel->GetModelName());
+    return GetScene(pModel->GetSceneName());
 }
 
 const std::map<QString, Canavar::Engine::ScenePtr>& Canavar::Engine::NodeManager::GetScenes() const
@@ -189,17 +189,17 @@ const std::map<QString, Canavar::Engine::ScenePtr>& Canavar::Engine::NodeManager
     return mScenes;
 }
 
-const std::set<Canavar::Engine::ModelPtr>& Canavar::Engine::NodeManager::GetModels() const
+const QList<Canavar::Engine::ModelPtr>& Canavar::Engine::NodeManager::GetModels() const
 {
     return mModels;
 }
 
-const std::set<Canavar::Engine::NodePtr>& Canavar::Engine::NodeManager::GetNodes() const
+const QList<Canavar::Engine::NodePtr>& Canavar::Engine::NodeManager::GetNodes() const
 {
     return mNodes;
 }
 
-const std::set<Canavar::Engine::ObjectPtr>& Canavar::Engine::NodeManager::GetObjects() const
+const QList<Canavar::Engine::ObjectPtr>& Canavar::Engine::NodeManager::GetObjects() const
 {
     return mObjects;
 }

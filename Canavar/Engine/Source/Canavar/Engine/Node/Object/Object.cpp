@@ -232,34 +232,32 @@ void Canavar::Engine::Object::SetParent(ObjectWeakPtr pNewParent)
 {
     LOG_DEBUG("Object::SetParent: > Setting a parent to Object at {}", PRINT_ADDRESS(this));
 
-    const auto pProspectiveParent = pNewParent.lock();
-    const auto pCurrentParent = mParent.lock();
-
-    if (pProspectiveParent == nullptr)
+    if (pNewParent.lock() == nullptr)
     {
         LOG_DEBUG("Object::SetParent: < pProspectiveParent is nullptr. Reseting Weak Pointer...");
+        mParent.reset();
     }
 
-    if (pCurrentParent == nullptr)
+    if (mParent.lock() == nullptr)
     {
         LOG_DEBUG("Object::SetParent: < Current parent is nullptr.");
     }
 
-    if (pCurrentParent == pProspectiveParent)
+    if (mParent.lock() == pNewParent.lock())
     {
         LOG_WARN("Object::SetParent: < Object has already this parent.. Returning...");
         return;
     }
 
-    if (pProspectiveParent.get() == this)
+    if (pNewParent.lock().get() == this)
     {
         LOG_WARN("Object::SetParent: < Cannot assign itself as a parent. Returning...");
         return;
     }
 
-    if (pCurrentParent)
+    if (mParent.lock())
     {
-        pCurrentParent->RemoveChild(shared_from_this());
+        mParent.lock()->RemoveChild(shared_from_this());
     }
 
     mParent = pNewParent;

@@ -32,9 +32,9 @@ namespace Canavar::Engine
         ScenePtr GetScene(ModelPtr pModel) const;
 
         const std::map<QString, ScenePtr> &GetScenes() const;
-        const std::set<ModelPtr> &GetModels() const;
-        const std::set<NodePtr> &GetNodes() const;
-        const std::set<ObjectPtr> &GetObjects() const;
+        const QList<ModelPtr> &GetModels() const;
+        const QList<NodePtr> &GetNodes() const;
+        const QList<ObjectPtr> &GetObjects() const;
 
         NodePtr GetNodeById(uint32_t nodeId) const;
         MeshPtr GetMeshById(ModelPtr pModel, uint32_t meshId) const;
@@ -42,9 +42,9 @@ namespace Canavar::Engine
       private:
         std::map<QString, ScenePtr> mScenes; // 3D model data
 
-        std::set<NodePtr> mNodes;
-        std::set<ObjectPtr> mObjects;
-        std::set<ModelPtr> mModels;
+        QList<NodePtr> mNodes;
+        QList<ObjectPtr> mObjects;
+        QList<ModelPtr> mModels;
 
         LightManager *mLightManager{ nullptr };
 

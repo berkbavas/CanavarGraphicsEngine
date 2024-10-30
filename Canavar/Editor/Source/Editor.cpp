@@ -42,8 +42,9 @@ void Canavar::Editor::Editor::Initialize()
     mCameraManager = mController->GetCameraManager();
     mRenderingManager = mController->GetRenderingManager();
 
-    mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
+    mImGuiWidget->SetRenderingManager(mRenderingManager);
     mImGuiWidget->SetNodeManager(mNodeManager);
+    mImGuiWidget->SetCameraManager(mCameraManager);
     mImGuiWidget->Initialize();
 
     mFreeCamera = mCameraManager->GetFreeCamera();

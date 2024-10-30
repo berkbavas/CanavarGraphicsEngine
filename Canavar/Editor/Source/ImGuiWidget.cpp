@@ -1,7 +1,12 @@
 #include "ImGuiWidget.h"
 
-#include "Canavar/Engine/Util/Util.h"
-
+#include <Canavar/Engine/Node/Object/DummyObject/DummyObject.h>
+#include <Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h>
+#include <Canavar/Engine/Node/Object/Light/DirectionalLight.h>
+#include <Canavar/Engine/Node/Object/Light/PointLight.h>
+#include <Canavar/Engine/Node/Object/LightningStrike/LightningStrikeAttractor.h>
+#include <Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h>
+#include <Canavar/Engine/Util/Util.h>
 #include <imgui.h>
 
 void Canavar::Editor::ImGuiWidget::Initialize()
@@ -16,9 +21,13 @@ void Canavar::Editor::ImGuiWidget::Draw()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug");
+
+    DrawCreateObjectWidget();
+    DrawCreateModelWidget();
     DrawRenderSettings();
     DrawNodeInfo();
     DrawStats();
+
     ImGui::End();
 
     DrawNodeParametersWindow();
@@ -284,6 +293,16 @@ void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
     {
         emit GoToObject(pObject);
     }
+
+    if (ImGui::Button("Remove Object"))
+    {
+        mNodeManager->RemoveNode(pObject);
+        if (pObject == mSelectedNode)
+        {
+            mSelectedNode = nullptr;
+            pObject = nullptr;
+        }
+    }
 }
 
 void Canavar::Editor::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
@@ -361,6 +380,36 @@ void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
     }
 }
 
+void Canavar::Editor::ImGuiWidget::DrawCreateObjectWidget()
+{
+    if (ImGui::CollapsingHeader("Create Object##DrawCreateObjectWidget"))
+    {
+        if (ImGui::BeginCombo("Create Object##DrawCreateObjectWidgetBeginCombo", mSelectedObjectName))
+        {
+            for (const auto &[name, factory] : Engine::Object::OBJECT_FACTORIES)
+            {
+                if (ImGui::Selectable(name))
+                {
+                    mSelectedObjectName = name;
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+        if (ImGui::Button("Create##DrawCreateObjectWidget"))
+        {
+            if (Engine::Object::OBJECT_FACTORIES.contains(mSelectedObjectName))
+            {
+                Engine::ObjectPtr pNewObject = Engine::Object::OBJECT_FACTORIES[mSelectedObjectName]();
+                pNewObject->SetWorldPosition(GetWorldPositionForCreatedObject());
+                mNodeManager->AddNode(pNewObject);
+                mSelectedNode = pNewObject;
+            }
+        }
+    }
+}
+
 void Canavar::Editor::ImGuiWidget::DrawNodeInfo()
 {
     if (ImGui::CollapsingHeader("Node Information"))
@@ -412,6 +461,35 @@ void Canavar::Editor::ImGuiWidget::DrawStats()
     }
 }
 
+void Canavar::Editor::ImGuiWidget::DrawCreateModelWidget()
+{
+    if (ImGui::CollapsingHeader("Create Model##DrawCreateModelWidget"))
+    {
+        const auto &scenes = mNodeManager->GetScenes();
+
+        if (ImGui::BeginCombo("Create Model##DrawCreateModelWidgetBeginCombo", (mSelectedSceneName + "##DrawCreateModelWidget").toStdString().c_str()))
+        {
+            for (const auto &[name, scene] : scenes)
+            {
+                if (ImGui::Selectable(name.toStdString().c_str()))
+                {
+                    mSelectedSceneName = name;
+                }
+            }
+
+            ImGui::EndCombo();
+        }
+
+        if (ImGui::Button("Create##DrawCreateModelWidget"))
+        {
+            Engine::ModelPtr pModel = std::make_shared<Engine::Model>(mSelectedSceneName);
+            pModel->SetWorldPosition(GetWorldPositionForCreatedObject());
+            mNodeManager->AddNode(pModel);
+            mSelectedNode = pModel;
+        }
+    }
+}
+
 void Canavar::Editor::ImGuiWidget::DrawWorldPositionsWindow()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
@@ -450,6 +528,15 @@ void Canavar::Editor::ImGuiWidget::DrawWorldPositionsWindow()
     }
 
     ImGui::End();
+}
+
+QVector3D Canavar::Editor::ImGuiWidget::GetWorldPositionForCreatedObject() const
+{
+    Engine::CameraPtr pActiveCamera = mCameraManager->GetActiveCamera();
+    QVector3D cameraPosition = pActiveCamera->GetWorldPosition();
+    QVector3D viewDirection = pActiveCamera->GetViewDirection();
+
+    return cameraPosition + 10 * viewDirection;
 }
 
 bool Canavar::Editor::ImGuiWidget::KeyPressed(QKeyEvent *)

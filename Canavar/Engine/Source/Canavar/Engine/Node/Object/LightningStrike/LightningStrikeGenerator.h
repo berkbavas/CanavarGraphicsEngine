@@ -9,7 +9,7 @@ namespace Canavar::Engine
 {
     class LightningStrikeGenerator : public LightningStrikeBase
     {
-        REGISTER_NODE_TYPE(LightningStrikeGenerator);
+        REGISTER_OBJECT_TYPE(LightningStrikeGenerator);
 
       public:
         LightningStrikeGenerator();
