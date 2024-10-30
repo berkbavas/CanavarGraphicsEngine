@@ -5,18 +5,22 @@ layout(location = 1) in vec3 initialPosition;
 layout(location = 2) in vec3 direction;
 layout(location = 3) in float life;
 
-uniform mat4 MVP;
+uniform mat4 M;
+uniform mat4 VP;
 uniform float scale;
 uniform float speed;
 
 layout(location = 0) out float fsRadius;
 layout(location = 1) out float fsDistance;
+layout(location = 2) out vec4 fsLocalPosition;
+layout(location = 3) out vec4 fsWorldPosition;
 
 void main()
 {
-    vec3 position = speed * direction * life + initialPosition + scale * vertexPosition;
+    fsLocalPosition = vec4(speed * direction * life + initialPosition + scale * vertexPosition, 1.0f);
+    fsWorldPosition = M * fsLocalPosition;
     fsRadius = length(initialPosition);
-    fsDistance = position.z;
+    fsDistance = fsLocalPosition.z;
 
-    gl_Position = MVP * vec4(position, 1.0f);
+    gl_Position = VP * fsWorldPosition;
 }

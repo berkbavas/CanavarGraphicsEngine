@@ -207,7 +207,8 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
 void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffect, float ifps)
 {
     mNozzleEffectShader->Bind();
-    mNozzleEffectShader->SetUniformValue("MVP", mActiveCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
+    mNozzleEffectShader->SetUniformValue("M", pEffect->GetWorldTransformation());
+    mNozzleEffectShader->SetUniformValue("VP", mActiveCamera->GetViewProjectionMatrix());
     mNozzleEffectShader->SetUniformValue("scale", pEffect->GetScale());
     mNozzleEffectShader->SetUniformValue("maxRadius", pEffect->GetMaxRadius());
     mNozzleEffectShader->SetUniformValue("maxDistance", pEffect->GetMaxDistance());

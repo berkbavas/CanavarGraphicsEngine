@@ -5,10 +5,13 @@ uniform float maxDistance;
 
 layout(location = 0) in float fsRadius;
 layout(location = 1) in float fsDistance;
+layout(location = 2) in vec4 fsLocalPosition;
+layout(location = 3) in vec4 fsWorldPosition;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 brightColor;
-
+layout(location = 2) out vec4 fragLocalPosition;
+layout(location = 3) out vec4 fragWorldPosition;
 void main()
 {
     vec4 result;
@@ -22,4 +25,6 @@ void main()
 
     fragColor = result;
     brightColor = result;
+    fragLocalPosition = fsLocalPosition;
+    fragWorldPosition = fsWorldPosition;
 }
