@@ -92,8 +92,6 @@ namespace Canavar::Engine
         float mPitch{ 0 };
         float mRoll{ 0 };
 
-        bool mUpdateFromEulerAngles{ false };
-
         ObjectWeakPtr mParent;
         std::set<ObjectPtr> mChildren;
 

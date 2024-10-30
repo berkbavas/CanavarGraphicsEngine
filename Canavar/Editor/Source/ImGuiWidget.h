@@ -2,7 +2,11 @@
 
 #include <Canavar/Engine/Manager/NodeManager.h>
 #include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
+#include <Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h>
 #include <Canavar/Engine/Node/Object/Light/DirectionalLight.h>
+#include <Canavar/Engine/Node/Object/Light/PointLight.h>
+#include <Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h>
+#include <Canavar/Engine/Node/Object/Model/Model.h>
 #include <Canavar/Engine/Util/Macros.h>
 
 namespace Canavar::Editor
@@ -24,21 +28,28 @@ namespace Canavar::Editor
         void GoToObject(Engine::ObjectPtr pObject);
 
       private:
+        void DrawNodeTreeViewWindow();
+        void DrawNodeParametersWindow();
+
         void DrawSun();
         void DrawSky();
         void DrawTerrain();
         void DrawHaze();
+
+        void DrawObject(Engine::ObjectPtr pObject);
+        void DrawModel(Engine::ModelPtr pModel);
+        void DrawDirectionalLight(Engine::DirectionalLightPtr pLight);
+        void DrawPointLight(Engine::PointLightPtr pLight);
+        void DrawNozzleEffect(Engine::NozzleEffectPtr pEffect);
+        void DrawLightningStrike(Engine::LightningStrikeBasePtr pLightning);
+
         void DrawRenderSettings();
         void DrawNodeInfo();
         void DrawStats();
 
         void DrawWorldPositionsWindow();
 
-        void DrawObjectsWindow();
-        void DrawObject(Engine::ObjectPtr pObject);
-        void DrawObjectsTreeView();
-
-        Engine::ObjectPtr mSelectedObject{ nullptr };
+        Engine::NodePtr mSelectedNode{ nullptr };
 
         Engine::DirectionalLightPtr mSun;
         Engine::SkyPtr mSky;

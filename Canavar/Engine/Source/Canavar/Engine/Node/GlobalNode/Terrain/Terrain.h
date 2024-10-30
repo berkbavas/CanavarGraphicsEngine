@@ -21,6 +21,8 @@ namespace Canavar::Engine
 
     class Terrain : public GlobalNode, protected QOpenGLExtraFunctions
     {
+        REGISTER_NODE_TYPE(Terrain);
+
       public:
         Terrain();
 

@@ -23,6 +23,11 @@ target_link_libraries(Editor CanavarGraphicsEngine Qt6::Core Qt6::Widgets Qt6::O
 
 add_custom_command(TARGET Editor
     POST_BUILD COMMAND ${CMAKE_COMMAND}
+    -E rm -r
+    "$<TARGET_FILE_DIR:Editor>/Resources/")
+
+add_custom_command(TARGET Editor
+    POST_BUILD COMMAND ${CMAKE_COMMAND}
     -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/Resources/"
     "$<TARGET_FILE_DIR:Editor>/Resources/")
@@ -32,6 +37,7 @@ add_custom_command(TARGET Editor
     -E copy_directory 
     "${CMAKE_SOURCE_DIR}/Libs/assimp/bin/" 
     "$<TARGET_FILE_DIR:Editor>")
+    
 
 add_custom_command(TARGET Editor
     POST_BUILD COMMAND

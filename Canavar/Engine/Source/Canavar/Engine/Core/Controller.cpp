@@ -44,8 +44,8 @@ Canavar::Engine::Controller::Controller(QObject* parent)
 
 Canavar::Engine::Controller::~Controller()
 {
-    qDebug() << "Controller::~Controller: Application closing...";
     qDebug() << "Controller::~Controller: Current Thread:" << QThread::currentThread();
+    qDebug() << "Controller::~Controller: Application closing...";
 }
 
 void Canavar::Engine::Controller::Run()
@@ -53,6 +53,7 @@ void Canavar::Engine::Controller::Run()
     qDebug() << "Controller::Controller: Application starting...";
 
     qInstallMessageHandler(Logger::QtMessageOutputCallback);
+
     Q_INIT_RESOURCE(Engine);
 
     mWindow->show();

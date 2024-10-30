@@ -10,11 +10,13 @@ namespace Canavar::Engine
 {
     class FreeCamera : public PerspectiveCamera
     {
+        REGISTER_NODE_TYPE(FreeCamera);
+
       public:
         FreeCamera();
 
-        void Update(float ifps);
-        void Reset();
+        void Update(float ifps) override;
+        void Reset() override;
 
         void KeyPressed(QKeyEvent *) override;
         void KeyReleased(QKeyEvent *) override;

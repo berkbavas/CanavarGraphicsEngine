@@ -6,6 +6,8 @@ namespace Canavar::Engine
 {
     class DummyObject : public Object
     {
+        REGISTER_NODE_TYPE(DummyObject);
+
       public:
         DummyObject();
     };

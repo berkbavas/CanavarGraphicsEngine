@@ -100,7 +100,7 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
     // F16
     ModelPtr pModel = std::make_shared<Model>("f16c");
     pModel->SetInvertNormals(true);
-    pModel->SetNodeName("F16C");
+    pModel->SetNodeName("f16c");
     pRootNode->AddChild(pModel);
 
     // Red light

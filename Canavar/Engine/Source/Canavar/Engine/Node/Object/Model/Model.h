@@ -6,6 +6,8 @@ namespace Canavar::Engine
 {
     class Model : public Object
     {
+        REGISTER_NODE_TYPE(Model);
+
       public:
         Model(const QString& modelName);
 

@@ -13,7 +13,6 @@
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 
 #include <map>
-#include <memory>
 
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLFramebufferObject>
@@ -44,7 +43,7 @@ namespace Canavar::Engine
         void Initialize() override;
         void PostInitialize() override;
 
-        void Render(float ifps);
+        void Render(float ifps) override;
         void Resize(int width, int height);
 
         QVector3D FetchFragmentLocalPositionFromScreen(int x, int y);

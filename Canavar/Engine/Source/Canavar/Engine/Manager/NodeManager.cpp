@@ -19,6 +19,7 @@ void Canavar::Engine::NodeManager::Initialize()
     mHaze = std::make_shared<Haze>();
 
     mSun = std::make_shared<DirectionalLight>();
+    mSun->SetNodeName("Sun");
     mSun->SetDirection(QVector3D(1, -1, 0).normalized());
 
     AddNode(mSky);
@@ -140,7 +141,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
 
         const auto& children = pObject->GetChildren();
 
-        for (const auto pChild : children)
+        for (const auto& pChild : children)
         {
             LOG_DEBUG("NodeManager::RemoveNode: Removing this Object's child: '{}' at {}. This is a recursive call.", pChild->GetNodeName().toStdString(), PRINT_ADDRESS(pChild.get()));
             RemoveNode(pChild);
@@ -172,7 +173,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& 
     }
     else
     {
-        LOG_WARN("NodeManager::GetScene: Scene is not found: '{}'", sceneName.toStdString());
+        //LOG_WARN("NodeManager::GetScene: Scene is not found: '{}'", sceneName.toStdString());
     }
 
     return pResult;

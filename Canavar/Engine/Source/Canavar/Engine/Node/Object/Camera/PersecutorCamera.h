@@ -7,6 +7,8 @@ namespace Canavar::Engine
 {
     class PersecutorCamera : public PerspectiveCamera
     {
+        REGISTER_NODE_TYPE(PersecutorCamera);
+
       public:
         PersecutorCamera();
 

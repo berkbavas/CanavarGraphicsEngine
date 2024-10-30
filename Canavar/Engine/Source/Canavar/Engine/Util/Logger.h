@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <atomic>
+#include <map>
 #include <string>
 
 #include <QDebug>

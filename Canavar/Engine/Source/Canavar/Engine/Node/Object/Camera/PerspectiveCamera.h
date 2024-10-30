@@ -19,8 +19,8 @@ namespace Canavar::Engine
         const QMatrix4x4 &GetRotationMatrix() override;
         const QMatrix4x4 &GetViewMatrix() override;
         const QVector3D &GetViewDirection() override;
-        int GetWidth() const { return mWidth; }
-        int GetHeight() const { return mHeight; }
+        int GetWidth() const override { return mWidth; }
+        int GetHeight() const override { return mHeight; }
 
         float GetHorizontalFov() const;
         float GetAspectRatio() const;

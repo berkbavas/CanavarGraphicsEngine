@@ -6,6 +6,8 @@ namespace Canavar::Engine
 {
     class PointLight : public Light
     {
+        REGISTER_NODE_TYPE(PointLight);
+
       public:
         PointLight();
 

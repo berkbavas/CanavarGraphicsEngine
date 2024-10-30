@@ -198,7 +198,7 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     }
     else
     {
-        LOG_FATAL("RenderingManager::RenderModel: Model data is not found for this model: {}", pModel->GetModelName().toStdString());
+        //LOG_FATAL("RenderingManager::RenderModel: Model data is not found for this model: {}", pModel->GetModelName().toStdString());
     }
 
     mModelShader->Release();

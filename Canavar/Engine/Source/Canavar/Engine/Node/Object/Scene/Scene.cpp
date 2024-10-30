@@ -1,6 +1,5 @@
 #include "Scene.h"
 
-#include "Canavar/Engine/Util/Logger.h"
 
 void Canavar::Engine::Scene::Initialize()
 {

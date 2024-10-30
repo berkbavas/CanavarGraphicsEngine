@@ -15,6 +15,8 @@ namespace Canavar::Engine
 
     class Sky : public GlobalNode, protected QOpenGLExtraFunctions
     {
+        REGISTER_NODE_TYPE(Sky);
+
       public:
         void Initialize() override;
 

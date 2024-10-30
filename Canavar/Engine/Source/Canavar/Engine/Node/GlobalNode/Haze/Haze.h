@@ -11,6 +11,8 @@ namespace Canavar::Engine
 {
     class Haze : public GlobalNode
     {
+        REGISTER_NODE_TYPE(Haze);
+
       public:
         Haze();
 

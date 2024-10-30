@@ -16,13 +16,6 @@ void Canavar::Engine::Object::SetRotation(const QQuaternion& newRotation)
         mWorldRotation = mRotation;
     }
 
-    if (!mUpdateFromEulerAngles)
-    {
-        Canavar::Engine::Math::GetEulerDegrees(mRotation, mYaw, mPitch, mRoll);
-    }
-
-    mUpdateFromEulerAngles = false;
-
     MakeTransformationDirty();
 }
 

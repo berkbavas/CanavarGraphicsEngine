@@ -100,6 +100,8 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     // Nodes
     SceneNodePtr pRootNode = ProcessNode(pScene, aiScene->mRootNode);
     pScene->SetRootNode(pRootNode);
+
+    // AABB
     float minX = std::numeric_limits<float>::infinity();
     float minY = std::numeric_limits<float>::infinity();
     float minZ = std::numeric_limits<float>::infinity();
@@ -108,7 +110,6 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     float maxY = -std::numeric_limits<float>::infinity();
     float maxZ = -std::numeric_limits<float>::infinity();
 
-    // AABB
     const auto& meshes = pScene->GetMeshes();
     for (const auto& pMesh : meshes)
     {
