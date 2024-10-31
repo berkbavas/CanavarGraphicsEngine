@@ -56,8 +56,7 @@ void Canavar::Engine::Controller::Run()
 
     Q_INIT_RESOURCE(Engine);
 
-    mWindow->show();
-    mWindow->resize(INITIAL_WIDTH, INITIAL_HEIGHT);
+    mWindow->showMaximized();
 }
 
 void Canavar::Engine::Controller::Initialize()

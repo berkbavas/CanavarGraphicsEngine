@@ -220,14 +220,10 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(aiM
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
-    if (!ProcessTexture(pMaterial, aiMaterial, aiTextureType_AMBIENT, TextureType::Ambient, directory))
-    {
-        ProcessTexture(pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::Ambient, directory);
-    }
-
+    ProcessTexture(pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::Ambient, directory);
     ProcessTexture(pMaterial, aiMaterial, aiTextureType_DIFFUSE, TextureType::Diffuse, directory);
     ProcessTexture(pMaterial, aiMaterial, aiTextureType_SPECULAR, TextureType::Specular, directory);
-    ProcessTexture(pMaterial, aiMaterial, aiTextureType_HEIGHT, TextureType::Normal, directory);
+    ProcessTexture(pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
 
     return pMaterial;
 }

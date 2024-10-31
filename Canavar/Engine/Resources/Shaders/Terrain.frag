@@ -81,11 +81,10 @@ uniform vec3 cameraPosition;
 uniform float waterHeight;
 
 uniform sampler2D sand;
-uniform sampler2D grass;
-uniform sampler2D terrainTexture;
+uniform sampler2D grass1;
+uniform sampler2D grass0;
 uniform sampler2D snow;
 uniform sampler2D rock;
-uniform sampler2D rockNormal;
 
 uniform float nodeID; // WTF? float? QOpenGLFramebuffer fucks up when the internal texture format is GL_RGBA32UI.
 
@@ -250,21 +249,20 @@ float perlin(float x, float y, int oct)
 
 vec4 getTexture(inout vec3 normal, const mat3 TBN)
 {
-    float trans = 20.;
+    float trans = 20.0f;
 
-    vec4 sand_t = texture(sand, fsTextureCoord * 10.0);
-    sand_t.rg *= 1.3;
-    vec4 rock_t = texture(rock, fsTextureCoord * vec2(1.0, 1.256).yx);
-    rock_t.rgb *= vec3(2.5, 2.0, 2.0);
-    vec4 grass_t = texture(grass, fsTextureCoord * 10.0);
-    vec4 grass_t1 = texture(terrainTexture, fsTextureCoord * 10.0);
+    vec4 sand_t = texture(sand, fsTextureCoord * 64.0);
+    vec4 rock_t = texture(rock, fsTextureCoord * vec2(1.0, 16.0).yx);
+    vec4 grass_t = texture(grass1, fsTextureCoord * 16.0);
+    vec4 grass_t0 = texture(grass0, fsTextureCoord * 16.0);
+
     float perlinBlendingCoeff = clamp(perlin(fsWorldPosition.x, fsWorldPosition.z, 2) * 2.0 - 0.2, 0.0, 1.0);
-    grass_t = mix(grass_t * 1.3, grass_t1 * 0.75, perlinBlendingCoeff);
-    grass_t.rgb *= 0.5;
+    grass_t = mix(grass_t * 1.3, grass_t0 * 0.75, perlinBlendingCoeff);
+    grass_t.rgb *= 0.5f;
 
     vec4 heightColor;
     float cosV = abs(dot(normal, vec3(0.0, 1.0, 0.0)));
-    float tenPercentGrass = terrain.grassCoverage - terrain.grassCoverage * 0.1;
+    float tenPercentGrass = terrain.grassCoverage * 0.9f;
     float blendingCoeff = pow((cosV - tenPercentGrass) / (terrain.grassCoverage * 0.1), 1.0);
 
     if (fsHeight <= waterHeight + trans)
@@ -283,12 +281,10 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     else if (cosV > tenPercentGrass)
     {
         heightColor = mix(rock_t, grass_t, blendingCoeff);
-        normal = mix(TBN * (texture(rockNormal, fsTextureCoord * vec2(2.0, 2.5).yx).rgb * 2.0 - 1.0), normal, blendingCoeff);
     }
     else
     {
         heightColor = rock_t;
-        normal = TBN * (texture(rockNormal, fsTextureCoord * vec2(2.0, 2.5).yx).rgb * 2.0 - 1.0);
     }
 
     return heightColor;
@@ -304,11 +300,11 @@ vec4 processDirectionalLights(vec4 color, vec3 normal, vec3 viewDir)
         float ambient = terrain.ambient * directionalLights[i].ambient;
 
         // Diffuse
-        float diffuseStrength = max(dot(normal, -directionalLights[i].direction), 0.0f);
+        float diffuseStrength = max(dot(normal, directionalLights[i].direction), 0.0f);
         float diffuse = diffuseStrength * terrain.diffuse * directionalLights[i].diffuse;
 
         // Specular
-        vec3 reflectDir = reflect(directionalLights[i].direction, normal);
+        vec3 reflectDir = reflect(-directionalLights[i].direction, normal);
         float specularStrength = max(dot(viewDir, reflectDir), 0.0);
         float specular = pow(specularStrength, terrain.shininess) * terrain.specular * directionalLights[i].specular;
 
@@ -358,7 +354,7 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(vec4(haze.color * clamp(-directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
+        result = mix(vec4(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
     }
 
     return result;

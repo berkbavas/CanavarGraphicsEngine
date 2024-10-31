@@ -58,7 +58,7 @@ void Canavar::Editor::Editor::Initialize()
 
     CreateSimulatorModels();
 
-    Test();
+    //  Test();
 }
 
 void Canavar::Editor::Editor::Test()
@@ -99,8 +99,10 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
 
     // F16
     ModelPtr pModel = std::make_shared<Model>("f16c");
-    pModel->SetInvertNormals(true);
+    pModel->SetInvertNormals(false);
     pModel->SetNodeName("f16c");
+    pModel->SetAmbient(0.25f);
+    pModel->SetDiffuse(1.0f);
     pRootNode->AddChild(pModel);
 
     // Red light

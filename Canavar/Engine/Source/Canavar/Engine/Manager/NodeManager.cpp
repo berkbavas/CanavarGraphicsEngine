@@ -20,7 +20,7 @@ void Canavar::Engine::NodeManager::Initialize()
 
     mSun = std::make_shared<DirectionalLight>();
     mSun->SetNodeName("Sun");
-    mSun->SetDirection(QVector3D(1, -1, 0).normalized());
+    mSun->SetDirection(QVector3D(1, 1, 0).normalized());
 
     AddNode(mSky);
     AddNode(mTerrain);

@@ -92,13 +92,6 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
         pShader->SetUniformValue("useTextureAmbient", true);
         pShader->SetSampler("textureAmbient", 0, pTexture->textureId());
     }
-    else if (const auto pTexture = mMaterial->GetTexture(TextureType::Diffuse))
-    {
-        // Use diffuse texture in place of ambient if there is no ambient texture.
-        hasAnyTexture = true;
-        pShader->SetUniformValue("useTextureAmbient", true);
-        pShader->SetSampler("textureAmbient", 0, pTexture->textureId());
-    }
 
     if (const auto pTexture = mMaterial->GetTexture(TextureType::Diffuse))
     {

@@ -124,16 +124,16 @@ vec4 processPointLights(vec4 ambientColor, vec4 diffuseColor, vec4 specularColor
     for (int i = 0; i < numberOfPointLights; i++)
     {
         // Ambient
-        vec4 ambient = ambientColor * pointLights[i].ambient * pointLights[i].ambient;
+        vec4 ambient = ambientColor * pointLights[i].ambient;
 
         // Diffuse
         vec3 lightDir = normalize(pointLights[i].position - fragWorldPos);
-        vec4 diffuse = diffuseColor * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * model.diffuse;
+        vec4 diffuse = diffuseColor * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse;
 
         // Specular
         vec3 reflectDir = reflect(-lightDir, normal);
         vec3 halfwayDir = normalize(lightDir + viewDir);
-        vec4 specular = specularColor * pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * pointLights[i].specular * model.specular;
+        vec4 specular = specularColor * pow(max(dot(normal, halfwayDir), 0.0), model.shininess) * pointLights[i].specular;
 
         // Attenuation
         float distance = length(pointLights[i].position - fragWorldPos);
@@ -157,7 +157,7 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(vec4(haze.color * clamp(-directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
+        result = mix(vec4(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
     }
 
     return result;

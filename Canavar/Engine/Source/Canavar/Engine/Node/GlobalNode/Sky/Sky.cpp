@@ -73,7 +73,7 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
         return;
     }
 
-    const auto sunDirection = -pSun->GetDirection().normalized();
+    const auto sunDirection = pSun->GetDirection().normalized();
     const auto sunTheta = std::acos(std::clamp(0.f, sunDirection.y(), 1.f));
 
     for (int i = 0; i < 3; ++i)

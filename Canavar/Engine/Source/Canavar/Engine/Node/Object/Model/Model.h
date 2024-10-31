@@ -17,8 +17,8 @@ namespace Canavar::Engine
 
       private:
         DEFINE_MEMBER(QVector4D, Color, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
-        DEFINE_MEMBER(float, Ambient, 0.5f);
-        DEFINE_MEMBER(float, Diffuse, 0.5f);
+        DEFINE_MEMBER(float, Ambient, 0.25f);
+        DEFINE_MEMBER(float, Diffuse, 0.75f);
         DEFINE_MEMBER(float, Specular, 0.25f);
         DEFINE_MEMBER(float, Shininess, 8.0f);
         DEFINE_MEMBER_CONST(QString, SceneName);

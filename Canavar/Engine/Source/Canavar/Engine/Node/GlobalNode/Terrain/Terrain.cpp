@@ -19,14 +19,11 @@ void Canavar::Engine::Terrain::Initialize()
 
     mTileGenerator = new TileGenerator(3, 128, 1024.0f);
 
-    mTextures.insert("Terrain", ModelImporter::CreateTexture(":/Resources/Terrain/terrain.jpg"));
-    mTextures.insert("Sand", ModelImporter::CreateTexture(":/Resources/Terrain/sand.jpg"));
-    mTextures.insert("Grass", ModelImporter::CreateTexture(":/Resources/Terrain/grass2.jpg"));
-    mTextures.insert("Snow", ModelImporter::CreateTexture(":/Resources/Terrain/snow0.jpg"));
-    mTextures.insert("RockDiffuse", ModelImporter::CreateTexture(":/Resources/Terrain/rock0.jpg"));
-    mTextures.insert("RockNormal", ModelImporter::CreateTexture(":/Resources/Terrain/rnormal.jpg"));
-
-    mTextures.value("Terrain")->setWrapMode(QOpenGLTexture::WrapMode::MirroredRepeat);
+    mTextures.insert("Terrain", ModelImporter::CreateTexture(":/Resources/Terrain/grass2.jpg"));
+    mTextures.insert("Grass", ModelImporter::CreateTexture(":/Resources/Terrain/grass0.jpg"));
+    mTextures.insert("Sand", ModelImporter::CreateTexture(":/Resources/Terrain/sand0.jpg"));
+    mTextures.insert("Snow", ModelImporter::CreateTexture(":/Resources/Terrain/grass1.jpg"));
+    mTextures.insert("Rock", ModelImporter::CreateTexture(":/Resources/Terrain/rock3.jpg"));
 }
 
 void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
@@ -57,12 +54,11 @@ void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
     pShader->SetUniformValue("terrain.diffuse", mDiffuse);
     pShader->SetUniformValue("terrain.shininess", mShininess);
     pShader->SetUniformValue("terrain.specular", mSpecular);
-    pShader->SetUniformValue("waterHeight", -1000.0f);
+    pShader->SetUniformValue("waterHeight", 10.0f);
     pShader->SetSampler("sand", 1, mTextures.value("Sand")->textureId());
-    pShader->SetSampler("grass", 2, mTextures.value("Grass")->textureId());
-    pShader->SetSampler("terrainTexture", 3, mTextures.value("Terrain")->textureId());
-    pShader->SetSampler("rock", 5, mTextures.value("RockDiffuse")->textureId());
-    pShader->SetSampler("rockNormal", 6, mTextures.value("RockNormal")->textureId());
+    pShader->SetSampler("grass0", 2, mTextures.value("Grass")->textureId());
+    pShader->SetSampler("grass1", 3, mTextures.value("Terrain")->textureId());
+    pShader->SetSampler("rock", 5, mTextures.value("Rock")->textureId());
     mTileGenerator->Render(GL_PATCHES);
     pShader->Release();
 }
@@ -74,11 +70,11 @@ void Canavar::Engine::Terrain::Reset()
     mTessellationMultiplier = 1.0f;
     mAmplitude = 20.0f;
     mPower = 3.0f;
-    mGrassCoverage = 0.45f;
+    mGrassCoverage = 0.25f;
     mSeed = QVector3D(1, 1, 1);
 
-    mAmbient = 0.5f;
-    mDiffuse = 0.6f;
+    mAmbient = 0.2f;
+    mDiffuse = 0.85f;
     mShininess = 8.0f;
-    mSpecular = 0.05f;
+    mSpecular = 0.0f;
 }
