@@ -250,7 +250,7 @@ void Canavar::Editor::ImGuiWidget::DrawHaze()
 void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
 {
     auto WorldPosition = pObject->GetWorldPosition();
-    if (ImGui::InputFloat3("World Position##DrawObject", &WorldPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::DragFloat3("World Position##DrawObject", &WorldPosition[0], 0.1f))
     {
         pObject->SetWorldPosition(WorldPosition);
     }
@@ -265,7 +265,7 @@ void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
     ImGui::EndDisabled();
 
     auto LocalPosition = pObject->GetPosition();
-    if (ImGui::InputFloat3("Position##DrawObject", &LocalPosition[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::DragFloat3("Position##DrawObject", &LocalPosition[0], 0.1f))
     {
         pObject->SetPosition(LocalPosition);
     }
@@ -278,15 +278,9 @@ void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
         pObject->SetRoll(pObject->GetRoll());
 
     auto Scale = pObject->GetScale();
-    if (ImGui::InputFloat3("Scale##DrawObject", &Scale[0], "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::DragFloat3("Scale##DrawObject", &Scale[0], 0.001f))
     {
         pObject->SetScale(Scale);
-    }
-
-    auto ScaleMin = std::min(Scale.x(), std::min(Scale.y(), Scale.z()));
-    if (ImGui::DragFloat("Scale##DragFloatObjectScale", &ScaleMin, 0.01f, 0.001, 100.0f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue))
-    {
-        pObject->SetScale(ScaleMin, ScaleMin, ScaleMin);
     }
 
     if (ImGui::Button("Go to node"))
