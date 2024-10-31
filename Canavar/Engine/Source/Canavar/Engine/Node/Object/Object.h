@@ -69,7 +69,7 @@ namespace Canavar::Engine
 
         ObjectPtr GetParent() const;
 
-        // TODO: Test these 3 methods.
+        virtual void RemoveParent();
         virtual void SetParent(ObjectWeakPtr pParentNode);
         virtual void AddChild(ObjectPtr pNode);
         virtual void RemoveChild(ObjectPtr pNode);

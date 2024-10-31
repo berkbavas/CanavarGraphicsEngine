@@ -94,7 +94,6 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
     // Root
     DummyObjectPtr pRootNode = std::make_shared<DummyObject>();
     pRootNode->SetNodeName("Root Node");
-    pRootNode->SetWorldPosition(0, 20, 0);
 
     mPersecutorCamera->SetTarget(pRootNode);
 
@@ -108,7 +107,7 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
     {
         ModelPtr pSphere = std::make_shared<Model>("Sphere");
         pSphere->SetScale(0.5f, 0.5f, 0.5f);
-        pSphere->SetWorldPosition(-11.42f, 0.16f, -0.83f);
+
         pSphere->SetColor(QVector4D(1, 0, 0, 1));
 
         PointLightPtr pRedLight = std::make_shared<PointLight>();
@@ -120,13 +119,13 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
 
         pSphere->AddChild(pRedLight);
         pRootNode->AddChild(pSphere);
+        pSphere->SetPosition(-11.42f, 0.16f, -0.83f);
     }
 
     // Green light
     {
         ModelPtr pSphere = std::make_shared<Model>("Sphere");
         pSphere->SetScale(0.5f, 0.5f, 0.5f);
-        pSphere->SetWorldPosition(11.42f, 0.16f, -0.83f);
         pSphere->SetColor(QVector4D(0, 1, 0, 1));
 
         PointLightPtr pGreenLight = std::make_shared<PointLight>();
@@ -138,24 +137,26 @@ void Canavar::Editor::Editor::CreateSimulatorModels()
 
         pSphere->AddChild(pGreenLight);
         pRootNode->AddChild(pSphere);
+        pSphere->SetPosition(11.42f, 0.16f, -0.83f);
     }
 
     // Nozzle Effect
     {
         NozzleEffectPtr pNozzleEffect = std::make_shared<NozzleEffect>();
         pNozzleEffect->SetNodeName("Nozzle Effect");
-        pNozzleEffect->SetPosition(0.0f, 0.14f, 11.5f);
         pRootNode->AddChild(pNozzleEffect);
+        pNozzleEffect->SetPosition(0.0f, 0.14f, 11.5f);
     }
 
     // Dummy Camera
     {
         mDummyCamera = std::make_shared<DummyCamera>();
-        mDummyCamera->SetPosition(0, 7.5f, 60);
         pRootNode->AddChild(mDummyCamera);
+        mDummyCamera->SetPosition(0, 7.5f, 60);
     }
 
     mNodeManager->AddNode(pRootNode);
+    pRootNode->SetWorldPosition(0, 20, 0);
 
     mSimulator->Initialize(pRootNode, pModel);
 }

@@ -54,6 +54,8 @@ namespace Canavar::Editor
 
         QVector3D GetWorldPositionForCreatedObject() const;
 
+        std::optional<std::string> InputText(const std::string &label, const std::string &text);
+
         Engine::NodePtr mSelectedNode{ nullptr };
 
         Engine::DirectionalLightPtr mSun;

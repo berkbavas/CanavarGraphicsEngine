@@ -228,36 +228,46 @@ Canavar::Engine::ObjectPtr Canavar::Engine::Object::GetParent() const
     return mParent.lock();
 }
 
+void Canavar::Engine::Object::RemoveParent()
+{
+    SetParent(std::weak_ptr<Object>());
+}
+
 void Canavar::Engine::Object::SetParent(ObjectWeakPtr pNewParent)
 {
     LOG_DEBUG("Object::SetParent: > Setting a parent to Object at {}", PRINT_ADDRESS(this));
 
-    if (pNewParent.lock() == nullptr)
-    {
-        LOG_DEBUG("Object::SetParent: < pProspectiveParent is nullptr. Reseting Weak Pointer...");
-        mParent.reset();
-    }
+    const auto worldPos = GetWorldPosition();
 
-    if (mParent.lock() == nullptr)
+    const auto pCurrentParentLocked = mParent.lock();
+    const auto pNewParentLocked = pNewParent.lock();
+
+    if (pCurrentParentLocked == nullptr)
     {
         LOG_DEBUG("Object::SetParent: < Current parent is nullptr.");
     }
 
-    if (mParent.lock() == pNewParent.lock())
+    if (pNewParentLocked == nullptr)
     {
-        LOG_WARN("Object::SetParent: < Object has already this parent.. Returning...");
+        LOG_DEBUG("Object::SetParent: < New parent is nullptr. Reseting Weak Pointer...");
+        mParent.reset();
+    }
+
+    if (pCurrentParentLocked == pNewParentLocked && pCurrentParentLocked != nullptr)
+    {
+        LOG_WARN("Object::SetParent: < Parent is already this object. Returning...");
         return;
     }
 
-    if (pNewParent.lock().get() == this)
+    if (pNewParentLocked.get() == this)
     {
-        LOG_WARN("Object::SetParent: < Cannot assign itself as a parent. Returning...");
+        LOG_FATAL("Object::SetParent: < Cannot assign itself as a parent. Returning...");
         return;
     }
 
-    if (mParent.lock())
+    if (pCurrentParentLocked)
     {
-        mParent.lock()->RemoveChild(shared_from_this());
+        pCurrentParentLocked->RemoveChild(shared_from_this());
     }
 
     mParent = pNewParent;
@@ -266,6 +276,8 @@ void Canavar::Engine::Object::SetParent(ObjectWeakPtr pNewParent)
     {
         mParent.lock()->AddChild(shared_from_this());
     }
+
+    SetWorldPosition(worldPos);
 
     LOG_DEBUG("Object::SetParent: < Parent has been set. I am done.");
 }
@@ -276,17 +288,17 @@ void Canavar::Engine::Object::AddChild(ObjectPtr pNode)
 
     if (pNode == nullptr)
     {
-        LOG_WARN("Object::AddChild: < pNode is nullptr! Returning...");
+        LOG_FATAL("Object::AddChild: < pNode is nullptr! Returning...");
         return;
     }
 
     if (pNode.get() == this)
     {
-        LOG_WARN("Object::AddChild: < Cannot add itself as a child! Returning...");
+        LOG_FATAL("Object::AddChild: < Cannot add itself as a child! Returning...");
         return;
     }
 
-    if (pNode->GetParent().get() == this)
+    if (mChildren.contains(pNode))
     {
         LOG_WARN("Object::AddChild: < Already child of this Object. Returning...");
         return;

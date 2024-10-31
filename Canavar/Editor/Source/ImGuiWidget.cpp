@@ -35,6 +35,8 @@ void Canavar::Editor::ImGuiWidget::Draw()
     DrawWorldPositionsWindow();
 }
 
+char buffer[25];
+
 void Canavar::Editor::ImGuiWidget::DrawNodeParametersWindow()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
@@ -44,9 +46,12 @@ void Canavar::Editor::ImGuiWidget::DrawNodeParametersWindow()
     if (Engine::NodePtr pNode = std::dynamic_pointer_cast<Engine::Node>(mSelectedNode))
     {
         ImGui::Text("Node Type: %s", pNode->GetNodeType());
-        ImGui::Text("Node Name: %s", pNode->GetNodeName().toStdString().c_str());
         ImGui::Text("Node ID:   %u", pNode->GetNodeId());
-        ImGui::Spacing();
+
+        if (const auto newNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
+        {
+            pNode->SetNodeName(newNodeName.value().c_str());
+        }
     }
 
     if (mSelectedNode == mSun)
@@ -249,6 +254,32 @@ void Canavar::Editor::ImGuiWidget::DrawHaze()
 
 void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
 {
+    const auto pParent = pObject->GetParent();
+    const auto &objects = mNodeManager->GetObjects();
+
+    if (ImGui::BeginCombo("Parent", pParent ? pParent->GetNodeName().toStdString().c_str() : "-"))
+    {
+        for (const auto &pParentCandidate : objects)
+        {
+            if (pParentCandidate == pObject)
+            {
+                continue;
+            }
+
+            if (ImGui::Selectable(pParentCandidate->GetNodeName().toStdString().c_str(), pParentCandidate == pParent))
+            {
+                pObject->SetParent(pParentCandidate);
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+
+    if (ImGui::Button("Remove Parent##DrawObject"))
+    {
+        pObject->RemoveParent();
+    }
+
     auto WorldPosition = pObject->GetWorldPosition();
     if (ImGui::DragFloat3("World Position##DrawObject", &WorldPosition[0], 0.1f))
     {
@@ -531,6 +562,20 @@ QVector3D Canavar::Editor::ImGuiWidget::GetWorldPositionForCreatedObject() const
     QVector3D viewDirection = pActiveCamera->GetViewDirection();
 
     return cameraPosition + 10 * viewDirection;
+}
+
+std::optional<std::string> Canavar::Editor::ImGuiWidget::InputText(const std::string &label, const std::string &text)
+{
+    char buffer[255];
+
+    strncpy(buffer, text.c_str(), sizeof(buffer) - 1);
+
+    if (ImGui::InputText(label.c_str(), buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue))
+    {
+        return std::string(buffer);
+    }
+
+    return std::nullopt;
 }
 
 bool Canavar::Editor::ImGuiWidget::KeyPressed(QKeyEvent *)
