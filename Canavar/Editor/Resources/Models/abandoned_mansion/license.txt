@@ -1,0 +1,8 @@
+Model Information:
+* title:	Abandoned Mansion
+* source:	https://sketchfab.com/3d-models/abandoned-mansion-7fa8fd7a219f4fbcaa6532c3b9364739
+* author:	uday (https://sketchfab.com/udayjeet)
+
+Model License:
+* license type:	SKETCHFAB Standard (https://sketchfab.com/licenses)
+* requirements:	Under basic restrictions, use worldwide, on all types of media, commercially or not, and in all types of derivative works
