@@ -336,11 +336,7 @@ vec4 processPointLights(vec4 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos
         float distance = length(pointLights[i].position - fragWorldPos);
         float attenuation = 1.0f / (pointLights[i].constant + pointLights[i].linear * distance + pointLights[i].quadratic * (distance * distance));
 
-        ambient *= attenuation;
-        diffuse *= attenuation;
-        specular *= attenuation;
-
-        result += (ambient + diffuse + specular) * pointLights[i].color;
+        result += (ambient + diffuse + specular) * pointLights[i].color * attenuation;
     }
 
     return result;
