@@ -35,8 +35,6 @@ void Canavar::Editor::ImGuiWidget::Draw()
     DrawWorldPositionsWindow();
 }
 
-char buffer[25];
-
 void Canavar::Editor::ImGuiWidget::DrawNodeParametersWindow()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
