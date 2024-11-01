@@ -46,6 +46,85 @@ void Canavar::Engine::Object::SetScale(const QVector3D& newScale)
     MakeTransformationDirty();
 }
 
+void Canavar::Engine::Object::ToJson(QJsonObject& object)
+{
+    QJsonObject rotation;
+    rotation.insert("x", mRotation.x());
+    rotation.insert("y", mRotation.y());
+    rotation.insert("z", mRotation.z());
+    rotation.insert("w", mRotation.scalar());
+    object.insert("rotation", rotation);
+
+    QJsonObject position;
+    position.insert("x", mPosition.x());
+    position.insert("y", mPosition.y());
+    position.insert("z", mPosition.z());
+    object.insert("position", position);
+
+    QJsonObject scale;
+    scale.insert("x", mScale.x());
+    scale.insert("y", mScale.y());
+    scale.insert("z", mScale.z());
+    object.insert("scale", scale);
+
+    QMatrix4x4 mTransformation;
+    QMatrix3x3 mNormalMatrix;
+    QQuaternion mRotation;
+    QVector3D mPosition{ QVector3D(0, 0, 0) };
+    QVector3D mScale{ QVector3D(1, 1, 1) };
+
+    if (GetParent())
+    {
+        object.insert("parent", GetParent()->GetUuid());
+    }
+
+    object.insert("visible", mVisible);
+    object.insert("selectable", mSelectable);
+
+    // TODO : AABB
+}
+
+void Canavar::Engine::Object::FromJson(const QJsonObject& object)
+{
+    Node::FromJson(object);
+
+    // Parent must be set before calling this method.
+
+    // Rotation
+    {
+        float x = object["rotation"]["x"].toDouble();
+        float y = object["rotation"]["y"].toDouble();
+        float z = object["rotation"]["z"].toDouble();
+        float w = object["rotation"]["w"].toDouble(1.0f);
+
+        SetRotation(QQuaternion(w, x, y, z));
+    }
+
+    // Position
+    {
+        float x = object["position"]["x"].toDouble();
+        float y = object["position"]["y"].toDouble();
+        float z = object["position"]["z"].toDouble();
+
+        SetPosition(QVector3D(x, y, z));
+    }
+
+    // Scale
+    {
+        float x = object["scale"]["x"].toDouble(1.0f);
+        float y = object["scale"]["y"].toDouble(1.0f);
+        float z = object["scale"]["z"].toDouble(1.0f);
+
+        SetScale(QVector3D(x, y, z));
+    }
+
+    mVisible = object["visible"].toBool(true);
+    mSelectable = object["selectable"].toBool(true);
+
+    UpdateTransformation();
+    Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll);
+}
+
 const QMatrix4x4& Canavar::Engine::Object::GetWorldTransformation()
 {
     mWorldTransformation.setToIdentity();

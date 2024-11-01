@@ -27,6 +27,9 @@ namespace Canavar::Engine
         Object() = default;
         virtual ~Object() = default;
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       public:
         const QMatrix4x4& GetWorldTransformation();
         const QMatrix4x4& GetTransformation();

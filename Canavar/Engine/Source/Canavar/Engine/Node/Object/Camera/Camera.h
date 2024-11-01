@@ -11,6 +11,9 @@ namespace Canavar::Engine
       protected:
         Camera() = default;
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
       public:
         virtual const QMatrix4x4 &GetProjectionMatrix() = 0;
         virtual const QMatrix4x4 &GetViewProjectionMatrix() = 0;

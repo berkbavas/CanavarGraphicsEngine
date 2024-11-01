@@ -139,6 +139,28 @@ void Canavar::Engine::FreeCamera::RemoveChild(ObjectPtr pNode)
     LOG_WARN("FreeCamera::RemoveChild: FreeCamera cannot have any children.");
 }
 
+void Canavar::Engine::FreeCamera::ToJson(QJsonObject& object)
+{
+    PerspectiveCamera::ToJson(object);
+
+    object.insert("angular_speed", mAngularSpeed);
+    object.insert("linear_speed", mLinearSpeed);
+    object.insert("linear_speed_multiplier", mLinearSpeedMultiplier);
+    object.insert("angular_speed_muliplier", mAngularSpeedMultiplier);
+    object.insert("action_receive_button", mActionReceiveButton);
+}
+
+void Canavar::Engine::FreeCamera::FromJson(const QJsonObject& object)
+{
+    PerspectiveCamera::FromJson(object);
+
+    mAngularSpeed = object["angular_speed"].toDouble(25.0f);
+    mLinearSpeed = object["linear_speed"].toDouble(5.0f);
+    mLinearSpeedMultiplier = object["linear_speed_multiplier"].toDouble(1.0f);
+    mAngularSpeedMultiplier = object["angular_speed_muliplier"].toDouble(1.0f);
+    mActionReceiveButton = (Qt::MouseButton) object["action_receive_button"].toInt(Qt::MiddleButton);
+}
+
 const QMap<Qt::Key, QVector3D> Canavar::Engine::FreeCamera::KEY_BINDINGS = //
     {
         { Qt::Key_W, QVector3D(0, 0, -1) }, //

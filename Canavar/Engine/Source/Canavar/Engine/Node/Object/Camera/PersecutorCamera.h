@@ -26,6 +26,9 @@ namespace Canavar::Engine
         ObjectPtr GetTarget() const;
         void SetTarget(ObjectPtr newTarget);
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
       private:
         ObjectPtr mTarget;
         Mouse mMouse;

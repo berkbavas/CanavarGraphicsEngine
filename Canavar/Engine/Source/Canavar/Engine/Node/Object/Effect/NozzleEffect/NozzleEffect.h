@@ -15,6 +15,9 @@ namespace Canavar::Engine
 
         void Render(float ifps);
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
       private:
         struct Particle
         {

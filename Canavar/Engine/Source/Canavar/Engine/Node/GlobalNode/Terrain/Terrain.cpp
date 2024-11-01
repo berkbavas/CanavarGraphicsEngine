@@ -78,3 +78,49 @@ void Canavar::Engine::Terrain::Reset()
     mShininess = 8.0f;
     mSpecular = 0.0f;
 }
+
+void Canavar::Engine::Terrain::ToJson(QJsonObject& object)
+{
+    GlobalNode::ToJson(object);
+
+    object.insert("amplitude", mAmplitude);
+    object.insert("frequency", mFrequency);
+    object.insert("octaves", mOctaves);
+    object.insert("power", mPower);
+    object.insert("tessellation_multiplier", mTessellationMultiplier);
+    object.insert("grass_coverage", mGrassCoverage);
+    object.insert("ambient", mAmbient);
+    object.insert("diffuse", mDiffuse);
+    object.insert("specular", mSpecular);
+    object.insert("shininess", mShininess);
+    object.insert("enabled", mEnabled);
+
+    QJsonObject seed;
+    seed.insert("x", mSeed.x());
+    seed.insert("y", mSeed.y());
+    seed.insert("z", mSeed.z());
+
+    object.insert("seed", seed);
+}
+
+void Canavar::Engine::Terrain::FromJson(const QJsonObject& object)
+{
+    GlobalNode::FromJson(object);
+
+    mAmplitude = object["amplitude"].toDouble(20.0f);
+    mFrequency = object["frequency"].toDouble(0.01f);
+    mOctaves = object["octaves"].toInt(13);
+    mPower = object["power"].toDouble(3.0f);
+    mTessellationMultiplier = object["tessellation_multiplier"].toDouble(1.0f);
+    mGrassCoverage = object["grass_coverage"].toDouble(0.25f);
+    mAmbient = object["ambient"].toDouble(0.2f);
+    mDiffuse = object["diffuse"].toDouble(0.85f);
+    mSpecular = object["specular"].toDouble(0.0f);
+    mShininess = object["shininess"].toDouble(8.0f);
+
+    // Seed
+    float x = object["seed"]["x"].toDouble();
+    float y = object["seed"]["y"].toDouble();
+    float z = object["seed"]["z"].toDouble();
+    mSeed = QVector3D(x, y, z);
+}

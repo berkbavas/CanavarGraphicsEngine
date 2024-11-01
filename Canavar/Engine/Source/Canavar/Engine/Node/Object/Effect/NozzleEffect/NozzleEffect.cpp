@@ -87,6 +87,30 @@ void Canavar::Engine::NozzleEffect::Render(float ifps)
     glBindVertexArray(0);
 }
 
+void Canavar::Engine::NozzleEffect::ToJson(QJsonObject &object)
+{
+    Object::ToJson(object);
+
+    object.insert("max_radius", mMaxRadius);
+    object.insert("max_life", mMaxLife);
+    object.insert("max_distance", mMaxDistance);
+    object.insert("min_distance", mMinDistance);
+    object.insert("speed", mSpeed);
+    object.insert("scale", mScale);
+}
+
+void Canavar::Engine::NozzleEffect::FromJson(const QJsonObject &object)
+{
+    Object::FromJson(object);
+
+    mMaxRadius = object["max_radius"].toDouble(0.8f);
+    mMaxLife = object["max_life"].toDouble(0.0f);
+    mMaxDistance = object["max_distance"].toDouble(10.0f);
+    mMinDistance = object["min_distance"].toDouble(4.0f);
+    mSpeed = object["speed"].toDouble(7.0f);
+    mScale = object["scale"].toDouble(0.04f);
+}
+
 Canavar::Engine::NozzleEffect::Particle Canavar::Engine::NozzleEffect::GenerateParticle()
 {
     Particle p;

@@ -15,6 +15,9 @@ namespace Canavar::Engine
         float GetPhi() const;
         void SetDirectionFromThetaPhi(float theta, float phi);
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
         DEFINE_MEMBER(QVector3D, Direction, QVector3D(0, 1, 0));
     };
 

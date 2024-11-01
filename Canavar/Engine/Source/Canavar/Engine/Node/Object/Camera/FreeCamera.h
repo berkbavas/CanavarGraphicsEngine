@@ -30,6 +30,9 @@ namespace Canavar::Engine
         void AddChild(ObjectPtr pNode) override;
         void RemoveChild(ObjectPtr pNode) override;
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
       private:
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
         DEFINE_MEMBER(float, LinearSpeed, 5.0f);

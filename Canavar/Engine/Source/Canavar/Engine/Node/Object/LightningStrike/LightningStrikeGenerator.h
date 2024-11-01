@@ -11,6 +11,9 @@ namespace Canavar::Engine
     {
         REGISTER_OBJECT_TYPE(LightningStrikeGenerator);
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       public:
         LightningStrikeGenerator();
 

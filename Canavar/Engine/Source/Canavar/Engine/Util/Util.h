@@ -16,6 +16,8 @@ namespace Canavar::Engine
         static QVector3D GenerateRandomVector(float x, float y, float z);
         static float GenerateRandom(float bound);
 
+        static QString GenerateUuid();
+
       private:
         static QRandomGenerator mGenerator;
     };

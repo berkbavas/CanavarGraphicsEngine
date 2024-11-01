@@ -32,3 +32,31 @@ void Canavar::Engine::DirectionalLight::SetDirectionFromThetaPhi(float theta, fl
 
     mDirection = QVector3D(x, y, z);
 }
+
+void Canavar::Engine::DirectionalLight::ToJson(QJsonObject &object)
+{
+    Light::ToJson(object);
+
+    QJsonObject direction;
+    direction.insert("x", 0);
+    direction.insert("y", 1);
+    direction.insert("z", 0);
+    object.insert("direction", direction);
+}
+
+void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &object)
+{
+    Light::FromJson(object);
+
+    QJsonObject defaultDirection;
+    defaultDirection.insert("x", 0);
+    defaultDirection.insert("y", 1);
+    defaultDirection.insert("z", 0);
+
+    QJsonObject direction = object["direction"].toObject(defaultDirection);
+    float x = direction["x"].toDouble();
+    float y = direction["y"].toDouble();
+    float z = direction["z"].toDouble();
+
+    mDirection = QVector3D(x, y, z);
+}

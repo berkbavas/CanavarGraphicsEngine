@@ -10,6 +10,9 @@ namespace Canavar::Engine
 
       public:
         DummyCamera();
+
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
     };
 
     using DummyCameraPtr = std::shared_ptr<DummyCamera>;

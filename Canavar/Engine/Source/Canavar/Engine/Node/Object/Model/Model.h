@@ -15,6 +15,9 @@ namespace Canavar::Engine
         const char* GetNodeType() const override { return "Model"; }
         static constexpr const char* NODE_TYPE{ "Model" };
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       private:
         DEFINE_MEMBER(QVector4D, Color, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
         DEFINE_MEMBER(float, Ambient, 0.25f);

@@ -10,6 +10,9 @@ namespace Canavar::Engine
     {
         REGISTER_OBJECT_TYPE(LightningStrikeAttractor);
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
       public:
         LightningStrikeAttractor();
     };

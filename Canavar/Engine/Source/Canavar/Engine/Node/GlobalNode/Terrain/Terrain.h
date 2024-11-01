@@ -30,6 +30,9 @@ namespace Canavar::Engine
         void Render(Shader* pShader, Camera* pCamera);
         void Reset();
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       private:
         TileGenerator* mTileGenerator;
 

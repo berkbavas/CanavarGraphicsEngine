@@ -9,6 +9,9 @@ namespace Canavar::Engine
       protected:
         GlobalNode() = default;
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       public:
         virtual void Initialize();
 

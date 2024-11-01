@@ -3,6 +3,7 @@
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <QFile>
+#include <QUuid>
 
 QByteArray Canavar::Engine::Util::GetBytes(const QString& path)
 {
@@ -27,6 +28,11 @@ QVector3D Canavar::Engine::Util::GenerateRandomVector(float x, float y, float z)
 float Canavar::Engine::Util::GenerateRandom(float bound)
 {
     return mGenerator.bounded(bound);
+}
+
+QString Canavar::Engine::Util::GenerateUuid()
+{
+    return QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
 }
 
 QRandomGenerator Canavar::Engine::Util::mGenerator = QRandomGenerator::securelySeeded();

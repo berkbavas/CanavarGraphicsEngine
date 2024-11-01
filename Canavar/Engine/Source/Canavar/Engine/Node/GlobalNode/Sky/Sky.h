@@ -22,6 +22,9 @@ namespace Canavar::Engine
 
         void Render(Shader* pShader, DirectionalLight* pSun, Camera* pCamera);
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       private:
         static QVector3D Pow(const QVector3D& a, const QVector3D& b);
         static QVector3D Exp(const QVector3D& a);
@@ -42,8 +45,6 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Albedo, 0.1f);
         DEFINE_MEMBER(float, Turbidity, 4.0f);
         DEFINE_MEMBER(float, NormalizedSunY, 1.15f);
-
-        friend class NodeManager;
     };
 
     using SkyPtr = std::shared_ptr<Sky>;

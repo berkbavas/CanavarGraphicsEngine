@@ -25,6 +25,9 @@ namespace Canavar::Engine
         float GetHorizontalFov() const;
         float GetAspectRatio() const;
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
       private:
         // For caching
         QMatrix4x4 mViewProjectionMatrix;

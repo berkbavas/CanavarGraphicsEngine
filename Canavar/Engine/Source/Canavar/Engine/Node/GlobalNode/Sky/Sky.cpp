@@ -123,6 +123,24 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
     glEnable(GL_DEPTH_TEST);
 }
 
+void Canavar::Engine::Sky::ToJson(QJsonObject& object)
+{
+    GlobalNode::ToJson(object);
+
+    object.insert("albedo", mAlbedo);
+    object.insert("turbidity", mTurbidity);
+    object.insert("normalized_sun_y", mNormalizedSunY);
+}
+
+void Canavar::Engine::Sky::FromJson(const QJsonObject& object)
+{
+    GlobalNode::FromJson(object);
+
+    mAlbedo = object["albedo"].toDouble(0.1f);
+    mTurbidity = object["turbidity"].toDouble(4.0f);
+    mNormalizedSunY = object["normalized_sun_y"].toDouble(1.15f);
+}
+
 QVector3D Canavar::Engine::Sky::Pow(const QVector3D& a, const QVector3D& b)
 {
     return QVector3D(std::pow(a.x(), b.x()), std::pow(a.y(), b.y()), std::pow(a.z(), b.z()));

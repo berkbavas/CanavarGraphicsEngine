@@ -10,6 +10,9 @@ namespace Canavar::Engine
 
       public:
         DummyObject();
+
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
     };
 
     using DummyObjectPtr = std::shared_ptr<DummyObject>;

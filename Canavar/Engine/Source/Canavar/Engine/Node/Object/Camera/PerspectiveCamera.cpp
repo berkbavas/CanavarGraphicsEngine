@@ -53,3 +53,21 @@ float Canavar::Engine::PerspectiveCamera::GetAspectRatio() const
 {
     return float(mWidth) / float(mHeight);
 }
+
+void Canavar::Engine::PerspectiveCamera::ToJson(QJsonObject& object)
+{
+    Camera::ToJson(object);
+
+    object.insert("z_near", mZNear);
+    object.insert("z_far", mZFar);
+    object.insert("vertical_fov", mVerticalFov);
+}
+
+void Canavar::Engine::PerspectiveCamera::FromJson(const QJsonObject& object)
+{
+    Camera::FromJson(object);
+
+    mZNear = object["z_near"].toDouble(1.0f);
+    mZFar = object["z_far"].toDouble(100'000.0f);
+    mVerticalFov = object["vertical_fov"].toDouble(60.0f);
+}

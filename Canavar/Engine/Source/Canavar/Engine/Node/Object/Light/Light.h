@@ -9,6 +9,9 @@ namespace Canavar::Engine
       protected:
         Light() = default;
 
+        void ToJson(QJsonObject &object) override;
+        void FromJson(const QJsonObject &object) override;
+
         DEFINE_MEMBER(QVector4D, Color, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
         DEFINE_MEMBER(float, Ambient, 1.0f);
         DEFINE_MEMBER(float, Diffuse, 1.0f);

@@ -80,6 +80,29 @@ void Canavar::Engine::PersecutorCamera::SetTarget(ObjectPtr newTarget)
     Reset();
 }
 
+void Canavar::Engine::PersecutorCamera::ToJson(QJsonObject& object)
+{
+    PersecutorCamera::ToJson(object);
+
+    if (mTarget)
+    {
+        object.insert("target", mTarget->GetUuid());
+    }
+
+    object.insert("angular_speed", mAngularSpeed);
+    object.insert("angular_speed_muliplier", mAngularSpeedMultiplier);
+}
+
+void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object)
+{
+    PersecutorCamera::FromJson(object);
+
+    // Target must be set in advance.
+
+    mAngularSpeed = object["angular_speed"].toDouble(25.0f);
+    mAngularSpeedMultiplier = object["angular_speed_muliplier"].toDouble(1.0f);
+}
+
 void Canavar::Engine::PersecutorCamera::SetParent(ObjectWeakPtr pParentNode)
 {
     LOG_WARN("PersecutorCamera::SetParent: Cannot assign parent to PersecutorCamera");

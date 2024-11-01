@@ -15,6 +15,9 @@ namespace Canavar::Engine
         LightningStrikeBase();
         ~LightningStrikeBase();
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object) override;
+
       public:
         void Initialize();
         void Render(Camera* pCamera, Shader* pLightningStrikeShader, Shader* pLightningStrikeQuadGeneratorShader, float ifps);

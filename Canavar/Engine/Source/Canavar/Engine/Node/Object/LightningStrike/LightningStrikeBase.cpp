@@ -15,6 +15,32 @@ Canavar::Engine::LightningStrikeBase::~LightningStrikeBase()
     // glDeleteTransformFeedbacks(2, mTransformFeedbackObjects);
 }
 
+void Canavar::Engine::LightningStrikeBase::ToJson(QJsonObject& object)
+{
+    Object::ToJson(object);
+
+    object.insert("base_value", mBaseValue);
+    object.insert("decay", mDecay);
+    object.insert("jitter_displacement_multiplier", mJitterDisplacementMultiplier);
+    object.insert("fork_length_multiplier", mForkLengthMultiplier);
+    object.insert("quad_width", mQuadWidth);
+    object.insert("subdivision_level", mSubdivisionLevel);
+    object.insert("freee", mFreeze);
+}
+
+void Canavar::Engine::LightningStrikeBase::FromJson(const QJsonObject& object)
+{
+    Object::FromJson(object);
+
+    mBaseValue = object["base_value"].toDouble(1.0f);
+    mDecay = object["decay"].toDouble(1.0f);
+    mJitterDisplacementMultiplier = object["jitter_displacement_multiplier"].toDouble(1.0f);
+    mForkLengthMultiplier = object["fork_length_multiplier"].toDouble(2.0f);
+    mQuadWidth = object["quad_width"].toDouble(0.05f);
+    mSubdivisionLevel = object["subdivision_level"].toInt(7);
+    mFreeze = object["freeze"].toBool(false);
+}
+
 void Canavar::Engine::LightningStrikeBase::Initialize()
 {
     initializeOpenGLFunctions();
