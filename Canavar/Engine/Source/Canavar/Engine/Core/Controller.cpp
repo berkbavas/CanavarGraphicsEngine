@@ -56,11 +56,15 @@ void Canavar::Engine::Controller::Run()
 
     Q_INIT_RESOURCE(Engine);
 
-    mWindow->showMaximized();
+    mWindow->setWidth(INITIAL_WIDTH);
+    mWindow->setHeight(INITIAL_HEIGHT);
+    mWindow->showMinimized();
 }
 
 void Canavar::Engine::Controller::Initialize()
 {
+    mWindow->showMaximized();
+
     for (const auto pManager : mManagers)
     {
         pManager->SetManagerProvider(this);
