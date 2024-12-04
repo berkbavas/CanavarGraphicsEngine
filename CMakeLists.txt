@@ -11,23 +11,45 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(INCLUDE_DIR Libs/qtimgui/include 
-                Libs/assimp/include
-                Libs/JSBSim/include
+
+set(QT_IMGUI_DIR Libs/qtimgui)
+set(ASSIMP_DIR Libs/assimp)
+set(JSBSIM_DIR Libs/JSBSim)
+set(OPENCV_DIR Libs/opencv-4.10.0)
+
+set(INCLUDE_DIR 
+    ${QT_IMGUI_DIR}/include 
+    ${ASSIMP_DIR}/include
+    ${JSBSIM_DIR}/include
+    ${OPENCV_DIR}/include
 )
 				
-set(LIBS_DIR    Libs/qtimgui/lib
-                Libs/assimp/lib
-                Libs/JSBSim/lib
+set(LIBS_DIR
+    ${QT_IMGUI_DIR}/lib
+    ${ASSIMP_DIR}/lib
+    ${JSBSIM_DIR}/lib
+    ${OPENCV_DIR}/x64/vc17/lib
 )
 			 
-set(LIBS    imgui
-            qt_imgui_widgets
-            assimp-vc143-mt
-            zlibstatic
+set(LIBS
+    imgui
+    qt_imgui_widgets
+    assimp-vc143-mt
+    zlibstatic
+    JSBSim
+    ws2_32
+    opencv_core4100
+    opencv_features2d4100
+    opencv_imgcodecs4100
+    opencv_calib3d4100
+    opencv_imgproc4100
+    opencv_highgui4100
 )
 
 link_directories(${LIBS_DIR})
 include_directories(${INCLUDE_DIR})
 
 add_subdirectory(Canavar/Engine Canavar/Engine)
+add_subdirectory(Canavar/Editor Canavar/Editor)
+add_subdirectory(Canavar/Simulator Canavar/Simulator)
+add_subdirectory(Canavar/RangeCalculator Canavar/RangeCalculator)

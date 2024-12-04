@@ -1,0 +1,371 @@
+{
+    "nodes": [
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": true,
+            "node_name": "Sky",
+            "node_type": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "turbidity": 4,
+            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
+        },
+        {
+            "ambient": 0.20000000298023224,
+            "amplitude": 20,
+            "diffuse": 0.8500000238418579,
+            "enabled": true,
+            "frequency": 0.009999999776482582,
+            "grass_coverage": 0.25,
+            "node_name": "Terrain",
+            "node_type": "Terrain",
+            "octaves": 13,
+            "power": 3,
+            "seed": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "shininess": 8,
+            "specular": 0,
+            "tessellation_multiplier": 1,
+            "uuid": "9537a87e-9d47-4072-9fdb-a25dcf1339c1"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "d8cf8235-16bb-4d21-9ff1-9c0239fe666a"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": 0.7071067690849304,
+                "y": -0.7071067690849304,
+                "z": 0
+            },
+            "enabled": true,
+            "node_name": "Sun",
+            "node_type": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "visible": true
+        },
+        {
+            "angular_speed": 25,
+            "angular_speed_muliplier": 1,
+            "node_name": "Persecutor Camera",
+            "node_type": "PersecutorCamera",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "target": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "uuid": "aa4c4f90-adf6-4524-91ce-e0bbc0e6fdc9",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 1
+        },
+        {
+            "node_name": "Root Node",
+            "node_type": "DummyObject",
+            "position": {
+                "x": 0,
+                "y": 20,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "color": {
+                "a": 1,
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "invert_normals": false,
+            "node_name": "Sphere",
+            "node_type": "Model",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": -11.420000076293945,
+                "y": 0.1599999964237213,
+                "z": -0.8299999833106995
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "scene_name": "Sphere",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "uuid": "71a89cae-dc71-4f78-8888-b77956c22136",
+            "visible": true
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "constant": 0.07500000298023224,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.25,
+            "node_name": "Red Light",
+            "node_type": "PointLight",
+            "parent": "71a89cae-dc71-4f78-8888-b77956c22136",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "quadratic": 0.10000000149011612,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
+            "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "color": {
+                "a": 1,
+                "b": 0,
+                "g": 1,
+                "r": 0
+            },
+            "diffuse": 0.75,
+            "invert_normals": false,
+            "node_name": "Sphere",
+            "node_type": "Model",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 11.420000076293945,
+                "y": 0.1599999964237213,
+                "z": -0.8299999833106995
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.5,
+                "y": 0.5,
+                "z": 0.5
+            },
+            "scene_name": "Sphere",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "uuid": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
+            "visible": true
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 0,
+                "g": 1,
+                "r": 0
+            },
+            "constant": 0.07500000298023224,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.25,
+            "node_name": "Green Light",
+            "node_type": "PointLight",
+            "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "quadratic": 0.10000000149011612,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
+            "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "invert_normals": false,
+            "node_name": "f16c",
+            "node_type": "Model",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "f16c",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
+            "visible": true
+        },
+        {
+            "node_name": "Dummy Camera",
+            "node_type": "DummyCamera",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 7.5,
+                "z": 60
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 1
+        },
+        {
+            "max_distance": 10,
+            "max_life": 0,
+            "max_radius": 0.800000011920929,
+            "min_distance": 4,
+            "node_name": "Nozzle Effect",
+            "node_type": "NozzleEffect",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0.14000000059604645,
+                "z": 11.5
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": 0.03999999910593033,
+            "selectable": true,
+            "speed": 7,
+            "uuid": "32d98f53-0903-4f67-ac38-9dd6dec271e7",
+            "visible": true
+        }
+    ]
+}
