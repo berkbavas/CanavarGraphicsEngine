@@ -30,6 +30,11 @@ namespace Canavar::Engine
         QMatrix4x4 mLightProjectionMatrix;
         QMatrix4x4 mLightViewMatrix;
 
+        DEFINE_MEMBER(float, Fov, 60);
+        DEFINE_MEMBER(float, ZNear, 10);
+        DEFINE_MEMBER(float, ZFar, 1000);
+        DEFINE_MEMBER(float, SunDistance, 50);
+
         DEFINE_MEMBER_PTR(NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(ShaderManager, ShaderManager);
         DEFINE_MEMBER(DirectionalLightPtr, Sun);

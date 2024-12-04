@@ -454,7 +454,12 @@ void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
         ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 24);
         ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
         ImGui::Checkbox("Shadows", &mRenderingManager->GetShadowsEnabled_NonConst());
-        ImGui::SliderFloat("Shadow Bias Coefficent", &mRenderingManager->GetShadowBiasCoefficent_NonConst(), 0.001f, 1.0f, "%.3f");
+        ImGui::SliderFloat("Shadow Bias", &mRenderingManager->GetShadowBias_NonConst(), 0.00001f, 0.001f, "%.5f");
+        ImGui::SliderInt("Shadow Samples", &mRenderingManager->GetShadowSamples_NonConst(), 1, 6);
+        ImGui::SliderFloat("Shadow Projection FOV", &mRenderingManager->GetShadowMappingRenderer()->GetFov_NonConst(), 5, 90);
+        ImGui::SliderFloat("Shadow Projection Z-Near", &mRenderingManager->GetShadowMappingRenderer()->GetZNear_NonConst(), 1, 20);
+        ImGui::SliderFloat("Shadow Projection Z-Far", &mRenderingManager->GetShadowMappingRenderer()->GetZFar_NonConst(), 20, 1000);
+        ImGui::SliderFloat("Shadow Sun Distance", &mRenderingManager->GetShadowMappingRenderer()->GetSunDistance_NonConst(), 1, 1000);
     }
 }
 

@@ -278,12 +278,12 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camer
     pShader->SetUniformValue("haze.density", mHaze->GetDensity());
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
     pShader->SetUniformValue("cameraPosition", pCamera->GetWorldPosition());
-    pShader->SetUniformValue("sunDirection", mSun->GetDirection());
     pShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
     pShader->SetUniformValue("LVP", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-    pShader->SetSampler("shadowMap", 4, mShadowMappingRenderer->GetShadowMap());
-    pShader->SetUniformValue("shadowsEnabled", mShadowsEnabled);
-    pShader->SetUniformValue("shadowBiasCoefficent", mShadowBiasCoefficent);
+    pShader->SetSampler("shadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMap());
+    pShader->SetUniformValue("shadow.enabled", mShadowsEnabled);
+    pShader->SetUniformValue("shadow.bias", mShadowBias);
+    pShader->SetUniformValue("shadow.samples", mShadowSamples);
     pShader->Release();
 }
 

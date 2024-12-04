@@ -45,8 +45,17 @@ struct Color
     vec4 specular;
 };
 
+struct Shadow
+{
+    sampler2D map;
+    bool enabled;
+    float bias;
+    int samples;
+};
+
 uniform Haze haze;
 uniform Model model;
+uniform Shadow shadow;
 
 uniform PointLight pointLights[8];
 uniform int numberOfPointLights;
@@ -67,10 +76,6 @@ uniform sampler2D textureAmbient;
 uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
 uniform sampler2D textureNormal;
-
-uniform sampler2D shadowMap;
-uniform bool shadowsEnabled;
-uniform float shadowBiasCoefficent;
 
 uniform bool invertNormals = false;
 
@@ -176,34 +181,43 @@ vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
 }
 
 // Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
-float shadowCalculation(vec3 normal)
+float shadowCalculation()
 {
     // perform perspective divide
     vec3 projCoords = fsFragPosLightSpace.xyz / fsFragPosLightSpace.w;
+
     // transform to [0,1] range
     projCoords = projCoords * 0.5 + 0.5;
+
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float closestDepth = texture(shadow.map, projCoords.xy).r;
+
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
-    float bias = 0.00001f * max((1.0f - dot(normal, sunDirection)), 0.1f);
-    float shadow = 0.0;
-    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
-    for (int x = -3; x <= 3; ++x)
+
+    vec2 texelSize = 1.0 / textureSize(shadow.map, 0);
+
+    int samples = shadow.samples;
+    float result = 0.0f;
+
+    for (int x = -samples; x <= samples; ++x)
     {
-        for (int y = -3; y <= 3; ++y)
+        for (int y = -samples; y <= samples; ++y)
         {
-            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
-            shadow += currentDepth - shadowBiasCoefficent * bias > pcfDepth ? 1.0 : 0.0;
+            float pcfDepth = texture(shadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
+            result += currentDepth - shadow.bias > pcfDepth ? 1.0 : 0.0;
         }
     }
-    shadow /= 49.0;
+
+    result /= pow(2 * samples + 1, 2);
 
     // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
     if (projCoords.z > 1.0)
-        shadow = 0.0;
+    {
+        result = 0.0;
+    }
 
-    return shadow;
+    return result;
 }
 
 Color calculateColor(float shadow)
@@ -242,7 +256,7 @@ Color calculateColor(float shadow)
         color.diffuse = model.diffuse * fsVertexColor * lit;
         color.specular = model.specular * fsVertexColor * lit;
     }
-    
+
     return color;
 }
 
@@ -255,14 +269,14 @@ void main()
         normal = -normal;
     }
 
-    float shadow = 0.0f;
+    float shadowFactor = 0.0f;
 
-    if (shadowsEnabled)
+    if (shadow.enabled)
     {
-        shadow = shadowCalculation(normal);
+        shadowFactor = shadowCalculation();
     }
 
-    Color color = calculateColor(shadow);
+    Color color = calculateColor(shadowFactor);
 
     vec3 viewDirection = normalize(cameraPosition - fsWorldPosition.xyz);
     float distance = length(cameraPosition - fsWorldPosition.xyz);

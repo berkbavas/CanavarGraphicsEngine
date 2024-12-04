@@ -8,18 +8,20 @@ void Canavar::Engine::ShadowMappingRenderer::Initialize()
 {
     initializeOpenGLFunctions();
 
-    mFramebuffer = new ShadowMappingFramebuffer(4096, 4096);
+    mFramebuffer = new ShadowMappingFramebuffer(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
     mShadowMappingShader = mShaderManager->GetShader(ShaderType::ShadowMapping);
-
-    mLightProjectionMatrix.perspective(90, 1, 0.1, 10000);
 }
 
 void Canavar::Engine::ShadowMappingRenderer::Render(float ifps)
 {
     constexpr QVector3D ORIGIN(0, 0, 0);
     constexpr QVector3D UP(0, 1, 0);
+    
     mLightViewMatrix.setToIdentity();
-    mLightViewMatrix.lookAt(-100 * mSun->GetDirection(), ORIGIN, UP);
+    mLightViewMatrix.lookAt(-mSunDistance * mSun->GetDirection(), ORIGIN, UP);
+
+    mLightProjectionMatrix.setToIdentity();
+    mLightProjectionMatrix.perspective(mFov, 1, mZNear, mZFar);
 
     mLightViewProjectionMatrix = mLightProjectionMatrix * mLightViewMatrix;
 

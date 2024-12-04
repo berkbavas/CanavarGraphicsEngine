@@ -85,7 +85,7 @@ namespace Canavar::Engine
         LightManager *mLightManager;
 
         BoundingBoxRenderer *mBoundingBoxRenderer;
-        ShadowMappingRenderer *mShadowMappingRenderer;
+        DEFINE_MEMBER_PTR_CONST(ShadowMappingRenderer, ShadowMappingRenderer);
 
         Camera *mActiveCamera{ nullptr };
 
@@ -114,7 +114,8 @@ namespace Canavar::Engine
         DEFINE_MEMBER(int, BlurPass, 4);
         DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
         DEFINE_MEMBER(bool, ShadowsEnabled, false);
-        DEFINE_MEMBER(float, ShadowBiasCoefficent, 0.3f);
+        DEFINE_MEMBER(float, ShadowBias, 0.00005f);
+        DEFINE_MEMBER(int, ShadowSamples, 3);
 
         static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 6;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
