@@ -25,86 +25,83 @@ void Canavar::Editor::ImGuiWidget::Draw()
     ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_MenuBar);
 
     DrawMenuBar();
+    DrawNodeTreeViewWidget();
+    DrawNodeParametersWidget();
     DrawCreateObjectWidget();
     DrawCreateModelWidget();
     DrawRenderSettings();
     DrawVertexPainterSettings();
+    DrawWorldPositionsWidget();
     DrawNodeInfo();
     DrawStats();
-
+    
     ImGui::End();
-
-    DrawNodeParametersWindow();
-    DrawNodeTreeViewWindow();
-    DrawWorldPositionsWindow();
 }
 
-void Canavar::Editor::ImGuiWidget::DrawNodeParametersWindow()
+void Canavar::Editor::ImGuiWidget::DrawNodeParametersWidget()
 {
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Parameters");
-
-    ImGui::BeginDisabled(mSelectedNode == nullptr);
-    if (Engine::NodePtr pNode = std::dynamic_pointer_cast<Engine::Node>(mSelectedNode))
+    if (ImGui::CollapsingHeader("Parameters"))
     {
-        ImGui::Text("Node Type: %s", pNode->GetNodeType().toStdString().c_str());
-        ImGui::Text("Node ID:   %u", pNode->GetNodeId());
+        ImGui::BeginDisabled(mSelectedNode == nullptr);
+        if (Engine::NodePtr pNode = std::dynamic_pointer_cast<Engine::Node>(mSelectedNode))
+        {
+            ImGui::Text("Node Type: %s", pNode->GetNodeType().toStdString().c_str());
+            ImGui::Text("Node ID:   %u", pNode->GetNodeId());
 
-        if (const auto newNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
-        {
-            pNode->SetNodeName(newNodeName.value().c_str());
+            if (const auto newNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
+            {
+                pNode->SetNodeName(newNodeName.value().c_str());
+            }
         }
-    }
 
-    if (mSelectedNode == mSun)
-    {
-        DrawSun();
-    }
-    else if (mSelectedNode == mSky)
-    {
-        DrawSky();
-    }
-    else if (mSelectedNode == mHaze)
-    {
-        DrawHaze();
-    }
-    else if (mSelectedNode == mTerrain)
-    {
-        DrawTerrain();
-    }
-    else if (Engine::ObjectPtr pObject = std::dynamic_pointer_cast<Engine::Object>(mSelectedNode))
-    {
-        DrawObject(pObject);
+        if (mSelectedNode == mSun)
+        {
+            DrawSun();
+        }
+        else if (mSelectedNode == mSky)
+        {
+            DrawSky();
+        }
+        else if (mSelectedNode == mHaze)
+        {
+            DrawHaze();
+        }
+        else if (mSelectedNode == mTerrain)
+        {
+            DrawTerrain();
+        }
+        else if (Engine::ObjectPtr pObject = std::dynamic_pointer_cast<Engine::Object>(mSelectedNode))
+        {
+            DrawObject(pObject);
 
-        if (Engine::ModelPtr pModel = std::dynamic_pointer_cast<Engine::Model>(mSelectedNode))
-        {
-            DrawModel(pModel);
+            if (Engine::ModelPtr pModel = std::dynamic_pointer_cast<Engine::Model>(mSelectedNode))
+            {
+                DrawModel(pModel);
+            }
+            else if (Engine::PerspectiveCameraPtr pPerspectiveCamera = std::dynamic_pointer_cast<Engine::PerspectiveCamera>(mSelectedNode))
+            {
+                DrawCamera(pPerspectiveCamera);
+            }
+            else if (Engine::DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<Engine::DirectionalLight>(mSelectedNode))
+            {
+                DrawDirectionalLight(pDirectionalLight);
+            }
+            else if (Engine::PointLightPtr pPointLight = std::dynamic_pointer_cast<Engine::PointLight>(mSelectedNode))
+            {
+                DrawPointLight(pPointLight);
+            }
+            else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(mSelectedNode))
+            {
+                DrawNozzleEffect(pNozzleEffect);
+            }
+            else if (Engine::LightningStrikeBasePtr pLightingStrike = std::dynamic_pointer_cast<Engine::LightningStrikeBase>(mSelectedNode))
+            {
+                DrawLightningStrike(pLightingStrike);
+            }
         }
-        else if (Engine::PerspectiveCameraPtr pPerspectiveCamera = std::dynamic_pointer_cast<Engine::PerspectiveCamera>(mSelectedNode))
-        {
-            DrawCamera(pPerspectiveCamera);
-        }
-        else if (Engine::DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<Engine::DirectionalLight>(mSelectedNode))
-        {
-            DrawDirectionalLight(pDirectionalLight);
-        }
-        else if (Engine::PointLightPtr pPointLight = std::dynamic_pointer_cast<Engine::PointLight>(mSelectedNode))
-        {
-            DrawPointLight(pPointLight);
-        }
-        else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(mSelectedNode))
-        {
-            DrawNozzleEffect(pNozzleEffect);
-        }
-        else if (Engine::LightningStrikeBasePtr pLightingStrike = std::dynamic_pointer_cast<Engine::LightningStrikeBase>(mSelectedNode))
-        {
-            DrawLightningStrike(pLightingStrike);
-        }
+
+        ImGui::EndDisabled();
     }
-
-    ImGui::EndDisabled();
-
-    ImGui::End();
 }
 
 void Canavar::Editor::ImGuiWidget::DrawMenuBar()
@@ -142,51 +139,62 @@ void Canavar::Editor::ImGuiWidget::DrawMenuBar()
     }
 }
 
-void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWindow()
+void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWidget()
 {
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Node Tree View");
-
-    static ImGuiTableFlags FLAGS = ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
-
-    if (ImGui::BeginTable("Nodes", 3, FLAGS))
+    if (ImGui::CollapsingHeader("Node Tree"))
     {
-        // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
-        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
-        ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_NoHide);
-        ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoHide);
-        ImGui::TableHeadersRow();
+        static ImGuiTableFlags FLAGS = ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Resizable | ImGuiTableFlags_NoBordersInBody | ImGuiTableFlags_RowBg;
 
-        struct CanavarTreeNode
+        if (ImGui::BeginTable("Nodes", 3, FLAGS))
         {
-            static void DisplayNode(Engine::NodePtr pNode, Engine::NodePtr &pSelectedNode)
+            // The first column will use the default _WidthStretch when ScrollX is Off and _WidthFixed when ScrollX is On
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_NoHide);
+            ImGui::TableSetupColumn("Type", ImGuiTableColumnFlags_NoHide);
+            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_NoHide);
+            ImGui::TableHeadersRow();
+
+            struct CanavarTreeNode
             {
-                ImGui::TableNextRow();
-                ImGui::TableNextColumn();
-
-                if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(pNode))
+                static void DisplayNode(Engine::NodePtr pNode, Engine::NodePtr &pSelectedNode)
                 {
-                    if (pObject->GetChildren().size() > 0)
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+
+                    if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(pNode))
                     {
-                        bool open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().toStdString().c_str()); // Column 1
-                        ImGui::TableNextColumn();
-                        ImGui::Text(pObject->GetNodeType().toStdString().c_str());
-                        ImGui::TableNextColumn();
-                        if (ImGui::Selectable(std::format("{}", pObject->GetNodeId()).c_str(), pSelectedNode == pObject)) // Column 2
+                        if (pObject->GetChildren().size() > 0)
                         {
-                            pSelectedNode = pObject;
-                        }
-
-                        if (open)
-                        {
-                            const auto &children = pObject->GetChildren();
-
-                            for (const auto &pChild : children)
+                            bool open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().toStdString().c_str()); // Column 1
+                            ImGui::TableNextColumn();
+                            ImGui::Text(pObject->GetNodeType().toStdString().c_str());
+                            ImGui::TableNextColumn();
+                            if (ImGui::Selectable(std::format("{}", pObject->GetNodeId()).c_str(), pSelectedNode == pObject)) // Column 2
                             {
-                                CanavarTreeNode::DisplayNode(pChild, pSelectedNode); // Recursive call
+                                pSelectedNode = pObject;
                             }
 
-                            ImGui::TreePop();
+                            if (open)
+                            {
+                                const auto &children = pObject->GetChildren();
+
+                                for (const auto &pChild : children)
+                                {
+                                    CanavarTreeNode::DisplayNode(pChild, pSelectedNode); // Recursive call
+                                }
+
+                                ImGui::TreePop();
+                            }
+                        }
+                        else
+                        {
+                            ImGui::TreeNodeEx(pNode->GetUniqueNodeName().toStdString().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
+                            ImGui::TableNextColumn();
+                            ImGui::Text(pNode->GetNodeType().toStdString().c_str());
+                            ImGui::TableNextColumn();
+                            if (ImGui::Selectable(std::format("{}", pNode->GetNodeId()).c_str(), pSelectedNode == pNode)) // Column 2
+                            {
+                                pSelectedNode = pNode;
+                            }
                         }
                     }
                     else
@@ -201,41 +209,28 @@ void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWindow()
                         }
                     }
                 }
-                else
+            };
+
+            const auto &nodes = mNodeManager->GetNodes();
+
+            for (const auto &pNode : nodes)
+            {
+                if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(pNode))
                 {
-                    ImGui::TreeNodeEx(pNode->GetUniqueNodeName().toStdString().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
-                    ImGui::TableNextColumn();
-                    ImGui::Text(pNode->GetNodeType().toStdString().c_str());
-                    ImGui::TableNextColumn();
-                    if (ImGui::Selectable(std::format("{}", pNode->GetNodeId()).c_str(), pSelectedNode == pNode)) // Column 2
+                    if (pObject->GetParent() == nullptr) // Call only root objects, children will be handled by recursion
                     {
-                        pSelectedNode = pNode;
+                        CanavarTreeNode::DisplayNode(pObject, mSelectedNode);
                     }
                 }
-            }
-        };
-
-        const auto &nodes = mNodeManager->GetNodes();
-
-        for (const auto &pNode : nodes)
-        {
-            if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(pNode))
-            {
-                if (pObject->GetParent() == nullptr) // Call only root objects, children will be handled by recursion
+                else
                 {
-                    CanavarTreeNode::DisplayNode(pObject, mSelectedNode);
+                    CanavarTreeNode::DisplayNode(pNode, mSelectedNode);
                 }
             }
-            else
-            {
-                CanavarTreeNode::DisplayNode(pNode, mSelectedNode);
-            }
+
+            ImGui::EndTable();
         }
-
-        ImGui::EndTable();
     }
-
-    ImGui::End();
 }
 
 void Canavar::Editor::ImGuiWidget::DrawSky()
@@ -583,44 +578,42 @@ void Canavar::Editor::ImGuiWidget::DrawCreateModelWidget()
     }
 }
 
-void Canavar::Editor::ImGuiWidget::DrawWorldPositionsWindow()
+void Canavar::Editor::ImGuiWidget::DrawWorldPositionsWidget()
 {
-    ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Saved World Positions");
-
-    ImGui::TextWrapped("Right-click on a fragment adds its world position to this list.");
-    ImGui::Spacing();
-    ImGui::TextWrapped("You can then assign this position to an object in 'Objects Tree View' window.");
-    ImGui::Spacing();
-
-    if (ImGui::BeginListBox(" "))
+    if (ImGui::CollapsingHeader("Saved World Positions"))
     {
-        for (int i = 0; i < mSavedWorldPositions.size(); ++i)
+        ImGui::TextWrapped("Right-click on a fragment adds its world position to this list.");
+        ImGui::Spacing();
+        ImGui::TextWrapped("You can then assign this position to an object in 'Objects Tree View' window.");
+        ImGui::Spacing();
+
+        if (ImGui::BeginListBox(" "))
         {
-            const float x = mSavedWorldPositions[i].x();
-            const float y = mSavedWorldPositions[i].y();
-            const float z = mSavedWorldPositions[i].z();
-
-            const auto text = std::format("{:.6}, {:.6}, {:.6}", x, y, z);
-
-            if (ImGui::Selectable(text.c_str(), i == mSelectedWorldPositionIndex))
+            for (int i = 0; i < mSavedWorldPositions.size(); ++i)
             {
-                mSelectedWorldPositionIndex = i;
+                const float x = mSavedWorldPositions[i].x();
+                const float y = mSavedWorldPositions[i].y();
+                const float z = mSavedWorldPositions[i].z();
+
+                const auto text = std::format("{:.6}, {:.6}, {:.6}", x, y, z);
+
+                if (ImGui::Selectable(text.c_str(), i == mSelectedWorldPositionIndex))
+                {
+                    mSelectedWorldPositionIndex = i;
+                }
             }
+
+            ImGui::EndListBox();
         }
 
-        ImGui::EndListBox();
+        ImGui::Spacing();
+
+        if (ImGui::Button("Clear"))
+        {
+            mSavedWorldPositions.clear();
+            mSelectedWorldPositionIndex = -1;
+        }
     }
-
-    ImGui::Spacing();
-
-    if (ImGui::Button("Clear"))
-    {
-        mSavedWorldPositions.clear();
-        mSelectedWorldPositionIndex = -1;
-    }
-
-    ImGui::End();
 }
 
 QVector3D Canavar::Editor::ImGuiWidget::GetWorldPositionForCreatedObject() const

@@ -32,8 +32,8 @@ namespace Canavar::Editor
       private:
         void DrawMenuBar();
 
-        void DrawNodeTreeViewWindow();
-        void DrawNodeParametersWindow();
+        void DrawNodeTreeViewWidget();
+        void DrawNodeParametersWidget();
 
         void DrawSun();
         void DrawSky();
@@ -55,7 +55,7 @@ namespace Canavar::Editor
         void DrawNodeInfo();
         void DrawStats();
 
-        void DrawWorldPositionsWindow();
+        void DrawWorldPositionsWidget();
 
         QVector3D GetWorldPositionForCreatedObject() const;
 
