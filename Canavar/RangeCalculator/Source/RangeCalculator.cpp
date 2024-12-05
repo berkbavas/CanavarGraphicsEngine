@@ -15,20 +15,20 @@ RangeCalculator::RangeCalculator::RangeCalculator(QObject *parent)
     mFramebufferFormat.setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormat.setSamples(0);
 }
- 
+
 RangeCalculator::RangeCalculator::~RangeCalculator()
 {
     mController->RemoveEventReceiver(this);
     mExtractFeatures = false;
     mDrawMatches = false;
-    mDrawRangeLabel = false;  
-} 
+    mDrawRangeLabel = false;
+}
 
 void RangeCalculator::RangeCalculator::Run()
 {
     mController->Run();
 
-    mCameraCalibration.Calibrate();
+    // mCameraCalibration.Calibrate();
 }
 
 void RangeCalculator::RangeCalculator::Initialize()
@@ -38,7 +38,7 @@ void RangeCalculator::RangeCalculator::Initialize()
     mRenderingManager = mController->GetRenderingManager();
     mWindow = mController->GetWindow();
 
-    mNodeManager->ImportNodes("Resources/Truck.json");
+    mNodeManager->ImportNodes("Resources/Checkerboard.json");
     mNodeManager->GetTerrain()->SetEnabled(false);
     mNodeManager->GetSky()->SetEnabled(true);
 
@@ -90,6 +90,8 @@ void RangeCalculator::RangeCalculator::PostRender(float ifps)
     ImGui::DragFloat("Dummy Camera Heading Angle", &mDummyCameraHeadingAngle, 0.0025f);
     ImGui::DragFloat("Sensor Size", &mSensorSize, 0.25f);
 
+    ImGui::Checkbox("Undistort Frames", &mUndistortFrames);
+    
     if (ImGui::SliderFloat("Distance Btw. Cameras", &mDistanceBetweenCameras, 0.001f, 20.0f))
     {
         mExtractFeatures = true;
@@ -190,8 +192,11 @@ void RangeCalculator::RangeCalculator::ExtractFeatures(const QImage &image0, con
 
     try
     {
-        mat[Camera_0] = Undistort(mat[Camera_0]);
-        mat[Camera_1] = Undistort(mat[Camera_1]);
+        if (mUndistortFrames)
+        {
+            mat[Camera_0] = Undistort(mat[Camera_0]);
+            mat[Camera_1] = Undistort(mat[Camera_1]);
+        }
 
         cv::Mat desc[2];
 

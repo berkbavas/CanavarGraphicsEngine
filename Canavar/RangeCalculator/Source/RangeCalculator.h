@@ -96,6 +96,8 @@ namespace RangeCalculator
         int mSavedFrameCount{ 0 };
         bool mSaveFrame{ false };
 
+        bool mUndistortFrames{false};
+
         CameraCalibration mCameraCalibration;
     };
 }
