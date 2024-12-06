@@ -28,5 +28,7 @@ namespace Canavar::Engine
         Shader* mLineShader{ nullptr };
         Shader* mLightningStrikeShader{ nullptr };
         Shader* mShadowMappingShader{ nullptr };
+        Shader* mBasicShader{ nullptr };
+        Shader* mCrossSection{ nullptr };
     };
 }

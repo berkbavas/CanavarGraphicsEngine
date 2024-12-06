@@ -65,6 +65,17 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShadowMappingShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ShadowMapping.frag");
     mShadowMappingShader->Initialize();
 
+    mBasicShader = new Shader(ShaderType::Basic, "Basic Shader");
+    mBasicShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Basic.vert");
+    mBasicShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Basic.frag");
+    mBasicShader->Initialize();
+
+    mCrossSection = new Shader(ShaderType::CrossSection, "Cross Section Shader");
+    mCrossSection->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/CrossSection.vert");
+    mCrossSection->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/CrossSection.geom");
+    mCrossSection->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/CrossSection.frag");
+    mCrossSection->Initialize();
+
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
@@ -75,6 +86,8 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Line, mLineShader));
     mShaders.emplace(std::pair(ShaderType::LightningStrike, mLightningStrikeShader));
     mShaders.emplace(std::pair(ShaderType::ShadowMapping, mShadowMappingShader));
+    mShaders.emplace(std::pair(ShaderType::Basic, mBasicShader));
+    mShaders.emplace(std::pair(ShaderType::CrossSection, mCrossSection));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)

@@ -32,6 +32,8 @@ void Canavar::Engine::RenderingManager::Initialize()
     mBoundingBoxRenderer = new BoundingBoxRenderer;
     mShadowMappingRenderer = new ShadowMappingRenderer;
 
+    mCrossSectionAnalyzer = new CrossSectionAnalyzer;
+
     ResizeFramebuffers();
 }
 
@@ -53,8 +55,11 @@ void Canavar::Engine::RenderingManager::PostInitialize()
 
     mShadowMappingRenderer->SetShaderManager(mShaderManager);
     mShadowMappingRenderer->SetNodeManager(mNodeManager);
+    mShadowMappingRenderer->SetCameraManager(mCameraManager);
     mShadowMappingRenderer->SetSun(mSun);
     mShadowMappingRenderer->Initialize();
+
+    mCrossSectionAnalyzer->Initialize(mManagerProvider);
 
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
     mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
@@ -105,6 +110,11 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     if (mDrawBoundingBoxes)
     {
         mBoundingBoxRenderer->Render(mActiveCamera, ifps);
+    }
+
+    if (mCrossSectionEnabled)
+    {
+        mCrossSectionAnalyzer->RenderPlane();
     }
 
     emit RenderLoop(ifps);
@@ -228,7 +238,6 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     SetPointLights(mModelShader, pModel.get());
 
     mModelShader->Bind();
-    mModelShader->SetUniformValue("M", pModel->GetWorldTransformation());
     mModelShader->SetUniformValue("invertNormals", pModel->GetInvertNormals());
     mModelShader->SetUniformValue("model.color", pModel->GetColor());
     mModelShader->SetUniformValue("model.ambient", pModel->GetAmbient());

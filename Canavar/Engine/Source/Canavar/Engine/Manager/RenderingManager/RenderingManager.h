@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Manager/RenderingManager/CrossSectionAnalyzer/CrossSectionAnalyzer.h"
 #include "Canavar/Engine/Manager/RenderingManager/NodeInfo.h"
 #include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 #include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingRenderer.h"
@@ -113,9 +114,9 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(int, BlurPass, 4);
         DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
-        DEFINE_MEMBER(bool, ShadowsEnabled, false);
+        DEFINE_MEMBER(bool, ShadowsEnabled, true);
         DEFINE_MEMBER(float, ShadowBias, 0.00005f);
-        DEFINE_MEMBER(int, ShadowSamples, 3);
+        DEFINE_MEMBER(int, ShadowSamples, 1);
 
         static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 6;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
@@ -128,5 +129,8 @@ namespace Canavar::Engine
             };
 
         float mIfps;
+
+        DEFINE_MEMBER_PTR_CONST(CrossSectionAnalyzer, CrossSectionAnalyzer);
+        DEFINE_MEMBER(bool, CrossSectionEnabled, false);
     };
 };

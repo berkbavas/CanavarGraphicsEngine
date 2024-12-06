@@ -1,5 +1,6 @@
 #include "ShadowMappingRenderer.h"
 
+#include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingFramebuffer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
@@ -16,12 +17,20 @@ void Canavar::Engine::ShadowMappingRenderer::Render(float ifps)
 {
     constexpr QVector3D ORIGIN(0, 0, 0);
     constexpr QVector3D UP(0, 1, 0);
-    
-    mLightViewMatrix.setToIdentity();
-    mLightViewMatrix.lookAt(-mSunDistance * mSun->GetDirection(), ORIGIN, UP);
 
+    mLightViewMatrix.setToIdentity();
     mLightProjectionMatrix.setToIdentity();
-    mLightProjectionMatrix.perspective(mFov, 1, mZNear, mZFar);
+
+    if (mUseOrthographicProjection)
+    {
+        mLightViewMatrix.lookAt(mCameraManager->GetActiveCamera()->GetWorldPosition() - mSunDistance * mSun->GetDirection(), mSunDistance * mSun->GetDirection(), UP);
+        mLightProjectionMatrix.ortho(-50, 50, -50, 50, mZNear, mZFar);
+    }
+    else
+    {
+        mLightViewMatrix.lookAt(-mSunDistance * mSun->GetDirection(), ORIGIN, UP);
+        mLightProjectionMatrix.perspective(mFov, 1, mZNear, mZFar);
+    }
 
     mLightViewProjectionMatrix = mLightProjectionMatrix * mLightViewMatrix;
 

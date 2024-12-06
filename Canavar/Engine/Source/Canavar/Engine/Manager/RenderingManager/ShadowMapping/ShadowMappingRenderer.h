@@ -11,6 +11,7 @@ namespace Canavar::Engine
     class ShadowMappingFramebuffer;
     class NodeManager;
     class ShaderManager;
+    class CameraManager;
     class Shader;
 
     class ShadowMappingRenderer : protected QOpenGLExtraFunctions
@@ -34,9 +35,11 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, ZNear, 10);
         DEFINE_MEMBER(float, ZFar, 1000);
         DEFINE_MEMBER(float, SunDistance, 50);
+        DEFINE_MEMBER(bool, UseOrthographicProjection, false);
 
         DEFINE_MEMBER_PTR(NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(ShaderManager, ShaderManager);
+        DEFINE_MEMBER_PTR(CameraManager, CameraManager);
         DEFINE_MEMBER(DirectionalLightPtr, Sun);
         DEFINE_MEMBER_CONST(QMatrix4x4, LightViewProjectionMatrix);
     };

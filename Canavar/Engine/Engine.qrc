@@ -24,7 +24,12 @@
         <file>Resources/Shaders/PointCloud.vert</file>
         <file>Resources/Shaders/PointCloud.frag</file>
         <file>Resources/Shaders/VertexPainter.comp</file>
-        
+        <file>Resources/Shaders/Basic.frag</file>
+        <file>Resources/Shaders/Basic.vert</file>
+        <file>Resources/Shaders/CrossSection.frag</file>
+        <file>Resources/Shaders/CrossSection.geom</file>
+        <file>Resources/Shaders/CrossSection.vert</file>
+
         <file>Resources/Sky/SkyRGB.data</file>
         <file>Resources/Sky/SkyRGBRad.data</file>
 

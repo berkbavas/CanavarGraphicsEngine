@@ -31,10 +31,11 @@ void Canavar::Editor::ImGuiWidget::Draw()
     DrawCreateModelWidget();
     DrawRenderSettings();
     DrawVertexPainterSettings();
+    DrawCrossSectionAnalyzerWidget();
     DrawWorldPositionsWidget();
     DrawNodeInfo();
     DrawStats();
-    
+
     ImGui::End();
 }
 
@@ -446,9 +447,10 @@ void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
 {
     if (ImGui::CollapsingHeader("Render Settings"))
     {
-        ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 24);
+        ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 16);
         ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
-        ImGui::Checkbox("Shadows", &mRenderingManager->GetShadowsEnabled_NonConst());
+        ImGui::Checkbox("Shadows Enabled", &mRenderingManager->GetShadowsEnabled_NonConst());
+        ImGui::Checkbox("Use Orthographic Projection", &mRenderingManager->GetShadowMappingRenderer()->GetUseOrthographicProjection_NonConst());
         ImGui::SliderFloat("Shadow Bias", &mRenderingManager->GetShadowBias_NonConst(), 0.00001f, 0.001f, "%.5f");
         ImGui::SliderInt("Shadow Samples", &mRenderingManager->GetShadowSamples_NonConst(), 1, 6);
         ImGui::SliderFloat("Shadow Projection FOV", &mRenderingManager->GetShadowMappingRenderer()->GetFov_NonConst(), 5, 90);
@@ -465,6 +467,36 @@ void Canavar::Editor::ImGuiWidget::DrawVertexPainterSettings()
         ImGui::Checkbox("Enabled##VertexPainter", &mVertexPainter->GetVertexPaintingEnabled_NonConst());
         ImGui::SliderFloat("Brush Radius##VertexPainter", &mVertexPainter->GetBrushRadius_NonConst(), 0.01f, 2.0f, "%.2f");
         ImGui::ColorEdit4("Brush Color##VertexPainter", (float *) &mVertexPainter->GetBrushColor_NonConst());
+    }
+}
+
+void Canavar::Editor::ImGuiWidget::DrawCrossSectionAnalyzerWidget()
+{
+    if (ImGui::CollapsingHeader("Cross Section Analyzer##DrawCrossSectionAnalyzerWidget"))
+    {
+        ImGui::ColorEdit4("Plane Color##DrawCrossSectionAnalyzerWidget", (float *) &mRenderingManager->GetCrossSectionAnalyzer()->GetPlaneColor_NonConst());
+        ImGui::DragFloat3("Plane Position##DrawCrossSectionAnalyzerWidget", (float *) &mRenderingManager->GetCrossSectionAnalyzer()->GetPlanePosition_NonConst(), 0.005f);
+        ImGui::DragFloat3("Plane Scale##DrawCrossSectionAnalyzerWidget", (float *) &mRenderingManager->GetCrossSectionAnalyzer()->GetPlaneScale_NonConst(), 0.005f);
+
+        if (ImGui::Checkbox("Enabled##DrawCrossSectionAnalyzerWidget", &mRenderingManager->GetCrossSectionEnabled_NonConst()))
+        {
+            if (mRenderingManager->GetCrossSectionEnabled())
+            {
+                mRenderingManager->GetCrossSectionAnalyzer()->ShowWidget();
+            }
+            else
+            {
+                mRenderingManager->GetCrossSectionAnalyzer()->CloseWidget();
+            }
+        }
+
+        if (ImGui::Button("Assign Position"))
+        {
+            if (mSelectedWorldPositionIndex != -1)
+            {
+                mRenderingManager->GetCrossSectionAnalyzer()->SetPlanePosition(mSavedWorldPositions[mSelectedWorldPositionIndex]);
+            }
+        }
     }
 }
 

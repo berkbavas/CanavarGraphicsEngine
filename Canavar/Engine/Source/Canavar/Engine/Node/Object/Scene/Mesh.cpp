@@ -31,23 +31,23 @@ void Canavar::Engine::Mesh::Initialize()
     glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_DYNAMIC_COPY);
 
     // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
 
     // Normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
     glEnableVertexAttribArray(1);
 
     //Texture Cooords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
     glEnableVertexAttribArray(2);
 
     // Tangent
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
+    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
     glEnableVertexAttribArray(3);
 
     // Bitangent
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
+    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
     glEnableVertexAttribArray(4);
 
     // Color (required for vertex painter)
@@ -107,7 +107,23 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
 
     if (pShader->GetShaderType() == ShaderType::ShadowMapping)
     {
-        // Nothing to do
+        glBindVertexArray(mVAO);
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+    }
+    else if (pShader->GetShaderType() == ShaderType::CrossSection)
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
+        glEnableVertexAttribArray(0);
+
+        glBindVertexArray(mVAO);
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
     else
     {
@@ -156,11 +172,11 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
             // If there is no texture, then use color.
             pShader->SetUniformValue("useColor", true);
         }
-    }
 
-    glBindVertexArray(mVAO);
-    glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+        glBindVertexArray(mVAO);
+        glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+    }
 }
 
 void Canavar::Engine::Mesh::AddVertex(const Vertex &vertex)

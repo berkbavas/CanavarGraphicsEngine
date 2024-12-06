@@ -169,6 +169,7 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
         vertex.position.setX(aiMesh->mVertices[i].x);
         vertex.position.setY(aiMesh->mVertices[i].y);
         vertex.position.setZ(aiMesh->mVertices[i].z);
+        vertex.position.setW(1.0f);
 
         if (aiMesh->HasNormals())
         {

@@ -24,7 +24,9 @@ namespace Canavar::Engine
         ShadowMapping,
         Bitmap,
         PointCloud,
-        VertexPainter
+        VertexPainter,
+        Basic,
+        CrossSection
     };
 
     class Shader : public QOpenGLExtraFunctions

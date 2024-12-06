@@ -52,8 +52,10 @@ namespace Canavar::Editor
         void DrawCreateModelWidget();
         void DrawRenderSettings();
         void DrawVertexPainterSettings();
+        void DrawCrossSectionAnalyzerWidget();
         void DrawNodeInfo();
         void DrawStats();
+        
 
         void DrawWorldPositionsWidget();
 
