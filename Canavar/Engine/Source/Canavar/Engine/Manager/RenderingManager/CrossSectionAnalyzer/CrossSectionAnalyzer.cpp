@@ -19,6 +19,7 @@ void Canavar::Engine::CrossSectionAnalyzer::Initialize(ManagerProvider* pProvide
 
     mCrossSectionAnalyzerWidget = new CrossSectionAnalyzerWidget;
     mCrossSectionAnalyzerWidget->setWindowTitle("CrossSectionAnalyzerWidget");
+    mCrossSectionAnalyzerWidget->setWindowFlag(Qt::WindowStaysOnTopHint, true);
 
     QSurfaceFormat format = mCrossSectionAnalyzerWidget->format();
     format.setSamples(4);
@@ -47,8 +48,7 @@ void Canavar::Engine::CrossSectionAnalyzer::RenderPlane()
     mPlane->SetScale(mPlaneScale);
 
     mBasicShader->Bind();
-    mBasicShader->SetUniformValue("M", mPlane->GetTransformation());
-    mBasicShader->SetUniformValue("VP", mCameraManager->GetActiveCamera()->GetViewProjectionMatrix());
+    mBasicShader->SetUniformValue("MVP", mCameraManager->GetActiveCamera()->GetViewProjectionMatrix() * mPlane->GetTransformation());
     mBasicShader->SetUniformValue("color", mPlaneColor);
     mPlane->Render();
     mBasicShader->Release();

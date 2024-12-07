@@ -41,8 +41,8 @@ namespace Canavar::Engine
         QMatrix4x4 mCrossSectionViewMatrix;
 
         DEFINE_MEMBER(QVector3D, PlanePosition, QVector3D(0, 0, 0));
-        DEFINE_MEMBER(QVector3D, PlaneScale, QVector3D(2, 2, 2));
-        DEFINE_MEMBER(QVector4D, PlaneColor, QVector4D(1, 1, 1, 0.25f));
+        DEFINE_MEMBER(QVector3D, PlaneScale, QVector3D(1, 1, 1));
+        DEFINE_MEMBER(QVector4D, PlaneColor, QVector4D(1, 0, 0, 0.25f));
         DEFINE_MEMBER(QVector4D, CrossSectionColor, QVector4D(1, 0, 0, 1));
     };
 
