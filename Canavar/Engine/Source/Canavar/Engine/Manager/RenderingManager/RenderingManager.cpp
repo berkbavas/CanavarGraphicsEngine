@@ -15,14 +15,12 @@ void Canavar::Engine::RenderingManager::Initialize()
 {
     initializeOpenGLFunctions();
 
-    mFramebufferFormats[Default].setSamples(4);
-    mFramebufferFormats[Default].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
-    mFramebufferFormats[Temp].setSamples(0);
-    mFramebufferFormats[Ping].setSamples(0);
-    mFramebufferFormats[Pong].setSamples(0);
-    mFramebufferFormats[Bloom].setSamples(0);
+    mFramebufferFormats[Multisample].setSamples(4);
+    mFramebufferFormats[Multisample].setMipmap(true);
+    mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
+    mFramebufferFormats[Singlesample].setSamples(0);
 
-    for (const auto type : { Default, Temp, Ping, Pong, Bloom })
+    for (const auto type : { Multisample, Singlesample })
     {
         mFramebuffers[type] = nullptr;
     }
@@ -31,7 +29,6 @@ void Canavar::Engine::RenderingManager::Initialize()
 
     mBoundingBoxRenderer = new BoundingBoxRenderer;
     mShadowMappingRenderer = new ShadowMappingRenderer;
-
     mCrossSectionAnalyzer = new CrossSectionAnalyzer;
 
     ResizeFramebuffers();
@@ -95,7 +92,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     mActiveCamera = mCameraManager->GetActiveCamera().get();
 
-    mFramebuffers[Default]->bind();
+    mFramebuffers[Multisample]->bind();
     glViewport(0, 0, mWidth, mHeight);
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -119,38 +116,26 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     emit RenderLoop(ifps);
 
-    // ----------------------- RENDER LOOP ENDS -------------------
+    mFramebuffers[Multisample]->release();
 
-    ApplyPingPong(Bloom, 1, mBlurPass);
+    // ----------------------- BLIT 4X MULTISAMPLE FBO TO SINGLESAMPLE FBO -------------------
 
-    // ----------------------- BLIT 4X DEFAULT FBO TO TEMP -------------------
-
-    for (int index = 0; index < NUMBER_OF_FBO_ATTACHMENTS; index++)
+    for (const auto attachment : FBO_ATTACHMENTS)
     {
         QOpenGLFramebufferObject::blitFramebuffer( //
-            mFramebuffers[Temp],
-            QRect(0, 0, mFramebuffers[Temp]->width(), mFramebuffers[Temp]->height()),
-            mFramebuffers[Default],
-            QRect(0, 0, mFramebuffers[Default]->width(), mFramebuffers[Default]->height()),
+            mFramebuffers[Singlesample],
+            QRect(0, 0, mFramebuffers[Singlesample]->width(), mFramebuffers[Singlesample]->height()),
+            mFramebuffers[Multisample],
+            QRect(0, 0, mFramebuffers[Multisample]->width(), mFramebuffers[Multisample]->height()),
             GL_COLOR_BUFFER_BIT,
-            GL_LINEAR, // Why not GL_NEAREST?
-            index,
-            index);
+            GL_NEAREST,
+            attachment - GL_COLOR_ATTACHMENT0,
+            attachment - GL_COLOR_ATTACHMENT0);
     }
 
-    // ----------------------- RENDER TO DEFAULT FBO -------------------
+    // ----------------------- BLIT TO DEFAULT FBO -------------------
 
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, mActiveCamera->GetWidth(), mActiveCamera->GetHeight());
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    mPostProcessShader->Bind();
-    mPostProcessShader->SetSampler("sceneTexture", 0, mFramebuffers[Temp]->textures().at(0));
-    mPostProcessShader->SetSampler("bloomTexture", 1, mFramebuffers[Bloom]->texture());
-
-    mQuad->Render();
-    mPostProcessShader->Release();
+    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Multisample], GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
     // For QPainter
     glDisable(GL_CULL_FACE);
@@ -162,7 +147,7 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
 {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
-    glEnable(GL_CULL_FACE);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -195,14 +180,6 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
 
     ResizeFramebuffers();
 }
-
-void Canavar::Engine::RenderingManager::OnMousePressed(QMouseEvent*) {}
-
-void Canavar::Engine::RenderingManager::OnMouseReleased(QMouseEvent*) {}
-
-void Canavar::Engine::RenderingManager::OnMouseMoved(QMouseEvent*) {}
-
-void Canavar::Engine::RenderingManager::OnWheelMoved(QWheelEvent*) {}
 
 void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifps)
 {
@@ -259,15 +236,14 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
 
 void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffect, Camera* pCamera, float ifps)
 {
+    // glEnable(GL_BLEND);
+    // glBlendFunc(GL_ONE, GL_ONE);
     mNozzleEffectShader->Bind();
-    mNozzleEffectShader->SetUniformValue("M", pEffect->GetWorldTransformation());
-    mNozzleEffectShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
-    mNozzleEffectShader->SetUniformValue("scale", pEffect->GetScale());
     mNozzleEffectShader->SetUniformValue("maxRadius", pEffect->GetMaxRadius());
-    mNozzleEffectShader->SetUniformValue("maxDistance", pEffect->GetMaxDistance());
-    mNozzleEffectShader->SetUniformValue("speed", pEffect->GetSpeed());
+    mNozzleEffectShader->SetUniformValue("MVP", pCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
     pEffect->Render(ifps);
     mNozzleEffectShader->Release();
+    // glDisable(GL_BLEND);
 }
 
 void Canavar::Engine::RenderingManager::SetUniforms(Camera* pCamera)
@@ -341,7 +317,7 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, Object* 
 
 void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 {
-    for (const auto type : { Default, Temp, Ping, Pong, Bloom })
+    for (const auto type : { Multisample, Singlesample })
     {
         if (mFramebuffers[type])
         {
@@ -350,11 +326,10 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         }
     }
 
-    for (const auto type : { Default, Temp })
+    for (const auto type : { Multisample, Singlesample })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
 
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Bloom effect
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment local position
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment world position
         mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Node info
@@ -363,81 +338,76 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         glDrawBuffers(NUMBER_OF_FBO_ATTACHMENTS, FBO_ATTACHMENTS);
         mFramebuffers[type]->release();
     }
-
-    for (const auto type : { Ping, Pong, Bloom })
-    {
-        mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
-    }
 }
 
-void Canavar::Engine::RenderingManager::ApplyPingPong(E_Framebuffer target, int source, int pass)
-{
-    // Default Framebuffer -> Ping Framebuffer
+// void Canavar::Engine::RenderingManager::ApplyPingPong(Framebuffer target, int source, int pass)
+// {
+//     // Default Framebuffer -> Ping Framebuffer
 
-    QOpenGLFramebufferObject::blitFramebuffer( //
-        mFramebuffers[Ping],
-        QRect(0, 0, mWidth, mHeight),
-        mFramebuffers[Default],
-        QRect(0, 0, mWidth, mHeight),
-        GL_COLOR_BUFFER_BIT,
-        GL_NEAREST,
-        source, // <- "source" location of Default FBO
-        0       // <- Write location of Ping FBO
-    );
+//     QOpenGLFramebufferObject::blitFramebuffer( //
+//         mFramebuffers[Ping],
+//         QRect(0, 0, mWidth, mHeight),
+//         mFramebuffers[Default],
+//         QRect(0, 0, mWidth, mHeight),
+//         GL_COLOR_BUFFER_BIT,
+//         GL_NEAREST,
+//         source, // <- "source" location of Default FBO
+//         0       // <- Write location of Ping FBO
+//     );
 
-    // Ping -> Pong -> Ping -> ... Pxng
-    for (int i = 0; i < qMax(0, pass); i++)
-    {
-        mFramebuffers[i % 2 == 0 ? Pong : Ping]->bind();
-        mBlurShader->Bind();
-        mBlurShader->SetUniformValue("horizontal", i % 2 == 0);
-        mBlurShader->SetSampler("targetTexture", 0, mFramebuffers[i % 2 == 0 ? Ping : Pong]->texture());
-        mQuad->Render();
-        mBlurShader->Release();
-    }
+//     // Ping -> Pong -> Ping -> ... Pxng
+//     for (int i = 0; i < qMax(0, pass); i++)
+//     {
+//         mFramebuffers[i % 2 == 0 ? Pong : Ping]->bind();
+//         mBlurShader->Bind();
+//         mBlurShader->SetUniformValue("horizontal", i % 2 == 0);
+//         mBlurShader->SetSampler("targetTexture", 0, mFramebuffers[i % 2 == 0 ? Ping : Pong]->texture());
+//         mQuad->Render();
+//         mBlurShader->Release();
+//     }
 
-    QOpenGLFramebufferObject::blitFramebuffer( //
-        mFramebuffers[target],
-        QRect(0, 0, mWidth, mHeight),
-        mFramebuffers[qMax(0, pass) % 2 == 0 ? Ping : Pong],
-        QRect(0, 0, mWidth, mHeight),
-        GL_COLOR_BUFFER_BIT,
-        GL_NEAREST,
-        0,
-        0);
-}
+//     QOpenGLFramebufferObject::blitFramebuffer( //
+//         mFramebuffers[target],
+//         QRect(0, 0, mWidth, mHeight),
+//         mFramebuffers[qMax(0, pass) % 2 == 0 ? Ping : Pong],
+//         QRect(0, 0, mWidth, mHeight),
+//         GL_COLOR_BUFFER_BIT,
+//         GL_NEAREST,
+//         0,
+//         0);
+// }
 
 QVector3D Canavar::Engine::RenderingManager::FetchFragmentLocalPositionFromScreen(int x, int y)
 {
     QVector3D position;
-    mFramebuffers[Temp]->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT2);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
-    mFramebuffers[Temp]->release();
+    mFramebuffers[Singlesample]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    mFramebuffers[Singlesample]->release();
     return position;
 }
 
 QVector3D Canavar::Engine::RenderingManager::FetchFragmentWorldPositionFromScreen(int x, int y)
 {
     QVector3D position;
-    mFramebuffers[Temp]->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT3);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
-    mFramebuffers[Temp]->release();
+    mFramebuffers[Singlesample]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT2);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    mFramebuffers[Singlesample]->release();
     return position;
 }
 
 Canavar::Engine::NodeInfo Canavar::Engine::RenderingManager::FetchNodeInfoFromScreenCoordinates(int x, int y)
 {
     NodeInfo info;
-    mFramebuffers[Temp]->bind();
-    glReadBuffer(GL_COLOR_ATTACHMENT4);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Temp]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &info);
-    mFramebuffers[Temp]->release();
+    mFramebuffers[Singlesample]->bind();
+    glReadBuffer(GL_COLOR_ATTACHMENT3);
+    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &info);
+    mFramebuffers[Singlesample]->release();
     return info;
 }
 
-QOpenGLFramebufferObject* Canavar::Engine::RenderingManager::GetFramebuffer(E_Framebuffer framebufferType) const
+QOpenGLFramebufferObject* Canavar::Engine::RenderingManager::GetFramebuffer(Framebuffer framebufferType) const
 {
     const auto it = mFramebuffers.find(framebufferType);
 

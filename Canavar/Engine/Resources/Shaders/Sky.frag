@@ -23,15 +23,12 @@ vec3 hosek_wilkie_sky_rgb(vec3 v, vec3 sun_direction)
 layout(location = 0) in vec3 fsDirection;
 
 layout(location = 0) out vec4 fragColor;
-layout(location = 1) out vec4 brightColor;
-layout(location = 4) out vec4 nodeInfo;
+layout(location = 3) out vec4 nodeInfo;
 
 void main()
 {
     vec3 color = hosek_wilkie_sky_rgb(fsDirection, sunDirection);
 
-    fragColor = vec4(color, 1.0);
-    brightColor = vec4(0);
-
+    fragColor = vec4(color, 1);
     nodeInfo = vec4(nodeId, 0, 0, 1);
 }

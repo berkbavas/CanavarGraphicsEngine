@@ -15,7 +15,7 @@
             "diffuse": 0.8500000238418579,
             "enabled": true,
             "frequency": 0.009999999776482582,
-            "grass_coverage": 0.25,
+            "grass_coverage": 0.6499999761581421,
             "node_name": "Terrain",
             "node_type": "Terrain",
             "octaves": 13,
@@ -53,8 +53,8 @@
             },
             "diffuse": 1,
             "direction": {
-                "x": 0.7071067690849304,
-                "y": -0.7071067690849304,
+                "x": 0.7071067094802856,
+                "y": -0.7071067094802856,
                 "z": 0
             },
             "enabled": true,
@@ -82,14 +82,13 @@
             "visible": true
         },
         {
-            "angular_speed": 25,
-            "angular_speed_muliplier": 1,
-            "node_name": "Persecutor Camera",
-            "node_type": "PersecutorCamera",
+            "node_name": "Dummy Camera",
+            "node_type": "DummyCamera",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
                 "x": 0,
-                "y": 0,
-                "z": 0
+                "y": 7.5,
+                "z": 60
             },
             "rotation": {
                 "w": 1,
@@ -103,8 +102,7 @@
                 "z": 1
             },
             "selectable": true,
-            "target": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "uuid": "aa4c4f90-adf6-4524-91ce-e0bbc0e6fdc9",
+            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
             "vertical_fov": 60,
             "visible": true,
             "z_far": 100000,
@@ -115,7 +113,7 @@
             "node_type": "DummyObject",
             "position": {
                 "x": 0,
-                "y": 20,
+                "y": 137.1999969482422,
                 "z": 0
             },
             "rotation": {
@@ -134,11 +132,39 @@
             "visible": true
         },
         {
+            "max_length": 6.706999778747559,
+            "max_life": 0.08100000023841858,
+            "max_radius": 0.7639999985694885,
+            "max_speed": 32.11399841308594,
+            "node_name": "Nozzle Effect",
+            "node_type": "NozzleEffect",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0.10000000149011612,
+                "z": 11.256999969482422
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "f83490ac-b3a4-4b34-bafc-c6d9e3c46ed3",
+            "visible": true
+        },
+        {
             "ambient": 0.25,
             "color": {
                 "a": 1,
-                "b": 0,
-                "g": 0,
+                "b": 1,
+                "g": 1,
                 "r": 1
             },
             "diffuse": 0.75,
@@ -207,12 +233,48 @@
             "visible": true
         },
         {
+            "ambient": 0.5,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "invert_normals": true,
+            "node_name": "f16c",
+            "node_type": "Model",
+            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "f16c",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
+            "visible": true
+        },
+        {
             "ambient": 0.25,
             "color": {
                 "a": 1,
-                "b": 0,
+                "b": 1,
                 "g": 1,
-                "r": 0
+                "r": 1
             },
             "diffuse": 0.75,
             "invert_normals": false,
@@ -280,22 +342,21 @@
             "visible": true
         },
         {
-            "ambient": 0.25,
+            "ambient": 0.4169999957084656,
             "color": {
                 "a": 1,
                 "b": 1,
                 "g": 1,
                 "r": 1
             },
-            "diffuse": 1,
+            "diffuse": 0.75,
             "invert_normals": false,
-            "node_name": "f16c",
+            "node_name": "GasStation",
             "node_type": "Model",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
+                "x": 5,
+                "y": 1.899999976158142,
+                "z": -15
             },
             "rotation": {
                 "w": 1,
@@ -304,67 +365,15 @@
                 "z": 0
             },
             "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 5,
+                "y": 5,
+                "z": 5
             },
-            "scene_name": "f16c",
+            "scene_name": "GasStation",
             "selectable": true,
             "shininess": 8,
             "specular": 0.25,
-            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
-            "visible": true
-        },
-        {
-            "node_name": "Dummy Camera",
-            "node_type": "DummyCamera",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 7.5,
-                "z": 60
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
-            "vertical_fov": 60,
-            "visible": true,
-            "z_far": 100000,
-            "z_near": 1
-        },
-        {
-            "max_distance": 10,
-            "max_life": 0,
-            "max_radius": 0.800000011920929,
-            "min_distance": 4,
-            "node_name": "Nozzle Effect",
-            "node_type": "NozzleEffect",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 0.14000000059604645,
-                "z": 11.5
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": 0.03999999910593033,
-            "selectable": true,
-            "speed": 7,
-            "uuid": "32d98f53-0903-4f67-ac38-9dd6dec271e7",
+            "uuid": "b5ad764a-455f-4581-9f2f-312c31af61f1",
             "visible": true
         }
     ]

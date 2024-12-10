@@ -91,7 +91,7 @@ void RangeCalculator::RangeCalculator::PostRender(float ifps)
     ImGui::DragFloat("Sensor Size", &mSensorSize, 0.25f);
 
     ImGui::Checkbox("Undistort Frames", &mUndistortFrames);
-    
+
     if (ImGui::SliderFloat("Distance Btw. Cameras", &mDistanceBetweenCameras, 0.001f, 20.0f))
     {
         mExtractFeatures = true;
@@ -161,7 +161,7 @@ std::pair<QImage, QImage> RangeCalculator::RangeCalculator::RenderScene()
 
     mRenderingManager->RenderToFramebuffer(mFramebuffer, mCamera.get());
 
-    const auto fbo = mRenderingManager->GetFramebuffer(Canavar::Engine::E_Framebuffer::Temp);
+    const auto fbo = mRenderingManager->GetFramebuffer(Canavar::Engine::Framebuffer::Singlesample);
     auto image0 = fbo->toImage(true, 0); // Take color attachment
     image0 = image0.convertedTo(QImage::Format_Grayscale8);
 
@@ -285,7 +285,7 @@ void RangeCalculator::RangeCalculator::CalculateRangeAndErrorRate()
 void RangeCalculator::RangeCalculator::DrawMatches()
 {
     QPainter painter(mWindow);
-    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing, true);
 
     painter.setPen(QColor(0, 255, 255));
 
@@ -308,6 +308,8 @@ void RangeCalculator::RangeCalculator::DrawRangeLabel()
     }
 
     QPainter painter(mWindow);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing, true);
+
     const auto &bestMatch = mGoodMatches[0];
     const auto &kp = mKeyPoints[Camera_0][bestMatch.queryIdx];
 
@@ -323,8 +325,6 @@ void RangeCalculator::RangeCalculator::DrawRangeLabel()
     painter.drawLine(kp.pt.x, kp.pt.y, kp.pt.x + 45, kp.pt.y - 45);
     painter.drawText(kp.pt.x + 50, kp.pt.y - 50, QString("%1 units").arg(mCalculatedRange));
     painter.drawText(kp.pt.x + 50, kp.pt.y - 15, QString("~%1%").arg(mErrorRate));
-
-    mWindow->requestUpdate();
 }
 
 cv::Mat RangeCalculator::RangeCalculator::Undistort(cv::Mat image)

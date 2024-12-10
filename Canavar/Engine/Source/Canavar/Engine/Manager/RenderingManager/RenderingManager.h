@@ -28,13 +28,10 @@ namespace Canavar::Engine
     class LightManager;
     class BoundingBoxRenderer;
 
-    enum E_Framebuffer
+    enum Framebuffer
     {
-        Default,
-        Temp,
-        Ping,
-        Pong,
-        Bloom
+        Multisample,
+        Singlesample,
     };
 
     class RenderingManager : public Manager, protected QOpenGLFunctions_4_3_Core
@@ -49,16 +46,11 @@ namespace Canavar::Engine
         void Render(float ifps) override;
         void Resize(int width, int height);
 
-        void OnMousePressed(QMouseEvent *);
-        void OnMouseReleased(QMouseEvent *);
-        void OnMouseMoved(QMouseEvent *);
-        void OnWheelMoved(QWheelEvent *);
-
         QVector3D FetchFragmentLocalPositionFromScreen(int x, int y);
         QVector3D FetchFragmentWorldPositionFromScreen(int x, int y);
         NodeInfo FetchNodeInfoFromScreenCoordinates(int x, int y);
 
-        QOpenGLFramebufferObject *GetFramebuffer(E_Framebuffer framebuffer) const;
+        QOpenGLFramebufferObject *GetFramebuffer(Framebuffer framebuffer) const;
 
         void RenderToFramebuffer(QOpenGLFramebufferObject *pFramebuffer, Camera *pCamera);
 
@@ -78,7 +70,7 @@ namespace Canavar::Engine
         void ResizeFramebuffers();
         void ResizeCustomFramebuffers();
 
-        void ApplyPingPong(E_Framebuffer target, int source, int pass);
+        void ApplyPingPong(Framebuffer target, int source, int pass);
 
         ShaderManager *mShaderManager;
         NodeManager *mNodeManager;
@@ -106,26 +98,24 @@ namespace Canavar::Engine
 
         Quad *mQuad;
 
-        std::map<E_Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
-        std::map<E_Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
+        std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
+        std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
 
-        DEFINE_MEMBER(int, BlurPass, 4);
         DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
         DEFINE_MEMBER(bool, ShadowsEnabled, true);
         DEFINE_MEMBER(float, ShadowBias, 0.00005f);
         DEFINE_MEMBER(int, ShadowSamples, 1);
 
-        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 6;
+        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 4;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
             {
-                GL_COLOR_ATTACHMENT0, //
-                GL_COLOR_ATTACHMENT1, //
-                GL_COLOR_ATTACHMENT2, //
-                GL_COLOR_ATTACHMENT3, //
-                GL_COLOR_ATTACHMENT4, //
+                GL_COLOR_ATTACHMENT0, // Color
+                GL_COLOR_ATTACHMENT1, // Fragment local position
+                GL_COLOR_ATTACHMENT2, // Fragment world position
+                GL_COLOR_ATTACHMENT3, // Node info
             };
 
         float mIfps;

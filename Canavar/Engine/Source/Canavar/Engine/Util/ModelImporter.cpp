@@ -249,23 +249,30 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(aiM
 
 bool Canavar::Engine::ModelImporter::ProcessTexture(MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory)
 {
-    bool success = false;
-
-    for (int i = 0; i < qMin(1, static_cast<int>(aiMaterial->GetTextureCount(aiType))); i++)
+    for (int i = 0; i < aiMaterial->GetTextureCount(aiType); i++)
     {
         aiString str;
         aiMaterial->GetTexture(aiType, i, &str);
-        QString filename = QString(str.C_Str());
+
+        QString filename(str.C_Str());
+
         const auto path = directory + "/" + filename;
 
-        if (const auto pTexture = CreateTexture(path))
+        QImage image(path);
+
+        if (image.isNull())
         {
-            pMaterial->SetTexture(type, pTexture);
-            success = true;
+            LOG_WARN("ModelImporter::ProcessTexture: Image at '{}' is null.", path.toStdString());
+        }
+        else
+        {
+            LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", path.toStdString());
+            pMaterial->LoadTexture(type, image);
+            return true;
         }
     }
 
-    return success;
+    return false;
 }
 
 QOpenGLTexture* Canavar::Engine::ModelImporter::CreateTexture(const QString& path)

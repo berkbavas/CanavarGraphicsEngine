@@ -76,3 +76,16 @@ bool Canavar::Engine::Logger::isLogEnabledFor(LogLevel level)
 Canavar::Engine::LogLevel Canavar::Engine::Logger::mLogLevel = Canavar::Engine::LogLevel::ALL;
 
 std::atomic_uint32_t Canavar::Engine::Logger::mLastThreadId = 0;
+
+Canavar::Engine::EnterExitLogger::EnterExitLogger(const char* functionName, const char* fileName, int lineNumber)
+    : mFunctionName(functionName)
+    , mFileName(fileName)
+    , mLineNumber(lineNumber)
+{
+    LOG_DEBUG("{} in '{}' at line {}: BEGIN", mFunctionName, mFileName, mLineNumber);
+}
+
+Canavar::Engine::EnterExitLogger::~EnterExitLogger()
+{
+    LOG_DEBUG("{} in '{}' at line {}: END", mFunctionName, mFileName, mLineNumber);
+}

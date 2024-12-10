@@ -1,9 +1,13 @@
 #pragma once
 
+#include "Canavar/Engine/Util/Macros.h"
+
 #include <memory>
 
 #include <QMap>
+#include <QOpenGLExtraFunctions>
 #include <QOpenGLTexture>
+
 
 namespace Canavar::Engine
 {
@@ -15,18 +19,20 @@ namespace Canavar::Engine
         Normal
     };
 
-    class Material
+    class Material : protected QOpenGLExtraFunctions
     {
+        DISABLE_COPY(Material);
+
       public:
-        Material() = default;
+        Material();
         ~Material();
 
-        void SetTexture(TextureType type, QOpenGLTexture* texture);
-        QOpenGLTexture* GetTexture(TextureType type);
+        void LoadTexture(TextureType type, const QImage& image);
+        GLuint GetTexture(TextureType type);
         int GetNumberOfTextures();
 
       private:
-        QMap<TextureType, QOpenGLTexture*> mTextures;
+        QMap<TextureType, GLuint> mTextures;
     };
 
     using MaterialPtr = std::shared_ptr<Material>;

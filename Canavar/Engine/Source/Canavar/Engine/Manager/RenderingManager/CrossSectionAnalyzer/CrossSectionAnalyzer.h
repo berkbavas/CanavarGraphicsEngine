@@ -27,6 +27,7 @@ namespace Canavar::Engine
         void CloseWidget();
 
       private:
+        void UpdateCrossSectionParameters();
         void RenderCrossSection();
 
         NodeManager *mNodeManager;
@@ -39,6 +40,9 @@ namespace Canavar::Engine
 
         QMatrix4x4 mCrossSectionProjectionMatrix;
         QMatrix4x4 mCrossSectionViewMatrix;
+
+        QVector3D mPlanePositionInner;
+        QVector3D mPlaneScaleInner;
 
         DEFINE_MEMBER(QVector3D, PlanePosition, QVector3D(0, 0, 0));
         DEFINE_MEMBER(QVector3D, PlaneScale, QVector3D(1, 1, 1));

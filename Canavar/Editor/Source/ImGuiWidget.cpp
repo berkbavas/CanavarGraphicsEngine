@@ -423,12 +423,11 @@ void Canavar::Editor::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffectPtr pNoz
 {
     ImGui::Text("Nozzle Effect Parameters");
 
-    ImGui::SliderFloat("Max Radius##NozzleEffect", &pNozzleEffect->GetMaxRadius_NonConst(), 0.001f, 4.0f, "%.4f");
-    ImGui::SliderFloat("Max Life##NozzleEffect", &pNozzleEffect->GetMaxLife_NonConst(), 0.0000f, 0.1f, "%.5f");
-    ImGui::SliderFloat("Max Distance##NozzleEffect", &pNozzleEffect->GetMaxDistance_NonConst(), 1.0f, 30.0f, "%.3f");
-    ImGui::SliderFloat("Min Distance##NozzleEffect", &pNozzleEffect->GetMinDistance_NonConst(), 1.0f, 30.0f, "%.3f");
-    ImGui::SliderFloat("Speed##NozzleEffect", &pNozzleEffect->GetSpeed_NonConst(), 0.0f, 10.0f, "%.5f");
-    ImGui::SliderFloat("Scale##NozzleEffect", &pNozzleEffect->GetScale_NonConst(), 0.001f, 0.1f, "%.4f");
+    ImGui::SliderFloat("Max Radius##NozzleEffect", &pNozzleEffect->GetMaxRadius_NonConst(), 0.0f, 4.0f);
+    ImGui::SliderFloat("Max Life##NozzleEffect", &pNozzleEffect->GetMaxLife_NonConst(), 0.00f, 4.0f);
+    ImGui::SliderFloat("Max Length##NozzleEffect", &pNozzleEffect->GetMaxLength_NonConst(), 0.0f, 15.0f);
+    ImGui::SliderFloat("Max Speed##NozzleEffect", &pNozzleEffect->GetMaxSpeed_NonConst(), 0.0f, 100.0f);
+    ImGui::SliderInt("# of Particles##NozzleEffect", &pNozzleEffect->GetNumberOfParticles_NonConst(), 0, 100'000);
 }
 
 void Canavar::Editor::ImGuiWidget::DrawLightningStrike(Engine::LightningStrikeBasePtr pLightningStrike)
@@ -447,7 +446,6 @@ void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
 {
     if (ImGui::CollapsingHeader("Render Settings"))
     {
-        ImGui::SliderInt("Blur Pass", &mRenderingManager->GetBlurPass_NonConst(), 0, 16);
         ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
         ImGui::Checkbox("Shadows Enabled", &mRenderingManager->GetShadowsEnabled_NonConst());
         ImGui::Checkbox("Use Orthographic Projection", &mRenderingManager->GetShadowMappingRenderer()->GetUseOrthographicProjection_NonConst());

@@ -2,11 +2,13 @@
 
 #include "Canavar/Engine/Node/Object/Object.h"
 
-#include <QOpenGLExtraFunctions>
+#include <QOpenGLFunctions_4_3_Core>
 
 namespace Canavar::Engine
 {
-    class NozzleEffect : public Object, protected QOpenGLExtraFunctions
+    class Shader;
+
+    class NozzleEffect : public Object, protected QOpenGLFunctions_4_3_Core
     {
         REGISTER_OBJECT_TYPE(NozzleEffect);
 
@@ -15,38 +17,41 @@ namespace Canavar::Engine
 
         void Render(float ifps);
 
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
 
       private:
+        void Initialize();
+        void Update(float ifps);
+
+#pragma pack(push, 1)
         struct Particle
         {
-            QVector3D initialPosition;
-            QVector3D direction;
+            QVector3D position;
+            QVector3D velocity;
             float life;
-            float deadAfter;
         };
+#pragma pack(pop)
 
-        void Initialize();
-
-        Particle GenerateParticle();
-
-        QVector<Particle> mParticles;
-        int mNumberOfParticles{ 5000 };
+        void GenerateParticles();
+        Particle GenerateParticle() const;
 
         // OpenGL stuff
-        unsigned int mVAO{ 0 };
-        unsigned int mVBO{ 0 };
-        unsigned int mPBO{ 0 };
+        GLuint mVAO{ 0 };
+        GLuint mVBO{ 0 };
 
-        DEFINE_MEMBER(float, MaxRadius, 0.8f);
-        DEFINE_MEMBER(float, MaxLife, 0.0f);
-        DEFINE_MEMBER(float, MaxDistance, 10.0f);
-        DEFINE_MEMBER(float, MinDistance, 4.0f);
-        DEFINE_MEMBER(float, Speed, 7.0f);
-        DEFINE_MEMBER(float, Scale, 0.04f);
+        QVector<Particle> mParticles;
 
-        DEFINE_MEMBER(bool, Initialized, false);
+        DEFINE_MEMBER(float, MaxRadius, 1.0f);
+        DEFINE_MEMBER(float, MaxLife, 2.0f);
+        DEFINE_MEMBER(float, MaxLength, 10.0f);
+        DEFINE_MEMBER(float, MaxSpeed, 5.0f);
+        DEFINE_MEMBER(int, NumberOfParticles, MAX_NUMBER_OF_PARTICLES);
+
+        bool mIsInitialized{ false };
+        float mTime{ 0 };
+
+        static constexpr int MAX_NUMBER_OF_PARTICLES{ 100'000 };
     };
 
     using NozzleEffectPtr = std::shared_ptr<NozzleEffect>;

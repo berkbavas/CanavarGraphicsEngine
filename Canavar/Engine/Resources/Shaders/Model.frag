@@ -93,10 +93,9 @@ in vec4 fsVertexColor;
 flat in int fsVertexId;
 
 layout(location = 0) out vec4 fragColor;
-layout(location = 1) out vec4 brightColor;
-layout(location = 2) out vec4 fragLocalPosition;
-layout(location = 3) out vec4 fragWorldPosition;
-layout(location = 4) out vec4 nodeInfo;
+layout(location = 1) out vec4 fragLocalPosition;
+layout(location = 2) out vec4 fragWorldPosition;
+layout(location = 3) out vec4 nodeInfo;
 
 vec3 getNormal()
 {
@@ -291,15 +290,8 @@ void main()
 
     fragColor = vec4(result.rgb, 1);
 
-    float brightness = dot(result.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
-
-    if (brightness > 1.0f)
-        brightColor = vec4(result.rgb, 1.0f);
-    else
-        brightColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
     // Fragment position
-    fragLocalPosition = vec4(fsLocalPosition.xyz, 1.0f);
+    fragLocalPosition = vec4(fsLocalPosition.xyz, 1);
     fragWorldPosition = fsWorldPosition;
 
     // Node Info

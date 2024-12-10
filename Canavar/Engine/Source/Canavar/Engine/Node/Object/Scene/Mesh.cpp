@@ -140,31 +140,31 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
         pShader->SetUniformValue("useTextureSpecular", false);
         pShader->SetUniformValue("useTextureNormal", false);
 
-        if (const auto pTexture = mMaterial->GetTexture(TextureType::Ambient))
+        if (const auto texture = mMaterial->GetTexture(TextureType::Ambient))
         {
             hasAnyTexture = true;
             pShader->SetUniformValue("useTextureAmbient", true);
-            pShader->SetSampler("textureAmbient", 0, pTexture->textureId());
+            pShader->SetSampler("textureAmbient", 0, texture);
         }
 
-        if (const auto pTexture = mMaterial->GetTexture(TextureType::Diffuse))
+        if (const auto texture = mMaterial->GetTexture(TextureType::Diffuse))
         {
             hasAnyTexture = true;
             pShader->SetUniformValue("useTextureDiffuse", true);
-            pShader->SetSampler("textureDiffuse", 1, pTexture->textureId());
+            pShader->SetSampler("textureDiffuse", 1, texture);
         }
 
-        if (const auto pTexture = mMaterial->GetTexture(TextureType::Specular))
+        if (const auto texture = mMaterial->GetTexture(TextureType::Specular))
         {
             hasAnyTexture = true;
             pShader->SetUniformValue("useTextureSpecular", true);
-            pShader->SetSampler("textureSpecular", 2, pTexture->textureId());
+            pShader->SetSampler("textureSpecular", 2, texture);
         }
 
-        if (const auto pTexture = mMaterial->GetTexture(TextureType::Normal))
+        if (const auto texture = mMaterial->GetTexture(TextureType::Normal))
         {
             pShader->SetUniformValue("useTextureNormal", true);
-            pShader->SetSampler("textureNormal", 3, pTexture->textureId());
+            pShader->SetSampler("textureNormal", 3, texture);
         }
 
         if (!hasAnyTexture)

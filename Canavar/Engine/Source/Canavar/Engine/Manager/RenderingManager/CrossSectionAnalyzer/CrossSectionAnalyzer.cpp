@@ -41,6 +41,18 @@ void Canavar::Engine::CrossSectionAnalyzer::CloseWidget()
 
 void Canavar::Engine::CrossSectionAnalyzer::RenderPlane()
 {
+    if (mPlanePositionInner != mPlanePosition)
+    {
+        mPlanePositionInner = mPlanePosition;
+        mCrossSectionAnalyzerWidget->update();
+    }
+
+    if (mPlaneScaleInner != mPlaneScale)
+    {
+        mPlaneScaleInner = mPlaneScale;
+        mCrossSectionAnalyzerWidget->update();
+    }
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -56,19 +68,24 @@ void Canavar::Engine::CrossSectionAnalyzer::RenderPlane()
     glDisable(GL_BLEND);
 }
 
-void Canavar::Engine::CrossSectionAnalyzer::RenderCrossSection()
+void Canavar::Engine::CrossSectionAnalyzer::UpdateCrossSectionParameters()
 {
     mCrossSectionProjectionMatrix.setToIdentity();
     mCrossSectionProjectionMatrix.ortho(-mPlaneScale.x(),
                                         mPlaneScale.x(), //
                                         -mPlaneScale.y(),
                                         mPlaneScale.y(),
-                                        1000,
-                                        0);
+                                        -1,
+                                        1);
 
     mCrossSectionViewMatrix.setToIdentity();
     mCrossSectionViewMatrix.rotate(mPlane->GetRotation().conjugated());
-    mCrossSectionViewMatrix.translate(-mPlane->GetPosition());
+    mCrossSectionViewMatrix.translate(-mPlanePosition);
+}
+
+void Canavar::Engine::CrossSectionAnalyzer::RenderCrossSection()
+{
+    UpdateCrossSectionParameters();
 
     const auto w = mCrossSectionAnalyzerWidget->width() * mCrossSectionAnalyzerWidget->devicePixelRatio();
     const auto h = mCrossSectionAnalyzerWidget->height() * mCrossSectionAnalyzerWidget->devicePixelRatio();

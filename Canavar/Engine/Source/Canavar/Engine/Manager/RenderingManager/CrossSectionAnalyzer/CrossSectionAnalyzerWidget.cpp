@@ -7,7 +7,7 @@
 Canavar::Engine::CrossSectionAnalyzerWidget::CrossSectionAnalyzerWidget(QWidget *parent)
     : QOpenGLWidget(parent)
 {
-    connect(this, &QOpenGLWidget::frameSwapped, [this]() { update(); });
+    // connect(this, &QOpenGLWidget::frameSwapped, [this]() { update(); });
 }
 
 void Canavar::Engine::CrossSectionAnalyzerWidget::initializeGL()

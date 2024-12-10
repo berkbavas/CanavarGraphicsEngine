@@ -17,7 +17,7 @@ void Canavar::Engine::Terrain::Initialize()
 
     Reset();
 
-    mTileGenerator = new TileGenerator(4, 128, 2048.0f);
+    mTileGenerator = new TileGenerator(4, 64, 2048.0f);
 
     mTextures.insert("Terrain", ModelImporter::CreateTexture(":/Resources/Terrain/grass2.jpg"));
     mTextures.insert("Grass", ModelImporter::CreateTexture(":/Resources/Terrain/grass0.jpg"));
@@ -39,6 +39,8 @@ void Canavar::Engine::Terrain::Render(Shader* pShader, Camera* pCamera)
     {
         mTileGenerator->TranslateTiles((currentTilePosition - mPreviousTilePosition));
         mPreviousTilePosition = currentTilePosition;
+
+        qDebug() << "Terrain::Render:" << "currentTilePosition:" << currentTilePosition;
     }
 
     pShader->Bind();
