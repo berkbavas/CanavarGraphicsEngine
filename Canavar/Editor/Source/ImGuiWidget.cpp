@@ -427,6 +427,7 @@ void Canavar::Editor::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffectPtr pNoz
     ImGui::SliderFloat("Max Life##NozzleEffect", &pNozzleEffect->GetMaxLife_NonConst(), 0.00f, 4.0f);
     ImGui::SliderFloat("Max Length##NozzleEffect", &pNozzleEffect->GetMaxLength_NonConst(), 0.0f, 15.0f);
     ImGui::SliderFloat("Max Speed##NozzleEffect", &pNozzleEffect->GetMaxSpeed_NonConst(), 0.0f, 100.0f);
+    ImGui::SliderFloat("Power##NozzleEffect", &pNozzleEffect->GetPower_NonConst(), 0.01f, 4.0f);
     ImGui::SliderInt("# of Particles##NozzleEffect", &pNozzleEffect->GetNumberOfParticles_NonConst(), 0, 100'000);
 }
 
@@ -463,7 +464,7 @@ void Canavar::Editor::ImGuiWidget::DrawVertexPainterSettings()
     if (ImGui::CollapsingHeader("Vertex Painter Settings"))
     {
         ImGui::Checkbox("Enabled##VertexPainter", &mVertexPainter->GetVertexPaintingEnabled_NonConst());
-        ImGui::SliderFloat("Brush Radius##VertexPainter", &mVertexPainter->GetBrushRadius_NonConst(), 0.01f, 2.0f, "%.2f");
+        ImGui::SliderFloat("Brush Radius##VertexPainter", &mVertexPainter->GetBrushRadius_NonConst(), 0.01f, 20.0f, "%.2f");
         ImGui::ColorEdit4("Brush Color##VertexPainter", (float *) &mVertexPainter->GetBrushColor_NonConst());
     }
 }

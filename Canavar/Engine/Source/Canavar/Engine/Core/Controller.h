@@ -11,6 +11,7 @@
 namespace Canavar::Engine
 {
     class Window;
+    class Widget;
 
     class NodeManager;
     class ShaderManager;
@@ -20,11 +21,17 @@ namespace Canavar::Engine
     class VertexPainter;
     class EventReceiver;
 
-    class Controller : public QObject, protected QOpenGLExtraFunctions, public ManagerProvider
+    enum class ContainerMode
+    {
+        Widget,
+        Window
+    };
+
+    class Controller : public QObject, public ManagerProvider
     {
         Q_OBJECT
       public:
-        explicit Controller(QObject* parent = nullptr);
+        explicit Controller(ContainerMode mode = ContainerMode::Window, QObject* parent = nullptr);
         ~Controller();
 
         void Run();
@@ -37,6 +44,7 @@ namespace Canavar::Engine
         VertexPainter* GetVertexPainter() override { return mVertexPainter; }
 
         Window* GetWindow() { return mWindow; }
+        Widget* GetWidget() { return mWidget; }
 
         void AddEventReceiver(EventReceiver* pReceiver);
         void RemoveEventReceiver(EventReceiver* pReceiver);
@@ -58,7 +66,9 @@ namespace Canavar::Engine
         void onRenderLoop(float ifps);
 
       private:
-        Window* mWindow;
+        ContainerMode mContainerMode{ ContainerMode::Window };
+        Window* mWindow{ nullptr };
+        Widget* mWidget{ nullptr };
 
         CameraManager* mCameraManager;
         NodeManager* mNodeManager;

@@ -71,7 +71,7 @@ void Canavar::Engine::NozzleEffect::Update(float ifps)
 
             float bound = -z * mMaxRadius / mMaxLength + mMaxRadius;
 
-            if (radius  > bound)
+            if (radius > std::pow(bound, mPower))
             {
                 pParticles[i] = GenerateParticle();
             }

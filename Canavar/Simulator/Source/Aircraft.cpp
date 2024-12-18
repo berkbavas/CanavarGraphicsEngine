@@ -30,7 +30,7 @@ bool Canavar::Simulator::Aircraft::Initialize()
 
     qInfo() << "Aircraft is being initializing...";
 
-    if (!mExecutor->LoadModel("f16"))
+    if (!mExecutor->LoadModel("c172r"))
     {
         qCritical() << "Could not load JSBSim model.";
         return false;
@@ -144,6 +144,8 @@ void Canavar::Simulator::Aircraft::Tick()
 
     mPfd.airspeed = mAuxiliary->GetVcalibratedKTS();
     mPfd.machNumber = mAuxiliary->GetMach();
+
+    mPfd.pressure = mAuxiliary->GetTotalPressure();
 
     mPfd.latitude = mPropagate->GetLatitudeDeg();
     mPfd.longitude = mPropagate->GetLongitudeDeg();

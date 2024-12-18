@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Core/EventReceiver.h"
+#include "Canavar/Engine/Core/Widget.h"
 #include "Canavar/Engine/Core/Window.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
@@ -13,20 +14,36 @@
 
 #include <QThread>
 
-Canavar::Engine::Controller::Controller(QObject* parent)
+Canavar::Engine::Controller::Controller(ContainerMode mode, QObject* parent)
     : QObject(parent)
+    , mContainerMode(mode)
 {
-    mWindow = new Window;
-
-    connect(mWindow, &Window::Initialize, this, &Controller::Initialize);
-    connect(mWindow, &Window::Render, this, &Controller::Render);
-    connect(mWindow, &Window::Resize, this, &Controller::Resize);
-    connect(mWindow, &Window::MousePressed, this, &Controller::OnMousePressed);
-    connect(mWindow, &Window::MouseReleased, this, &Controller::OnMouseReleased);
-    connect(mWindow, &Window::MouseMoved, this, &Controller::OnMouseMoved);
-    connect(mWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
-    connect(mWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
-    connect(mWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mWindow = new Window;
+        connect(mWindow, &Window::Initialize, this, &Controller::Initialize);
+        connect(mWindow, &Window::Render, this, &Controller::Render);
+        connect(mWindow, &Window::Resize, this, &Controller::Resize);
+        connect(mWindow, &Window::MousePressed, this, &Controller::OnMousePressed);
+        connect(mWindow, &Window::MouseReleased, this, &Controller::OnMouseReleased);
+        connect(mWindow, &Window::MouseMoved, this, &Controller::OnMouseMoved);
+        connect(mWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
+        connect(mWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
+        connect(mWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
+    }
+    else
+    {
+        mWidget = new Widget;
+        connect(mWidget, &Widget::Initialize, this, &Controller::Initialize);
+        connect(mWidget, &Widget::Render, this, &Controller::Render);
+        connect(mWidget, &Widget::Resize, this, &Controller::Resize);
+        connect(mWidget, &Widget::MousePressed, this, &Controller::OnMousePressed);
+        connect(mWidget, &Widget::MouseReleased, this, &Controller::OnMouseReleased);
+        connect(mWidget, &Widget::MouseMoved, this, &Controller::OnMouseMoved);
+        connect(mWidget, &Widget::WheelMoved, this, &Controller::OnWheelMoved);
+        connect(mWidget, &Widget::KeyPressed, this, &Controller::OnKeyPressed);
+        connect(mWidget, &Widget::KeyReleased, this, &Controller::OnKeyReleased);
+    }
 
     mNodeManager = new NodeManager(nullptr);
     mCameraManager = new CameraManager(nullptr);
@@ -59,15 +76,20 @@ void Canavar::Engine::Controller::Run()
 
     Q_INIT_RESOURCE(Engine);
 
-    mWindow->setWidth(INITIAL_WIDTH);
-    mWindow->setHeight(INITIAL_HEIGHT);
-    mWindow->showMinimized();
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mWindow->setWidth(INITIAL_WIDTH);
+        mWindow->setHeight(INITIAL_HEIGHT);
+        mWindow->showMinimized();
+    }
 }
 
 void Canavar::Engine::Controller::Initialize()
 {
-    initializeOpenGLFunctions();
-    mWindow->showMaximized();
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mWindow->showMaximized();
+    }
 
     for (const auto pManager : mManagers)
     {
@@ -88,7 +110,14 @@ void Canavar::Engine::Controller::Initialize()
 
 void Canavar::Engine::Controller::Render(float ifps)
 {
-    mDevicePixelRatio = mWindow->devicePixelRatio();
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mDevicePixelRatio = mWindow->devicePixelRatio();
+    }
+    else
+    {
+        mDevicePixelRatio = mWidget->devicePixelRatio();
+    }
 
     for (const auto pManager : mManagers)
     {
@@ -167,11 +196,26 @@ void Canavar::Engine::Controller::RemoveEventReceiver(EventReceiver* pReceiver)
 
 void Canavar::Engine::Controller::Resize(int width, int height)
 {
-    mDevicePixelRatio = mWindow->devicePixelRatio();
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mDevicePixelRatio = mWindow->devicePixelRatio();
+    }
+    else
+    {
+        mDevicePixelRatio = mWidget->devicePixelRatio();
+    }
+
     mWidth = width * mDevicePixelRatio;
     mHeight = height * mDevicePixelRatio;
 
-    mWindow->makeCurrent();
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mWindow->makeCurrent();
+    }
+    else
+    {
+        mWidget->makeCurrent();
+    }
 
     mRenderingManager->Resize(mWidth, mHeight);
     mCameraManager->Resize(mWidth, mHeight);
@@ -181,7 +225,14 @@ void Canavar::Engine::Controller::Resize(int width, int height)
         pReceiver->Resize(mWidth, mHeight);
     }
 
-    mWindow->doneCurrent();
+    if (mContainerMode == ContainerMode::Window)
+    {
+        mWindow->doneCurrent();
+    }
+    else
+    {
+        mWidget->doneCurrent();
+    }
 }
 
 void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)

@@ -126,15 +126,16 @@ void Canavar::Simulator::AircraftController::Update(float ifps)
         CGE_EXIT_FAILURE("mRootNode is nullptr. Exiting...");
     }
 
-    if (mJetNode == nullptr)
-    {
-        CGE_EXIT_FAILURE("mJetNode is nullptr. Exiting...");
-    }
+    // if (mJetNode == nullptr)
+    // {
+    //     CGE_EXIT_FAILURE("mJetNode is nullptr. Exiting...");
+    // }
 
     mRootNode->SetWorldRotation(mPfd.rotation);
     mRootNode->SetWorldPosition(mPfd.position);
 
     // Rudder
+    if (mJetNode)
     {
         QVector3D p0 = QVector3D(0.0f, 3.0193f, 10.3473f);
         QVector3D p1 = QVector3D(0.0f, 7.742f, 13.4306f);
@@ -148,6 +149,7 @@ void Canavar::Simulator::AircraftController::Update(float ifps)
     }
 
     // Left elevator
+    if (mJetNode)
     {
         QVector3D p0 = QVector3D(-2.6f, 0.4204f, 8.4395f);
         QVector3D p1 = QVector3D(-6.8575f, -0.4848f, 11.7923f);
@@ -161,6 +163,7 @@ void Canavar::Simulator::AircraftController::Update(float ifps)
     }
 
     // Right elevator
+    if (mJetNode)
     {
         QVector3D p0 = QVector3D(2.6f, 0.4204f, 8.4395f);
         QVector3D p1 = QVector3D(6.8575f, -0.4848f, 11.7923f);
@@ -174,6 +177,7 @@ void Canavar::Simulator::AircraftController::Update(float ifps)
     }
 
     // Left aileron
+    if (mJetNode)
     {
         QVector3D p0 = QVector3D(-2.6074f, 0.3266f, 3.4115f);
         QVector3D p1 = QVector3D(-8.7629f, -0.2083f, 4.333f);
@@ -187,6 +191,7 @@ void Canavar::Simulator::AircraftController::Update(float ifps)
     }
 
     // Right aileron
+    if (mJetNode)
     {
         QVector3D p0 = QVector3D(2.6072f, 0.3266f, 3.4115f);
         QVector3D p1 = QVector3D(8.7623f, 0.1772f, 4.3218f);

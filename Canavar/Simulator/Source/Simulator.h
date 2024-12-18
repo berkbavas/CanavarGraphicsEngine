@@ -2,9 +2,11 @@
 
 #include "Aircraft.h"
 #include "AircraftController.h"
+#include "PrimaryFlightData.h"
 
 #include <Canavar/Engine/Core/Controller.h>
 #include <Canavar/Engine/Core/EventReceiver.h>
+#include <Canavar/Engine/Core/Widget.h>
 #include <Canavar/Engine/Core/Window.h>
 #include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/LightManager.h>
@@ -19,9 +21,15 @@
 #include <Canavar/Engine/Node/Object/Model/Model.h>
 #include <Canavar/Engine/Util/Logger.h>
 
+#include <QGridLayout>
+#include <QMainWindow>
+#include <QOpenGLFunctions>
+#include <QQuickWidget>
+#include <QtImGui.h>
+
 namespace Canavar::Simulator
 {
-    class Simulator : public Canavar::Engine::EventReceiver
+    class Simulator : public QObject, public Canavar::Engine::EventReceiver, protected QOpenGLFunctions
     {
       public:
         Simulator();
@@ -38,12 +46,19 @@ namespace Canavar::Simulator
         bool KeyReleased(QKeyEvent *) override;
 
       private:
+        QtImGui::RenderRef mRenderRef;
+        QGridLayout *mGridLayout;
+        Canavar::Engine::Widget *mOpenGLWidget;
+        QQuickWidget *mBasicSix;
+
         Canavar::Engine::Controller *mController;
         Canavar::Engine::NodeManager *mNodeManager;
         Canavar::Engine::CameraManager *mCameraManager;
 
         Aircraft *mAircraft;
         AircraftController *mAircraftController;
+
+        PrimaryFlightData* mPfd;
 
         Canavar::Engine::DummyObjectPtr mRootNode;
         Canavar::Engine::ModelPtr mJetNode;

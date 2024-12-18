@@ -4,11 +4,11 @@ layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 struct Vertex
 {
-    vec3 position;
-    vec3 normal;
-    vec2 textureCoords;
-    vec3 tangent;
-    vec3 bitangent;
+    vec4 position;
+    vec4 normal;
+    vec4 textureCoords;
+    vec4 tangent;
+    vec4 bitangent;
     vec4 color;
 };
 
@@ -30,7 +30,7 @@ void main()
 {
     const uint index = gl_GlobalInvocationID.x;
 
-    float distance = length(brush.center - vertex[index].position);
+    float distance = length(brush.center - vertex[index].position.xyz);
 
     if (distance < brush.radius)
     {

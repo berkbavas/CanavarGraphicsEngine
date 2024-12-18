@@ -40,7 +40,7 @@ namespace Canavar::Engine
         int mHeight{ INITIAL_HEIGHT };
 
         DEFINE_MEMBER(float, ZNear, 0.1f);
-        DEFINE_MEMBER(float, ZFar, 100'000.0f);
+        DEFINE_MEMBER(float, ZFar, 1'000'000.0f);
         DEFINE_MEMBER(float, VerticalFov, 60.0f);
     };
 

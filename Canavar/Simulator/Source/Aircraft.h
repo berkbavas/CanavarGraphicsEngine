@@ -63,6 +63,9 @@ namespace Canavar::Simulator
             double latitude;
             double longitude;
             double altitude;
+            double pressure;
+            double turnRate;
+            double slipSkid;
             QVector3D position;
             QQuaternion rotation;
             double rudderPos;

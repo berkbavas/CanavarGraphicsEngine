@@ -46,6 +46,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, MaxLife, 2.0f);
         DEFINE_MEMBER(float, MaxLength, 10.0f);
         DEFINE_MEMBER(float, MaxSpeed, 5.0f);
+        DEFINE_MEMBER(float, Power, 1.0f);
         DEFINE_MEMBER(int, NumberOfParticles, MAX_NUMBER_OF_PARTICLES);
 
         bool mIsInitialized{ false };
