@@ -350,7 +350,7 @@ vec4 processPointLights(vec4 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos
     return result;
 }
 
-vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
+vec4 processHaze(float distance, vec4 subjectColor)
 {
     vec4 result = subjectColor;
 
@@ -427,7 +427,7 @@ void main()
     result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
 
     // Final
-    fragColor = processHaze(distance, fsWorldPosition, vec4(result.rgb, 1));
+    fragColor = processHaze(distance, vec4(result.rgb, 1));
 
     // Fragment position
     // Note that the terrain has no model matrix so its local and world coordinates are equal.

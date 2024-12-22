@@ -131,47 +131,15 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
         pShader->SetUniformValue("nodeId", static_cast<float>(pModel->GetNodeId()));
         pShader->SetUniformValue("meshId", static_cast<float>(mMeshId));
 
-        // Process textures
-        bool hasAnyTexture = false;
+        pShader->SetSampler("textureBaseColor", 0, mMaterial->GetTexture(TextureType::BaseColor));
+        pShader->SetSampler("textureRoughness", 1, mMaterial->GetTexture(TextureType::Metallic));
+        pShader->SetSampler("textureMetallic", 2, mMaterial->GetTexture(TextureType::Metallic));
+        pShader->SetSampler("textureAmbient", 3, mMaterial->GetTexture(TextureType::BaseColor));
+        pShader->SetSampler("textureDiffuse", 4, mMaterial->GetTexture(TextureType::BaseColor));
+        pShader->SetSampler("textureSpecular", 5, mMaterial->GetTexture(TextureType::Specular));
 
-        pShader->SetUniformValue("useColor", false);
-        pShader->SetUniformValue("useTextureAmbient", false);
-        pShader->SetUniformValue("useTextureDiffuse", false);
-        pShader->SetUniformValue("useTextureSpecular", false);
-        pShader->SetUniformValue("useTextureNormal", false);
-
-        if (const auto texture = mMaterial->GetTexture(TextureType::Ambient))
-        {
-            hasAnyTexture = true;
-            pShader->SetUniformValue("useTextureAmbient", true);
-            pShader->SetSampler("textureAmbient", 0, texture);
-        }
-
-        if (const auto texture = mMaterial->GetTexture(TextureType::Diffuse))
-        {
-            hasAnyTexture = true;
-            pShader->SetUniformValue("useTextureDiffuse", true);
-            pShader->SetSampler("textureDiffuse", 1, texture);
-        }
-
-        if (const auto texture = mMaterial->GetTexture(TextureType::Specular))
-        {
-            hasAnyTexture = true;
-            pShader->SetUniformValue("useTextureSpecular", true);
-            pShader->SetSampler("textureSpecular", 2, texture);
-        }
-
-        if (const auto texture = mMaterial->GetTexture(TextureType::Normal))
-        {
-            pShader->SetUniformValue("useTextureNormal", true);
-            pShader->SetSampler("textureNormal", 3, texture);
-        }
-
-        if (!hasAnyTexture)
-        {
-            // If there is no texture, then use color.
-            pShader->SetUniformValue("useColor", true);
-        }
+        pShader->SetUniformValue("useTextureNormal", mMaterial->HasNormalTexture());
+        pShader->SetSampler("textureNormal", 6, mMaterial->GetTexture(TextureType::Normal));
 
         glBindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

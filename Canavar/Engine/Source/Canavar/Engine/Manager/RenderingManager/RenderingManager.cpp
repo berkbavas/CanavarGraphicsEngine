@@ -215,12 +215,13 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     SetPointLights(mModelShader, pModel.get());
 
     mModelShader->Bind();
-    mModelShader->SetUniformValue("invertNormals", pModel->GetInvertNormals());
+    mModelShader->SetUniformValue("model.useColor", pModel->GetUseColor());
     mModelShader->SetUniformValue("model.color", pModel->GetColor());
     mModelShader->SetUniformValue("model.ambient", pModel->GetAmbient());
     mModelShader->SetUniformValue("model.diffuse", pModel->GetDiffuse());
     mModelShader->SetUniformValue("model.specular", pModel->GetSpecular());
     mModelShader->SetUniformValue("model.shininess", pModel->GetShininess());
+    mModelShader->SetUniformValue("model.invertNormals", pModel->GetInvertNormals());
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {

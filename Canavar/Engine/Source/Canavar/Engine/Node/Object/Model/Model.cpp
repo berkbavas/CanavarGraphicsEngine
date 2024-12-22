@@ -27,6 +27,7 @@ void Canavar::Engine::Model::ToJson(QJsonObject& object)
     color.insert("a", mColor.w());
     object.insert("color", color);
 
+    object.insert("useColor", mUseColor);
     object.insert("ambient", mAmbient);
     object.insert("diffuse", mDiffuse);
     object.insert("specular", mSpecular);
@@ -42,18 +43,14 @@ void Canavar::Engine::Model::FromJson(const QJsonObject& object, const std::map<
 {
     Object::FromJson(object, nodes);
 
-    QJsonObject defaultColor;
-    defaultColor.insert("r", mColor.x());
-    defaultColor.insert("g", mColor.y());
-    defaultColor.insert("b", mColor.z());
-    defaultColor.insert("a", mColor.w());
-
-    QJsonObject color = object["color"].toObject(defaultColor);
+    QJsonObject color = object["color"].toObject();
     float r = object["r"].toDouble(1.0f);
     float g = object["g"].toDouble(1.0f);
     float b = object["b"].toDouble(1.0f);
     float a = object["a"].toDouble(1.0f);
     mColor = QVector4D(r, g, b, a);
+
+    mUseColor = object["useColor"].toBool(false);
 
     mAmbient = object["ambient"].toDouble(0.25f);
     mDiffuse = object["diffuse"].toDouble(0.75f);

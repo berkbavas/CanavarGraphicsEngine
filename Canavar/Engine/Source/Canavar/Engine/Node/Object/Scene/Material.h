@@ -8,7 +8,6 @@
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLTexture>
 
-
 namespace Canavar::Engine
 {
     enum class TextureType
@@ -16,7 +15,10 @@ namespace Canavar::Engine
         Ambient,
         Diffuse,
         Specular,
-        Normal
+        Normal,
+        BaseColor,
+        Metallic,
+        Roughness
     };
 
     class Material : protected QOpenGLExtraFunctions
@@ -29,7 +31,11 @@ namespace Canavar::Engine
 
         void LoadTexture(TextureType type, const QImage& image);
         GLuint GetTexture(TextureType type);
-        int GetNumberOfTextures();
+
+        bool HasNormalTexture() const;
+        bool HasAnyColorTexture() const;
+
+        int GetNumberOfTextures() const;
 
       private:
         QMap<TextureType, GLuint> mTextures;

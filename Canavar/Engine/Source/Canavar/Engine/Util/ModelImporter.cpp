@@ -221,26 +221,29 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(aiM
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
-    constexpr aiTextureType AMBIENT_TARGETS[] = { aiTextureType_AMBIENT, aiTextureType_BASE_COLOR, aiTextureType_UNKNOWN, aiTextureType_DIFFUSE };
+    // constexpr aiTextureType AMBIENT_TARGETS[] = { aiTextureType_AMBIENT, aiTextureType_BASE_COLOR };
 
-    for (const auto target : AMBIENT_TARGETS)
-    {
-        if (ProcessTexture(pMaterial, aiMaterial, target, TextureType::Ambient, directory))
-        {
-            break;
-        }
-    }
+    // for (const auto target : AMBIENT_TARGETS)
+    // {
+    //     if (ProcessTexture(pMaterial, aiMaterial, target, TextureType::Ambient, directory))
+    //     {
+    //         break;
+    //     }
+    // }
 
-    constexpr aiTextureType DIFFUSE_TARGETS[] = { aiTextureType_DIFFUSE, aiTextureType_DIFFUSE_ROUGHNESS, aiTextureType_AMBIENT };
+    // constexpr aiTextureType DIFFUSE_TARGETS[] = { aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR };
 
-    for (const auto target : DIFFUSE_TARGETS)
-    {
-        if (ProcessTexture(pMaterial, aiMaterial, target, TextureType::Diffuse, directory))
-        {
-            break;
-        }
-    }
+    // for (const auto target : DIFFUSE_TARGETS)
+    // {
+    //     if (ProcessTexture(pMaterial, aiMaterial, target, TextureType::Diffuse, directory))
+    //     {
+    //         break;
+    //     }
+    // }
 
+    ProcessTexture(pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
+    ProcessTexture(pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
+    //ProcessTexture(pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
     ProcessTexture(pMaterial, aiMaterial, aiTextureType_SPECULAR, TextureType::Specular, directory);
     ProcessTexture(pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
 

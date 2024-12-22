@@ -50,7 +50,7 @@ void Canavar::Simulator::Simulator::Initialize()
     mAircraftController = new AircraftController(mAircraft);
 
     // Post initialize
-    mNodeManager->ImportNodes("Resources/Nodes2.json");
+    mNodeManager->ImportNodes("Resources/f16.json");
     mFreeCamera = mCameraManager->GetFreeCamera();
     mRootNode = mNodeManager->FindNodeByName<Canavar::Engine::DummyObject>("Root Node");
     mJetNode = mNodeManager->FindNodeByName<Canavar::Engine::Model>("f16c");

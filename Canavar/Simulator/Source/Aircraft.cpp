@@ -30,7 +30,7 @@ bool Canavar::Simulator::Aircraft::Initialize()
 
     qInfo() << "Aircraft is being initializing...";
 
-    if (!mExecutor->LoadModel("c172r"))
+    if (!mExecutor->LoadModel("f16"))
     {
         qCritical() << "Could not load JSBSim model.";
         return false;

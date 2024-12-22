@@ -376,6 +376,7 @@ void Canavar::Editor::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
     ImGui::SliderFloat("Diffuse##Model", &pModel->GetDiffuse_NonConst(), 0.0f, 2.0f, "%.3f");
     ImGui::SliderFloat("Specular##Model", &pModel->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Shininess##Model", &pModel->GetShininess_NonConst(), 1.0f, 128.0f, "%.3f");
+    ImGui::Checkbox("Use Color##Model", &pModel->GetUseColor_NonConst());
     ImGui::ColorEdit4("Color##Model", &pModel->GetColor_NonConst()[0]);
     ImGui::Checkbox("Invert Normals##Model", &pModel->GetInvertNormals_NonConst());
     ImGui::Checkbox("Visible##Model", &pModel->GetVisible_NonConst());

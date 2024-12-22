@@ -12,7 +12,7 @@ void main()
     float r = sqrt(x * x + y * y);
     float nr = r / maxRadius;
 
-    if (r < 0.5)
+    if (r < 0.25)
     {
         fragColor = mix(vec4(1), vec4(1, 1, 0, 1), nr);
     }

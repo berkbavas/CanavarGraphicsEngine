@@ -35,7 +35,7 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
         DEFINE_MEMBER(float, AngularSpeedMultiplier, 1.0f);
-        DEFINE_MEMBER(float, Distance, 10.0f);
+        DEFINE_MEMBER(float, Distance, 5.0f);
         DEFINE_MEMBER(float, Yaw, 0.0f);
         DEFINE_MEMBER(float, Pitch, 0.0f);
     };

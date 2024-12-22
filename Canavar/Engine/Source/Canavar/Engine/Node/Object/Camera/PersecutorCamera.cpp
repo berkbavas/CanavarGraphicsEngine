@@ -64,7 +64,7 @@ void Canavar::Engine::PersecutorCamera::Update(float ifps)
 
 void Canavar::Engine::PersecutorCamera::Reset()
 {
-    mDistance = 10.0f;
+    mDistance = 5.0f;
     mYaw = 0.0f;
     mPitch = 0.0f;
 }
