@@ -26,6 +26,7 @@ All 3D math operations are handled by `Qt 6`'s math module.
 - [ ] Water
 - [x] Vertex Painting
 - [x] Editor
+- [x] Physically Based Rendering
 - [ ] WGS84 ellipsoid support
 - [ ] Terrain generation using DTED and satellite images
 - [ ] Post processing effects
