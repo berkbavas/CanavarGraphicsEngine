@@ -126,7 +126,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER_PTR_CONST(CrossSectionAnalyzer, CrossSectionAnalyzer);
         DEFINE_MEMBER(bool, CrossSectionEnabled, false);
 
-        DEFINE_MEMBER(float, BlurThreshold, 1000.0f);
+        DEFINE_MEMBER(float, BlurThreshold, 5000.0f);
         DEFINE_MEMBER(int, MaxSamples, 2);
     };
 };

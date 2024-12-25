@@ -260,6 +260,7 @@ void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffe
     mNozzleEffectShader->Bind();
     mNozzleEffectShader->SetUniformValue("maxRadius", pEffect->GetMaxRadius());
     mNozzleEffectShader->SetUniformValue("MVP", pCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
+    mNozzleEffectShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     pEffect->Render(ifps);
     mNozzleEffectShader->Release();
     // glDisable(GL_BLEND);
@@ -272,6 +273,10 @@ void Canavar::Engine::RenderingManager::SetUniforms(Camera* pCamera)
     SetDirectionalLights(mModelShader);
     SetDirectionalLights(mTerrainShader);
     SetPointLights(mTerrainShader, pCamera);
+
+    mModelShader->Bind();
+    mModelShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    mModelShader->Release();
 }
 
 void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camera* pCamera)

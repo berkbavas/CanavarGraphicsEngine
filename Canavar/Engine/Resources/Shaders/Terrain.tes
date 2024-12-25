@@ -46,6 +46,8 @@ uniform mat4 LVP; // Light space view projection matrix
 uniform vec3 cameraPos;
 uniform Terrain terrain;
 
+uniform float zFar;
+
 in vec3 tesPosition[];
 in vec3 tesNormal[];
 in vec2 tesTextureCoord[];
@@ -166,4 +168,6 @@ void main()
 
     //    gl_ClipDistance[0] = dot(clipPlane, vec4(fsWorldPosition, 1.0));
     gl_Position = VP * vec4(fsWorldPosition, 1.0f);
+
+    // gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * (2.0 / log2(zFar + 1.0)) - 1.0;
 }

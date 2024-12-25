@@ -94,6 +94,8 @@ uniform bool hasAnyColorTexture;
 uniform float nodeId;
 uniform float meshId;
 
+uniform float zFar;
+
 in vec4 fsLocalPosition;
 in vec4 fsWorldPosition;
 in vec3 fsNormal;
@@ -102,6 +104,7 @@ in mat3 fsTBN;
 in vec4 fsFragPosLightSpace;
 in vec4 fsVertexColor;
 flat in int fsVertexId;
+in float fsflogz;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 fragLocalPosition;
@@ -415,4 +418,6 @@ void main()
 
     // Distance
     outDistance = vec4(distance, 0, 0, 1);
+
+    gl_FragDepth = log2(fsflogz) * (1.0 / log2(zFar + 1.0));
 }

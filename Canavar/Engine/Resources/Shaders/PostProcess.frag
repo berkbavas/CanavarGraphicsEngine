@@ -19,7 +19,7 @@ void main()
     {
         outColor = texture(colorTexture, fsTextureCoords);
     }
-    else if(distance > blurThreshold || 0.5f < distance4d.a)
+    else if(distance > blurThreshold || 0.5f > distance4d.a /*Sky*/)
     {
         int samples = int(distance / pow(blurThreshold, 1.05));
 
