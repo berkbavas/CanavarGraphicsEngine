@@ -108,6 +108,7 @@ layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 fragLocalPosition;
 layout(location = 2) out vec4 fragWorldPosition;
 layout(location = 3) out vec4 nodeInfo;
+layout(location = 4) out vec4 outDistance;
 
 const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
@@ -436,4 +437,7 @@ void main()
 
     // Node Info
     nodeInfo = vec4(nodeId, 0, 0, 1);
+
+    // Distance
+    outDistance = vec4(distance, 0, 0, 1);
 };

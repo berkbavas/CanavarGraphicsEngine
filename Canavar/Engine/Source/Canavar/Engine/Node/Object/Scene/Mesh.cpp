@@ -90,7 +90,7 @@ void Canavar::Engine::Mesh::Destroy()
     }
 }
 
-void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
+void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4)
 {
     if (mVAO == 0)
     {
@@ -101,7 +101,7 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
     const auto &Model4x4 = pModel->GetWorldTransformation();
     const auto &Mesh4x4 = pModel->GetMeshTransformation(mMeshName);
 
-    const auto M = Model4x4 * Mesh4x4;
+    const auto M = Model4x4 * (Mesh4x4 * Node4x4);
 
     pShader->SetUniformValue("M", M);
 
@@ -130,13 +130,17 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader)
         pShader->SetUniformValue("N", M.normalMatrix());
         pShader->SetUniformValue("nodeId", static_cast<float>(pModel->GetNodeId()));
         pShader->SetUniformValue("meshId", static_cast<float>(mMeshId));
+        pShader->SetUniformValue("hasAnyColorTexture", mMaterial->HasAnyColorTexture());
 
-        pShader->SetSampler("textureBaseColor", 0, mMaterial->GetTexture(TextureType::BaseColor));
-        pShader->SetSampler("textureRoughness", 1, mMaterial->GetTexture(TextureType::Metallic));
-        pShader->SetSampler("textureMetallic", 2, mMaterial->GetTexture(TextureType::Metallic));
-        pShader->SetSampler("textureAmbient", 3, mMaterial->GetTexture(TextureType::BaseColor));
-        pShader->SetSampler("textureDiffuse", 4, mMaterial->GetTexture(TextureType::BaseColor));
-        pShader->SetSampler("textureSpecular", 5, mMaterial->GetTexture(TextureType::Specular));
+        if (mMaterial->HasAnyColorTexture())
+        {
+            pShader->SetSampler("textureBaseColor", 0, mMaterial->GetTexture(TextureType::BaseColor));
+            pShader->SetSampler("textureRoughness", 1, mMaterial->GetTexture(TextureType::Metallic));
+            pShader->SetSampler("textureMetallic", 2, mMaterial->GetTexture(TextureType::Metallic));
+            pShader->SetSampler("textureAmbient", 3, mMaterial->GetTexture(TextureType::BaseColor));
+            pShader->SetSampler("textureDiffuse", 4, mMaterial->GetTexture(TextureType::BaseColor));
+            pShader->SetSampler("textureSpecular", 5, mMaterial->GetTexture(TextureType::Specular));
+        }
 
         pShader->SetUniformValue("useTextureNormal", mMaterial->HasNormalTexture());
         pShader->SetSampler("textureNormal", 6, mMaterial->GetTexture(TextureType::Normal));

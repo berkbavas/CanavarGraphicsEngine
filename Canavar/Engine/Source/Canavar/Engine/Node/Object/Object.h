@@ -77,7 +77,7 @@ namespace Canavar::Engine
         virtual void AddChild(ObjectPtr pNode);
         virtual void RemoveChild(ObjectPtr pNode);
 
-        const std::set<ObjectPtr>& GetChildren() const { return mChildren; }
+        const std::set<ObjectPtr>& GetChildren() const;
 
       private:
         QMatrix4x4 mTransformation;

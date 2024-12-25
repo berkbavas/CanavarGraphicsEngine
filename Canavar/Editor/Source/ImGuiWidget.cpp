@@ -457,6 +457,9 @@ void Canavar::Editor::ImGuiWidget::DrawRenderSettings()
         ImGui::SliderFloat("Shadow Projection Z-Near", &mRenderingManager->GetShadowMappingRenderer()->GetZNear_NonConst(), 1, 20);
         ImGui::SliderFloat("Shadow Projection Z-Far", &mRenderingManager->GetShadowMappingRenderer()->GetZFar_NonConst(), 20, 1000);
         ImGui::SliderFloat("Shadow Sun Distance", &mRenderingManager->GetShadowMappingRenderer()->GetSunDistance_NonConst(), 1, 1000);
+
+        ImGui::SliderFloat("Blur Threshold", &mRenderingManager->GetBlurThreshold_NonConst(), 100, 10'000);
+        ImGui::SliderInt("Max Samples##DrawRenderSettings", &mRenderingManager->GetMaxSamples_NonConst(), 1, 6);
     }
 }
 

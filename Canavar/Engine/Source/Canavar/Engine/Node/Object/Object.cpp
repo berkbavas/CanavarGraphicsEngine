@@ -401,3 +401,8 @@ void Canavar::Engine::Object::RemoveChild(ObjectPtr pNode)
     mChildren.extract(pNode);
     pNode->SetParent(std::weak_ptr<Object>());
 }
+
+const std::set<Canavar::Engine::ObjectPtr>& Canavar::Engine::Object::GetChildren() const
+{
+    return mChildren;
+}

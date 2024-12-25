@@ -19,8 +19,10 @@ void Canavar::Engine::RenderingManager::Initialize()
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormats[Singlesample].setSamples(0);
+    mFramebufferFormats[Temp1].setSamples(0);
+    mFramebufferFormats[Temp2].setSamples(0);
 
-    for (const auto type : { Multisample, Singlesample })
+    for (const auto type : { Multisample, Singlesample, Temp1, Temp2 })
     {
         mFramebuffers[type] = nullptr;
     }
@@ -135,7 +137,23 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     // ----------------------- BLIT TO DEFAULT FBO -------------------
 
-    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Multisample], GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp1], mFramebuffers[Multisample], GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+    mFramebuffers[Temp2]->bind();
+    glViewport(0, 0, mWidth, mHeight);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    mPostProcessShader->Bind();
+    mPostProcessShader->SetUniformValue("blurThreshold", mBlurThreshold);
+    mPostProcessShader->SetUniformValue("maxSamples", mMaxSamples);
+    mPostProcessShader->SetSampler("colorTexture", 0, mFramebuffers[Temp1]->texture());
+    mPostProcessShader->SetSampler("distanceTexture", 1, mFramebuffers[Singlesample]->textures().at(4));
+    mQuad->Render();
+    mPostProcessShader->Release();
+    mFramebuffers[Temp2]->release();
+
+    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Temp2], GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
     // For QPainter
     glDisable(GL_CULL_FACE);
@@ -318,7 +336,7 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, Object* 
 
 void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 {
-    for (const auto type : { Multisample, Singlesample })
+    for (const auto type : { Multisample, Singlesample, Temp1, Temp2 })
     {
         if (mFramebuffers[type])
         {
@@ -331,13 +349,19 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
 
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment local position
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Fragment world position
-        mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F); // Node info
+        for (int i = 1; i < NUMBER_OF_FBO_ATTACHMENTS; ++i)
+        {
+            mFramebuffers[type]->addColorAttachment(mWidth, mHeight, GL_RGBA32F);
+        }
 
         mFramebuffers[type]->bind();
         glDrawBuffers(NUMBER_OF_FBO_ATTACHMENTS, FBO_ATTACHMENTS);
         mFramebuffers[type]->release();
+    }
+
+    for (const auto type : { Temp1, Temp2 })
+    {
+        mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
     }
 }
 

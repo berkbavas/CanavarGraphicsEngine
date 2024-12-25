@@ -25,7 +25,7 @@ namespace Canavar::Engine
 
         void Initialize();
         void Destroy();
-        void Render(Model *pModel, Shader *pShader);
+        void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4);
 
         void AddVertex(const Vertex &vertex);
         void AddIndex(unsigned int index);

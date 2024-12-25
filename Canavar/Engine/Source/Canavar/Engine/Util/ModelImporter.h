@@ -25,8 +25,8 @@ namespace Canavar::Engine
       private:
         static SceneNodePtr ProcessNode(ScenePtr pScene, aiNode* aiNode);
         static MeshPtr ProcessMesh(aiMesh* aiMesh);
-        static MaterialPtr ProcessMaterial(aiMaterial* aiMaterial, const QString& directory);
-        static bool ProcessTexture(MaterialPtr material, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory);
+        static MaterialPtr ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& directory);
+        static bool ProcessTexture(const aiScene* pScene, MaterialPtr material, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory);
 
         static QMatrix4x4 ToQMatrix4x4(const aiMatrix4x4& matrix);
     };

@@ -83,7 +83,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     // Materials
     for (unsigned int i = 0; i < aiScene->mNumMaterials; ++i)
     {
-        MaterialPtr pMaterial = ProcessMaterial(aiScene->mMaterials[i], directory);
+        MaterialPtr pMaterial = ProcessMaterial(aiScene, aiScene->mMaterials[i], directory);
         pScene->AddMaterial(pMaterial);
     }
 
@@ -217,7 +217,7 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
     return pMesh;
 }
 
-Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(aiMaterial* aiMaterial, const QString& directory)
+Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& directory)
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
@@ -241,37 +241,55 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(aiM
     //     }
     // }
 
-    ProcessTexture(pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
-    ProcessTexture(pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
     //ProcessTexture(pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
-    ProcessTexture(pMaterial, aiMaterial, aiTextureType_SPECULAR, TextureType::Specular, directory);
-    ProcessTexture(pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_SPECULAR, TextureType::Specular, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
 
     return pMaterial;
 }
 
-bool Canavar::Engine::ModelImporter::ProcessTexture(MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory)
+bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory)
 {
     for (int i = 0; i < aiMaterial->GetTextureCount(aiType); i++)
     {
         aiString str;
         aiMaterial->GetTexture(aiType, i, &str);
 
-        QString filename(str.C_Str());
-
-        const auto path = directory + "/" + filename;
-
-        QImage image(path);
-
-        if (image.isNull())
+        if (const auto* pTexture = pScene->GetEmbeddedTexture(str.C_Str()))
         {
-            LOG_WARN("ModelImporter::ProcessTexture: Image at '{}' is null.", path.toStdString());
+            QImage image(reinterpret_cast<uchar*>(pTexture->pcData), pTexture->mWidth, pTexture->mHeight, QImage::Format_RGBA8888);
+
+            if (image.isNull())
+            {
+                LOG_WARN("ModelImporter::ProcessTexture: Image at '{}' is null.", str.C_Str());
+            }
+            else
+            {
+                LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", str.C_Str());
+                pMaterial->LoadTexture(type, image);
+                return true;
+            }
         }
         else
         {
-            LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", path.toStdString());
-            pMaterial->LoadTexture(type, image);
-            return true;
+            QString filename(str.C_Str());
+
+            const auto path = directory + "/" + filename;
+
+            QImage image(path);
+
+            if (image.isNull())
+            {
+                LOG_WARN("ModelImporter::ProcessTexture: Image at '{}' is null.", path.toStdString());
+            }
+            else
+            {
+                LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", path.toStdString());
+                pMaterial->LoadTexture(type, image);
+                return true;
+            }
         }
     }
 

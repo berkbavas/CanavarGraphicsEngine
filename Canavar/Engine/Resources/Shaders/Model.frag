@@ -75,8 +75,6 @@ uniform int numberOfDirectionalLights;
 uniform vec3 cameraPosition;
 uniform vec3 sunDirection;
 
-uniform bool useTextureNormal;
-
 // PBR
 uniform sampler2D textureBaseColor;
 uniform sampler2D textureRoughness;
@@ -88,6 +86,9 @@ uniform sampler2D textureDiffuse;
 uniform sampler2D textureSpecular;
 
 uniform sampler2D textureNormal;
+uniform bool useTextureNormal;
+
+uniform bool hasAnyColorTexture;
 
 // WTF? float?
 uniform float nodeId;
@@ -106,6 +107,7 @@ layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 fragLocalPosition;
 layout(location = 2) out vec4 fragWorldPosition;
 layout(location = 3) out vec4 nodeInfo;
+layout(location = 4) out vec4 outDistance;
 
 const float PI = 3.14159265359;
 
@@ -330,7 +332,7 @@ Color calculateColor(float shadow)
 
     Color color;
 
-    if (model.useColor)
+    if (model.useColor || !hasAnyColorTexture)
     {
         color.ambient = model.ambient * model.color;
         color.diffuse = model.diffuse * model.color;
@@ -410,4 +412,7 @@ void main()
 
     // Node Info
     nodeInfo = vec4(nodeId, meshId, float(gl_PrimitiveID), 1);
+
+    // Distance
+    outDistance = vec4(distance, 0, 0, 1);
 }

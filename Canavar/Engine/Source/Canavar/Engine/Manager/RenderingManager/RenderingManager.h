@@ -32,6 +32,8 @@ namespace Canavar::Engine
     {
         Multisample,
         Singlesample,
+        Temp1,
+        Temp2
     };
 
     class RenderingManager : public Manager, protected QOpenGLFunctions_4_3_Core
@@ -105,22 +107,26 @@ namespace Canavar::Engine
         int mHeight{ INITIAL_HEIGHT };
 
         DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
-        DEFINE_MEMBER(bool, ShadowsEnabled, true);
+        DEFINE_MEMBER(bool, ShadowsEnabled, false);
         DEFINE_MEMBER(float, ShadowBias, 0.00005f);
         DEFINE_MEMBER(int, ShadowSamples, 1);
 
-        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 4;
+        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 5;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
             {
                 GL_COLOR_ATTACHMENT0, // Color
                 GL_COLOR_ATTACHMENT1, // Fragment local position
                 GL_COLOR_ATTACHMENT2, // Fragment world position
                 GL_COLOR_ATTACHMENT3, // Node info
+                GL_COLOR_ATTACHMENT4, // Distance
             };
 
         float mIfps;
 
         DEFINE_MEMBER_PTR_CONST(CrossSectionAnalyzer, CrossSectionAnalyzer);
         DEFINE_MEMBER(bool, CrossSectionEnabled, false);
+
+        DEFINE_MEMBER(float, BlurThreshold, 1000.0f);
+        DEFINE_MEMBER(int, MaxSamples, 2);
     };
 };

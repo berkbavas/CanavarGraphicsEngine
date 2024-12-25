@@ -151,9 +151,9 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
 
         mObjects.removeAll(pObject);
 
-        const auto& children = pObject->GetChildren();
+        auto children = pObject->GetChildren();
 
-        for (auto it = pObject->GetChildren().begin(); it != pObject->GetChildren().end(); ++it)
+        for (auto it = children.begin(); it != children.end(); ++it)
         {
             if (const auto pChild = *it)
             {
