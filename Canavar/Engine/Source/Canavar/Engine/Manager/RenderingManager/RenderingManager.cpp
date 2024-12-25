@@ -273,20 +273,18 @@ void Canavar::Engine::RenderingManager::SetUniforms(Camera* pCamera)
     SetDirectionalLights(mModelShader);
     SetDirectionalLights(mTerrainShader);
     SetPointLights(mTerrainShader, pCamera);
-
-    mModelShader->Bind();
-    mModelShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
-    mModelShader->Release();
 }
 
 void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camera* pCamera)
 {
     pShader->Bind();
+
     pShader->SetUniformValue("haze.enabled", mHaze->GetEnabled());
     pShader->SetUniformValue("haze.color", mHaze->GetColor());
     pShader->SetUniformValue("haze.density", mHaze->GetDensity());
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
     pShader->SetUniformValue("cameraPosition", pCamera->GetWorldPosition());
+    pShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     pShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
     pShader->SetUniformValue("LVP", mShadowMappingRenderer->GetLightViewProjectionMatrix());
     pShader->SetSampler("shadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMap());

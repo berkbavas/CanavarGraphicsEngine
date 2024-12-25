@@ -58,6 +58,7 @@ out vec3 fsNormal;
 out float fsDistanceFromPosition;
 out float fsHeight;
 out vec4 fsFragPosLightSpace;
+out float fsflogz;
 
 const mat2 m = mat2(0.8, -0.6, 0.6, 0.8);
 
@@ -169,5 +170,7 @@ void main()
     //    gl_ClipDistance[0] = dot(clipPlane, vec4(fsWorldPosition, 1.0));
     gl_Position = VP * vec4(fsWorldPosition, 1.0f);
 
-    // gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * (2.0 / log2(zFar + 1.0)) - 1.0;
+    gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * (2.0 / log2(zFar + 1.0)) - 1.0;
+
+    fsflogz = 1.0 + gl_Position.w;
 }
