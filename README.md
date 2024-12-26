@@ -33,6 +33,8 @@ All 3D math operations are handled by `Qt 6`'s math module.
 
 ## Videos
 
+<https://github.com/user-attachments/assets/e6a14a70-482f-449f-ad58-2ef4f8164648>
+
 <https://github.com/user-attachments/assets/52296861-428c-4694-bbe4-b03f44dd3d18>
 
 <https://github.com/user-attachments/assets/a3a1cd6e-0239-4a83-b0b9-13c3846d6698>
@@ -40,6 +42,8 @@ All 3D math operations are handled by `Qt 6`'s math module.
 <https://github.com/user-attachments/assets/04041241-4dd9-49b1-92ea-0e0b61b3369f>
 
 <https://github.com/user-attachments/assets/d73b6242-a21e-405a-9e01-acbe09288390>
+
+<https://github.com/user-attachments/assets/186846ec-5881-4168-9b4c-83ce20c04f80>
 
 ## Build
 
