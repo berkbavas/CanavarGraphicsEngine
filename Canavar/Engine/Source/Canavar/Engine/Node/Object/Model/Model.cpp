@@ -44,10 +44,10 @@ void Canavar::Engine::Model::FromJson(const QJsonObject& object, const std::map<
     Object::FromJson(object, nodes);
 
     QJsonObject color = object["color"].toObject();
-    float r = object["r"].toDouble(1.0f);
-    float g = object["g"].toDouble(1.0f);
-    float b = object["b"].toDouble(1.0f);
-    float a = object["a"].toDouble(1.0f);
+    float r = color["r"].toDouble(1.0f);
+    float g = color["g"].toDouble(1.0f);
+    float b = color["b"].toDouble(1.0f);
+    float a = color["a"].toDouble(1.0f);
     mColor = QVector4D(r, g, b, a);
 
     mUseColor = object["useColor"].toBool(false);

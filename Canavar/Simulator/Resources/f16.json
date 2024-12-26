@@ -88,7 +88,7 @@
             "position": {
                 "x": 0,
                 "y": 4,
-                "z": 20
+                "z": 30
             },
             "rotation": {
                 "w": 1,
@@ -156,59 +156,22 @@
             "visible": true
         },
         {
-            "ambient": 0.5,
+            "ambient": 1,
             "color": {
                 "a": 1,
-                "b": 1,
+                "b": 0,
                 "g": 1,
-                "r": 1
+                "r": 0
             },
-            "diffuse": 1,
-            "invert_normals": true,
-            "node_name": "f16c",
-            "node_type": "Model",
-            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "rotation": {
-                "w": 0.7071129679679871,
-                "x": -0.7071006298065186,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "scene_name": "f16c",
-            "selectable": true,
-            "shininess": 8,
-            "specular": 0.25,
-            "useColor": false,
-            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
-            "visible": true
-        },
-        {
-            "ambient": 0.25,
-            "color": {
-                "a": 1,
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "diffuse": 0.75,
+            "diffuse": 2,
             "invert_normals": false,
             "node_name": "Sphere",
             "node_type": "Model",
             "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
             "position": {
-                "x": -2.8889217376708984,
-                "y": 0.037353515625,
-                "z": -10.371949195861816
+                "x": -2.9112045764923096,
+                "y": 0.03500000014901161,
+                "z": -10.400023460388184
             },
             "rotation": {
                 "w": 1,
@@ -217,9 +180,9 @@
                 "z": 0
             },
             "scale": {
-                "x": 0.0005000000237487257,
-                "y": 0.0005000000237487257,
-                "z": 0.0005000000237487257
+                "x": 0.0010000000474974513,
+                "y": 0.0010000000474974513,
+                "z": 0.0010000000474974513
             },
             "scene_name": "Sphere",
             "selectable": true,
@@ -237,10 +200,10 @@
                 "g": 1,
                 "r": 0
             },
-            "constant": 0.07500000298023224,
+            "constant": 1,
             "diffuse": 1,
             "enabled": true,
-            "linear": 0.25,
+            "linear": 0.10000000149011612,
             "node_name": "Green Light",
             "node_type": "PointLight",
             "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
@@ -267,21 +230,21 @@
             "visible": true
         },
         {
-            "ambient": 0.25,
+            "ambient": 1,
             "color": {
                 "a": 1,
-                "b": 1,
-                "g": 1,
+                "b": 0,
+                "g": 0,
                 "r": 1
             },
-            "diffuse": 0.75,
+            "diffuse": 2,
             "invert_normals": false,
             "node_name": "Sphere",
             "node_type": "Model",
             "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
             "position": {
                 "x": 2.9011764526367188,
-                "y": 0.0438690185546875,
+                "y": 0.03500000014901161,
                 "z": -10.396831512451172
             },
             "rotation": {
@@ -291,9 +254,9 @@
                 "z": 0
             },
             "scale": {
-                "x": 0.0005000000237487257,
-                "y": 0.0005000000237487257,
-                "z": 0.0005000000237487257
+                "x": 0.0010000000474974513,
+                "y": 0.0010000000474974513,
+                "z": 0.0010000000474974513
             },
             "scene_name": "Sphere",
             "selectable": true,
@@ -311,7 +274,7 @@
                 "g": 0,
                 "r": 1
             },
-            "constant": 0.07500000298023224,
+            "constant": 1,
             "diffuse": 1,
             "enabled": true,
             "linear": 0.25,
@@ -366,6 +329,43 @@
             },
             "selectable": true,
             "uuid": "f83490ac-b3a4-4b34-bafc-c6d9e3c46ed3",
+            "visible": true
+        },
+        {
+            "ambient": 0.5,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "invert_normals": true,
+            "node_name": "f16c",
+            "node_type": "Model",
+            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": -0.7071006298065186,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "f16c",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "useColor": false,
+            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
             "visible": true
         },
         {

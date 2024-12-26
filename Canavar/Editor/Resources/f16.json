@@ -156,18 +156,63 @@
             "visible": true
         },
         {
-            "max_length": 1.3519999980926514,
-            "max_life": 0.032999999821186066,
-            "max_radius": 0.24799999594688416,
-            "max_speed": 20.492000579833984,
-            "node_name": "Nozzle Effect",
-            "node_type": "NozzleEffect",
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 0,
+                "g": 1,
+                "r": 0
+            },
+            "diffuse": 2,
+            "invert_normals": false,
+            "node_name": "Sphere",
+            "node_type": "Model",
             "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
+            "position": {
+                "x": -2.9112045764923096,
+                "y": 0.03500000014901161,
+                "z": -10.400023460388184
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.0010000000474974513,
+                "y": 0.0010000000474974513,
+                "z": 0.0010000000474974513
+            },
+            "scene_name": "Sphere",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "useColor": true,
+            "uuid": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
+            "visible": true
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 0,
+                "g": 1,
+                "r": 0
+            },
+            "constant": 1,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.10000000149011612,
+            "node_name": "Green Light",
+            "node_type": "PointLight",
+            "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
             "position": {
                 "x": 0,
                 "y": 0,
-                "z": -7.596758842468262
+                "z": 0
             },
+            "quadratic": 0.10000000149011612,
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -180,25 +225,26 @@
                 "z": 1
             },
             "selectable": true,
-            "uuid": "f83490ac-b3a4-4b34-bafc-c6d9e3c46ed3",
+            "specular": 1,
+            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
             "visible": true
         },
         {
-            "ambient": 0.25,
+            "ambient": 1,
             "color": {
                 "a": 1,
                 "b": 0,
                 "g": 0,
                 "r": 1
             },
-            "diffuse": 0.75,
+            "diffuse": 2,
             "invert_normals": false,
             "node_name": "Sphere",
             "node_type": "Model",
             "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
             "position": {
                 "x": 2.9011764526367188,
-                "y": 0.0438690185546875,
+                "y": 0.03500000014901161,
                 "z": -10.396831512451172
             },
             "rotation": {
@@ -208,9 +254,9 @@
                 "z": 0
             },
             "scale": {
-                "x": 0.0005000000237487257,
-                "y": 0.0005000000237487257,
-                "z": 0.0005000000237487257
+                "x": 0.0010000000474974513,
+                "y": 0.0010000000474974513,
+                "z": 0.0010000000474974513
             },
             "scene_name": "Sphere",
             "selectable": true,
@@ -228,7 +274,7 @@
                 "g": 0,
                 "r": 1
             },
-            "constant": 0.07500000298023224,
+            "constant": 1,
             "diffuse": 1,
             "enabled": true,
             "linear": 0.25,
@@ -258,63 +304,18 @@
             "visible": true
         },
         {
-            "ambient": 0.25,
-            "color": {
-                "a": 1,
-                "b": 0,
-                "g": 1,
-                "r": 0
-            },
-            "diffuse": 0.75,
-            "invert_normals": false,
-            "node_name": "Sphere",
-            "node_type": "Model",
+            "max_length": 1.3519999980926514,
+            "max_life": 0.032999999821186066,
+            "max_radius": 0.24799999594688416,
+            "max_speed": 20.492000579833984,
+            "node_name": "Nozzle Effect",
+            "node_type": "NozzleEffect",
             "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
             "position": {
-                "x": -2.8889217376708984,
-                "y": 0.037353515625,
-                "z": -10.371949195861816
-            },
-            "rotation": {
-                "w": 1,
                 "x": 0,
                 "y": 0,
-                "z": 0
+                "z": -7.596758842468262
             },
-            "scale": {
-                "x": 0.0005000000237487257,
-                "y": 0.0005000000237487257,
-                "z": 0.0005000000237487257
-            },
-            "scene_name": "Sphere",
-            "selectable": true,
-            "shininess": 8,
-            "specular": 0.25,
-            "useColor": true,
-            "uuid": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
-            "visible": true
-        },
-        {
-            "ambient": 1,
-            "color": {
-                "a": 1,
-                "b": 0,
-                "g": 1,
-                "r": 0
-            },
-            "constant": 0.07500000298023224,
-            "diffuse": 1,
-            "enabled": true,
-            "linear": 0.25,
-            "node_name": "Green Light",
-            "node_type": "PointLight",
-            "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "quadratic": 0.10000000149011612,
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -327,8 +328,7 @@
                 "z": 1
             },
             "selectable": true,
-            "specular": 1,
-            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
+            "uuid": "f83490ac-b3a4-4b34-bafc-c6d9e3c46ed3",
             "visible": true
         },
         {
