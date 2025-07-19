@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
+#include "Canavar/Engine/Node/NodeFactory.h"
 #include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/ModelImporter.h"
 #include "Canavar/Engine/Util/Util.h"
@@ -288,17 +289,14 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         }
         else
         {
-            const auto factory = Object::OBJECT_FACTORIES[nodeType];
-
-            if (factory != nullptr)
+            if (NodePtr pNode = NodeFactory::CreateNode(nodeType))
             {
-                NodePtr pNode = factory();
-
-                if (pNode)
-                {
-                    nodes.insert(std::pair(uuid, pNode));
-                    objects.insert(std::pair(uuid, object));
-                }
+                nodes.insert(std::pair(uuid, pNode));
+                objects.insert(std::pair(uuid, object));
+            }
+            else
+            {
+                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", nodeType.toStdString());
             }
         }
     }

@@ -9,7 +9,7 @@ namespace Canavar::Engine
 {
     class OrthographicCamera : public Camera
     {
-        REGISTER_OBJECT_TYPE(OrthographicCamera);
+        REGISTER_NODE_TYPE(OrthographicCamera);
 
       public:
         OrthographicCamera() = default;

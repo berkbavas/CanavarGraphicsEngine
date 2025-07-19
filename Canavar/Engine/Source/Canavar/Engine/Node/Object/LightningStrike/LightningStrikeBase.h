@@ -53,6 +53,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, ForkLengthMultiplier, 3.0f);
         DEFINE_MEMBER(int, SubdivisionLevel, 7);
         DEFINE_MEMBER(bool, Freeze, false);
+        DEFINE_MEMBER(QVector4D, Color, QVector4D(1, 1, 1, 1));
 
         bool mInitialized{ false };
 

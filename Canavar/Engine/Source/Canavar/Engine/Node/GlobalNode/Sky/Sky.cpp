@@ -100,8 +100,6 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
         Z *= mNormalizedSunY;
     }
 
-    glDisable(GL_DEPTH_TEST);
-
     pShader->Bind();
     pShader->SetUniformValue("nodeId", static_cast<float>(GetNodeId()));
     pShader->SetUniformValue("IVP", pCamera->GetRotationMatrix().inverted() * pCamera->GetProjectionMatrix().inverted());
@@ -117,6 +115,8 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
     pShader->SetUniformValue("H", H);
     pShader->SetUniformValue("I", I);
     pShader->SetUniformValue("Z", Z);
+
+    glDisable(GL_DEPTH_TEST);
 
     mQuad->Render();
 

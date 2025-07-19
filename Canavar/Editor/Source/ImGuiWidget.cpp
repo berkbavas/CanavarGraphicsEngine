@@ -1,5 +1,7 @@
 #include "ImGuiWidget.h"
 
+#include "Canavar/Engine/Node/NodeFactory.h"
+
 #include <Canavar/Engine/Node/Object/DummyObject/DummyObject.h>
 #include <Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h>
 #include <Canavar/Engine/Node/Object/Light/DirectionalLight.h>
@@ -509,7 +511,7 @@ void Canavar::Editor::ImGuiWidget::DrawCreateObjectWidget()
     {
         if (ImGui::BeginCombo("Create Object##DrawCreateObjectWidgetBeginCombo", mSelectedObjectName.toStdString().c_str()))
         {
-            for (const auto &[name, factory] : Engine::Object::OBJECT_FACTORIES)
+            for (const auto name : Engine::NodeFactory::GetNodeNames())
             {
                 if (ImGui::Selectable(name.toStdString().c_str()))
                 {
@@ -522,12 +524,16 @@ void Canavar::Editor::ImGuiWidget::DrawCreateObjectWidget()
 
         if (ImGui::Button("Create##DrawCreateObjectWidget"))
         {
-            if (Engine::Object::OBJECT_FACTORIES.contains(mSelectedObjectName))
+            if (Engine::NodeFactory::GetNodeNames().contains(mSelectedObjectName))
             {
-                Engine::ObjectPtr pNewObject = Engine::Object::OBJECT_FACTORIES[mSelectedObjectName]();
-                pNewObject->SetWorldPosition(GetWorldPositionForCreatedObject());
-                mNodeManager->AddNode(pNewObject);
-                mSelectedNode = pNewObject;
+                Engine::NodePtr pNewNode = Engine::NodeFactory::CreateNode(mSelectedObjectName);
+                if (Engine::ObjectPtr pNewObject = std::dynamic_pointer_cast<Engine::Object>(pNewNode))
+                {
+                    pNewObject->SetWorldPosition(GetWorldPositionForCreatedObject());
+                }
+
+                mNodeManager->AddNode(pNewNode);
+                mSelectedNode = pNewNode;
             }
         }
     }

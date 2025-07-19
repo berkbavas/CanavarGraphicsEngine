@@ -6,7 +6,7 @@ namespace Canavar::Engine
 {
     class DummyCamera : public PerspectiveCamera
     {
-        REGISTER_OBJECT_TYPE(DummyCamera);
+        REGISTER_NODE_TYPE(DummyCamera);
 
       public:
         DummyCamera();

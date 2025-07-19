@@ -6,7 +6,7 @@ namespace Canavar::Engine
 {
     class DirectionalLight : public Light
     {
-        REGISTER_OBJECT_TYPE(DirectionalLight);
+        REGISTER_NODE_TYPE(DirectionalLight);
 
       public:
         DirectionalLight();

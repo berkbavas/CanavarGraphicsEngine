@@ -54,7 +54,7 @@ void Canavar::Editor::Editor::Initialize()
 
     mNodeManager->GetTerrain()->SetEnabled(false);
 
-    mNodeManager->ImportNodes("Resources/f16.json");
+    mNodeManager->ImportNodes("Resources/Empty.json");
 
     // LightningStrikeGeneratorPtr pGenerator = std::make_shared<LightningStrikeGenerator>();
     // pGenerator->SetPosition(0, 0, -10);

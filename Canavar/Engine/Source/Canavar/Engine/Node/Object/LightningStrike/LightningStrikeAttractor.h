@@ -8,7 +8,7 @@ namespace Canavar::Engine
 {
     class LightningStrikeAttractor : public Object
     {
-        REGISTER_OBJECT_TYPE(LightningStrikeAttractor);
+        REGISTER_NODE_TYPE(LightningStrikeAttractor);
 
         void ToJson(QJsonObject &object) override;
         void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;

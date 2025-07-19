@@ -39,8 +39,8 @@ void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
         }
         else
         {
-            mCubeStrip->Render();
             mLineShader->SetUniformValue("MVP", VP * pObject->GetWorldTransformation() * pObject->GetAABB().GetTransformation());
+            mCubeStrip->Render();
         }
     }
 

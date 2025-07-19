@@ -82,20 +82,12 @@
         TYPE_ID \
     }
 
-#define REGISTER_OBJECT_TYPE(TYPE) \
-  public: \
-    QString GetNodeType() const override \
-    { \
-        return #TYPE; \
-    } \
-    static constexpr const char* NODE_TYPE{ #TYPE }; \
-    inline static const Canavar::Engine::ObjectFactory FACTORY = Canavar::Engine::Object::RegisterObjectFactory<TYPE>()
-
 #define REGISTER_NODE_TYPE(TYPE) \
   public: \
-    QString GetNodeType() const override \
+    const QString& GetNodeType() const override \
     { \
-        return #TYPE; \
+        static const QString THIS_NODE_TYPE(#TYPE); \
+        return THIS_NODE_TYPE; \
     } \
     static constexpr const char* NODE_TYPE \
     { \

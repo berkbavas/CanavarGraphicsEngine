@@ -89,8 +89,6 @@ uniform int numberOfDirectionalLights;
 uniform vec3 cameraPosition;
 uniform float waterHeight;
 
-uniform float zFar;
-
 uniform sampler2D sand;
 uniform sampler2D grass1;
 uniform sampler2D grass0;
@@ -443,6 +441,4 @@ void main()
 
     // Distance
     outDistance = vec4(distance, 0, 0, 1);
-
-    gl_FragDepth = log2(fsflogz) * (1.0 / log2(zFar + 1.0));
 };

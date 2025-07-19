@@ -33,7 +33,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(QString, Uuid);       // Persistent ID
         DEFINE_MEMBER(uint32_t, NodeId, 0); // Run-time ID
 
-        virtual QString GetNodeType() const = 0;
+        virtual const QString& GetNodeType() const = 0;
     };
 
 }

@@ -104,12 +104,12 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     mSky->Render(mSkyShader, mSun.get(), mActiveCamera);
     mTerrain->Render(mTerrainShader, mActiveCamera);
 
-    RenderObjects(mActiveCamera, ifps);
-
     if (mDrawBoundingBoxes)
     {
         mBoundingBoxRenderer->Render(mActiveCamera, ifps);
     }
+
+    RenderObjects(mActiveCamera, ifps);
 
     if (mCrossSectionEnabled)
     {
@@ -260,7 +260,6 @@ void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffe
     mNozzleEffectShader->Bind();
     mNozzleEffectShader->SetUniformValue("maxRadius", pEffect->GetMaxRadius());
     mNozzleEffectShader->SetUniformValue("MVP", pCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
-    mNozzleEffectShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     pEffect->Render(ifps);
     mNozzleEffectShader->Release();
     // glDisable(GL_BLEND);
@@ -284,7 +283,6 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camer
     pShader->SetUniformValue("haze.density", mHaze->GetDensity());
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
     pShader->SetUniformValue("cameraPosition", pCamera->GetWorldPosition());
-    pShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     pShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
     pShader->SetUniformValue("LVP", mShadowMappingRenderer->GetLightViewProjectionMatrix());
     pShader->SetSampler("shadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMap());

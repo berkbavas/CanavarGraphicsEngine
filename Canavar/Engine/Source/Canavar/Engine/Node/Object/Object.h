@@ -19,8 +19,6 @@ namespace Canavar::Engine
     using ObjectPtr = std::shared_ptr<Object>;
     using ObjectWeakPtr = std::weak_ptr<Object>;
 
-    using ObjectFactory = std::function<std::shared_ptr<Object>()>;
-
     class Object : public Node, public std::enable_shared_from_this<Object>
     {
       protected:
@@ -103,15 +101,6 @@ namespace Canavar::Engine
         DEFINE_MEMBER(bool, Visible, true);
         DEFINE_MEMBER(bool, Selectable, true);
         DEFINE_MEMBER(AABB, AABB, QVector3D(-1, -1, -1), QVector3D(1, 1, 1));
-
-        template<class T>
-        static ObjectFactory RegisterObjectFactory()
-        {
-            OBJECT_FACTORIES[T::NODE_TYPE] = []() { return std::dynamic_pointer_cast<Object>(std::make_shared<T>()); };
-            return OBJECT_FACTORIES[T::NODE_TYPE];
-        }
-
-        inline static std::map<QString, ObjectFactory> OBJECT_FACTORIES{};
     };
 
 }

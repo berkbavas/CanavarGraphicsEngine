@@ -9,7 +9,7 @@ namespace Canavar::Engine
 {
     class LightningStrikeGenerator : public LightningStrikeBase
     {
-        REGISTER_OBJECT_TYPE(LightningStrikeGenerator);
+        REGISTER_NODE_TYPE(LightningStrikeGenerator);
 
         void ToJson(QJsonObject& object) override;
         void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;

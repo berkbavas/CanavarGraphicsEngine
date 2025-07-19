@@ -35,7 +35,6 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLigh
     if (!mInitialized)
     {
         Initialize();
-
         mInitialized = true;
     }
 
@@ -135,6 +134,7 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLine
 {
     pLineShader->Bind();
     pLineShader->SetUniformValue("MVP", pCamera->GetViewProjectionMatrix());
+    pLineShader->SetUniformValue("color", mColor);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffers[mCurrentTransformFeedbackBufferIndex]);
 

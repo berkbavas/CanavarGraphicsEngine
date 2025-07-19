@@ -12,8 +12,6 @@ uniform mat3 N;   // Normal matrix
 uniform mat4 VP;  // View-projection matrix
 uniform mat4 LVP; // Light view-projection matrix
 
-uniform float zFar;
-
 uniform bool useTextureNormal;
 
 out vec4 fsLocalPosition;
@@ -24,7 +22,6 @@ out mat3 fsTBN;
 out vec4 fsFragPosLightSpace;
 out vec4 fsVertexColor;
 flat out int fsVertexId;
-out float fsflogz;
 
 void main()
 {
@@ -49,8 +46,4 @@ void main()
     fsVertexId = gl_VertexID;
 
     gl_Position = VP * fsWorldPosition;
-
-    gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * (2.0 / log2(zFar + 1.0)) - 1.0;
-
-    fsflogz = 1.0 + gl_Position.w;
 }
