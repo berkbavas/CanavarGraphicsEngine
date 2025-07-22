@@ -26,7 +26,7 @@
 
 struct DirectionalLight
 {
-    vec4 color;
+    vec3 color;
     vec3 direction;
     float ambient;
     float diffuse;
@@ -35,14 +35,14 @@ struct DirectionalLight
 
 struct PointLight
 {
-    vec4 color;
+    vec3 color;
     vec3 position;
-    float ambient;
-    float diffuse;
-    float specular;
     float constant;
     float linear;
     float quadratic;
+    float ambient;
+    float diffuse;
+    float specular;
 };
 
 struct Terrain
@@ -258,20 +258,20 @@ float perlin(float x, float y, int oct)
     return total;
 }
 
-vec4 getTexture(inout vec3 normal, const mat3 TBN)
+vec3 getTexture(inout vec3 normal, const mat3 TBN)
 {
     float trans = 20.0f;
 
-    vec4 sand_t = texture(sand, fsTextureCoord * 64.0);
-    vec4 rock_t = texture(rock, fsTextureCoord * vec2(1.0, 16.0).yx);
-    vec4 grass_t = texture(grass1, fsTextureCoord * 16.0);
-    vec4 grass_t0 = texture(grass0, fsTextureCoord * 16.0);
+    vec3 sand_t = texture(sand, fsTextureCoord * 64.0).rgb;
+    vec3 rock_t = texture(rock, fsTextureCoord * vec2(1.0, 16.0).yx).rgb;
+    vec3 grass_t = texture(grass1, fsTextureCoord * 16.0).rgb;
+    vec3 grass_t0 = texture(grass0, fsTextureCoord * 16.0).rgb;
 
     float perlinBlendingCoeff = clamp(perlin(fsWorldPosition.x, fsWorldPosition.z, 2) * 2.0 - 0.2, 0.0, 1.0);
     grass_t = mix(grass_t * 1.3, grass_t0 * 0.75, perlinBlendingCoeff);
     grass_t.rgb *= 0.5f;
 
-    vec4 heightColor;
+    vec3 heightColor;
     float cosV = abs(dot(normal, vec3(0.0, 1.0, 0.0)));
     float tenPercentGrass = terrain.grassCoverage * 0.9f;
     float blendingCoeff = pow((cosV - tenPercentGrass) / (terrain.grassCoverage * 0.1), 1.0);
@@ -301,9 +301,9 @@ vec4 getTexture(inout vec3 normal, const mat3 TBN)
     return heightColor;
 }
 
-vec4 processDirectionalLights(vec4 color, vec3 normal, vec3 viewDir, float shadow)
+vec3 processDirectionalLights(vec3 color, vec3 normal, vec3 viewDir, float shadow)
 {
-    vec4 result = vec4(0);
+    vec3 result = vec3(0);
 
     for (int i = 0; i < numberOfDirectionalLights; i++)
     {
@@ -325,22 +325,22 @@ vec4 processDirectionalLights(vec4 color, vec3 normal, vec3 viewDir, float shado
     return result * color;
 }
 
-vec4 processPointLights(vec4 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos)
+vec3 processPointLights(vec3 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos)
 {
-    vec4 result = vec4(0);
+    vec3 result = vec3(0);
 
     for (int i = 0; i < numberOfPointLights; i++)
     {
         // Ambient
-        vec4 ambient = color * pointLights[i].ambient * pointLights[i].ambient;
+        vec3 ambient = color * pointLights[i].ambient * pointLights[i].ambient;
 
         // Diffuse
         vec3 lightDir = normalize(pointLights[i].position - fragWorldPos);
-        vec4 diffuse = color * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * terrain.diffuse;
+        vec3 diffuse = color * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * terrain.diffuse;
 
         // Specular
         vec3 halfwayDir = normalize(lightDir + viewDir);
-        vec4 specular = color * pow(max(dot(normal, halfwayDir), 0.0), terrain.shininess) * pointLights[i].specular * terrain.specular;
+        vec3 specular = color * pow(max(dot(normal, halfwayDir), 0.0), terrain.shininess) * pointLights[i].specular * terrain.specular;
 
         // Attenuation
         float distance = length(pointLights[i].position - fragWorldPos);
@@ -352,15 +352,15 @@ vec4 processPointLights(vec4 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos
     return result;
 }
 
-vec4 processHaze(float distance, vec4 subjectColor)
+vec3 processHaze(float distance, vec3 subjectColor)
 {
-    vec4 result = subjectColor;
+    vec3 result = subjectColor;
 
     if (haze.enabled)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(vec4(haze.color * clamp(-directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
+        result = mix(haze.color * clamp(-directionalLights[0].direction.y, 0.0f, 1.0f), subjectColor, factor);
     }
 
     return result;
@@ -415,7 +415,7 @@ void main()
     vec3 normal = computeNormals(fsWorldPosition, TBN);
     normal = normalize(normal);
 
-    vec4 heightColor = getTexture(normal, TBN);
+    vec3 heightColor = getTexture(normal, TBN);
 
     float shadowFactor = 0.0f;
 
@@ -424,12 +424,12 @@ void main()
         shadowFactor = shadowCalculation();
     }
 
-    vec4 result = vec4(0);
+    vec3 result = vec3(0);
     result += processDirectionalLights(heightColor, normal, viewDir, shadowFactor);
     result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
 
     // Final
-    fragColor = processHaze(distance, vec4(result.rgb, 1));
+    fragColor = vec4(processHaze(distance, result), 1.0f);
 
     // Fragment position
     // Note that the terrain has no model matrix so its local and world coordinates are equal.

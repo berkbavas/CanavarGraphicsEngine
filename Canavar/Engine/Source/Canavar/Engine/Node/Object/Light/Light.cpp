@@ -8,7 +8,6 @@ void Canavar::Engine::Light::ToJson(QJsonObject &object)
     color.insert("r", mColor.x());
     color.insert("g", mColor.y());
     color.insert("b", mColor.z());
-    color.insert("a", mColor.w());
     object.insert("color", color);
 
     object.insert("ambient", mAmbient);
@@ -24,9 +23,8 @@ void Canavar::Engine::Light::FromJson(const QJsonObject &object, const std::map<
     float r = object["color"]["r"].toDouble();
     float g = object["color"]["g"].toDouble();
     float b = object["color"]["b"].toDouble();
-    float a = object["color"]["a"].toDouble(1.0f);
 
-    mColor = QVector4D(r, g, b, a);
+    mColor = QVector3D(r, g, b);
 
     mAmbient = object["ambient"].toDouble(1.0f);
     mDiffuse = object["diffuse"].toDouble(1.0f);

@@ -24,14 +24,13 @@ void Canavar::Engine::Model::ToJson(QJsonObject& object)
     color.insert("r", mColor.x());
     color.insert("g", mColor.y());
     color.insert("b", mColor.z());
-    color.insert("a", mColor.w());
     object.insert("color", color);
 
     object.insert("useColor", mUseColor);
-    object.insert("ambient", mAmbient);
-    object.insert("diffuse", mDiffuse);
-    object.insert("specular", mSpecular);
-    object.insert("shininess", mShininess);
+
+    object.insert("metallic", mMetallic);
+    object.insert("roughness", mRoughness);
+    object.insert("ambient_occlusion", mAmbientOcclusion);
 
     object.insert("invert_normals", mInvertNormals);
     object.insert("scene_name", mSceneName);
@@ -47,15 +46,13 @@ void Canavar::Engine::Model::FromJson(const QJsonObject& object, const std::map<
     float r = color["r"].toDouble(1.0f);
     float g = color["g"].toDouble(1.0f);
     float b = color["b"].toDouble(1.0f);
-    float a = color["a"].toDouble(1.0f);
-    mColor = QVector4D(r, g, b, a);
+    mColor = QVector3D(r, g, b);
 
     mUseColor = object["useColor"].toBool(false);
 
-    mAmbient = object["ambient"].toDouble(0.25f);
-    mDiffuse = object["diffuse"].toDouble(0.75f);
-    mSpecular = object["specular"].toDouble(0.25f);
-    mShininess = object["shininess"].toDouble(8.0f);
+    mMetallic = object["metallic"].toDouble(0.0f);
+    mRoughness = object["roughness"].toDouble(0.0f);
+    mAmbientOcclusion = object["ambient_occlusion"].toDouble(2.0f);
 
     mInvertNormals = object["invert_normals"].toBool(false);
     mSceneName = object["scene_name"].toString();

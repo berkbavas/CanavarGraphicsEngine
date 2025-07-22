@@ -41,7 +41,7 @@
             "gradient": 1.5,
             "node_name": "Haze",
             "node_type": "Haze",
-            "uuid": "d8cf8235-16bb-4d21-9ff1-9c0239fe666a"
+            "uuid": "73590bdd-3403-48d1-87ca-69e475ad7812"
         },
         {
             "ambient": 1,
@@ -53,9 +53,9 @@
             },
             "diffuse": 1,
             "direction": {
-                "x": 0.7071067094802856,
-                "y": -0.7071067094802856,
-                "z": 0
+                "x": 0.7299545407295227,
+                "y": -0.5591972470283508,
+                "z": -0.3930399417877197
             },
             "enabled": true,
             "node_name": "Sun",
@@ -82,276 +82,51 @@
             "visible": true
         },
         {
-            "node_name": "Dummy Camera",
-            "node_type": "DummyCamera",
-            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
-            "position": {
-                "x": 0,
-                "y": 4,
-                "z": 30
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
-            "vertical_fov": 60,
-            "visible": true,
-            "z_far": 100000,
-            "z_near": 1
-        },
-        {
-            "node_name": "Dummy Object",
-            "node_type": "DummyObject",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 9.699999809265137
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "9e20f3f6-7854-480a-a60b-79246094ea26",
-            "visible": true
-        },
-        {
-            "node_name": "Root Node",
-            "node_type": "DummyObject",
-            "position": {
-                "x": 0,
-                "y": 135.39999389648438,
-                "z": 0
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "visible": true
-        },
-        {
-            "ambient": 1,
             "color": {
-                "a": 1,
-                "b": 0,
-                "g": 1,
-                "r": 0
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
             },
-            "diffuse": 2,
-            "invert_normals": false,
-            "node_name": "Sphere",
-            "node_type": "Model",
-            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
-            "position": {
-                "x": -2.9112045764923096,
-                "y": 0.03500000014901161,
-                "z": -10.400023460388184
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 0.0010000000474974513,
-                "y": 0.0010000000474974513,
-                "z": 0.0010000000474974513
-            },
-            "scene_name": "Sphere",
-            "selectable": true,
-            "shininess": 8,
-            "specular": 0.25,
-            "useColor": true,
-            "uuid": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
-            "visible": true
-        },
-        {
-            "ambient": 1,
-            "color": {
-                "a": 1,
-                "b": 0,
-                "g": 1,
-                "r": 0
-            },
-            "constant": 1,
-            "diffuse": 1,
+            "density": 1,
             "enabled": true,
-            "linear": 0.10000000149011612,
-            "node_name": "Green Light",
-            "node_type": "PointLight",
-            "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "quadratic": 0.10000000149011612,
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "specular": 1,
-            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
-            "visible": true
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "0c83f6c5-f216-4d7c-bf20-20693af05bc8"
         },
         {
-            "ambient": 1,
             "color": {
-                "a": 1,
-                "b": 0,
-                "g": 0,
-                "r": 1
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
             },
-            "diffuse": 2,
-            "invert_normals": false,
-            "node_name": "Sphere",
-            "node_type": "Model",
-            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
-            "position": {
-                "x": 2.9011764526367188,
-                "y": 0.03500000014901161,
-                "z": -10.396831512451172
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 0.0010000000474974513,
-                "y": 0.0010000000474974513,
-                "z": 0.0010000000474974513
-            },
-            "scene_name": "Sphere",
-            "selectable": true,
-            "shininess": 8,
-            "specular": 0.25,
-            "useColor": true,
-            "uuid": "71a89cae-dc71-4f78-8888-b77956c22136",
-            "visible": true
-        },
-        {
-            "ambient": 1,
-            "color": {
-                "a": 1,
-                "b": 0,
-                "g": 0,
-                "r": 1
-            },
-            "constant": 1,
-            "diffuse": 1,
+            "density": 1,
             "enabled": true,
-            "linear": 0.25,
-            "node_name": "Red Light",
-            "node_type": "PointLight",
-            "parent": "71a89cae-dc71-4f78-8888-b77956c22136",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "quadratic": 0.10000000149011612,
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "specular": 1,
-            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
-            "visible": true
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "0876ad20-469c-486b-b9d5-7e579684e033"
         },
         {
-            "max_length": 1.3519999980926514,
-            "max_life": 0.032999999821186066,
-            "max_radius": 0.24799999594688416,
-            "max_speed": 20.492000579833984,
-            "node_name": "Nozzle Effect",
-            "node_type": "NozzleEffect",
-            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": -7.596758842468262
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "f83490ac-b3a4-4b34-bafc-c6d9e3c46ed3",
-            "visible": true
-        },
-        {
-            "ambient": 0.5,
+            "ambient": 0.23600000143051147,
             "color": {
                 "a": 1,
                 "b": 1,
                 "g": 1,
                 "r": 1
             },
-            "diffuse": 1,
+            "diffuse": 0.8489999771118164,
             "invert_normals": true,
             "node_name": "f16c",
             "node_type": "Model",
-            "parent": "9e20f3f6-7854-480a-a60b-79246094ea26",
             "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
+                "x": 0.7690623998641968,
+                "y": 1416.0726318359375,
+                "z": -40.90388107299805
             },
             "rotation": {
                 "w": 0.7071129679679871,
-                "x": -0.7071006298065186,
+                "x": 0.7071006894111633,
                 "y": 0,
                 "z": 0
             },
@@ -365,43 +140,7 @@
             "shininess": 8,
             "specular": 0.25,
             "useColor": false,
-            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
-            "visible": true
-        },
-        {
-            "ambient": 0.4169999957084656,
-            "color": {
-                "a": 1,
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "diffuse": 0.75,
-            "invert_normals": false,
-            "node_name": "GasStation",
-            "node_type": "Model",
-            "position": {
-                "x": 5,
-                "y": 1.899999976158142,
-                "z": -15
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 5,
-                "y": 5,
-                "z": 5
-            },
-            "scene_name": "GasStation",
-            "selectable": true,
-            "shininess": 8,
-            "specular": 0.25,
-            "useColor": false,
-            "uuid": "b5ad764a-455f-4581-9f2f-312c31af61f1",
+            "uuid": "46684efe-781c-4e91-8318-4e79b21171c8",
             "visible": true
         }
     ]

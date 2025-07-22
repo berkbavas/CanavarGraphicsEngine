@@ -130,20 +130,22 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix
         pShader->SetUniformValue("N", M.normalMatrix());
         pShader->SetUniformValue("nodeId", static_cast<float>(pModel->GetNodeId()));
         pShader->SetUniformValue("meshId", static_cast<float>(mMeshId));
-        pShader->SetUniformValue("hasAnyColorTexture", mMaterial->HasAnyColorTexture());
 
-        if (mMaterial->HasAnyColorTexture())
-        {
-            pShader->SetSampler("textureBaseColor", 0, mMaterial->GetTexture(TextureType::BaseColor));
-            pShader->SetSampler("textureRoughness", 1, mMaterial->GetTexture(TextureType::Metallic));
-            pShader->SetSampler("textureMetallic", 2, mMaterial->GetTexture(TextureType::Metallic));
-            pShader->SetSampler("textureAmbient", 3, mMaterial->GetTexture(TextureType::BaseColor));
-            pShader->SetSampler("textureDiffuse", 4, mMaterial->GetTexture(TextureType::BaseColor));
-            pShader->SetSampler("textureSpecular", 5, mMaterial->GetTexture(TextureType::Specular));
-        }
+        pShader->SetUniformValue("model.metallic", pModel->GetMetallic());
+        pShader->SetUniformValue("model.roughness", pModel->GetRoughness());
+        pShader->SetUniformValue("model.ambientOcclusion", pModel->GetAmbientOcclusion());
 
-        pShader->SetUniformValue("useTextureNormal", mMaterial->HasNormalTexture());
-        pShader->SetSampler("textureNormal", 6, mMaterial->GetTexture(TextureType::Normal));
+        pShader->SetUniformValue("hasTextureBaseColor", mMaterial->HasTextureBaseColor());
+        pShader->SetUniformValue("hasTextureNormal", mMaterial->HasTextureNormal());
+        pShader->SetUniformValue("hasTextureMetallic", mMaterial->HasTextureMetallic());
+        pShader->SetUniformValue("hasTextureRoughness", mMaterial->HasTextureRoughness());
+        pShader->SetUniformValue("hasTextureAmbientOcclusion", mMaterial->HasTextureAmbientOcclusion());
+
+        pShader->SetSampler("textureBaseColor", 0, mMaterial->GetTexture(TextureType::BaseColor));
+        pShader->SetSampler("textureNormal", 1, mMaterial->GetTexture(TextureType::Normal));
+        pShader->SetSampler("textureMetallic", 2, mMaterial->GetTexture(TextureType::Metallic));
+        pShader->SetSampler("textureRoughness", 3, mMaterial->GetTexture(TextureType::Roughness));
+        pShader->SetSampler("textureAmbientOcclusion", 4, mMaterial->GetTexture(TextureType::AmbientOcclusion));
 
         glBindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

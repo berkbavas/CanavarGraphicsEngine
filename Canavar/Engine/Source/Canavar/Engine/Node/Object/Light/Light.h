@@ -12,7 +12,7 @@ namespace Canavar::Engine
         void ToJson(QJsonObject &object) override;
         void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
 
-        DEFINE_MEMBER(QVector4D, Color, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
+        DEFINE_MEMBER(QVector3D, Color, QVector3D(1.0f, 1.0f, 1.0f));
         DEFINE_MEMBER(float, Ambient, 1.0f);
         DEFINE_MEMBER(float, Diffuse, 1.0f);
         DEFINE_MEMBER(float, Specular, 1.0f);

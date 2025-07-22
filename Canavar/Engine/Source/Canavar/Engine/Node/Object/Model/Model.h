@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Node/Object/Object.h"
 
 namespace Canavar::Engine
 {
+
     class Model : public Object
     {
         REGISTER_NODE_TYPE(Model);
@@ -18,11 +20,15 @@ namespace Canavar::Engine
         void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
 
       private:
-        DEFINE_MEMBER(QVector4D, Color, QVector4D(1.0f, 1.0f, 1.0f, 1.0f));
+        DEFINE_MEMBER(QVector3D, Color, QVector3D(1.0f, 1.0f, 1.0f));
         DEFINE_MEMBER(float, Ambient, 0.25f);
         DEFINE_MEMBER(float, Diffuse, 0.75f);
         DEFINE_MEMBER(float, Specular, 0.25f);
         DEFINE_MEMBER(float, Shininess, 8.0f);
+        DEFINE_MEMBER(float, Metallic, 0.0f);
+        DEFINE_MEMBER(float, Roughness, 0.0f);
+        DEFINE_MEMBER(float, AmbientOcclusion, 3.0f);
+        DEFINE_MEMBER(int, ShadingMode, PBR_SHADING);
         DEFINE_MEMBER(bool, UseColor, false);
         DEFINE_MEMBER_CONST(QString, SceneName);
 

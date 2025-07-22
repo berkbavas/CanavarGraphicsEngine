@@ -374,12 +374,30 @@ void Canavar::Editor::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
 {
     ImGui::Text("Model Parameters");
 
+    if (ImGui::BeginCombo("Shading Mode##DrawModel", pModel->GetShadingMode() == Canavar::Engine::PBR_SHADING ? "Pbr" : "Phong"))
+    {
+        if (ImGui::Selectable("Pbr"))
+        {
+            pModel->SetShadingMode(Canavar::Engine::PBR_SHADING);
+        }
+
+        if (ImGui::Selectable("Phong"))
+        {
+            pModel->SetShadingMode(Canavar::Engine::PHONG_SHADING);
+        }
+
+        ImGui::EndCombo();
+    }
+
     ImGui::SliderFloat("Ambient##Model", &pModel->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Diffuse##Model", &pModel->GetDiffuse_NonConst(), 0.0f, 2.0f, "%.3f");
     ImGui::SliderFloat("Specular##Model", &pModel->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Shininess##Model", &pModel->GetShininess_NonConst(), 1.0f, 128.0f, "%.3f");
+    ImGui::SliderFloat("Metallic##Model", &pModel->GetMetallic_NonConst(), 0.0f, 2.0f, "%.3f");
+    ImGui::SliderFloat("Roughness##Model", &pModel->GetRoughness_NonConst(), 0.0f, 2.0f, "%.3f");
+    ImGui::SliderFloat("Ambient Occlusion##Model", &pModel->GetAmbientOcclusion_NonConst(), 0.0f, 4.0f, "%.3f");
     ImGui::Checkbox("Use Color##Model", &pModel->GetUseColor_NonConst());
-    ImGui::ColorEdit4("Color##Model", &pModel->GetColor_NonConst()[0]);
+    ImGui::ColorEdit3("Color##Model", &pModel->GetColor_NonConst()[0]);
     ImGui::Checkbox("Invert Normals##Model", &pModel->GetInvertNormals_NonConst());
     ImGui::Checkbox("Visible##Model", &pModel->GetVisible_NonConst());
 }
@@ -400,7 +418,7 @@ void Canavar::Editor::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight
     ImGui::SliderFloat("Ambient##DirectionalLight", &pLight->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Diffuse##DirectionalLight", &pLight->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Specular##DirectionalLight", &pLight->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
-    ImGui::ColorEdit4("Color##DirectionalLight", (float *) &pLight->GetColor_NonConst());
+    ImGui::ColorEdit3("Color##DirectionalLight", (float *) &pLight->GetColor_NonConst());
 
     float theta = pLight->GetTheta();
     float phi = pLight->GetPhi();
@@ -419,7 +437,7 @@ void Canavar::Editor::ImGuiWidget::DrawPointLight(Engine::PointLightPtr pLight)
     ImGui::SliderFloat("Constant##PointLight", &pLight->GetConstant_NonConst(), 0.0f, 3.0f, "%.3f");
     ImGui::SliderFloat("Linear##PointLight", &pLight->GetLinear_NonConst(), 0.0f, 0.1f, "%.3f");
     ImGui::SliderFloat("Quadratic##PointLight", &pLight->GetQuadratic_NonConst(), 0.00001f, 0.001f, "%.6f");
-    ImGui::ColorEdit4("Color##PointLight", (float *) &pLight->GetColor_NonConst());
+    ImGui::ColorEdit3("Color##PointLight", (float *) &pLight->GetColor_NonConst());
 }
 
 void Canavar::Editor::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffectPtr pNozzleEffect)

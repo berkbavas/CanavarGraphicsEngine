@@ -6,6 +6,16 @@
 
 namespace Canavar::Engine
 {
+    enum class ViewDirection
+    {
+        Front,
+        Back,
+        Up,
+        Down,
+        Left,
+        Right
+    };
+
     class Camera : public Object
     {
       protected:

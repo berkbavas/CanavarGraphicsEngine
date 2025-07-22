@@ -1,0 +1,230 @@
+{
+    "nodes": [
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": false,
+            "node_name": "Sky",
+            "node_type": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "turbidity": 4,
+            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
+        },
+        {
+            "ambient": 0.20000000298023224,
+            "amplitude": 20,
+            "diffuse": 0.8500000238418579,
+            "enabled": false,
+            "frequency": 0.009999999776482582,
+            "grass_coverage": 0.6499999761581421,
+            "node_name": "Terrain",
+            "node_type": "Terrain",
+            "octaves": 13,
+            "power": 3,
+            "seed": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "shininess": 8,
+            "specular": 0,
+            "tessellation_multiplier": 1,
+            "uuid": "9537a87e-9d47-4072-9fdb-a25dcf1339c1"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "7512edbe-c750-4d1c-82cf-9e91b404cc93"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": -0.01744985580444336,
+                "y": -0.9998552203178406,
+                "z": -0.00030458925175480545
+            },
+            "enabled": true,
+            "node_name": "Sun",
+            "node_type": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "8a4fdcae-29c9-4abb-8ce6-0f1c205693bc"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "constant": 0.4519999921321869,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.02500000037252903,
+            "node_name": "Point Light",
+            "node_type": "PointLight",
+            "position": {
+                "x": -14.021208763122559,
+                "y": 91.8121109008789,
+                "z": -11.204926490783691
+            },
+            "quadratic": 0.0010000000474974513,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "cead90f5-9004-4ba4-86c4-b538b43b4632",
+            "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.75,
+            "invert_normals": false,
+            "node_name": "Antonius",
+            "node_type": "Model",
+            "parent": "6dc508d9-833b-4b94-94ff-8178d901a9ad",
+            "position": {
+                "x": 0,
+                "y": -1,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0.7064338326454163,
+                "x": -0.03084355592727661,
+                "y": 0.03084355592727661,
+                "z": 0.7064338326454163
+            },
+            "scale": {
+                "x": 100,
+                "y": 100,
+                "z": 100
+            },
+            "scene_name": "hl._antonius",
+            "selectable": true,
+            "shininess": 8,
+            "specular": 0.25,
+            "useColor": false,
+            "uuid": "ef67116c-909b-4411-afec-eae03e8459b3",
+            "visible": true
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "a": 1,
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "constant": 1,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.05000000074505806,
+            "node_name": "Point Light",
+            "node_type": "PointLight",
+            "position": {
+                "x": -7.479000091552734,
+                "y": 9.147000312805176,
+                "z": 2.4040000438690186
+            },
+            "quadratic": 0.0010000000474974513,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "48fb07c4-fe2a-4031-bf25-0e09bed41c36",
+            "visible": true
+        },
+        {
+            "node_name": "DummyObject",
+            "node_type": "DummyObject",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "6dc508d9-833b-4b94-94ff-8178d901a9ad",
+            "visible": true
+        }
+    ]
+}

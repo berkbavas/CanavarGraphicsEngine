@@ -12,13 +12,11 @@ namespace Canavar::Engine
 {
     enum class TextureType
     {
-        Ambient,
-        Diffuse,
-        Specular,
-        Normal,
         BaseColor,
+        Normal,
         Metallic,
-        Roughness
+        Roughness,
+        AmbientOcclusion
     };
 
     class Material : protected QOpenGLExtraFunctions
@@ -32,8 +30,11 @@ namespace Canavar::Engine
         void LoadTexture(TextureType type, const QImage& image);
         GLuint GetTexture(TextureType type);
 
-        bool HasNormalTexture() const;
-        bool HasAnyColorTexture() const;
+        bool HasTextureBaseColor() const;
+        bool HasTextureNormal() const;
+        bool HasTextureMetallic() const;
+        bool HasTextureRoughness() const;
+        bool HasTextureAmbientOcclusion() const;
 
         int GetNumberOfTextures() const;
 

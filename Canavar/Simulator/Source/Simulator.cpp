@@ -28,6 +28,7 @@ Canavar::Simulator::Simulator::Simulator()
     mOpenGLWidget->setLayout(mGridLayout);
 
     mBasicSix->installEventFilter(mOpenGLWidget);
+    mBasicSix->setVisible(false);
 }
 
 void Canavar::Simulator::Simulator::Run()

@@ -2,26 +2,23 @@
 
 struct Model
 {
-    vec4 color;
+    vec3 color;
     float ambient;
     float diffuse;
     float specular;
     float shininess;
-    bool useColor;
-    bool invertNormals;
-};
-
-struct PbrParameters
-{
-    vec3 baseColor;
     float metallic;
     float roughness;
+    float ambientOcclusion;
+    bool useColor;
+    bool invertNormals;
+    int shadingMode;
 };
 
 struct DirectionalLight
 {
+    vec3 color;
     vec3 direction;
-    vec4 color;
     float ambient;
     float diffuse;
     float specular;
@@ -29,37 +26,30 @@ struct DirectionalLight
 
 struct PointLight
 {
-    vec4 color;
+    vec3 color;
     vec3 position;
-    float ambient;
-    float diffuse;
-    float specular;
     float constant;
     float linear;
     float quadratic;
+    float ambient;
+    float diffuse;
+    float specular;
 };
 
 struct Haze
 {
-    bool enabled;
     vec3 color;
     float density;
     float gradient;
-};
-
-struct Color
-{
-    vec4 ambient;
-    vec4 diffuse;
-    vec4 specular;
+    bool enabled;
 };
 
 struct Shadow
 {
     sampler2D map;
-    bool enabled;
     float bias;
     int samples;
+    bool enabled;
 };
 
 uniform Haze haze;
@@ -77,20 +67,17 @@ uniform vec3 sunDirection;
 
 // PBR
 uniform sampler2D textureBaseColor;
+uniform sampler2D textureNormal;
 uniform sampler2D textureRoughness;
 uniform sampler2D textureMetallic;
+uniform sampler2D textureAmbientOcclusion;
 
-// Phong Shading
-uniform sampler2D textureAmbient;
-uniform sampler2D textureDiffuse;
-uniform sampler2D textureSpecular;
+uniform bool hasTextureBaseColor;
+uniform bool hasTextureNormal;
+uniform bool hasTextureRoughness;
+uniform bool hasTextureMetallic;
+uniform bool hasTextureAmbientOcclusion;
 
-uniform sampler2D textureNormal;
-uniform bool useTextureNormal;
-
-uniform bool hasAnyColorTexture;
-
-// WTF? float?
 uniform float nodeId;
 uniform float meshId;
 
@@ -111,6 +98,8 @@ layout(location = 3) out vec4 nodeInfo;
 layout(location = 4) out vec4 outDistance;
 
 const float PI = 3.14159265359;
+const int PBR_SHADING = 0;
+const int PHONG_SHADING = 1;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -147,53 +136,61 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-vec3 fresnelSchlick(float cosTheta, vec3 F0)
+vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }
 
-vec3 getNormal()
+vec3 GetNormal()
 {
-    if (useTextureNormal)
+    vec3 normal;
+
+    if (hasTextureNormal)
     {
-        vec3 normal = texture(textureNormal, fsTextureCoords).rgb;
+        normal = texture(textureNormal, fsTextureCoords).rgb;
         normal = 2.0 * normal - 1.0;
         normal = normalize(fsTBN * normal);
-        return normal;
     }
     else
     {
-        return fsNormal;
+        normal = fsNormal;
     }
+
+    if (model.invertNormals)
+    {
+        normal = -normal;
+    }
+
+    return normal;
 }
 
-vec4 processDirectionalLights(Color color, vec3 normal, vec3 viewDirection)
+vec3 ProcessDirectionalLights(vec3 color, vec3 normal, vec3 viewDirection)
 {
-    vec4 result = vec4(0);
+    vec3 result = vec3(0.0f);
 
     for (int i = 0; i < numberOfDirectionalLights; i++)
     {
         DirectionalLight light = directionalLights[i];
 
         // Ambient
-        float ambient = light.ambient;
+        float ambient = model.ambient * light.ambient;
 
         // Diffuse
-        float diffuse = max(dot(normal, -light.direction), 0.0) * light.diffuse;
+        float diffuse = max(dot(normal, -light.direction), 0.0) * model.diffuse * light.diffuse;
 
         // Specular
         vec3 reflectDirection = reflect(light.direction, normal);
-        float specular = pow(max(dot(viewDirection, reflectDirection), 0.0), model.shininess) * light.specular;
+        float specular = pow(max(dot(viewDirection, reflectDirection), 0.0), model.shininess) * model.specular * light.specular;
 
-        result += (ambient * color.ambient + diffuse * color.diffuse + specular * color.specular) * light.color;
+        result += (ambient + diffuse + specular) * color * light.color;
     }
 
     return result;
 }
 
-vec4 processPointLights(Color color, vec3 normal, vec3 viewDirection, vec3 fragWorldPos)
+vec3 ProcessPointLights(vec3 color, vec3 normal, vec3 viewDirection, vec3 fragWorldPos)
 {
-    vec4 result = vec4(0);
+    vec3 result = vec3(0);
 
     for (int i = 0; i < numberOfPointLights; i++)
     {
@@ -214,206 +211,214 @@ vec4 processPointLights(Color color, vec3 normal, vec3 viewDirection, vec3 fragW
         float distance = length(light.position - fragWorldPos);
         float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-        result += (ambient * color.ambient + diffuse * color.diffuse + specular * color.specular) * light.color * attenuation;
+        result += (ambient + diffuse + specular) * color * light.color * attenuation;
     }
 
     return result;
 }
 
-vec4 processPointLightsPbr(PbrParameters pbrParameters, vec3 N /* Normal */, vec3 V /* View Direction*/, vec3 fragWorldPos)
+vec3 ProcessPointLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 V /* View Direction*/, vec3 fragWorldPos)
 {
+    albedo = pow(albedo, vec3(2.2f));
+    vec3 F0 = mix(vec3(0.04f), albedo, metallic);
+
     vec3 Lo = vec3(0.0f);
 
     for (int i = 0; i < numberOfPointLights; ++i)
     {
         PointLight light = pointLights[i];
-
-        // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
-        // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
-        vec3 F0 = vec3(0.04);
-        F0 = mix(F0, pbrParameters.baseColor, pbrParameters.metallic);
-
-        // calculate per-light radiance
         vec3 L = normalize(light.position - fragWorldPos);
         vec3 H = normalize(V + L);
+        float distance = length(light.position - fragWorldPos);
+        float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+        vec3 radiance = light.color * attenuation;
 
-        // attenuation
-        float dist = length(light.position - fragWorldPos);
-        float attenuation = 1.0f / (light.constant + light.linear * dist + light.quadratic * (dist * dist));
-
-        vec3 radiance = light.color.rgb * attenuation;
-
-        // Cook-Torrance BRDF
-        float NDF = DistributionGGX(N, H, pbrParameters.roughness);
-        float G = GeometrySmith(N, V, L, pbrParameters.roughness);
-        vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
+        float NDF = DistributionGGX(N, H, roughness);
+        float G = GeometrySmith(N, V, L, roughness);
+        vec3 F = FresnelSchlick(max(dot(H, V), 0.0f), F0);
 
         vec3 numerator = NDF * G * F;
-        float denominator = 4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.0001; // + 0.0001 to prevent divide by zero
+        float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.001f;
         vec3 specular = numerator / denominator;
 
-        // kS is equal to Fresnel
+        float NdotL = max(dot(N, L), 0.0f);
         vec3 kS = F;
-        // for energy conservation, the diffuse and specular light can't
-        // be above 1.0 (unless the surface emits light); to preserve this
-        // relationship the diffuse component (kD) should equal 1.0 - kS.
-        vec3 kD = vec3(1.0) - kS;
-        // multiply kD by the inverse metalness such that only non-metals
-        // have diffuse lighting, or a linear blend if partly metal (pure metals
-        // have no diffuse light).
-        kD *= 1.0 - pbrParameters.metallic;
+        vec3 kD = vec3(1.0f) - kS;
+        kD *= 1.0f - metallic;
 
-        // scale light by NdotL
-        float NdotL = max(dot(N, L), 0.0);
-
-        // add to outgoing radiance Lo
-        Lo += (kD * pbrParameters.baseColor / PI + specular) * radiance * NdotL; // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
     }
 
-    return vec4(Lo, 1.0f);
+    vec3 ambient = vec3(0.03f) * albedo * ambientOcclusion;
+    vec3 color = ambient + Lo;
+
+    color = color / (color + vec3(1.0f));
+    color = pow(color, vec3(1.0f / 2.2f));
+
+    return color;
 }
 
-vec4 processHaze(float distance, vec3 fragWorldPos, vec4 subjectColor)
+vec3 ProcessDirectionalLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 V /* View Direction*/, vec3 fragWorldPos)
 {
-    vec4 result = subjectColor;
+    albedo = pow(albedo, vec3(2.2f));
+    vec3 F0 = mix(vec3(0.04f), albedo, metallic);
+
+    vec3 Lo = vec3(0.0f);
+
+    for (int i = 0; i < numberOfDirectionalLights; ++i)
+    {
+        DirectionalLight light = directionalLights[i];
+
+        vec3 L = normalize(-light.direction); // Light direction toward surface
+        vec3 H = normalize(V + L);
+        vec3 radiance = light.color; // no attenuation
+
+        float NDF = DistributionGGX(N, H, roughness);
+        float G = GeometrySmith(N, V, L, roughness);
+        vec3 F = FresnelSchlick(max(dot(H, V), 0.0f), F0);
+
+        vec3 numerator = NDF * G * F;
+        float denominator = 4.0f * max(dot(N, V), 0.0f) * max(dot(N, L), 0.0f) + 0.001f;
+        vec3 specular = numerator / denominator;
+
+        float NdotL = max(dot(N, L), 0.0f);
+        vec3 kS = F;
+        vec3 kD = vec3(1.0f) - kS;
+        kD *= 1.0f - metallic;
+
+        Lo += (kD * albedo / PI + specular) * radiance * NdotL;
+    }
+
+    vec3 ambient = vec3(0.03f) * albedo * ambientOcclusion;
+    vec3 color = ambient + Lo;
+
+    color = color / (color + vec3(1.0f));
+    color = pow(color, vec3(1.0f / 2.2f));
+
+    return color;
+}
+
+vec3 ProcessHaze(float distance, vec3 fragWorldPos, vec3 subjectColor)
+{
+    vec3 result = subjectColor;
 
     if (haze.enabled)
     {
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(vec4(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), 1), subjectColor, factor);
+        result = mix(haze.color * clamp(directionalLights[0].direction.y, 0.0f, 1.0f), subjectColor, factor);
     }
 
     return result;
 }
 
 // Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
-float shadowCalculation()
+float CalculateShadow()
 {
-    // perform perspective divide
-    vec3 projCoords = fsFragPosLightSpace.xyz / fsFragPosLightSpace.w;
+    float factor = 0.0f;
 
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadow.map, projCoords.xy).r;
-
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-
-    vec2 texelSize = 1.0 / textureSize(shadow.map, 0);
-
-    int samples = shadow.samples;
-    float result = 0.0f;
-
-    for (int x = -samples; x <= samples; ++x)
+    if (shadow.enabled)
     {
-        for (int y = -samples; y <= samples; ++y)
+        // perform perspective divide
+        vec3 projCoords = fsFragPosLightSpace.xyz / fsFragPosLightSpace.w;
+
+        // transform to [0,1] range
+        projCoords = projCoords * 0.5 + 0.5;
+
+        // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+        float closestDepth = texture(shadow.map, projCoords.xy).r;
+
+        // get depth of current fragment from light's perspective
+        float currentDepth = projCoords.z;
+
+        vec2 texelSize = 1.0 / textureSize(shadow.map, 0);
+
+        int samples = shadow.samples;
+
+        for (int x = -samples; x <= samples; ++x)
         {
-            float pcfDepth = texture(shadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
-            result += currentDepth - shadow.bias > pcfDepth ? 1.0 : 0.0;
+            for (int y = -samples; y <= samples; ++y)
+            {
+                float pcfDepth = texture(shadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
+                factor += currentDepth - shadow.bias > pcfDepth ? 1.0 : 0.0;
+            }
+        }
+
+        factor /= pow(2 * samples + 1, 2);
+
+        // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+        if (projCoords.z > 1.0)
+        {
+            factor = 0.0;
         }
     }
 
-    result /= pow(2 * samples + 1, 2);
-
-    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-    if (projCoords.z > 1.0)
-    {
-        result = 0.0;
-    }
-
-    return result;
+    return factor;
 }
 
-Color calculateColor(float shadow)
+vec3 CalculateColor(float shadow)
 {
     const float lit = 1 - shadow;
 
-    Color color;
+    vec3 color;
 
-    if (model.useColor || !hasAnyColorTexture)
+    if (model.useColor)
     {
-        color.ambient = model.ambient * model.color;
-        color.diffuse = model.diffuse * model.color;
-        color.specular = model.specular * model.color;
+        color = model.color;
     }
     else
     {
-        color.ambient = model.ambient * texture(textureAmbient, fsTextureCoords) * (0.5 + 0.5 * lit);
-        color.diffuse = model.diffuse * texture(textureDiffuse, fsTextureCoords) * lit;
-        color.specular = model.specular * texture(textureSpecular, fsTextureCoords) * lit;
+        if (hasTextureBaseColor)
+        {
+            color = texture(textureBaseColor, fsTextureCoords).rgb;
+        }
+        else
+        {
+            color = model.color;
+        }
     }
 
-    if (0.5f < fsVertexColor.a)
-    {
-        color.ambient = model.ambient * fsVertexColor * (0.5 + 0.5 * lit);
-        color.diffuse = model.diffuse * fsVertexColor * lit;
-        color.specular = model.specular * fsVertexColor * lit;
-    }
-
-    return color;
-}
-
-PbrParameters calculatePbrParameters(float shadow)
-{
-    const float lit = 1 - shadow;
-
-    PbrParameters pbrParameters;
-
-    pbrParameters.baseColor = texture(textureBaseColor, fsTextureCoords).rgb;
-    pbrParameters.metallic = texture(textureMetallic, fsTextureCoords).r;
-    pbrParameters.roughness = texture(textureRoughness, fsTextureCoords).g;
-
-    if (0.5f < fsVertexColor.a)
-    {
-        pbrParameters.baseColor = fsVertexColor.rgb * lit;
-    }
-
-    return pbrParameters;
+    return color * (0.5 + 0.5 * lit);
 }
 
 void main()
 {
-    vec3 normal = getNormal();
-
-    if (model.invertNormals)
-    {
-        normal = -normal;
-    }
-
-    float shadowFactor = 0.0f;
-
-    if (shadow.enabled)
-    {
-        shadowFactor = shadowCalculation();
-    }
-
-    Color color = calculateColor(shadowFactor);
-    PbrParameters pbrParameters = calculatePbrParameters(shadowFactor);
-
+    vec3 normal = GetNormal();
+    float shadowFactor = CalculateShadow();
+    vec3 color = CalculateColor(shadowFactor);
     vec3 viewDirection = normalize(cameraPosition - fsWorldPosition.xyz);
     float distance = length(cameraPosition - fsWorldPosition.xyz);
 
     // Process
-    vec4 result = vec4(0);
-    result += processDirectionalLights(color, normal, viewDirection);
-    result += processPointLights(color, normal, viewDirection, fsWorldPosition.xyz);
-    result += processPointLightsPbr(pbrParameters, normal, viewDirection, fsWorldPosition.xyz);
+    vec3 result = vec3(0.0f);
+
+    if (model.shadingMode == PBR_SHADING)
+    {
+        float metallic = hasTextureMetallic ? texture(textureMetallic, fsTextureCoords).r : model.metallic;
+        float roughness = hasTextureRoughness ? texture(textureRoughness, fsTextureCoords).r : model.roughness;
+        float ambientOcclusion = hasTextureAmbientOcclusion ? texture(textureAmbientOcclusion, fsTextureCoords).r : model.ambientOcclusion;
+
+        result += ProcessDirectionalLightsPbr(color, metallic, roughness, ambientOcclusion, normal, viewDirection, fsWorldPosition.xyz);
+        result += ProcessPointLightsPbr(color, metallic, roughness, ambientOcclusion, normal, viewDirection, fsWorldPosition.xyz);
+    }
+    else if (model.shadingMode == PHONG_SHADING)
+    {
+        result += ProcessDirectionalLights(color, normal, viewDirection);
+        result += ProcessPointLights(color, normal, viewDirection, fsWorldPosition.xyz);
+    }
 
     // Final
-    result = processHaze(distance, fsWorldPosition.xyz, result);
+    result = ProcessHaze(distance, fsWorldPosition.xyz, result);
 
-    fragColor = vec4(result.rgb, 1);
+    fragColor = vec4(result, 1.0f);
 
     // Fragment position
-    fragLocalPosition = vec4(fsLocalPosition.xyz, 1);
+    fragLocalPosition = vec4(fsLocalPosition.xyz, 1.0f);
     fragWorldPosition = fsWorldPosition;
 
     // Node Info
-    nodeInfo = vec4(nodeId, meshId, float(gl_PrimitiveID), 1);
+    nodeInfo = vec4(nodeId, meshId, float(gl_PrimitiveID), 1.0f);
 
     // Distance
-    outDistance = vec4(distance, 0, 0, 1);
+    outDistance = vec4(distance, 0.0f, 0.0f, 1.0f);
 }

@@ -148,7 +148,7 @@ Canavar::Engine::SceneNodePtr Canavar::Engine::ModelImporter::ProcessNode(SceneP
     }
 
     pNode->SetNodeName(aiNode->mName.C_Str());
-    pNode->SetTransformation(ToQMatrix4x4(aiNode->mTransformation));
+    pNode->SetTransformation(QMatrix4x4(aiNode->mTransformation[0]));
 
     for (unsigned int i = 0; i < aiNode->mNumChildren; ++i)
     {
@@ -242,10 +242,10 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
     // }
 
     ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMAL_CAMERA, TextureType::Normal, directory);
     ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
-    //ProcessTexture(pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_SPECULAR, TextureType::Specular, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
 
     return pMaterial;
 }
@@ -310,20 +310,4 @@ QOpenGLTexture* Canavar::Engine::ModelImporter::CreateTexture(const QString& pat
     pTexture->setMinMagFilters(QOpenGLTexture::Filter::LinearMipMapLinear, QOpenGLTexture::Filter::Linear);
 
     return pTexture;
-}
-
-QMatrix4x4 Canavar::Engine::ModelImporter::ToQMatrix4x4(const aiMatrix4x4& matrix)
-{
-    aiVector3D scaling;
-    aiQuaternion rotation;
-    aiVector3D position;
-    matrix.Decompose(scaling, rotation, position);
-
-    QMatrix4x4 transformation;
-
-    transformation.scale(scaling.x, scaling.y, scaling.z);
-    transformation.rotate(rotation.w, rotation.x, rotation.y, rotation.z);
-    transformation.setColumn(3, QVector4D(position.x, position.y, position.z, 1.0));
-
-    return transformation;
 }

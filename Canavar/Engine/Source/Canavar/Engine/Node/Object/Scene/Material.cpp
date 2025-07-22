@@ -45,14 +45,29 @@ GLuint Canavar::Engine::Material::GetTexture(TextureType type)
     return mTextures.value(type, 0);
 }
 
-bool Canavar::Engine::Material::HasNormalTexture() const
+bool Canavar::Engine::Material::HasTextureBaseColor() const
+{
+    return mTextures.value(TextureType::BaseColor, 0);
+}
+
+bool Canavar::Engine::Material::HasTextureNormal() const
 {
     return mTextures.value(TextureType::Normal, 0);
 }
 
-bool Canavar::Engine::Material::HasAnyColorTexture() const
+bool Canavar::Engine::Material::HasTextureMetallic() const
 {
-    return mTextures.value(TextureType::Ambient, 0) || mTextures.value(TextureType::Diffuse, 0) || mTextures.value(TextureType::BaseColor, 0);
+    return mTextures.value(TextureType::Metallic, 0);
+}
+
+bool Canavar::Engine::Material::HasTextureRoughness() const
+{
+    return mTextures.value(TextureType::Roughness, 0);
+}
+
+bool Canavar::Engine::Material::HasTextureAmbientOcclusion() const
+{
+    return mTextures.value(TextureType::AmbientOcclusion, 0);
 }
 
 int Canavar::Engine::Material::GetNumberOfTextures() const

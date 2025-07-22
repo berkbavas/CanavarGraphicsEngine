@@ -1,6 +1,5 @@
 #include "Scene.h"
 
-
 void Canavar::Engine::Scene::Initialize()
 {
     for (const auto &pMesh : mMeshes)
@@ -19,7 +18,7 @@ void Canavar::Engine::Scene::Destroy()
 
 void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader)
 {
-    mRootNode->Render(pModel, pShader);
+    mRootNode->Render(pModel, pShader, mRootNode->GetTransformation());
 }
 
 void Canavar::Engine::Scene::AddMesh(MeshPtr pMesh)
