@@ -51,6 +51,5 @@ Canavar::Engine::AABB Canavar::Engine::AABB::Transform(const QMatrix4x4& transfo
             max[2] = vertices[i].z();
     }
 
-    AABB aabb(min, max);
-    return aabb;
+    return AABB(min, max);
 }

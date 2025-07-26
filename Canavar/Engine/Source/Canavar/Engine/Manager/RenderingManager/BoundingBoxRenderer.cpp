@@ -17,6 +17,7 @@ void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
 
     mLineShader->Bind();
     mLineShader->SetUniformValue("color", LINE_COLOR);
+    mLineShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
 
     for (const auto& pObject : objects)
     {

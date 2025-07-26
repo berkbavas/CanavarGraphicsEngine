@@ -100,39 +100,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     // Nodes
     SceneNodePtr pRootNode = ProcessNode(pScene, aiScene->mRootNode);
     pScene->SetRootNode(pRootNode);
-
-    // AABB
-    float minX = std::numeric_limits<float>::infinity();
-    float minY = std::numeric_limits<float>::infinity();
-    float minZ = std::numeric_limits<float>::infinity();
-
-    float maxX = -std::numeric_limits<float>::infinity();
-    float maxY = -std::numeric_limits<float>::infinity();
-    float maxZ = -std::numeric_limits<float>::infinity();
-
-    const auto& meshes = pScene->GetMeshes();
-    for (const auto& pMesh : meshes)
-    {
-        if (minX > pMesh->GetAABB().GetMin().x())
-            minX = pMesh->GetAABB().GetMin().x();
-
-        if (minY > pMesh->GetAABB().GetMin().y())
-            minY = pMesh->GetAABB().GetMin().y();
-
-        if (minZ > pMesh->GetAABB().GetMin().z())
-            minZ = pMesh->GetAABB().GetMin().z();
-
-        if (maxX < pMesh->GetAABB().GetMax().x())
-            maxX = pMesh->GetAABB().GetMax().x();
-
-        if (maxY < pMesh->GetAABB().GetMax().y())
-            maxY = pMesh->GetAABB().GetMax().y();
-
-        if (maxZ < pMesh->GetAABB().GetMax().z())
-            maxZ = pMesh->GetAABB().GetMax().z();
-    }
-
-    pScene->SetAABB(AABB{ QVector3D(minX, minY, minZ), QVector3D(maxX, maxY, maxZ) });
+    pScene->SetAABB(pRootNode->CalculateAABB());
 
     return pScene;
 }
@@ -221,28 +189,8 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
-    // constexpr aiTextureType AMBIENT_TARGETS[] = { aiTextureType_AMBIENT, aiTextureType_BASE_COLOR };
-
-    // for (const auto target : AMBIENT_TARGETS)
-    // {
-    //     if (ProcessTexture(pMaterial, aiMaterial, target, TextureType::Ambient, directory))
-    //     {
-    //         break;
-    //     }
-    // }
-
-    // constexpr aiTextureType DIFFUSE_TARGETS[] = { aiTextureType_DIFFUSE, aiTextureType_BASE_COLOR };
-
-    // for (const auto target : DIFFUSE_TARGETS)
-    // {
-    //     if (ProcessTexture(pMaterial, aiMaterial, target, TextureType::Diffuse, directory))
-    //     {
-    //         break;
-    //     }
-    // }
-
     ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMAL_CAMERA, TextureType::Normal, directory);
+    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
     ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
     ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
     ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);

@@ -395,7 +395,7 @@ void Canavar::Editor::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
     ImGui::SliderFloat("Shininess##Model", &pModel->GetShininess_NonConst(), 1.0f, 128.0f, "%.3f");
     ImGui::SliderFloat("Metallic##Model", &pModel->GetMetallic_NonConst(), 0.0f, 2.0f, "%.3f");
     ImGui::SliderFloat("Roughness##Model", &pModel->GetRoughness_NonConst(), 0.0f, 2.0f, "%.3f");
-    ImGui::SliderFloat("Ambient Occlusion##Model", &pModel->GetAmbientOcclusion_NonConst(), 0.0f, 4.0f, "%.3f");
+    ImGui::SliderFloat("Ambient Occlusion##Model", &pModel->GetAmbientOcclusion_NonConst(), 0.0f, 10.0f, "%.3f");
     ImGui::Checkbox("Use Color##Model", &pModel->GetUseColor_NonConst());
     ImGui::ColorEdit3("Color##Model", &pModel->GetColor_NonConst()[0]);
     ImGui::Checkbox("Invert Normals##Model", &pModel->GetInvertNormals_NonConst());
@@ -408,7 +408,7 @@ void Canavar::Editor::ImGuiWidget::DrawCamera(Engine::PerspectiveCameraPtr pCame
 
     ImGui::SliderFloat("Vertical FOV", &pCamera->GetVerticalFov_NonConst(), 1.0f, 179.0f, "%.2f");
     ImGui::InputFloat("Z-Far", &pCamera->GetZFar_NonConst(), 0, 0, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
-    ImGui::InputFloat("Z-Near", &pCamera->GetZFar_NonConst(), 0, 0, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
+    ImGui::InputFloat("Z-Near", &pCamera->GetZNear_NonConst(), 0, 0, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 }
 
 void Canavar::Editor::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLightPtr pLight)

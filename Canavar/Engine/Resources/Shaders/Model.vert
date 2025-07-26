@@ -9,10 +9,11 @@ layout(location = 5) in vec4 color;
 
 uniform mat4 M;   // Model matrix
 uniform mat3 N;   // Normal matrix
-uniform mat4 VP;  // View-projection matrix
+uniform mat4 VP;  // View-Projection matrix
 uniform mat4 LVP; // Light view-projection matrix
 
 uniform bool useTextureNormal;
+uniform float zFar;
 
 out vec4 fsLocalPosition;
 out vec4 fsWorldPosition;
@@ -22,6 +23,7 @@ out mat3 fsTBN;
 out vec4 fsFragPosLightSpace;
 out vec4 fsVertexColor;
 flat out int fsVertexId;
+out float fsFlogZ;
 
 void main()
 {
@@ -46,4 +48,8 @@ void main()
     fsVertexId = gl_VertexID;
 
     gl_Position = VP * fsWorldPosition;
+
+    float coef = 2.0 / log2(zFar + 1.0);
+    gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * coef - 1.0;
+    fsFlogZ = 1.0 + gl_Position.w;
 }

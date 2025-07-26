@@ -148,7 +148,6 @@ const QMatrix4x4& Canavar::Engine::Object::GetWorldTransformation()
     }
     else
     {
-        mWorldTransformation.setToIdentity();
         mWorldTransformation.scale(mScale);
         mWorldTransformation.rotate(mWorldRotation);
         mWorldTransformation.setColumn(3, QVector4D(mWorldPosition, 1.0f));

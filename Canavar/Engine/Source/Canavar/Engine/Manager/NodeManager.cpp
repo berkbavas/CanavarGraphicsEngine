@@ -20,7 +20,7 @@ void Canavar::Engine::NodeManager::Initialize()
 {
     mLightManager = mManagerProvider->GetLightManager();
 
-    mScenes = ModelImporter::Import(MODELS_FOLDER, { "*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf" });
+    mScenes = ModelImporter::Import(MODELS_FOLDER, { "*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf", "*.usdz" });
 
     mSky = std::make_shared<Sky>();
     mTerrain = std::make_shared<Terrain>();
@@ -307,7 +307,7 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         QString nodeType = object["node_type"].toString();
         QString uuid = object["uuid"].toString();
 
-        if (nodeType == QString(Haze::NODE_TYPE))
+        if (nodeType == Haze::NODE_TYPE)
         {
             mHaze->FromJson(object, nodes);
         }

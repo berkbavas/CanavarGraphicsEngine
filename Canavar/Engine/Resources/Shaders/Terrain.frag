@@ -88,6 +88,7 @@ uniform int numberOfDirectionalLights;
 
 uniform vec3 cameraPosition;
 uniform float waterHeight;
+uniform float zFar;
 
 uniform sampler2D sand;
 uniform sampler2D grass1;
@@ -103,7 +104,7 @@ in vec2 fsTextureCoord;
 in float fsDistanceFromPosition;
 in float fsHeight;
 in vec4 fsFragPosLightSpace;
-in float fsflogz;
+in float fsFlogZ;
 
 layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 fragLocalPosition;
@@ -441,4 +442,6 @@ void main()
 
     // Distance
     outDistance = vec4(distance, 0, 0, 1);
+
+    gl_FragDepth = log2(fsFlogZ) / log2(zFar + 1.0);
 };
