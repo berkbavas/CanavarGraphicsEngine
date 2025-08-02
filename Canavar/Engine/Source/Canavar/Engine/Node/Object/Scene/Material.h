@@ -13,6 +13,9 @@ namespace Canavar::Engine
     enum class TextureType
     {
         BaseColor,
+        Metallic,
+        Roughness,
+        AmbientOcclusion,
         Normal
     };
 
@@ -28,6 +31,9 @@ namespace Canavar::Engine
         GLuint GetTexture(TextureType type);
 
         bool HasTextureBaseColor() const;
+        bool HasTextureMetallic() const;
+        bool HasTextureRoughness() const;
+        bool HasTextureAmbientOcclusion() const;
         bool HasTextureNormal() const;
 
         int GetNumberOfTextures() const;

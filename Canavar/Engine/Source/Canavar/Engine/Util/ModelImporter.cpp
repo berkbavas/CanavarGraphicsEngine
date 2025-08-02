@@ -190,6 +190,9 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
     MaterialPtr pMaterial = std::make_shared<Material>();
 
     qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_BASE_COLOR: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
+    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_METALNESS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
+    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_DIFFUSE_ROUGHNESS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
+    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_AMBIENT_OCCLUSION: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
     qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_NORMALS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
 
     return pMaterial;

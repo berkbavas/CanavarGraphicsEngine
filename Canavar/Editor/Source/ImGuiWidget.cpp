@@ -248,6 +248,7 @@ void Canavar::Editor::ImGuiWidget::DrawSun()
     ImGui::SliderFloat("Ambient##Sun", &mSun->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Diffuse##Sun", &mSun->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Specular##Sun", &mSun->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Radiance##Sun", &mSun->GetRadiance_NonConst(), 0.0f, 100.0f, "%.3f");
 
     float theta = mSun->GetTheta();
     float phi = mSun->GetPhi();
@@ -373,6 +374,21 @@ void Canavar::Editor::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
 {
     ImGui::Text("Model Parameters");
 
+    if (ImGui::BeginCombo("Shading Mode##DrawModel", pModel->GetShadingMode() == Canavar::Engine::PBR_SHADING ? "Pbr" : "Phong"))
+    {
+        if (ImGui::Selectable("Pbr"))
+        {
+            pModel->SetShadingMode(Canavar::Engine::PBR_SHADING);
+        }
+
+        if (ImGui::Selectable("Phong"))
+        {
+            pModel->SetShadingMode(Canavar::Engine::PHONG_SHADING);
+        }
+
+        ImGui::EndCombo();
+    }
+
     ImGui::SliderFloat("Ambient##Model", &pModel->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Diffuse##Model", &pModel->GetDiffuse_NonConst(), 0.0f, 2.0f, "%.3f");
     ImGui::SliderFloat("Specular##Model", &pModel->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
@@ -398,6 +414,7 @@ void Canavar::Editor::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight
     ImGui::SliderFloat("Ambient##DirectionalLight", &pLight->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Diffuse##DirectionalLight", &pLight->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Specular##DirectionalLight", &pLight->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
+    ImGui::SliderFloat("Radiance##DirectionalLight", &pLight->GetRadiance_NonConst(), 0.0f, 100.0f, "%.3f");
     ImGui::ColorEdit3("Color##DirectionalLight", &pLight->GetColor_NonConst()[0]);
 
     float theta = pLight->GetTheta();

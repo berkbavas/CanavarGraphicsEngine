@@ -19,6 +19,7 @@ namespace Canavar::Engine
         void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
 
         DEFINE_MEMBER(QVector3D, Direction, QVector3D(0, 1, 0));
+        DEFINE_MEMBER(float, Radiance, 5.0f);
     };
 
     using DirectionalLightPtr = std::shared_ptr<DirectionalLight>;

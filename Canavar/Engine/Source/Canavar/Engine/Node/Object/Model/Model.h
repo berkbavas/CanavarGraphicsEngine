@@ -25,7 +25,11 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Diffuse, 0.75f);
         DEFINE_MEMBER(float, Specular, 0.25f);
         DEFINE_MEMBER(float, Shininess, 8.0f);
+        DEFINE_MEMBER(float, Metallic, 0.0f);
+        DEFINE_MEMBER(float, Roughness, 0.25f);
+        DEFINE_MEMBER(float, AmbientOcclusion, 4.0f);
         DEFINE_MEMBER(bool, UseModelColor, false);
+        DEFINE_MEMBER(int, ShadingMode, PBR_SHADING);
         DEFINE_MEMBER_CONST(QString, SceneName);
 
         QMap<QString, QMatrix4x4> mMeshTransformations;

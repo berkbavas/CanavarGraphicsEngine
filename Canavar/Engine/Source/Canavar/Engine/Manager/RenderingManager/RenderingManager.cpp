@@ -234,6 +234,7 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
 
     mModelShader->Bind();
     mModelShader->SetUniformValue("model.color", pModel->GetColor());
+    mModelShader->SetUniformValue("model.shadingMode", pModel->GetShadingMode());
     mModelShader->SetUniformValue("model.useModelColor", pModel->GetUseModelColor());
     mModelShader->SetUniformValue("model.ambient", pModel->GetAmbient());
     mModelShader->SetUniformValue("model.diffuse", pModel->GetDiffuse());
@@ -303,6 +304,11 @@ void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
         pShader->SetUniformValue("directionalLights[" + QString::number(i) + "].ambient", lights[i]->GetAmbient());
         pShader->SetUniformValue("directionalLights[" + QString::number(i) + "].diffuse", lights[i]->GetDiffuse());
         pShader->SetUniformValue("directionalLights[" + QString::number(i) + "].specular", lights[i]->GetSpecular());
+
+        if (pShader == mModelShader)
+        {
+            pShader->SetUniformValue("directionalLights[" + QString::number(i) + "].radiance", lights[i]->GetRadiance());
+        }
     }
 
     pShader->Release();

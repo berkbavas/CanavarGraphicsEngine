@@ -7,4 +7,7 @@ namespace Canavar::Engine
     inline constexpr int SHADOW_MAP_SIZE = 4096;
     inline constexpr int SHADOW_MAP_TEXTURE_UNIT = 7;
     inline constexpr const char* MODELS_FOLDER = "C:/Canavar/Models";
+
+    inline constexpr int PBR_SHADING = 0;
+    inline constexpr int PHONG_SHADING = 1;
 }
