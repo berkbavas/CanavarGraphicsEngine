@@ -9,7 +9,6 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
-#include "Canavar/Engine/Manager/VertexPainter.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <QThread>
@@ -50,10 +49,8 @@ Canavar::Engine::Controller::Controller(ContainerMode mode, QObject* parent)
     mShaderManager = new ShaderManager(nullptr);
     mRenderingManager = new RenderingManager(nullptr);
     mLightManager = new LightManager(nullptr);
-    mVertexPainter = new VertexPainter(nullptr);
 
     mManagers.push_back(mShaderManager);
-    mManagers.push_back(mVertexPainter);
     mManagers.push_back(mNodeManager);
     mManagers.push_back(mCameraManager);
     mManagers.push_back(mRenderingManager);
@@ -246,7 +243,6 @@ void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
     }
 
     mCameraManager->OnMousePressed(event);
-    mVertexPainter->OnMousePressed(event);
 }
 
 void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
@@ -260,7 +256,6 @@ void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
     }
 
     mCameraManager->OnMouseReleased(event);
-    mVertexPainter->OnMouseReleased(event);
 }
 
 void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
@@ -274,7 +269,6 @@ void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
     }
 
     mCameraManager->OnMouseMoved(event);
-    mVertexPainter->OnMouseMoved(event);
 }
 
 void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
@@ -288,5 +282,4 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
     }
 
     mCameraManager->OnWheelMoved(event);
-    mVertexPainter->OnWheelMoved(event);
 }

@@ -26,13 +26,7 @@ void Canavar::Engine::Model::ToJson(QJsonObject& object)
     color.insert("b", mColor.z());
     object.insert("color", color);
 
-    object.insert("useColor", mUseColor);
-
-    object.insert("metallic", mMetallic);
-    object.insert("roughness", mRoughness);
-    object.insert("ambient_occlusion", mAmbientOcclusion);
-
-    object.insert("invert_normals", mInvertNormals);
+    object.insert("use_model_color", mUseModelColor);
     object.insert("scene_name", mSceneName);
 
     // TODO: mMeshTransformations
@@ -48,12 +42,6 @@ void Canavar::Engine::Model::FromJson(const QJsonObject& object, const std::map<
     float b = color["b"].toDouble(1.0f);
     mColor = QVector3D(r, g, b);
 
-    mUseColor = object["useColor"].toBool(false);
-
-    mMetallic = object["metallic"].toDouble(0.0f);
-    mRoughness = object["roughness"].toDouble(0.0f);
-    mAmbientOcclusion = object["ambient_occlusion"].toDouble(2.0f);
-
-    mInvertNormals = object["invert_normals"].toBool(false);
+    mUseModelColor = object["use_model_color"].toBool(false);
     mSceneName = object["scene_name"].toString();
 }

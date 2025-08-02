@@ -13,10 +13,7 @@ namespace Canavar::Engine
     enum class TextureType
     {
         BaseColor,
-        Normal,
-        Metallic,
-        Roughness,
-        AmbientOcclusion
+        Normal
     };
 
     class Material : protected QOpenGLExtraFunctions
@@ -32,9 +29,6 @@ namespace Canavar::Engine
 
         bool HasTextureBaseColor() const;
         bool HasTextureNormal() const;
-        bool HasTextureMetallic() const;
-        bool HasTextureRoughness() const;
-        bool HasTextureAmbientOcclusion() const;
 
         int GetNumberOfTextures() const;
 

@@ -18,7 +18,6 @@ namespace Canavar::Engine
     class CameraManager;
     class RenderingManager;
     class LightManager;
-    class VertexPainter;
     class EventReceiver;
 
     enum class ContainerMode
@@ -41,7 +40,6 @@ namespace Canavar::Engine
         CameraManager* GetCameraManager() override { return mCameraManager; }
         LightManager* GetLightManager() override { return mLightManager; }
         RenderingManager* GetRenderingManager() override { return mRenderingManager; }
-        VertexPainter* GetVertexPainter() override { return mVertexPainter; }
 
         Window* GetWindow() { return mWindow; }
         Widget* GetWidget() { return mWidget; }
@@ -75,7 +73,6 @@ namespace Canavar::Engine
         ShaderManager* mShaderManager;
         RenderingManager* mRenderingManager;
         LightManager* mLightManager;
-        VertexPainter* mVertexPainter;
 
         QVector<Manager*> mManagers;
 

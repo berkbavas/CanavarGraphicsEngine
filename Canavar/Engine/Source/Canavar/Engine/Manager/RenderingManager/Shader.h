@@ -24,7 +24,6 @@ namespace Canavar::Engine
         ShadowMapping,
         Bitmap,
         PointCloud,
-        VertexPainter,
         Basic,
         CrossSection
     };

@@ -42,7 +42,6 @@ void Canavar::Editor::Editor::Initialize()
     mImGuiWidget->SetRenderingManager(mRenderingManager);
     mImGuiWidget->SetNodeManager(mNodeManager);
     mImGuiWidget->SetCameraManager(mCameraManager);
-    mImGuiWidget->SetVertexPainter(mController->GetVertexPainter());
     mImGuiWidget->Initialize();
 
     mFreeCamera = mCameraManager->GetFreeCamera();

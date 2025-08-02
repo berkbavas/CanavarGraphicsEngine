@@ -28,41 +28,27 @@ void Canavar::Engine::Mesh::Initialize()
 
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_DYNAMIC_COPY);
+    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(Vertex), mVertices.data(), GL_DYNAMIC_DRAW);
 
     // Position
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
 
     // Normals
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
     glEnableVertexAttribArray(1);
 
     //Texture Cooords
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
     glEnableVertexAttribArray(2);
 
     // Tangent
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
     glEnableVertexAttribArray(3);
 
     // Bitangent
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
     glEnableVertexAttribArray(4);
-
-    // Color (required for vertex painter)
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, color));
-    glEnableVertexAttribArray(5);
-
-    // // Bone IDs
-    // glVertexAttribPointer(6, 4, GL_INT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, boneIDs));
-    // glEnableVertexAttribArray(6);
-
-    // // Weights
-    // glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, weights));
-    // glEnableVertexAttribArray(7);
-
-    // TODO: Check buffers' status here.
 
     glBindVertexArray(0);
 
@@ -131,21 +117,11 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix
         pShader->SetUniformValue("nodeId", static_cast<float>(pModel->GetNodeId()));
         pShader->SetUniformValue("meshId", static_cast<float>(mMeshId));
 
-        pShader->SetUniformValue("model.metallic", pModel->GetMetallic());
-        pShader->SetUniformValue("model.roughness", pModel->GetRoughness());
-        pShader->SetUniformValue("model.ambientOcclusion", pModel->GetAmbientOcclusion());
-
         pShader->SetUniformValue("hasTextureBaseColor", mMaterial->HasTextureBaseColor());
         pShader->SetUniformValue("hasTextureNormal", mMaterial->HasTextureNormal());
-        pShader->SetUniformValue("hasTextureMetallic", mMaterial->HasTextureMetallic());
-        pShader->SetUniformValue("hasTextureRoughness", mMaterial->HasTextureRoughness());
-        pShader->SetUniformValue("hasTextureAmbientOcclusion", mMaterial->HasTextureAmbientOcclusion());
 
         pShader->SetSampler("textureBaseColor", 0, mMaterial->GetTexture(TextureType::BaseColor));
         pShader->SetSampler("textureNormal", 1, mMaterial->GetTexture(TextureType::Normal));
-        pShader->SetSampler("textureMetallic", 2, mMaterial->GetTexture(TextureType::Metallic));
-        pShader->SetSampler("textureRoughness", 3, mMaterial->GetTexture(TextureType::Roughness));
-        pShader->SetSampler("textureAmbientOcclusion", 4, mMaterial->GetTexture(TextureType::AmbientOcclusion));
 
         glBindVertexArray(mVAO);
         glDrawElements(GL_TRIANGLES, mIndices.size(), GL_UNSIGNED_INT, 0);

@@ -55,21 +55,6 @@ bool Canavar::Engine::Material::HasTextureNormal() const
     return mTextures.value(TextureType::Normal, 0);
 }
 
-bool Canavar::Engine::Material::HasTextureMetallic() const
-{
-    return mTextures.value(TextureType::Metallic, 0);
-}
-
-bool Canavar::Engine::Material::HasTextureRoughness() const
-{
-    return mTextures.value(TextureType::Roughness, 0);
-}
-
-bool Canavar::Engine::Material::HasTextureAmbientOcclusion() const
-{
-    return mTextures.value(TextureType::AmbientOcclusion, 0);
-}
-
 int Canavar::Engine::Material::GetNumberOfTextures() const
 {
     return mTextures.size();

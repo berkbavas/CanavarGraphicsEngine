@@ -81,7 +81,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(-1.0f, -1.0f);
+    glPolygonOffset(1.0f, 1.0f);
 
     if (mShadowsEnabled)
     {
@@ -170,7 +170,7 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(-1.0f, -1.0f);
+    glPolygonOffset(1.0f, 1.0f);
 
     pFramebuffer->bind();
 
@@ -233,14 +233,12 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
     SetPointLights(mModelShader, pModel.get());
 
     mModelShader->Bind();
+    mModelShader->SetUniformValue("model.color", pModel->GetColor());
+    mModelShader->SetUniformValue("model.useModelColor", pModel->GetUseModelColor());
     mModelShader->SetUniformValue("model.ambient", pModel->GetAmbient());
     mModelShader->SetUniformValue("model.diffuse", pModel->GetDiffuse());
     mModelShader->SetUniformValue("model.specular", pModel->GetSpecular());
     mModelShader->SetUniformValue("model.shininess", pModel->GetShininess());
-    mModelShader->SetUniformValue("model.shadingMode", pModel->GetShadingMode());
-    mModelShader->SetUniformValue("model.useColor", pModel->GetUseColor());
-    mModelShader->SetUniformValue("model.color", pModel->GetColor());
-    mModelShader->SetUniformValue("model.invertNormals", pModel->GetInvertNormals());
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
@@ -287,11 +285,6 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camer
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
     pShader->SetUniformValue("cameraPosition", pCamera->GetWorldPosition());
     pShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
-    pShader->SetUniformValue("LVP", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-    pShader->SetSampler("shadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMap());
-    pShader->SetUniformValue("shadow.enabled", mShadowsEnabled);
-    pShader->SetUniformValue("shadow.bias", mShadowBias);
-    pShader->SetUniformValue("shadow.samples", mShadowSamples);
     pShader->Release();
 }
 

@@ -100,7 +100,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     // Nodes
     SceneNodePtr pRootNode = ProcessNode(pScene, aiScene->mRootNode);
     pScene->SetRootNode(pRootNode);
-    pScene->SetAABB(pRootNode->CalculateAABB());
+    CalculateAABB(pScene);
 
     return pScene;
 }
@@ -115,14 +115,14 @@ Canavar::Engine::SceneNodePtr Canavar::Engine::ModelImporter::ProcessNode(SceneP
         pNode->AddMesh(pMesh);
     }
 
-    pNode->SetNodeName(aiNode->mName.C_Str());
-    pNode->SetTransformation(QMatrix4x4(aiNode->mTransformation[0]));
-
     for (unsigned int i = 0; i < aiNode->mNumChildren; ++i)
     {
         SceneNodePtr pChildNode = ProcessNode(pScene, aiNode->mChildren[i]);
         pNode->AddChild(pChildNode);
     }
+
+    pNode->SetNodeName(aiNode->mName.C_Str());
+    pNode->SetTransformation(ToQMatrix4x4(aiNode->mTransformation));
 
     return pNode;
 }
@@ -131,13 +131,13 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
 {
     MeshPtr pMesh = std::make_shared<Mesh>();
 
+    Vertex vertex;
+
     for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
     {
-        Vertex vertex;
         vertex.position.setX(aiMesh->mVertices[i].x);
         vertex.position.setY(aiMesh->mVertices[i].y);
         vertex.position.setZ(aiMesh->mVertices[i].z);
-        vertex.position.setW(1.0f);
 
         if (aiMesh->HasNormals())
         {
@@ -189,11 +189,8 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
-    ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
+    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_BASE_COLOR: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
+    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_NORMALS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
 
     return pMaterial;
 }
@@ -242,6 +239,19 @@ bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, Mater
     }
 
     return false;
+}
+
+void Canavar::Engine::ModelImporter::CalculateAABB(ScenePtr pScene)
+{
+    const auto pRootNode = pScene->GetRootNode();
+    const auto AABB = pRootNode->CalculateAABB();
+
+    pScene->SetAABB(AABB);
+}
+
+QMatrix4x4 Canavar::Engine::ModelImporter::ToQMatrix4x4(const aiMatrix4x4& aiMatrix)
+{
+    return QMatrix4x4(aiMatrix[0]);
 }
 
 QOpenGLTexture* Canavar::Engine::ModelImporter::CreateTexture(const QString& path)

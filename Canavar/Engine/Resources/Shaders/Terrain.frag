@@ -37,12 +37,12 @@ struct PointLight
 {
     vec3 color;
     vec3 position;
-    float constant;
-    float linear;
-    float quadratic;
     float ambient;
     float diffuse;
     float specular;
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 struct Terrain
@@ -68,17 +68,8 @@ struct Haze
     float gradient;
 };
 
-struct Shadow
-{
-    sampler2D map;
-    bool enabled;
-    float bias;
-    int samples;
-};
-
 uniform Terrain terrain;
 uniform Haze haze;
-uniform Shadow shadow;
 
 uniform PointLight pointLights[8];
 uniform int numberOfPointLights;
@@ -96,14 +87,13 @@ uniform sampler2D grass0;
 uniform sampler2D snow;
 uniform sampler2D rock;
 
-uniform float nodeId; // WTF? float? QOpenGLFramebuffer fucks up when the internal texture format is GL_RGBA32UI.
+uniform float nodeId; // QOpenGLFramebuffer messes up when the internal texture format is GL_RGBA32UI.
 
 in vec3 fsWorldPosition;
 in vec3 fsNormal;
 in vec2 fsTextureCoord;
 in float fsDistanceFromPosition;
 in float fsHeight;
-in vec4 fsFragPosLightSpace;
 in float fsFlogZ;
 
 layout(location = 0) out vec4 fragColor;
@@ -302,52 +292,59 @@ vec3 getTexture(inout vec3 normal, const mat3 TBN)
     return heightColor;
 }
 
-vec3 processDirectionalLights(vec3 color, vec3 normal, vec3 viewDir, float shadow)
+vec3 processDirectionalLights(vec3 color, vec3 normal, vec3 Lo)
 {
-    vec3 result = vec3(0);
+    vec3 result = vec3(0.0f);
 
     for (int i = 0; i < numberOfDirectionalLights; i++)
     {
+        DirectionalLight light = directionalLights[i];
+
         // Ambient
-        float ambient = terrain.ambient * directionalLights[i].ambient;
+        float ambient = terrain.ambient * light.ambient;
 
         // Diffuse
-        float diffuseStrength = max(dot(normal, -directionalLights[i].direction), 0.0f);
-        float diffuse = diffuseStrength * terrain.diffuse * directionalLights[i].diffuse;
+        vec3 ld = -light.direction;
+        float df = dot(normal, ld);
+        float diffuse = max(df, 0.0f) * terrain.diffuse * light.diffuse;
 
         // Specular
-        vec3 reflectDir = reflect(directionalLights[i].direction, normal);
-        float specularStrength = max(dot(viewDir, reflectDir), 0.0);
-        float specular = pow(specularStrength, terrain.shininess) * terrain.specular * directionalLights[i].specular;
+        vec3 hd = normalize(ld + Lo);
+        float sf = max(dot(normal, hd), 0.0);
+        float specular = pow(sf, terrain.shininess) * terrain.specular * light.specular;
 
-        result += (ambient * (1 - 0.5 * shadow) + diffuse * (1 - shadow) + specular * (1 - shadow)) * directionalLights[i].color;
+        result += (ambient + diffuse + specular) * color * light.color;
     }
 
-    return result * color;
+    return result;
 }
 
-vec3 processPointLights(vec3 color, vec3 normal, vec3 viewDir, vec3 fragWorldPos)
+vec3 processPointLights(vec3 color, vec3 normal, vec3 Lo, vec3 fragWorldPos)
 {
     vec3 result = vec3(0);
 
     for (int i = 0; i < numberOfPointLights; i++)
     {
+        PointLight light = pointLights[i];
+
         // Ambient
-        vec3 ambient = color * pointLights[i].ambient * pointLights[i].ambient;
+        float ambient = terrain.ambient * light.ambient;
 
         // Diffuse
-        vec3 lightDir = normalize(pointLights[i].position - fragWorldPos);
-        vec3 diffuse = color * max(dot(normal, lightDir), 0.0) * pointLights[i].diffuse * terrain.diffuse;
+        vec3 ld = normalize(light.position - fragWorldPos);
+        float df = dot(normal, ld);
+        float diffuse = max(df, 0.0f) * terrain.diffuse * light.diffuse;
 
         // Specular
-        vec3 halfwayDir = normalize(lightDir + viewDir);
-        vec3 specular = color * pow(max(dot(normal, halfwayDir), 0.0), terrain.shininess) * pointLights[i].specular * terrain.specular;
+        vec3 hd = normalize(ld + Lo);
+        float sf = max(dot(normal, hd), 0.0);
+        float specular = pow(sf, terrain.shininess) * terrain.specular * light.specular;
 
         // Attenuation
-        float distance = length(pointLights[i].position - fragWorldPos);
-        float attenuation = 1.0f / (pointLights[i].constant + pointLights[i].linear * distance + pointLights[i].quadratic * (distance * distance));
+        float distance = length(light.position - fragWorldPos);
+        float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
-        result += (ambient + diffuse + specular) * pointLights[i].color * attenuation;
+        result += (ambient + diffuse + specular) * color * light.color * attenuation;
     }
 
     return result;
@@ -367,49 +364,9 @@ vec3 processHaze(float distance, vec3 subjectColor)
     return result;
 }
 
-// Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
-float shadowCalculation()
-{
-    // perform perspective divide
-    vec3 projCoords = fsFragPosLightSpace.xyz / fsFragPosLightSpace.w;
-
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadow.map, projCoords.xy).r;
-
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-
-    vec2 texelSize = 1.0 / textureSize(shadow.map, 0);
-
-    int samples = shadow.samples;
-    float result = 0.0f;
-
-    for (int x = -samples; x <= samples; ++x)
-    {
-        for (int y = -samples; y <= samples; ++y)
-        {
-            float pcfDepth = texture(shadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
-            result += currentDepth - shadow.bias > pcfDepth ? 1.0 : 0.0;
-        }
-    }
-
-    result /= pow(2 * samples + 1, 2);
-
-    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-    if (projCoords.z > 1.0)
-    {
-        result = 0.0;
-    }
-
-    return result;
-}
-
 void main()
 {
-    vec3 viewDir = normalize(cameraPosition - fsWorldPosition);
+    vec3 Lo = normalize(cameraPosition - fsWorldPosition);
     float distance = length(cameraPosition - fsWorldPosition);
 
     mat3 TBN;
@@ -418,19 +375,14 @@ void main()
 
     vec3 heightColor = getTexture(normal, TBN);
 
-    float shadowFactor = 0.0f;
-
-    if (shadow.enabled)
-    {
-        shadowFactor = shadowCalculation();
-    }
-
     vec3 result = vec3(0);
-    result += processDirectionalLights(heightColor, normal, viewDir, shadowFactor);
-    result += processPointLights(heightColor, normal, viewDir, fsWorldPosition);
+    result += processDirectionalLights(heightColor, normal, Lo);
+    result += processPointLights(heightColor, normal, Lo, fsWorldPosition);
+
+    result = processHaze(distance, result);
 
     // Final
-    fragColor = vec4(processHaze(distance, result), 1.0f);
+    fragColor = vec4(result, 1.0f);
 
     // Fragment position
     // Note that the terrain has no model matrix so its local and world coordinates are equal.
@@ -444,4 +396,4 @@ void main()
     outDistance = vec4(distance, 0, 0, 1);
 
     gl_FragDepth = log2(fsFlogZ) / log2(zFar + 1.0);
-};
+}

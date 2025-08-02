@@ -13,7 +13,7 @@
             "ambient": 0.20000000298023224,
             "amplitude": 20,
             "diffuse": 0.8500000238418579,
-            "enabled": true,
+            "enabled": false,
             "frequency": 0.009999999776482582,
             "grass_coverage": 0.6499999761581421,
             "node_name": "Terrain",
@@ -78,135 +78,6 @@
             "selectable": true,
             "specular": 1,
             "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
-            "visible": true
-        },
-        {
-            "color": {
-                "b": 0.4699999988079071,
-                "g": 0.3799999952316284,
-                "r": 0.33000001311302185
-            },
-            "density": 1,
-            "enabled": true,
-            "gradient": 1.5,
-            "node_name": "Haze",
-            "node_type": "Haze",
-            "uuid": "c685e3d9-0a3f-429a-acb1-f56c9b9a57e0"
-        },
-        {
-            "ambient_occlusion": 2,
-            "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "invert_normals": false,
-            "metallic": 0,
-            "node_name": "1968_volkswagen_beetle",
-            "node_type": "Model",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": -10
-            },
-            "rotation": {
-                "w": 0.7071129679679871,
-                "x": 0.7071006894111633,
-                "y": 0,
-                "z": 0
-            },
-            "roughness": 0,
-            "scale": {
-                "x": 1000,
-                "y": 1000,
-                "z": 1000
-            },
-            "scene_name": "1968_volkswagen_beetle",
-            "selectable": true,
-            "useColor": false,
-            "uuid": "74cbb328-dad6-425d-9235-4bbdd5bd7ad9",
-            "visible": true
-        },
-        {
-            "color": {
-                "b": 0.4699999988079071,
-                "g": 0.3799999952316284,
-                "r": 0.33000001311302185
-            },
-            "density": 1,
-            "enabled": true,
-            "gradient": 1.5,
-            "node_name": "Haze",
-            "node_type": "Haze",
-            "uuid": "ff6d0ae5-88a2-4e1d-91eb-d3dbe0927c39"
-        },
-        {
-            "ambient": 1,
-            "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "constant": 0.4519999921321869,
-            "diffuse": 1,
-            "enabled": true,
-            "linear": 0.02500000037252903,
-            "node_name": "Point Light",
-            "node_type": "PointLight",
-            "position": {
-                "x": -14.021208763122559,
-                "y": 91.8121109008789,
-                "z": -11.204926490783691
-            },
-            "quadratic": 0.0010000000474974513,
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "specular": 1,
-            "uuid": "cead90f5-9004-4ba4-86c4-b538b43b4632",
-            "visible": true
-        },
-        {
-            "ambient_occlusion": 3,
-            "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "invert_normals": false,
-            "metallic": 0,
-            "node_name": "full_gameready_city_buildings",
-            "node_type": "Model",
-            "position": {
-                "x": 166.7867889404297,
-                "y": 19.75530242919922,
-                "z": -204.0001220703125
-            },
-            "rotation": {
-                "w": 0.7071129679679871,
-                "x": 0.7071006894111633,
-                "y": 0,
-                "z": 0
-            },
-            "roughness": 0,
-            "scale": {
-                "x": 10,
-                "y": 10,
-                "z": 10
-            },
-            "scene_name": "full_gameready_city_buildings",
-            "selectable": true,
-            "useColor": false,
-            "uuid": "e657634c-64dc-45c2-94d7-ae64fbe605ad",
             "visible": true
         }
     ]
