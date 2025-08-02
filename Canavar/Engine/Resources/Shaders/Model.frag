@@ -369,6 +369,24 @@ float CalculateAmbientOcclusion()
     return ao;
 }
 
+vec3 RRTAndODTFit(vec3 v)
+{
+    vec3 a = v * (v + 0.0245786) - 0.000090537;
+    vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
+    return a / b;
+}
+
+vec3 ACESFittedToneMapping(vec3 color)
+{
+    // Exposure bias (optional, adjust as needed)
+    color *= 0.35;
+
+    color = RRTAndODTFit(color);
+
+    // Clamp negative values and apply gamma
+    return clamp(pow(color, vec3(1.0f / 2.2f)), 0.0, 1.0);
+}
+
 void main()
 {
     vec3 normal = CalculateNormal();
@@ -387,6 +405,7 @@ void main()
 
         result += ProcessDirectionalLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo);
         result += ProcessPointLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, fsWorldPosition);
+        //result = ACESFittedToneMapping(result);
     }
     else if (model.shadingMode == PHONG_SHADING)
     {
