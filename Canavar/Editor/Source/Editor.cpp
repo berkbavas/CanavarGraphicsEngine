@@ -53,7 +53,7 @@ void Canavar::Editor::Editor::Initialize()
 
     mNodeManager->GetTerrain()->SetEnabled(false);
 
-    mNodeManager->ImportNodes("Resources/Sponza.json");
+    mNodeManager->ImportNodes("Resources/DamagedHelmet.json");
 
     // LightningStrikeGeneratorPtr pGenerator = std::make_shared<LightningStrikeGenerator>();
     // pGenerator->SetPosition(0, 0, -10);

@@ -1,0 +1,127 @@
+{
+    "nodes": [
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": true,
+            "node_name": "Sky",
+            "node_type": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "turbidity": 4,
+            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
+        },
+        {
+            "ambient": 0.20000000298023224,
+            "amplitude": 20,
+            "diffuse": 0.8500000238418579,
+            "enabled": false,
+            "frequency": 0.009999999776482582,
+            "grass_coverage": 0.6499999761581421,
+            "node_name": "Terrain",
+            "node_type": "Terrain",
+            "octaves": 13,
+            "power": 3,
+            "seed": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "shininess": 8,
+            "specular": 0,
+            "tessellation_multiplier": 1,
+            "uuid": "9537a87e-9d47-4072-9fdb-a25dcf1339c1"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "2e26293f-6a8d-4640-8e6f-af8ffad96e7b"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": 0.308341383934021,
+                "y": -0.718131959438324,
+                "z": -0.6238812804222107
+            },
+            "enabled": true,
+            "node_name": "Sun",
+            "node_type": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "50d48ba3-d7ea-434d-a7be-ea4f203de2ce"
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "damaged_helmet",
+            "node_type": "Model",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": -20
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 10,
+                "y": 10,
+                "z": 10
+            },
+            "scene_name": "damaged_helmet",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "2778b4ad-461f-4326-af61-c1f8081a06c4",
+            "visible": true
+        }
+    ]
+}
