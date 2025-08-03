@@ -205,6 +205,20 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
 {
     const auto& nodes = mNodeManager->GetNodes();
 
+    // std::sort(nodes.begin(), nodes.end(), [&](const NodePtr& left, const NodePtr& right) {
+    //     const auto l = std::dynamic_pointer_cast<Object>(left);
+    //     const auto r = std::dynamic_pointer_cast<Object>(right);
+    //     if (l && r)
+    //     {
+    //         float dl = (pCamera->GetWorldPosition() - l->GetWorldPosition()).length();
+    //         float dr = (pCamera->GetWorldPosition() - r->GetWorldPosition()).length();
+
+    //         return dl > dr;
+    //     }
+
+    //     return false;
+    // });
+
     for (const auto& pNode : nodes)
     {
         if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))

@@ -23,6 +23,12 @@ namespace Canavar::Engine
         static QByteArray ReadDataFromFile(const QString& path);
         static QJsonDocument ReadJson(const QString& path);
 
+        template<typename T, typename S>
+        static bool Contains(const std::vector<T>& vec, const S& value)
+        {
+            return std::find(vec.begin(), vec.end(), std::dynamic_pointer_cast<T>(value)) != vec.end();
+        }
+
       private:
         static QRandomGenerator mGenerator;
     };

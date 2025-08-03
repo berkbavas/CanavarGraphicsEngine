@@ -191,11 +191,17 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
-    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_BASE_COLOR: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
-    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_METALNESS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
-    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_DIFFUSE_ROUGHNESS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
-    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_AMBIENT_OCCLUSION: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
-    qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_NORMALS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
+    std::map<const char*, bool> results;
+    results["aiTextureType_BASE_COLOR"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
+    results["aiTextureType_METALNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
+    results["aiTextureType_DIFFUSE_ROUGHNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
+    results["aiTextureType_AMBIENT_OCCLUSION"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
+    results["aiTextureType_NORMALS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
+
+    for (const auto [textureType, result] : results)
+    {
+        qDebug() << "ModelImporter::ProcessMaterial:" << textureType << ":" << result;
+    }
 
     aiMaterial->Get(AI_MATKEY_OPACITY, pMaterial->GetOpacity_NonConst());
 
