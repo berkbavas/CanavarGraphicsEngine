@@ -1,0 +1,177 @@
+{
+    "nodes": [
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": true,
+            "node_name": "Sky",
+            "node_type": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "turbidity": 4,
+            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
+        },
+        {
+            "ambient": 0.20000000298023224,
+            "amplitude": 20,
+            "diffuse": 0.8500000238418579,
+            "enabled": false,
+            "frequency": 0.009999999776482582,
+            "grass_coverage": 0.6499999761581421,
+            "node_name": "Terrain",
+            "node_type": "Terrain",
+            "octaves": 13,
+            "power": 3,
+            "seed": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "shininess": 8,
+            "specular": 0,
+            "tessellation_multiplier": 1,
+            "uuid": "9537a87e-9d47-4072-9fdb-a25dcf1339c1"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "e1cc2481-ad10-4b48-a894-7e0a5456a0ad"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": 0.017449332401156425,
+                "y": -0.9998572468757629,
+                "z": 0.0003350455954205245
+            },
+            "enabled": true,
+            "node_name": "Sun",
+            "node_type": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "sponza_palace",
+            "node_type": "Model",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": -10
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1000,
+                "y": 1000,
+                "z": 1000
+            },
+            "scene_name": "sponza_palace",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "2955f5bd-808a-4bed-bf5a-6480d280a67a",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "97aebbba-cab6-4dba-a10a-dee9e5d4e7c9"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type": "Haze",
+            "uuid": "fd247067-d76f-4b6f-849b-1c2eb1a2e3b4"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": 0.6088920831680298,
+                "y": -0.7836918234825134,
+                "z": -0.1227741613984108
+            },
+            "enabled": true,
+            "node_name": "Directional Light",
+            "node_type": "DirectionalLight",
+            "position": {
+                "x": -792.4065551757812,
+                "y": 242.43272399902344,
+                "z": -31.323871612548828
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "0a586cf3-d389-495c-93ec-3258a6e35862",
+            "visible": true
+        }
+    ]
+}

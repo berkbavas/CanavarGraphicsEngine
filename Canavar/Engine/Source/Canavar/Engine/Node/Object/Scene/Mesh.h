@@ -15,6 +15,7 @@
 
 namespace Canavar::Engine
 {
+
     class Mesh : protected QOpenGLExtraFunctions
     {
         DISABLE_COPY(Mesh);
@@ -25,12 +26,14 @@ namespace Canavar::Engine
 
         void Initialize();
         void Destroy();
-        void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4);
+        void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass renderPass);
 
         void AddVertex(const Vertex &vertex);
         void AddIndex(unsigned int index);
 
       private:
+        bool ShouldRender(RenderPass renderPass) const;
+
         DEFINE_MEMBER_CONST(GLuint, VAO, 0);
         DEFINE_MEMBER_CONST(GLuint, VBO, 0);
         DEFINE_MEMBER_CONST(GLuint, EBO, 0);
@@ -42,6 +45,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(QString, MeshName);
         DEFINE_MEMBER(uint32_t, MeshId);
         DEFINE_MEMBER(AABB, AABB);
+        DEFINE_MEMBER(bool, HasTransparency, false);
     };
 
     using MeshPtr = std::shared_ptr<Mesh>;

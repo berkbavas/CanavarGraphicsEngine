@@ -117,7 +117,7 @@ void Canavar::Engine::CrossSectionAnalyzer::RenderCrossSection()
             {
                 if (const auto pScene = mNodeManager->GetScene(pModel))
                 {
-                    pScene->Render(pModel.get(), mCrossSectionShader);
+                    pScene->Render(pModel.get(), mCrossSectionShader, RenderPass::Opaque);
                 }
             }
         }

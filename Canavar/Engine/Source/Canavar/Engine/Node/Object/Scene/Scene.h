@@ -17,7 +17,7 @@ namespace Canavar::Engine
 
         void Initialize();
         void Destroy();
-        void Render(Model *pModel, Shader *pShader);
+        void Render(Model *pModel, Shader *pShader, RenderPass renderPass);
 
         void AddMesh(MeshPtr pMesh);
         void AddMaterial(MaterialPtr pMaterial);

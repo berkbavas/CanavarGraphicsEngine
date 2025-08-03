@@ -77,8 +77,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
 
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_BLEND);
 
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0f, 1.0f);
@@ -108,6 +107,9 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     {
         mBoundingBoxRenderer->Render(mActiveCamera, ifps);
     }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     RenderObjects(mActiveCamera, ifps);
 
@@ -214,7 +216,7 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
 
             if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
             {
-                RenderModel(pModel);
+                RenderModel(pModel, RenderPass::Opaque);
             }
             else if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pObject))
             {
@@ -226,9 +228,29 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
             }
         }
     }
+
+    glDepthMask(GL_FALSE);
+
+    for (const auto& pNode : nodes)
+    {
+        if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
+        {
+            if (pObject->GetVisible() == false)
+            {
+                continue;
+            }
+
+            if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
+            {
+                RenderModel(pModel, RenderPass::Transparent);
+            }
+        }
+    }
+
+    glDepthMask(GL_TRUE);
 }
 
-void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
+void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel, RenderPass renderPass)
 {
     SetPointLights(mModelShader, pModel.get());
 
@@ -243,7 +265,7 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel)
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
-        pScene->Render(pModel.get(), mModelShader);
+        pScene->Render(pModel.get(), mModelShader, renderPass);
     }
     else
     {
@@ -286,6 +308,8 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camer
     pShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
     pShader->SetUniformValue("cameraPosition", pCamera->GetWorldPosition());
     pShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
+    pShader->SetUniformValue("enableAces", mEnableAces);
+    pShader->SetUniformValue("exposure", mExposure);
     pShader->Release();
 }
 

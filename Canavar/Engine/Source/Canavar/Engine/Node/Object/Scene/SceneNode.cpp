@@ -1,15 +1,15 @@
 #include "SceneNode.h"
 
-void Canavar::Engine::SceneNode::Render(Model *pModel, Shader *pShader, const QMatrix4x4 &parentTransformation)
+void Canavar::Engine::SceneNode::Render(Model *pModel, Shader *pShader, RenderPass renderPass, const QMatrix4x4 &parentTransformation)
 {
     for (const auto &pMesh : mMeshes)
     {
-        pMesh->Render(pModel, pShader, parentTransformation * mTransformation);
+        pMesh->Render(pModel, pShader, parentTransformation * mTransformation, renderPass);
     }
 
     for (const auto &pChild : mChildren)
     {
-        pChild->Render(pModel, pShader, parentTransformation * mTransformation);
+        pChild->Render(pModel, pShader, renderPass, parentTransformation * mTransformation);
     }
 }
 

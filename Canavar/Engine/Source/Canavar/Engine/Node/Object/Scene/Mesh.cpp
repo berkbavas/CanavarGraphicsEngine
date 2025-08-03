@@ -76,11 +76,16 @@ void Canavar::Engine::Mesh::Destroy()
     }
 }
 
-void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4)
+void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass renderPass)
 {
     if (mVAO == 0)
     {
         LOG_FATAL("Mesh::Render: '{}' is not initialized yet. Returning...", mMeshName.toStdString());
+        return;
+    }
+
+    if (!ShouldRender(renderPass))
+    {
         return;
     }
 
@@ -147,4 +152,28 @@ void Canavar::Engine::Mesh::AddVertex(const Vertex &vertex)
 void Canavar::Engine::Mesh::AddIndex(unsigned int index)
 {
     mIndices.push_back(index);
+}
+
+bool Canavar::Engine::Mesh::ShouldRender(RenderPass renderPass) const
+{
+    switch (renderPass)
+    {
+    case RenderPass::Opaque:
+        if (mHasTransparency)
+        {
+            return false;
+        }
+        break;
+    case RenderPass::Transparent:
+        if (!mHasTransparency)
+        {
+            return false;
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return true;
 }

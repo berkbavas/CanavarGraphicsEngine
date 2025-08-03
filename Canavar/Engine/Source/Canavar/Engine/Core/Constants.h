@@ -10,4 +10,10 @@ namespace Canavar::Engine
 
     inline constexpr int PBR_SHADING = 0;
     inline constexpr int PHONG_SHADING = 1;
+
+    enum class RenderPass
+    {
+        Opaque,
+        Transparent
+    };
 }

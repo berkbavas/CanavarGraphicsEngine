@@ -80,6 +80,8 @@ uniform int numberOfDirectionalLights;
 uniform vec3 cameraPosition;
 uniform float waterHeight;
 uniform float zFar;
+uniform bool enableAces;
+uniform float exposure;
 
 uniform sampler2D sand;
 uniform sampler2D grass1;
@@ -364,6 +366,24 @@ vec3 processHaze(float distance, vec3 subjectColor)
     return result;
 }
 
+vec3 RRTAndODTFit(vec3 v)
+{
+    vec3 a = v * (v + 0.0245786) - 0.000090537;
+    vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
+    return a / b;
+}
+
+vec3 ACESFittedToneMapping(vec3 color)
+{
+    // Exposure bias (optional, adjust as needed)
+    color *= exposure;
+
+    color = RRTAndODTFit(color);
+
+    // Clamp negative values and apply gamma
+    return clamp(pow(color, vec3(1.0f / 2.2f)), 0.0, 1.0);
+}
+
 void main()
 {
     vec3 Lo = normalize(cameraPosition - fsWorldPosition);
@@ -378,6 +398,11 @@ void main()
     vec3 result = vec3(0);
     result += processDirectionalLights(heightColor, normal, Lo);
     result += processPointLights(heightColor, normal, Lo, fsWorldPosition);
+
+    if (enableAces)
+    {
+        result = ACESFittedToneMapping(result);
+    }
 
     result = processHaze(distance, result);
 

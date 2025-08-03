@@ -40,6 +40,8 @@ namespace Canavar::Engine
 
       private:
         QMap<TextureType, GLuint> mTextures;
+
+        DEFINE_MEMBER(float, Opacity, 1.0f);
     };
 
     using MaterialPtr = std::shared_ptr<Material>;

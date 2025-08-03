@@ -56,6 +56,9 @@ uniform int numberOfDirectionalLights;
 uniform vec3 cameraPosition;
 uniform float zFar;
 
+uniform bool enableAces;
+uniform float exposure;
+
 uniform sampler2D textureBaseColor;
 uniform sampler2D textureMetallic;
 uniform sampler2D textureRoughness;
@@ -379,7 +382,7 @@ vec3 RRTAndODTFit(vec3 v)
 vec3 ACESFittedToneMapping(vec3 color)
 {
     // Exposure bias (optional, adjust as needed)
-    color *= 0.35;
+    color *= exposure;
 
     color = RRTAndODTFit(color);
 
@@ -389,6 +392,13 @@ vec3 ACESFittedToneMapping(vec3 color)
 
 void main()
 {
+    float alpha = texture(textureBaseColor, fsTextureCoords).a;
+
+    if (alpha < 0.1f)
+    {
+        discard;
+    }
+
     vec3 normal = CalculateNormal();
     vec3 color = CalculateColor();
     vec3 Lo = normalize(cameraPosition - fsWorldPosition);
@@ -405,7 +415,6 @@ void main()
 
         result += ProcessDirectionalLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo);
         result += ProcessPointLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, fsWorldPosition);
-        //result = ACESFittedToneMapping(result);
     }
     else if (model.shadingMode == PHONG_SHADING)
     {
@@ -413,10 +422,15 @@ void main()
         result += ProcessPointLights(color, normal, Lo, fsWorldPosition);
     }
 
+    if (enableAces)
+    {
+        result = ACESFittedToneMapping(result);
+    }
+
     // Final
     result = ProcessHaze(distance, fsWorldPosition, result);
 
-    fragColor = vec4(result, 1.0f);
+    fragColor = vec4(result, alpha);
 
     // Fragment position
     fragLocalPosition = vec4(fsLocalPosition, 1.0f);

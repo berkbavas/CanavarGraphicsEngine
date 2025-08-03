@@ -16,9 +16,9 @@ void Canavar::Engine::Scene::Destroy()
     }
 }
 
-void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader)
+void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader, RenderPass renderPass)
 {
-    mRootNode->Render(pModel, pShader, mRootNode->GetTransformation());
+    mRootNode->Render(pModel, pShader, renderPass, mRootNode->GetTransformation());
 }
 
 void Canavar::Engine::Scene::AddMesh(MeshPtr pMesh)

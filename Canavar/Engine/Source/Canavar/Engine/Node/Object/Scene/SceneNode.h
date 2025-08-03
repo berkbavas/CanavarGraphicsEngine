@@ -19,7 +19,7 @@ namespace Canavar::Engine
       public:
         SceneNode() = default;
 
-        void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &parentTransformation = QMatrix4x4());
+        void Render(Model *pModel, Shader *pShader, RenderPass renderPass, const QMatrix4x4 &parentTransformation = QMatrix4x4());
 
         void AddMesh(MeshPtr pMesh);
         void AddChild(SceneNodePtr pChild);

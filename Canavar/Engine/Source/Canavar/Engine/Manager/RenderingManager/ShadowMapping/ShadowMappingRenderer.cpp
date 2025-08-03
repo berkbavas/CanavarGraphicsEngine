@@ -54,7 +54,7 @@ void Canavar::Engine::ShadowMappingRenderer::Render(float ifps)
             {
                 if (const auto pScene = mNodeManager->GetScene(pModel))
                 {
-                    pScene->Render(pModel.get(), mShadowMappingShader);
+                    pScene->Render(pModel.get(), mShadowMappingShader, RenderPass::Opaque);
                 }
             }
         }

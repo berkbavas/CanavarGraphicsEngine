@@ -94,6 +94,8 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
         MeshPtr pMesh = ProcessMesh(aiScene->mMeshes[i]);
         pMesh->SetMeshId(i);
         pMesh->SetMaterial(pMaterial);
+        pMesh->SetHasTransparency(pMaterial->GetOpacity() < 0.9f);
+
         pScene->AddMesh(pMesh);
     }
 
@@ -194,6 +196,8 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
     qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_DIFFUSE_ROUGHNESS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
     qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_AMBIENT_OCCLUSION: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
     qDebug() << "ModelImporter::ProcessMaterial: aiTextureType_NORMALS: " << ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
+
+    aiMaterial->Get(AI_MATKEY_OPACITY, pMaterial->GetOpacity_NonConst());
 
     return pMaterial;
 }

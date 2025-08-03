@@ -61,7 +61,7 @@ namespace Canavar::Engine
 
       private:
         void RenderObjects(Camera *pCamera, float ifps);
-        void RenderModel(ModelPtr pModel);
+        void RenderModel(ModelPtr pModel, RenderPass renderPass);
         void RenderNozzleEffect(NozzleEffectPtr pEffect, Camera *pCamera, float ifps);
 
         void SetUniforms(Camera *pCamera);
@@ -128,5 +128,8 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(float, BlurThreshold, 5000.0f);
         DEFINE_MEMBER(int, MaxSamples, 2);
+
+        DEFINE_MEMBER(bool, EnableAces, false);
+        DEFINE_MEMBER(float, Exposure, 0.4f);
     };
 };
