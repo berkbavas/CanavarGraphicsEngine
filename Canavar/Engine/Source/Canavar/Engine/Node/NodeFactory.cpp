@@ -1,6 +1,5 @@
 #include "NodeFactory.h"
 
-#include "Canavar/Engine/Node/GlobalNode/Haze/Haze.h"
 #include "Canavar/Engine/Node/Object/Camera/DummyCamera.h"
 #include "Canavar/Engine/Node/Object/DummyObject/DummyObject.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
@@ -17,7 +16,6 @@
 
 Canavar::Engine::NodePtr Canavar::Engine::NodeFactory::CreateNode(const QString &type)
 {
-    RETURN_NODE(Haze);
     RETURN_NODE(DummyCamera);
     RETURN_NODE(DummyObject);
     RETURN_NODE(NozzleEffect);
@@ -34,8 +32,7 @@ const QVector<QString> &Canavar::Engine::NodeFactory::GetNodeNames()
     return mNodeNames;
 }
 
-QVector<QString> Canavar::Engine::NodeFactory::mNodeNames = { "Haze",
-                                                              "DummyCamera",
+QVector<QString> Canavar::Engine::NodeFactory::mNodeNames = { "DummyCamera",
                                                               "DummyObject",
                                                               "NozzleEffect",
                                                               "DirectionalLight",

@@ -263,9 +263,9 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
     std::map<QString, NodePtr> nodes;
     std::map<QString, QJsonObject> objects;
 
-    for (const auto elememt : array)
+    for (const auto element : array)
     {
-        QJsonObject object = elememt.toObject();
+        QJsonObject object = element.toObject();
         QString nodeType = object["node_type"].toString();
         QString uuid = object["uuid"].toString();
 
