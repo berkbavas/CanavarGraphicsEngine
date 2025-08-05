@@ -1,11 +1,10 @@
 #pragma once
 
+#include "Canavar/Engine/Core/AABB.h"
 #include "Canavar/Engine/Node/Node.h"
-#include "Canavar/Engine/Node/Object/Scene/AABB.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
-#include <set>
 
 #include <QMatrix4x4>
 #include <QQuaternion>
@@ -16,17 +15,15 @@
 namespace Canavar::Engine
 {
     class Object;
-    using ObjectPtr = std::shared_ptr<Object>;
-    using ObjectWeakPtr = std::weak_ptr<Object>;
 
-    class Object : public Node, public std::enable_shared_from_this<Object>
+    class Object : public Node
     {
       protected:
         Object() = default;
         ~Object() override = default;
 
         void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
+        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
 
       public:
         const QMatrix4x4& GetWorldTransformation();
@@ -68,15 +65,6 @@ namespace Canavar::Engine
         void SetPitch(float pitch);
         void SetRoll(float roll);
 
-        ObjectPtr GetParent() const;
-
-        virtual void RemoveParent();
-        virtual void SetParent(ObjectWeakPtr pParentNode);
-        virtual void AddChild(ObjectPtr pNode);
-        virtual void RemoveChild(ObjectPtr pNode);
-
-        const std::set<ObjectPtr>& GetChildren() const;
-
       private:
         QMatrix4x4 mTransformation;
         QMatrix3x3 mNormalMatrix;
@@ -95,12 +83,11 @@ namespace Canavar::Engine
         float mPitch{ 0 };
         float mRoll{ 0 };
 
-        ObjectWeakPtr mParent;
-        std::set<ObjectPtr> mChildren;
-
         DEFINE_MEMBER(bool, Visible, true);
         DEFINE_MEMBER(bool, Selectable, true);
         DEFINE_MEMBER(AABB, AABB, QVector3D(-1, -1, -1), QVector3D(1, 1, 1));
     };
+
+    using ObjectPtr = std::shared_ptr<Object>;
 
 }

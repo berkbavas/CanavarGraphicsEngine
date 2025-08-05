@@ -26,13 +26,3 @@ void Canavar::Engine::Camera::MouseReleased(QMouseEvent *) {}
 void Canavar::Engine::Camera::MouseMoved(QMouseEvent *) {}
 
 void Canavar::Engine::Camera::WheelMoved(QWheelEvent *) {}
-
-void Canavar::Engine::Camera::ToJson(QJsonObject &object)
-{
-    Object::ToJson(object);
-}
-
-void Canavar::Engine::Camera::FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes)
-{
-    Object::FromJson(object, nodes);
-}

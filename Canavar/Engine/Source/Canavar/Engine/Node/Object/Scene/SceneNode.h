@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Scene/Mesh.h"
 

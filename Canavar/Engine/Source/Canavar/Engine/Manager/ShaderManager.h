@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
 
 #include <map>
 
@@ -14,7 +14,7 @@ namespace Canavar::Engine
 
         void Initialize();
 
-        Shader* GetShader(ShaderType type);
+        Shader* GetShader(ShaderType shaderType);
 
       private:
         std::map<ShaderType, Shader*> mShaders;

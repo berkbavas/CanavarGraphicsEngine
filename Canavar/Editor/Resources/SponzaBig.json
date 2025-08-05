@@ -4,7 +4,7 @@
             "albedo": 0.10000000149011612,
             "enabled": true,
             "node_name": "Sky",
-            "node_type": "Sky",
+            "node_type_name": "Sky",
             "normalized_sun_y": 1.149999976158142,
             "turbidity": 4,
             "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
@@ -17,7 +17,7 @@
             "frequency": 0.009999999776482582,
             "grass_coverage": 0.6499999761581421,
             "node_name": "Terrain",
-            "node_type": "Terrain",
+            "node_type_name": "Terrain",
             "octaves": 13,
             "power": 3,
             "seed": {
@@ -40,7 +40,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "e1cc2481-ad10-4b48-a894-7e0a5456a0ad"
         },
         {
@@ -58,7 +58,7 @@
             },
             "enabled": true,
             "node_name": "Sun",
-            "node_type": "Sun",
+            "node_type_name": "Sun",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -87,7 +87,7 @@
                 "r": 1
             },
             "node_name": "sponza_palace",
-            "node_type": "Model",
+            "node_type_name": "Model",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -120,7 +120,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "97aebbba-cab6-4dba-a10a-dee9e5d4e7c9"
         },
         {
@@ -133,7 +133,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "fd247067-d76f-4b6f-849b-1c2eb1a2e3b4"
         },
         {
@@ -151,7 +151,7 @@
             },
             "enabled": true,
             "node_name": "Directional Light",
-            "node_type": "DirectionalLight",
+            "node_type_name": "DirectionalLight",
             "position": {
                 "x": -792.4065551757812,
                 "y": 242.43272399902344,

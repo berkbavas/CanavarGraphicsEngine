@@ -2,6 +2,8 @@
 
 Canavar::Engine::Plane::Plane()
 {
+    SetNodeName("Plane");
+
     //               +y
     //                |
     //      (-1,1,0)  |   (1,1,0)
@@ -14,8 +16,8 @@ Canavar::Engine::Plane::Plane()
     //                |
     //               -y
 
-    constexpr QVector4D VERTICES[6] = { QVector4D(-1, -1, 0, 1),  QVector4D(1, -1, 0, 1), QVector4D(-1, 1, 0, 1), //
-                                        QVector4D(1, 1, 0, 1), QVector4D(-1, 1, 0, 1), QVector4D(1, -1, 0, 1) };
+    constexpr QVector4D VERTICES[6] = { QVector4D(-1, -1, 0, 1), QVector4D(1, -1, 0, 1), QVector4D(-1, 1, 0, 1), //
+                                        QVector4D(1, 1, 0, 1),   QVector4D(-1, 1, 0, 1), QVector4D(1, -1, 0, 1) };
 
     initializeOpenGLFunctions();
 

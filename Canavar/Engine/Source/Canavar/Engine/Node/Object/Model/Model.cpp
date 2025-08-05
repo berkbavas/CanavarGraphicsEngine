@@ -28,11 +28,9 @@ void Canavar::Engine::Model::ToJson(QJsonObject& object)
 
     object.insert("use_model_color", mUseModelColor);
     object.insert("scene_name", mSceneName);
-
-    // TODO: mMeshTransformations
 }
 
-void Canavar::Engine::Model::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::Model::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
     Object::FromJson(object, nodes);
 

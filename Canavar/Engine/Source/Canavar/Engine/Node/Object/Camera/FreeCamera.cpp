@@ -124,21 +124,6 @@ void Canavar::Engine::FreeCamera::GoToObject(ObjectPtr pNode)
     SetWorldPosition(pNode->GetWorldPosition());
 }
 
-void Canavar::Engine::FreeCamera::SetParent(ObjectWeakPtr pParentNode)
-{
-    LOG_WARN("FreeCamera::SetParent: Cannot assign parent to FreeCamera");
-}
-
-void Canavar::Engine::FreeCamera::AddChild(ObjectPtr pNode)
-{
-    LOG_WARN("FreeCamera::AddChild: Cannot add child to FreeCamera.");
-}
-
-void Canavar::Engine::FreeCamera::RemoveChild(ObjectPtr pNode)
-{
-    LOG_WARN("FreeCamera::RemoveChild: FreeCamera cannot have any children.");
-}
-
 void Canavar::Engine::FreeCamera::ToJson(QJsonObject& object)
 {
     PerspectiveCamera::ToJson(object);
@@ -150,7 +135,7 @@ void Canavar::Engine::FreeCamera::ToJson(QJsonObject& object)
     object.insert("action_receive_button", mActionReceiveButton);
 }
 
-void Canavar::Engine::FreeCamera::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::FreeCamera::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
     PerspectiveCamera::FromJson(object, nodes);
 

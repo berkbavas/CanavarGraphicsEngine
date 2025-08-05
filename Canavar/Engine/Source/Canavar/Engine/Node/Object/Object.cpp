@@ -7,7 +7,7 @@ void Canavar::Engine::Object::SetRotation(const QQuaternion& newRotation)
 {
     mRotation = newRotation;
 
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         mWorldRotation = pParent->GetWorldRotation() * mRotation;
     }
@@ -23,7 +23,7 @@ void Canavar::Engine::Object::SetPosition(const QVector3D& newPosition)
 {
     mPosition = newPosition;
 
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         mWorldPosition = pParent->GetWorldPosition() + pParent->GetWorldRotation() * mPosition;
     }
@@ -69,30 +69,28 @@ void Canavar::Engine::Object::ToJson(QJsonObject& object)
     scale.insert("z", mScale.z());
     object.insert("scale", scale);
 
-    if (GetParent())
+    if (const auto pParent = GetParent<Node>())
     {
-        object.insert("parent", GetParent()->GetUuid());
+        object.insert("parent_uuid", pParent->GetUuid());
     }
 
     object.insert("visible", mVisible);
     object.insert("selectable", mSelectable);
-
-    // TODO : AABB
 }
 
-void Canavar::Engine::Object::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::Object::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
     Node::FromJson(object, nodes);
 
-    QString parent = object["parent"].toString();
+    QString parent_uuid = object["parent_uuid"].toString();
 
-    if (!parent.isNull() && !parent.isEmpty())
+    if (!parent_uuid.isNull() && !parent_uuid.isEmpty())
     {
-        if (const auto it = nodes.find(parent); it != nodes.end())
+        for (const auto pNode : nodes)
         {
-            if (const auto pParent = std::dynamic_pointer_cast<Object>(it->second))
+            if (parent_uuid == pNode->GetUuid())
             {
-                SetParent(pParent);
+                SetParent(pNode);
             }
         }
     }
@@ -136,7 +134,7 @@ const QMatrix4x4& Canavar::Engine::Object::GetWorldTransformation()
 {
     mWorldTransformation.setToIdentity();
 
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         const auto WorldPosition = pParent->GetWorldPosition();
         const auto WorldRotation = pParent->GetWorldRotation();
@@ -168,7 +166,7 @@ const QMatrix4x4& Canavar::Engine::Object::GetTransformation()
 
 const QQuaternion& Canavar::Engine::Object::GetWorldRotation()
 {
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         mWorldRotation = pParent->GetWorldRotation() * mRotation;
     }
@@ -182,7 +180,7 @@ const QQuaternion& Canavar::Engine::Object::GetWorldRotation()
 
 const QVector3D& Canavar::Engine::Object::GetWorldPosition()
 {
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         mWorldPosition = pParent->GetWorldPosition() + pParent->GetWorldRotation() * mPosition;
     }
@@ -198,7 +196,7 @@ void Canavar::Engine::Object::SetWorldRotation(const QQuaternion& newRotation)
 {
     mWorldRotation = newRotation;
 
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         SetRotation(pParent->GetWorldRotation().inverted() * mWorldRotation);
     }
@@ -212,7 +210,7 @@ void Canavar::Engine::Object::SetWorldPosition(const QVector3D& newPosition)
 {
     mWorldPosition = newPosition;
 
-    if (const auto pParent = GetParent())
+    if (const auto pParent = GetParent<Object>())
     {
         SetPosition(pParent->GetWorldRotation().inverted() * (mWorldPosition - pParent->GetWorldPosition()));
     }
@@ -306,102 +304,4 @@ void Canavar::Engine::Object::SetRoll(float roll)
 {
     mRoll = roll;
     SetRotation(Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll));
-}
-
-Canavar::Engine::ObjectPtr Canavar::Engine::Object::GetParent() const
-{
-    return mParent.lock();
-}
-
-void Canavar::Engine::Object::RemoveParent()
-{
-    SetParent(std::weak_ptr<Object>());
-}
-
-void Canavar::Engine::Object::SetParent(ObjectWeakPtr pNewParent)
-{
-    LOG_DEBUG("Object::SetParent: > Setting a parent to Object at {}", PRINT_ADDRESS(this));
-
-    const auto worldPos = GetWorldPosition();
-
-    const auto pCurrentParentLocked = mParent.lock();
-    const auto pNewParentLocked = pNewParent.lock();
-
-    if (pCurrentParentLocked == nullptr)
-    {
-        LOG_DEBUG("Object::SetParent: < Current parent is nullptr.");
-    }
-
-    if (pNewParentLocked == nullptr)
-    {
-        LOG_DEBUG("Object::SetParent: < New parent is nullptr. Reseting Weak Pointer...");
-        mParent.reset();
-    }
-
-    if (pCurrentParentLocked == pNewParentLocked && pCurrentParentLocked != nullptr)
-    {
-        LOG_WARN("Object::SetParent: < Parent is already this object. Returning...");
-        return;
-    }
-
-    if (pNewParentLocked.get() == this)
-    {
-        LOG_FATAL("Object::SetParent: < Cannot assign itself as a parent. Returning...");
-        return;
-    }
-
-    if (pCurrentParentLocked)
-    {
-        pCurrentParentLocked->RemoveChild(shared_from_this());
-    }
-
-    mParent = pNewParent;
-
-    if (mParent.lock())
-    {
-        mParent.lock()->AddChild(shared_from_this());
-    }
-
-    SetWorldPosition(worldPos);
-
-    LOG_DEBUG("Object::SetParent: < Parent has been set. I am done.");
-}
-
-void Canavar::Engine::Object::AddChild(ObjectPtr pNode)
-{
-    LOG_DEBUG("Object::AddChild: > An Object will be added to my children list.");
-
-    if (pNode == nullptr)
-    {
-        LOG_FATAL("Object::AddChild: < pNode is nullptr! Returning...");
-        return;
-    }
-
-    if (pNode.get() == this)
-    {
-        LOG_FATAL("Object::AddChild: < Cannot add itself as a child! Returning...");
-        return;
-    }
-
-    if (mChildren.contains(pNode))
-    {
-        LOG_WARN("Object::AddChild: < Already child of this Object. Returning...");
-        return;
-    }
-
-    pNode->SetParent(shared_from_this());
-    mChildren.emplace(pNode);
-
-    LOG_DEBUG("Object::AddChild: < I am done. Returning...");
-}
-
-void Canavar::Engine::Object::RemoveChild(ObjectPtr pNode)
-{
-    mChildren.extract(pNode);
-    pNode->SetParent(std::weak_ptr<Object>());
-}
-
-const std::set<Canavar::Engine::ObjectPtr>& Canavar::Engine::Object::GetChildren() const
-{
-    return mChildren;
 }

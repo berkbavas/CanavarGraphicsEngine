@@ -44,7 +44,7 @@ void Canavar::Engine::DirectionalLight::ToJson(QJsonObject &object)
     object.insert("direction", direction);
 }
 
-void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes)
+void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
 {
     Light::FromJson(object, nodes);
 

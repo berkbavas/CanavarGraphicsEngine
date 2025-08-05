@@ -6,13 +6,10 @@ namespace Canavar::Engine
 {
     class DummyObject : public Object
     {
-        REGISTER_NODE_TYPE(DummyObject);
-
       public:
         DummyObject();
 
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
+        const char* GetNodeTypeName() const override { return "DummyObject"; }
     };
 
     using DummyObjectPtr = std::shared_ptr<DummyObject>;

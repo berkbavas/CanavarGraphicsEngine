@@ -1,6 +1,6 @@
 #include "LightningStrikeBase.h"
 
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 
 Canavar::Engine::LightningStrikeBase::LightningStrikeBase()
@@ -164,7 +164,7 @@ void Canavar::Engine::LightningStrikeBase::ToJson(QJsonObject& object)
     object.insert("freee", mFreeze);
 }
 
-void Canavar::Engine::LightningStrikeBase::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::LightningStrikeBase::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
     Object::FromJson(object, nodes);
 

@@ -1,19 +1,20 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Structs.h"
 #include "Canavar/Engine/Node/Object/Camera/PerspectiveCamera.h"
-#include "Canavar/Engine/Util/Mouse.h"
 
 #include <QMap>
 #include <QMouseEvent>
+
 
 namespace Canavar::Engine
 {
     class FreeCamera : public PerspectiveCamera
     {
-        REGISTER_NODE_TYPE(FreeCamera);
-
       public:
         FreeCamera();
+
+        const char *GetNodeTypeName() const override { return "FreeCamera"; }
 
         void Update(float ifps) override;
         void Reset() override;
@@ -26,12 +27,8 @@ namespace Canavar::Engine
 
         void GoToObject(ObjectPtr pNode);
 
-        void SetParent(ObjectWeakPtr pParentNode) override;
-        void AddChild(ObjectPtr pNode) override;
-        void RemoveChild(ObjectPtr pNode) override;
-
         void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
+        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
 
       private:
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Enums.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <functional>
@@ -11,22 +12,6 @@
 
 namespace Canavar::Engine
 {
-    enum class ShaderType
-    {
-        Model,
-        Sky,
-        Terrain,
-        Blur,
-        PostProcess,
-        NozzleEffect,
-        Line,
-        LightningStrike,
-        ShadowMapping,
-        Bitmap,
-        PointCloud,
-        Basic,
-        CrossSection
-    };
 
     class Shader : public QOpenGLExtraFunctions
     {

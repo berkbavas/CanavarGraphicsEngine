@@ -1,17 +1,17 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Structs.h"
 #include "Canavar/Engine/Node/Object/Camera/PersecutorCameraNonlinearAnimator.h"
 #include "Canavar/Engine/Node/Object/Camera/PerspectiveCamera.h"
-#include "Canavar/Engine/Util/Mouse.h"
 
 namespace Canavar::Engine
 {
     class PersecutorCamera : public PerspectiveCamera, public QObject
     {
-        REGISTER_NODE_TYPE(PersecutorCamera);
-
       public:
         PersecutorCamera();
+
+        const char *GetNodeTypeName() const override { return "PersecutorCamera"; }
 
         void MousePressed(QMouseEvent *) override;
         void MouseReleased(QMouseEvent *) override;
@@ -20,15 +20,11 @@ namespace Canavar::Engine
         void Update(float ifps) override;
         void Reset() override;
 
-        void SetParent(ObjectWeakPtr pParentNode) override;
-        void AddChild(ObjectPtr pNode) override;
-        void RemoveChild(ObjectPtr pNode) override;
-
         ObjectPtr GetTarget() const;
         void SetTarget(ObjectPtr pNewTarget);
 
         void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
+        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
 
         void AnimateTo(float yaw, float pitch);
         void AnimateTo(ViewDirection viewDirection);

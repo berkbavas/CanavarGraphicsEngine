@@ -7,7 +7,7 @@ Canavar::Engine::Haze::Haze()
 
 void Canavar::Engine::Haze::ToJson(QJsonObject &object)
 {
-    GlobalNode::ToJson(object);
+    Global::ToJson(object);
 
     QJsonObject color;
     color.insert("r", mColor.x());
@@ -17,11 +17,12 @@ void Canavar::Engine::Haze::ToJson(QJsonObject &object)
 
     object.insert("density", mDensity);
     object.insert("gradient", mGradient);
+    object.insert("enabled", mEnabled);
 }
 
-void Canavar::Engine::Haze::FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes)
+void Canavar::Engine::Haze::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
 {
-    GlobalNode::FromJson(object, nodes);
+    Global::FromJson(object, nodes);
 
     float x = object["color"]["r"].toDouble(0.33f);
     float y = object["color"]["g"].toDouble(0.38f);
@@ -30,4 +31,5 @@ void Canavar::Engine::Haze::FromJson(const QJsonObject &object, const std::map<Q
 
     mDensity = object["density"].toDouble(1.0f);
     mGradient = object["gradient"].toDouble(1.5f);
+    mEnabled = object["enabled"].toBool(true);
 }

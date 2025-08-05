@@ -39,7 +39,6 @@ void Canavar::Engine::NodeManager::PostInitialize()
 
     mSky->Initialize();
     mTerrain->Initialize();
-    mHaze->Initialize();
 
     mFreeCamera = mManagerProvider->GetCameraManager()->GetFreeCamera();
 
@@ -82,7 +81,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
 
         mObjects.push_back(pObject);
 
-        if (const auto pParent = pObject->GetParent())
+        if (const auto pParent = pObject->GetParent<Node>())
         {
             LOG_DEBUG("NodeManager::AddNode: This Object has a parent. Let's see if its parent added to my list. Parent is '{}' at {}", pParent->GetNodeName().toStdString(), PRINT_ADDRESS(pParent.get()));
 
@@ -163,7 +162,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
             }
         }
 
-        if (const auto pParent = pObject->GetParent())
+        if (const auto pParent = pObject->GetParent<Node>())
         {
             LOG_DEBUG("NodeManager::RemoveNode: Object has a parent. Removing this Object its parent's child list.");
             pParent->RemoveChild(pObject);
@@ -260,43 +259,45 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
     QJsonObject root = document.object();
     QJsonArray array = root["nodes"].toArray();
 
-    std::map<QString, NodePtr> nodes;
+    QSet<NodePtr> nodes;
     std::map<QString, QJsonObject> objects;
 
     for (const auto element : array)
     {
         QJsonObject object = element.toObject();
-        QString nodeType = object["node_type"].toString();
+        QString nodeTypeName = object["node_type_name"].toString();
         QString uuid = object["uuid"].toString();
 
-        LOG_DEBUG("NodeManager::ImportNodes: uuid: {}, node_type: {}", uuid.toStdString(), nodeType.toStdString());
+        LOG_DEBUG("NodeManager::ImportNodes: uuid: {}, node_type_name: {}", uuid.toStdString(), nodeTypeName.toStdString());
 
-        if (nodeType.isNull() || nodeType.isEmpty())
+        if (nodeTypeName.isNull() || nodeTypeName.isEmpty())
         {
             continue;
         }
 
-        else if (nodeType == Model::NODE_TYPE)
+        else if (nodeTypeName == "Model")
         {
             QString sceneName = object["scene_name"].toString();
 
             if (sceneName.isNull() == false && sceneName.isEmpty() == false)
             {
                 ModelPtr pModel = std::make_shared<Model>(sceneName);
-                nodes.insert(std::pair(uuid, pModel));
+                pModel->SetUuid(uuid);
+                nodes.insert(pModel);
                 objects.insert(std::pair(uuid, object));
             }
         }
         else
         {
-            if (NodePtr pNode = NodeFactory::CreateNode(nodeType))
+            if (NodePtr pNode = NodeFactory::CreateNode(nodeTypeName))
             {
-                nodes.insert(std::pair(uuid, pNode));
+                pNode->SetUuid(uuid);
+                nodes.insert(pNode);
                 objects.insert(std::pair(uuid, object));
             }
             else
             {
-                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", nodeType.toStdString());
+                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", nodeTypeName.toStdString());
             }
         }
     }
@@ -304,34 +305,38 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
     for (const auto element : array)
     {
         QJsonObject object = element.toObject();
-        QString nodeType = object["node_type"].toString();
+        QString nodeTypeName = object["node_type_name"].toString();
         QString uuid = object["uuid"].toString();
 
-        if (nodeType == Haze::NODE_TYPE)
+        if (nodeTypeName == "Haze")
         {
             mHaze->FromJson(object, nodes);
         }
-        else if (nodeType == Sky::NODE_TYPE)
+        else if (nodeTypeName == "Sky")
         {
             mSky->FromJson(object, nodes);
         }
-        else if (nodeType == Terrain::NODE_TYPE)
+        else if (nodeTypeName == "Terrain")
         {
             mTerrain->FromJson(object, nodes);
         }
-        else if (nodeType == Sun::NODE_TYPE)
+        else if (nodeTypeName == "Sun")
         {
             mSun->FromJson(object, nodes);
         }
-        else if (const auto pNode = nodes[uuid])
+
+        for (const auto pNode : nodes)
         {
-            pNode->FromJson(object, nodes);
+            if (uuid == pNode->GetUuid())
+            {
+                pNode->FromJson(object, nodes);
+            }
         }
     }
 
-    for (const auto& [uuid, node] : nodes)
+    for (const auto pNode : nodes)
     {
-        AddNode(node);
+        AddNode(pNode);
     }
 
     LOG_DEBUG("NodeManager::ImportNodes: {} node(s) have been imported.", nodes.size());

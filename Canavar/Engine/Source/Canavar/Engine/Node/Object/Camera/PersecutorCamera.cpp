@@ -142,29 +142,29 @@ void Canavar::Engine::PersecutorCamera::ToJson(QJsonObject& object)
 
     if (mTarget)
     {
-        object.insert("target", mTarget->GetUuid());
+        object.insert("target_uuid", mTarget->GetUuid());
     }
 
     object.insert("angular_speed", mAngularSpeed);
     object.insert("angular_speed_muliplier", mAngularSpeedMultiplier);
 }
 
-void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
     PerspectiveCamera::FromJson(object, nodes);
 
     mAngularSpeed = object["angular_speed"].toDouble(25.0f);
     mAngularSpeedMultiplier = object["angular_speed_muliplier"].toDouble(1.0f);
 
-    QString target = object["target"].toString("");
+    QString targetUuid = object["target_uuid"].toString("");
 
-    if (target.isEmpty() == false)
+    if (targetUuid.isEmpty() == false)
     {
-        LOG_DEBUG("PersecutorCamera::FromJson: UUID of my target is {}.", target.toStdString());
+        LOG_DEBUG("PersecutorCamera::FromJson: UUID of my target is {}.", targetUuid.toStdString());
 
-        for (const auto& [uuid, pNode] : nodes)
+        for (const auto pNode : nodes)
         {
-            if (target == uuid)
+            if (targetUuid == pNode->GetUuid())
             {
                 LOG_DEBUG("PersecutorCamera::FromJson: I have found my target.");
                 SetTarget(std::dynamic_pointer_cast<Object>(pNode));
@@ -246,19 +246,4 @@ bool Canavar::Engine::PersecutorCamera::IsAnimating() const
 bool Canavar::Engine::PersecutorCamera::ShouldIgnoreEvents() const
 {
     return IsAnimating();
-}
-
-void Canavar::Engine::PersecutorCamera::SetParent(ObjectWeakPtr pParentNode)
-{
-    LOG_WARN("PersecutorCamera::SetParent: Cannot assign parent to PersecutorCamera");
-}
-
-void Canavar::Engine::PersecutorCamera::AddChild(ObjectPtr pNode)
-{
-    LOG_WARN("PersecutorCamera::AddChild: Cannot add child to PersecutorCamera.");
-}
-
-void Canavar::Engine::PersecutorCamera::RemoveChild(ObjectPtr pNode)
-{
-    LOG_WARN("PersecutorCamera::RemoveChild: PersecutorCamera cannot have any children.");
 }

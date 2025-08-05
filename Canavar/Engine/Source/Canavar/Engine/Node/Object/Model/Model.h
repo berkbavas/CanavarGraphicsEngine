@@ -8,16 +8,16 @@ namespace Canavar::Engine
 
     class Model : public Object
     {
-        REGISTER_NODE_TYPE(Model);
-
       public:
         Model(const QString& sceneName);
+
+        const char* GetNodeTypeName() const override { return "Model"; }
 
         QMatrix4x4 GetMeshTransformation(const QString& meshName);
         void SetMeshTransformation(const QString& meshName, const QMatrix4x4& transformation);
 
         void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
+        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
 
       private:
         DEFINE_MEMBER(QVector3D, Color, QVector3D(1.0f, 1.0f, 1.0f));

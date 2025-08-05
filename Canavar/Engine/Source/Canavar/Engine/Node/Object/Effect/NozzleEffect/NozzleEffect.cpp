@@ -1,6 +1,6 @@
 #include "NozzleEffect.h"
 
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Util/Util.h"
 
@@ -115,7 +115,7 @@ void Canavar::Engine::NozzleEffect::ToJson(QJsonObject &object)
     object.insert("max_speed", mMaxSpeed);
 }
 
-void Canavar::Engine::NozzleEffect::FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes)
+void Canavar::Engine::NozzleEffect::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
 {
     Object::FromJson(object, nodes);
 

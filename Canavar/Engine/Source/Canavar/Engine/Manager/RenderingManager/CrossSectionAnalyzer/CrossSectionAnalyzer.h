@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Manager/RenderingManager/CrossSectionAnalyzer/CrossSectionAnalyzerWidget.h"
-#include "Canavar/Engine/Manager/RenderingManager/Plane.h"
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Primitive/Plane.h"
 
 #include <QMatrix4x4>
 #include <QObject>
@@ -36,7 +36,7 @@ namespace Canavar::Engine
 
         Plane *mPlane;
         Shader *mBasicShader;
-        Shader* mCrossSectionShader;
+        Shader *mCrossSectionShader;
 
         QMatrix4x4 mCrossSectionProjectionMatrix;
         QMatrix4x4 mCrossSectionViewMatrix;

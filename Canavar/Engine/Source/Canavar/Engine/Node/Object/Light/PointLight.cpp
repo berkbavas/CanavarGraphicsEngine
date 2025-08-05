@@ -14,7 +14,7 @@ void Canavar::Engine::PointLight::ToJson(QJsonObject &object)
     object.insert("quadratic", mQuadratic);
 }
 
-void Canavar::Engine::PointLight::FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes)
+void Canavar::Engine::PointLight::FromJson(const QJsonObject &object, const  QSet<NodePtr> &nodes)
 {
     Light::FromJson(object, nodes);
 

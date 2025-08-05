@@ -1,10 +1,9 @@
 #pragma once
 
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/AABB.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
-#include "Canavar/Engine/Node/Object/Scene/AABB.h"
 #include "Canavar/Engine/Node/Object/Scene/Material.h"
-#include "Canavar/Engine/Node/Object/Scene/Vertex.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
@@ -15,6 +14,14 @@
 
 namespace Canavar::Engine
 {
+    struct Vertex
+    {
+        QVector3D position;
+        QVector3D normal;
+        QVector2D texture;
+        QVector3D tangent;
+        QVector3D bitangent;
+    };
 
     class Mesh : protected QOpenGLExtraFunctions
     {

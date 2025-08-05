@@ -33,24 +33,10 @@ void Canavar::Engine::Scene::AddMaterial(MaterialPtr pMaterial)
 
 Canavar::Engine::MeshPtr Canavar::Engine::Scene::GetMesh(int index)
 {
-    if (0 <= index && index < mMeshes.size())
-    {
-        return mMeshes[index];
-    }
-    else
-    {
-        return nullptr;
-    }
+    return mMeshes[index];
 }
 
 Canavar::Engine::MaterialPtr Canavar::Engine::Scene::GetMaterial(int index)
 {
-    if (0 <= index && index < mMaterials.size())
-    {
-        return mMaterials[index];
-    }
-    else
-    {
-        return nullptr;
-    }
+    return mMaterials[index];
 }

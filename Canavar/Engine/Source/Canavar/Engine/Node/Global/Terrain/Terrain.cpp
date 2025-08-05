@@ -1,6 +1,6 @@
 #include "Terrain.h"
 
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Util/ModelImporter.h"
 
@@ -83,7 +83,7 @@ void Canavar::Engine::Terrain::Reset()
 
 void Canavar::Engine::Terrain::ToJson(QJsonObject& object)
 {
-    GlobalNode::ToJson(object);
+    Global::ToJson(object);
 
     object.insert("amplitude", mAmplitude);
     object.insert("frequency", mFrequency);
@@ -105,9 +105,9 @@ void Canavar::Engine::Terrain::ToJson(QJsonObject& object)
     object.insert("seed", seed);
 }
 
-void Canavar::Engine::Terrain::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::Terrain::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
-    GlobalNode::FromJson(object, nodes);
+    Global::FromJson(object, nodes);
 
     mAmplitude = object["amplitude"].toDouble(20.0f);
     mFrequency = object["frequency"].toDouble(0.01f);
@@ -119,6 +119,7 @@ void Canavar::Engine::Terrain::FromJson(const QJsonObject& object, const std::ma
     mDiffuse = object["diffuse"].toDouble(0.85f);
     mSpecular = object["specular"].toDouble(0.0f);
     mShininess = object["shininess"].toDouble(8.0f);
+    mEnabled = object["enabled"].toBool(true);
 
     // Seed
     float x = object["seed"]["x"].toDouble();

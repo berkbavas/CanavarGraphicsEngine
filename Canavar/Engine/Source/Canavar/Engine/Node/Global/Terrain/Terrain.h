@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Canavar/Engine/Node/GlobalNode/GlobalNode.h"
-#include "Canavar/Engine/Node/GlobalNode/Terrain/TileGenerator.h"
+#include "Canavar/Engine/Node/Global/Global.h"
+#include "Canavar/Engine/Node/Global/Terrain/TileGenerator.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
@@ -19,19 +19,19 @@ namespace Canavar::Engine
     class DirectionalLight;
     class Camera;
 
-    class Terrain : public GlobalNode, protected QOpenGLExtraFunctions
+    class Terrain : public Global, protected QOpenGLExtraFunctions
     {
-        REGISTER_NODE_TYPE(Terrain);
-
       public:
         Terrain();
 
-        void Initialize() override;
+        const char* GetNodeTypeName() const override { return "Terrain"; }
+
+        void Initialize();
         void Render(Shader* pShader, Camera* pCamera);
         void Reset();
 
         void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
+        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
 
       private:
         TileGenerator* mTileGenerator;
@@ -53,6 +53,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Diffuse);
         DEFINE_MEMBER(float, Specular);
         DEFINE_MEMBER(float, Shininess);
+        DEFINE_MEMBER(bool, Enabled);
     };
 
     using TerrainPtr = std::shared_ptr<Terrain>;

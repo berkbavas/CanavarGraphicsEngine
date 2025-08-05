@@ -16,7 +16,7 @@ void Canavar::Engine::Light::ToJson(QJsonObject &object)
     object.insert("enabled", mEnabled);
 }
 
-void Canavar::Engine::Light::FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes)
+void Canavar::Engine::Light::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
 {
     Object::FromJson(object, nodes);
 

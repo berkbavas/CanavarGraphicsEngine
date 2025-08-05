@@ -4,7 +4,7 @@
             "albedo": 0.10000000149011612,
             "enabled": true,
             "node_name": "Sky",
-            "node_type": "Sky",
+            "node_type_name": "Sky",
             "normalized_sun_y": 1.149999976158142,
             "turbidity": 4,
             "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
@@ -17,7 +17,7 @@
             "frequency": 0.009999999776482582,
             "grass_coverage": 0.6499999761581421,
             "node_name": "Terrain",
-            "node_type": "Terrain",
+            "node_type_name": "Terrain",
             "octaves": 13,
             "power": 3,
             "seed": {
@@ -40,7 +40,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "cd896b56-aefc-4d87-ab52-e0277c20a954"
         },
         {
@@ -58,7 +58,7 @@
             },
             "enabled": true,
             "node_name": "Sun",
-            "node_type": "Sun",
+            "node_type_name": "Sun",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -82,7 +82,7 @@
         },
         {
             "node_name": "Dummy Camera",
-            "node_type": "DummyCamera",
+            "node_type_name": "DummyCamera",
             "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
                 "x": 0,
@@ -117,7 +117,7 @@
             "invert_normals": false,
             "metallic": 0,
             "node_name": "Sphere",
-            "node_type": "Model",
+            "node_type_name": "Model",
             "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
                 "x": 2.896780490875244,
@@ -144,7 +144,7 @@
         },
         {
             "node_name": "Root Node",
-            "node_type": "DummyObject",
+            "node_type_name": "DummyObject",
             "position": {
                 "x": 0,
                 "y": 147.5,
@@ -175,7 +175,7 @@
             "invert_normals": false,
             "metallic": 0,
             "node_name": "Sphere",
-            "node_type": "Model",
+            "node_type_name": "Model",
             "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
                 "x": -2.9050683975219727,
@@ -212,7 +212,7 @@
             "enabled": true,
             "linear": 0.25,
             "node_name": "Green Light",
-            "node_type": "PointLight",
+            "node_type_name": "PointLight",
             "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
             "position": {
                 "x": 0,
@@ -246,7 +246,7 @@
             "invert_normals": true,
             "metallic": 0,
             "node_name": "f16c",
-            "node_type": "Model",
+            "node_type_name": "Model",
             "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
                 "x": 0,
@@ -283,7 +283,7 @@
             "enabled": true,
             "linear": 0.25,
             "node_name": "Red Light",
-            "node_type": "PointLight",
+            "node_type_name": "PointLight",
             "parent": "71a89cae-dc71-4f78-8888-b77956c22136",
             "position": {
                 "x": 0,
@@ -317,7 +317,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "a50bfc23-2b94-489e-a843-7be20e597927"
         },
         {
@@ -330,7 +330,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "dd88480b-213d-4205-8229-4c71f1b3ace7"
         }
     ]

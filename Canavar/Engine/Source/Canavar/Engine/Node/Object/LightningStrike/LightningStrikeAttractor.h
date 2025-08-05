@@ -8,14 +8,11 @@ namespace Canavar::Engine
 {
     class LightningStrikeAttractor : public Object
     {
-        REGISTER_NODE_TYPE(LightningStrikeAttractor);
-
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
-
       public:
         LightningStrikeAttractor();
+
+        const char* GetNodeTypeName() const override { return "LightningStrikeAttractor"; }
     };
 
     using LightningStrikeAttractorPtr = std::shared_ptr<LightningStrikeAttractor>;
-}
+} 

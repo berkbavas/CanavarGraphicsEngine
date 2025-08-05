@@ -2,14 +2,13 @@
 
 Canavar::Engine::Quad::Quad()
 {
-    initializeOpenGLFunctions();
-
     constexpr float VERTICES[24] = { -1.0f, +1.0f, 0.0f, 1.0f, //
                                      -1.0f, -1.0f, 0.0f, 0.0f, //
                                      +1.0f, -1.0f, 1.0f, 0.0f, //
                                      -1.0f, +1.0f, 0.0f, 1.0f, //
                                      +1.0f, -1.0f, 1.0f, 0.0f, //
                                      +1.0f, +1.0f, 1.0f, 1.0f };
+    initializeOpenGLFunctions();
 
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);

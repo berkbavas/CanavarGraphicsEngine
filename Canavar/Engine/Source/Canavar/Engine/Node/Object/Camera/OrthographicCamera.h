@@ -1,18 +1,19 @@
 #pragma once
 
 #include "Canavar/Engine/Core/Constants.h"
+#include "Canavar/Engine/Core/Structs.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Util/Macros.h"
-#include "Canavar/Engine/Util/Mouse.h"
+
 
 namespace Canavar::Engine
 {
     class OrthographicCamera : public Camera
     {
-        REGISTER_NODE_TYPE(OrthographicCamera);
-
       public:
         OrthographicCamera() = default;
+
+        const char* GetNodeTypeName() const override { return "OrthographicCamera"; }
 
         void Resize(int width, int height) override;
 

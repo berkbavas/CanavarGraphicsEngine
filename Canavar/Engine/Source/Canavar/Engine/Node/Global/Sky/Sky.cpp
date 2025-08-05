@@ -1,6 +1,6 @@
 #include "Sky.h"
 
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 
@@ -11,10 +11,13 @@
 // Sky model belongs to Hosek-Wilkie - An Analytic Model for Full Spectral Sky-Dome Radiance
 // Code is taken from https://github.com/diharaw/sky-models
 
+Canavar::Engine::Sky::Sky() {
+
+    SetNodeName("Sky");
+}
+
 void Canavar::Engine::Sky::Initialize()
 {
-    SetNodeName("Sky");
-
     initializeOpenGLFunctions();
 
     mQuad = new Quad;
@@ -125,20 +128,22 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
 
 void Canavar::Engine::Sky::ToJson(QJsonObject& object)
 {
-    GlobalNode::ToJson(object);
+    Global::ToJson(object);
 
     object.insert("albedo", mAlbedo);
     object.insert("turbidity", mTurbidity);
     object.insert("normalized_sun_y", mNormalizedSunY);
+    object.insert("enabled", mEnabled);
 }
 
-void Canavar::Engine::Sky::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::Sky::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
-    GlobalNode::FromJson(object, nodes);
+    Global::FromJson(object, nodes);
 
     mAlbedo = object["albedo"].toDouble(0.1f);
     mTurbidity = object["turbidity"].toDouble(4.0f);
     mNormalizedSunY = object["normalized_sun_y"].toDouble(1.15f);
+    mEnabled = object["enabled"].toBool(true);
 }
 
 QVector3D Canavar::Engine::Sky::Pow(const QVector3D& a, const QVector3D& b)

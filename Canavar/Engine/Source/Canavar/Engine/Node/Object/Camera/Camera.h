@@ -6,23 +6,11 @@
 
 namespace Canavar::Engine
 {
-    enum class ViewDirection
-    {
-        Front,
-        Back,
-        Up,
-        Down,
-        Left,
-        Right
-    };
 
     class Camera : public Object
     {
       protected:
         Camera() = default;
-
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
 
       public:
         virtual const QMatrix4x4 &GetProjectionMatrix() = 0;

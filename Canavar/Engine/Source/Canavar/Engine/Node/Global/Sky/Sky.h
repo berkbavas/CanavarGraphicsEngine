@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Canavar/Engine/Manager/RenderingManager/Quad.h"
-#include "Canavar/Engine/Node/GlobalNode/GlobalNode.h"
+#include "Canavar/Engine/Node/Global/Global.h"
+#include "Canavar/Engine/Primitive/Quad.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <QOpenGLExtraFunctions>
@@ -13,17 +13,18 @@ namespace Canavar::Engine
     class DirectionalLight;
     class Camera;
 
-    class Sky : public GlobalNode, protected QOpenGLExtraFunctions
+    class Sky : public Global, protected QOpenGLExtraFunctions
     {
-        REGISTER_NODE_TYPE(Sky);
-
       public:
-        void Initialize() override;
+        Sky();
+        const char* GetNodeTypeName() const override { return "Sky"; }
+
+        void Initialize();
 
         void Render(Shader* pShader, DirectionalLight* pSun, Camera* pCamera);
 
         void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
+        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
 
       private:
         static QVector3D Pow(const QVector3D& a, const QVector3D& b);
@@ -45,6 +46,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Albedo, 0.1f);
         DEFINE_MEMBER(float, Turbidity, 4.0f);
         DEFINE_MEMBER(float, NormalizedSunY, 1.15f);
+        DEFINE_MEMBER(bool, Enabled);
     };
 
     using SkyPtr = std::shared_ptr<Sky>;

@@ -4,7 +4,7 @@
             "albedo": 0.10000000149011612,
             "enabled": false,
             "node_name": "Sky",
-            "node_type": "Sky",
+            "node_type_name": "Sky",
             "normalized_sun_y": 1.149999976158142,
             "turbidity": 4,
             "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
@@ -17,7 +17,7 @@
             "frequency": 0.009999999776482582,
             "grass_coverage": 0.6499999761581421,
             "node_name": "Terrain",
-            "node_type": "Terrain",
+            "node_type_name": "Terrain",
             "octaves": 13,
             "power": 3,
             "seed": {
@@ -40,7 +40,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "7512edbe-c750-4d1c-82cf-9e91b404cc93"
         },
         {
@@ -59,7 +59,7 @@
             },
             "enabled": true,
             "node_name": "Sun",
-            "node_type": "Sun",
+            "node_type_name": "Sun",
             "position": {
                 "x": 0,
                 "y": 0,
@@ -91,7 +91,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "8a4fdcae-29c9-4abb-8ce6-0f1c205693bc"
         },
         {
@@ -107,7 +107,7 @@
             "enabled": true,
             "linear": 0.02500000037252903,
             "node_name": "Point Light",
-            "node_type": "PointLight",
+            "node_type_name": "PointLight",
             "position": {
                 "x": -14.021208763122559,
                 "y": 91.8121109008789,
@@ -141,7 +141,7 @@
             "diffuse": 0.75,
             "invert_normals": false,
             "node_name": "Antonius",
-            "node_type": "Model",
+            "node_type_name": "Model",
             "parent": "6dc508d9-833b-4b94-94ff-8178d901a9ad",
             "position": {
                 "x": 0,
@@ -180,7 +180,7 @@
             "enabled": true,
             "linear": 0.05000000074505806,
             "node_name": "Point Light",
-            "node_type": "PointLight",
+            "node_type_name": "PointLight",
             "position": {
                 "x": -7.479000091552734,
                 "y": 9.147000312805176,
@@ -205,7 +205,7 @@
         },
         {
             "node_name": "DummyObject",
-            "node_type": "DummyObject",
+            "node_type_name": "DummyObject",
             "position": {
                 "x": 0,
                 "y": 0,

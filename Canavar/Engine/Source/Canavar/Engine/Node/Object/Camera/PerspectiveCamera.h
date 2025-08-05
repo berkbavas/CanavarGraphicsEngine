@@ -26,7 +26,7 @@ namespace Canavar::Engine
         float GetAspectRatio() const;
 
         void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
+        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
 
       private:
         // For caching
@@ -45,5 +45,4 @@ namespace Canavar::Engine
     };
 
     using PerspectiveCameraPtr = std::shared_ptr<PerspectiveCamera>;
-
 }

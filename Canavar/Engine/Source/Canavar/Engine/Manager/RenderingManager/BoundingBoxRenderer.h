@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Canavar/Engine/Manager/RenderingManager/CubeStrip.h"
-#include "Canavar/Engine/Manager/RenderingManager/Shader.h"
+#include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
+#include "Canavar/Engine/Primitive/CubeStrip.h"
 
 #include <QVector4D>
 

@@ -90,14 +90,15 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::CrossSection, mCrossSection));
 }
 
-Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType type)
+Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType shaderType)
 {
-    Shader* pResult = nullptr;
-
-    if (const auto it = mShaders.find(type); it != mShaders.end())
+    for (const auto [type, pShader] : mShaders)
     {
-        pResult = it->second;
+        if (type == shaderType)
+        {
+            return pShader;
+        }
     }
 
-    return pResult;
+    return nullptr;
 }

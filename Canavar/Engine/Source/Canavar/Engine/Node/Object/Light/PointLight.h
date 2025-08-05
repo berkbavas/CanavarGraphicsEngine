@@ -6,13 +6,13 @@ namespace Canavar::Engine
 {
     class PointLight : public Light
     {
-        REGISTER_NODE_TYPE(PointLight);
-
       public:
         PointLight();
 
+        const char *GetNodeTypeName() const override { return "PointLight"; }
+
         void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const std::map<QString, NodePtr> &nodes) override;
+        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
 
         DEFINE_MEMBER(float, Constant, 1.0f);
         DEFINE_MEMBER(float, Linear, 0.05f);

@@ -10,15 +10,15 @@ namespace Canavar::Engine
 
     class NozzleEffect : public Object, protected QOpenGLFunctions_4_3_Core
     {
-        REGISTER_NODE_TYPE(NozzleEffect);
-
       public:
         NozzleEffect();
+
+        const char* GetNodeTypeName() const override { return "NozzleEffect"; }
 
         void Render(float ifps);
 
         void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes) override;
+        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
 
       private:
         void Initialize();

@@ -1,17 +1,14 @@
 #pragma once
 
-#include "Canavar/Engine/Node/Object/Object.h"
-
 #include <QOpenGLExtraFunctions>
+#include <QVector3D>
 
 namespace Canavar::Engine
 {
-    class Plane : public Object, protected QOpenGLExtraFunctions
+    class CubeStrip : protected QOpenGLExtraFunctions
     {
-        REGISTER_NODE_TYPE(Plane);
-
       public:
-        Plane();
+        CubeStrip();
 
         void Render();
 

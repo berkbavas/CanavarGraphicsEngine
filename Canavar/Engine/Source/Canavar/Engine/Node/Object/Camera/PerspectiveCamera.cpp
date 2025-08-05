@@ -63,7 +63,7 @@ void Canavar::Engine::PerspectiveCamera::ToJson(QJsonObject& object)
     object.insert("vertical_fov", mVerticalFov);
 }
 
-void Canavar::Engine::PerspectiveCamera::FromJson(const QJsonObject& object, const std::map<QString, NodePtr>& nodes)
+void Canavar::Engine::PerspectiveCamera::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
 {
     Camera::FromJson(object, nodes);
 

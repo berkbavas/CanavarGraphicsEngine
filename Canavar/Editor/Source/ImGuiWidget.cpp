@@ -47,7 +47,7 @@ void Canavar::Editor::ImGuiWidget::DrawNodeParametersWidget()
         ImGui::BeginDisabled(mSelectedNode == nullptr);
         if (Engine::NodePtr pNode = std::dynamic_pointer_cast<Engine::Node>(mSelectedNode))
         {
-            ImGui::Text("Node Type: %s", pNode->GetNodeType().toStdString().c_str());
+            ImGui::Text("Node Type: %s", pNode->GetNodeTypeName());
             ImGui::Text("Node ID:   %u", pNode->GetNodeId());
 
             if (const auto newNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
@@ -168,7 +168,7 @@ void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWidget()
                         {
                             bool open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().toStdString().c_str()); // Column 1
                             ImGui::TableNextColumn();
-                            ImGui::Text(pObject->GetNodeType().toStdString().c_str());
+                            ImGui::Text(pObject->GetNodeTypeName());
                             ImGui::TableNextColumn();
                             if (ImGui::Selectable(std::format("{}", pObject->GetNodeId()).c_str(), pSelectedNode == pObject)) // Column 2
                             {
@@ -191,7 +191,7 @@ void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWidget()
                         {
                             ImGui::TreeNodeEx(pNode->GetUniqueNodeName().toStdString().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
                             ImGui::TableNextColumn();
-                            ImGui::Text(pNode->GetNodeType().toStdString().c_str());
+                            ImGui::Text(pNode->GetNodeTypeName());
                             ImGui::TableNextColumn();
                             if (ImGui::Selectable(std::format("{}", pNode->GetNodeId()).c_str(), pSelectedNode == pNode)) // Column 2
                             {
@@ -203,7 +203,7 @@ void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWidget()
                     {
                         ImGui::TreeNodeEx(pNode->GetUniqueNodeName().toStdString().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
                         ImGui::TableNextColumn();
-                        ImGui::Text(pNode->GetNodeType().toStdString().c_str());
+                        ImGui::Text(pNode->GetNodeTypeName());
                         ImGui::TableNextColumn();
                         if (ImGui::Selectable(std::format("{}", pNode->GetNodeId()).c_str(), pSelectedNode == pNode)) // Column 2
                         {
@@ -219,7 +219,7 @@ void Canavar::Editor::ImGuiWidget::DrawNodeTreeViewWidget()
             {
                 if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(pNode))
                 {
-                    if (pObject->GetParent() == nullptr) // Call only root objects, children will be handled by recursion
+                    if (pObject->GetParent<Engine::Node>() == nullptr) // Call only root objects, children will be handled by recursion
                     {
                         CanavarTreeNode::DisplayNode(pObject, mSelectedNode);
                     }
@@ -294,7 +294,7 @@ void Canavar::Editor::ImGuiWidget::DrawHaze()
 
 void Canavar::Editor::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
 {
-    const auto pParent = pObject->GetParent();
+    const auto pParent = pObject->GetParent<Engine::Node>();
     const auto &objects = mNodeManager->GetObjects();
 
     if (ImGui::BeginCombo("Parent", pParent ? pParent->GetNodeName().toStdString().c_str() : "-"))

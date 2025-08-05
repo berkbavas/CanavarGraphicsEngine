@@ -4,7 +4,7 @@
             "albedo": 0.10000000149011612,
             "enabled": true,
             "node_name": "Sky",
-            "node_type": "Sky",
+            "node_type_name": "Sky",
             "normalized_sun_y": 1.149999976158142,
             "turbidity": 4,
             "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
@@ -17,7 +17,7 @@
             "frequency": 0.009999999776482582,
             "grass_coverage": 0.6499999761581421,
             "node_name": "Terrain",
-            "node_type": "Terrain",
+            "node_type_name": "Terrain",
             "octaves": 13,
             "power": 3,
             "seed": {
@@ -40,7 +40,7 @@
             "enabled": true,
             "gradient": 1.5,
             "node_name": "Haze",
-            "node_type": "Haze",
+            "node_type_name": "Haze",
             "uuid": "2e26293f-6a8d-4640-8e6f-af8ffad96e7b"
         },
         {
@@ -58,7 +58,7 @@
             },
             "enabled": true,
             "node_name": "Sun",
-            "node_type": "Sun",
+            "node_type_name": "Sun",
             "position": {
                 "x": 0,
                 "y": 0,
