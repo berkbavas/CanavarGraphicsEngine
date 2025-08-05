@@ -42,6 +42,8 @@ void Canavar::Engine::DirectionalLight::ToJson(QJsonObject &object)
     direction.insert("y", mDirection.y());
     direction.insert("z", mDirection.z());
     object.insert("direction", direction);
+
+    object.insert("radience", mRadiance);
 }
 
 void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
@@ -59,4 +61,6 @@ void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &object, cons
     float z = direction["z"].toDouble();
 
     mDirection = QVector3D(x, y, z);
+
+    mRadiance = object["radiance"].toDouble(5.0);
 }

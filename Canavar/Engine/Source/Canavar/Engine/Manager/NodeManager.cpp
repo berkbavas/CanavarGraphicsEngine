@@ -48,6 +48,8 @@ void Canavar::Engine::NodeManager::PostInitialize()
     }
 
     LOG_DEBUG("NodeManager::PostInitialize: Initialization is done.");
+
+    AddNode(mFreeCamera);
 }
 
 void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
@@ -260,7 +262,6 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
     QJsonArray array = root["nodes"].toArray();
 
     QSet<NodePtr> nodes;
-    std::map<QString, QJsonObject> objects;
 
     for (const auto element : array)
     {
@@ -274,7 +275,31 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         {
             continue;
         }
-
+        else if (nodeTypeName == "Haze")
+        {
+            mHaze->FromJson(object, nodes);
+            nodes.insert(mHaze);
+        }
+        else if (nodeTypeName == "Sky")
+        {
+            mSky->FromJson(object, nodes);
+            nodes.insert(mSky);
+        }
+        else if (nodeTypeName == "Terrain")
+        {
+            mTerrain->FromJson(object, nodes);
+            nodes.insert(mTerrain);
+        }
+        else if (nodeTypeName == "Sun")
+        {
+            mSun->FromJson(object, nodes);
+            nodes.insert(mSun);
+        }
+        else if (nodeTypeName == "FreeCamera")
+        {
+            mFreeCamera->FromJson(object, nodes);
+            nodes.insert(mFreeCamera);
+        }
         else if (nodeTypeName == "Model")
         {
             QString sceneName = object["scene_name"].toString();
@@ -284,7 +309,6 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
                 ModelPtr pModel = std::make_shared<Model>(sceneName);
                 pModel->SetUuid(uuid);
                 nodes.insert(pModel);
-                objects.insert(std::pair(uuid, object));
             }
         }
         else
@@ -293,7 +317,6 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
             {
                 pNode->SetUuid(uuid);
                 nodes.insert(pNode);
-                objects.insert(std::pair(uuid, object));
             }
             else
             {
@@ -308,22 +331,20 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         QString nodeTypeName = object["node_type_name"].toString();
         QString uuid = object["uuid"].toString();
 
-        if (nodeTypeName == "Haze")
+        for (const auto pNode : nodes)
         {
-            mHaze->FromJson(object, nodes);
+            if (uuid == pNode->GetUuid())
+            {
+                pNode->FromJson(object, nodes);
+            }
         }
-        else if (nodeTypeName == "Sky")
-        {
-            mSky->FromJson(object, nodes);
-        }
-        else if (nodeTypeName == "Terrain")
-        {
-            mTerrain->FromJson(object, nodes);
-        }
-        else if (nodeTypeName == "Sun")
-        {
-            mSun->FromJson(object, nodes);
-        }
+    }
+
+    for (const auto element : array)
+    {
+        QJsonObject object = element.toObject();
+        QString nodeTypeName = object["node_type_name"].toString();
+        QString uuid = object["uuid"].toString();
 
         for (const auto pNode : nodes)
         {
@@ -353,4 +374,5 @@ void Canavar::Engine::NodeManager::RemoveAllNodes()
     AddNode(mTerrain);
     AddNode(mHaze);
     AddNode(mSun);
+    AddNode(mFreeCamera);
 }
