@@ -16,13 +16,6 @@ void Canavar::Engine::ShaderManager::Initialize()
     mSkyShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
     mSkyShader->Initialize();
 
-    mTerrainShader = new Shader(ShaderType::Terrain, "Terrain Shader");
-    mTerrainShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Terrain.vert");
-    mTerrainShader->AddPath(QOpenGLShader::TessellationControl, ":/Resources/Shaders/Terrain.tcs");
-    mTerrainShader->AddPath(QOpenGLShader::TessellationEvaluation, ":/Resources/Shaders/Terrain.tes");
-    mTerrainShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Terrain.frag");
-    mTerrainShader->Initialize();
-
     mBlurShader = new Shader(ShaderType::Blur, "Blur Shader");
     mBlurShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
     mBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
@@ -79,7 +72,6 @@ void Canavar::Engine::ShaderManager::Initialize()
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
-    mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
     mShaders.emplace(std::pair(ShaderType::Blur, mBlurShader));
     mShaders.emplace(std::pair(ShaderType::PostProcess, mPostProcessShader));
     mShaders.emplace(std::pair(ShaderType::NozzleEffect, mNozzleEffect));

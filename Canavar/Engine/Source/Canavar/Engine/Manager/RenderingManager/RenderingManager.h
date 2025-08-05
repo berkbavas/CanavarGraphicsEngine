@@ -8,7 +8,6 @@
 #include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingRenderer.h"
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
-#include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
@@ -86,7 +85,6 @@ namespace Canavar::Engine
 
         Shader *mModelShader{ nullptr };
         Shader *mSkyShader{ nullptr };
-        Shader *mTerrainShader{ nullptr };
         Shader *mBlurShader{ nullptr };
         Shader *mPostProcessShader{ nullptr };
         Shader *mNozzleEffectShader{ nullptr };
@@ -94,7 +92,6 @@ namespace Canavar::Engine
         Shader *mLineShader{ nullptr };
 
         SkyPtr mSky;
-        TerrainPtr mTerrain;
         DirectionalLightPtr mSun;
         HazePtr mHaze;
 

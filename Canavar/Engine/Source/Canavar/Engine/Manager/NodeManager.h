@@ -4,7 +4,6 @@
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
 #include "Canavar/Engine/Node/Global/Sun/Sun.h"
-#include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 #include "Canavar/Engine/Node/Object/Camera/FreeCamera.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
@@ -84,7 +83,6 @@ namespace Canavar::Engine
         LightManager *mLightManager{ nullptr };
 
         DEFINE_MEMBER_CONST(SkyPtr, Sky);
-        DEFINE_MEMBER_CONST(TerrainPtr, Terrain);
         DEFINE_MEMBER_CONST(HazePtr, Haze);
         DEFINE_MEMBER_CONST(SunPtr, Sun);
         DEFINE_MEMBER_CONST(FreeCameraPtr, FreeCamera);

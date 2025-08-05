@@ -6,7 +6,6 @@ namespace Canavar::Engine
     {
         Model,
         Sky,
-        Terrain,
         Blur,
         PostProcess,
         NozzleEffect,

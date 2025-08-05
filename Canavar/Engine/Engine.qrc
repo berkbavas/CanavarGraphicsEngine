@@ -7,10 +7,6 @@
         <file>Resources/Shaders/PostProcess.frag</file>
         <file>Resources/Shaders/Sky.vert</file>
         <file>Resources/Shaders/Sky.frag</file>
-        <file>Resources/Shaders/Terrain.vert</file>
-        <file>Resources/Shaders/Terrain.frag</file>
-        <file>Resources/Shaders/Terrain.tcs</file>
-        <file>Resources/Shaders/Terrain.tes</file>
         <file>Resources/Shaders/NozzleEffect.vert</file>
         <file>Resources/Shaders/NozzleEffect.frag</file>
         <file>Resources/Shaders/Line.vert</file>
@@ -31,23 +27,5 @@
 
         <file>Resources/Sky/SkyRGB.data</file>
         <file>Resources/Sky/SkyRGBRad.data</file>
-
-        <file>Resources/Terrain/grass0.jpg</file>
-        <file>Resources/Terrain/grass1.jpg</file>
-        <file>Resources/Terrain/grass2.jpg</file>
-        <file>Resources/Terrain/normal.png</file>
-        <file>Resources/Terrain/rdisp.png</file>
-        <file>Resources/Terrain/rnormal.jpg</file>
-        <file>Resources/Terrain/dirt0.jpg</file>
-        <file>Resources/Terrain/rock0.jpg</file>
-        <file>Resources/Terrain/rock1.jpg</file>
-        <file>Resources/Terrain/rock2.jpg</file>
-        <file>Resources/Terrain/rock3.jpg</file>
-        <file>Resources/Terrain/rock4.jpg</file>
-        <file>Resources/Terrain/sand0.jpg</file>
-        <file>Resources/Terrain/snow0.jpg</file>
-        <file>Resources/Terrain/snow1.jpg</file>
-        <file>Resources/Terrain/terrain.jpg</file>
-        <file>Resources/Terrain/waterDUDV.png</file>
     </qresource>
 </RCC>

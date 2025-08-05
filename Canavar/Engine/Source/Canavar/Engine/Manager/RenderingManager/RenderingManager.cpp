@@ -49,7 +49,6 @@ void Canavar::Engine::RenderingManager::PostInitialize()
 
     mSky = mNodeManager->GetSky();
     mSun = mNodeManager->GetSun();
-    mTerrain = mNodeManager->GetTerrain();
     mHaze = mNodeManager->GetHaze();
 
     mShadowMappingRenderer->SetShaderManager(mShaderManager);
@@ -62,7 +61,6 @@ void Canavar::Engine::RenderingManager::PostInitialize()
 
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
     mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
-    mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
     mBlurShader = mShaderManager->GetShader(ShaderType::Blur);
     mPostProcessShader = mShaderManager->GetShader(ShaderType::PostProcess);
     mNozzleEffectShader = mShaderManager->GetShader(ShaderType::NozzleEffect);
@@ -101,7 +99,6 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     SetUniforms(mActiveCamera);
 
     mSky->Render(mSkyShader, mSun.get(), mActiveCamera);
-    mTerrain->Render(mTerrainShader, mActiveCamera);
 
     if (mDrawBoundingBoxes)
     {
@@ -183,7 +180,7 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
     SetUniforms(pCamera);
 
     mSky->Render(mSkyShader, mSun.get(), pCamera);
-    mTerrain->Render(mTerrainShader, pCamera);
+
 
     RenderObjects(pCamera, mIfps);
 
@@ -291,24 +288,18 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel, RenderPass 
 
 void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffect, Camera* pCamera, float ifps)
 {
-    // glEnable(GL_BLEND);
-    // glBlendFunc(GL_ONE, GL_ONE);
     mNozzleEffectShader->Bind();
     mNozzleEffectShader->SetUniformValue("maxRadius", pEffect->GetMaxRadius());
     mNozzleEffectShader->SetUniformValue("MVP", pCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
     mNozzleEffectShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     pEffect->Render(ifps);
     mNozzleEffectShader->Release();
-    // glDisable(GL_BLEND);
 }
 
 void Canavar::Engine::RenderingManager::SetUniforms(Camera* pCamera)
 {
     SetCommonUniforms(mModelShader, pCamera);
-    SetCommonUniforms(mTerrainShader, pCamera);
     SetDirectionalLights(mModelShader);
-    SetDirectionalLights(mTerrainShader);
-    SetPointLights(mTerrainShader, pCamera);
 }
 
 void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camera* pCamera)

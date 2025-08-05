@@ -16,7 +16,6 @@
 void Canavar::Editor::ImGuiWidget::Initialize()
 {
     mSky = mNodeManager->GetSky();
-    mTerrain = mNodeManager->GetTerrain();
     mHaze = mNodeManager->GetHaze();
     mSun = mNodeManager->GetSun();
 }
@@ -67,10 +66,6 @@ void Canavar::Editor::ImGuiWidget::DrawNodeParametersWidget()
         else if (mSelectedNode == mHaze)
         {
             DrawHaze();
-        }
-        else if (mSelectedNode == mTerrain)
-        {
-            DrawTerrain();
         }
         else if (Engine::ObjectPtr pObject = std::dynamic_pointer_cast<Engine::Object>(mSelectedNode))
         {
@@ -257,31 +252,6 @@ void Canavar::Editor::ImGuiWidget::DrawSun()
     mSun->SetDirectionFromThetaPhi(theta, phi);
 
     ImGui::ColorEdit4("Color##Sun", (float *) &mSun->GetColor_NonConst());
-}
-
-void Canavar::Editor::ImGuiWidget::DrawTerrain()
-{
-    ImGui::SliderFloat("Amplitude##Terrain", &mTerrain->GetAmplitude_NonConst(), 0.0f, 50.0f, "%.3f");
-    ImGui::SliderInt("Octaves##Terrain", &mTerrain->GetOctaves_NonConst(), 1, 20);
-    ImGui::SliderFloat("Power##Terrain", &mTerrain->GetPower_NonConst(), 0.1f, 10.0f, "%.3f");
-    ImGui::SliderFloat("Tessellation Multiplier##Terrain", &mTerrain->GetTessellationMultiplier_NonConst(), 0.1f, 10.0f, "%.3f");
-    ImGui::SliderFloat("Grass Coverage##Terrain", &mTerrain->GetGrassCoverage_NonConst(), 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Water Height##Terrain", &mTerrain->GetWaterHeight_NonConst(), -1000.0f, 1000.0f, "%.3f");
-    ImGui::SliderFloat("Ambient##Terrain", &mTerrain->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Diffuse##Terrain", &mTerrain->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Specular##Terrain", &mTerrain->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Shininess##Terrain", &mTerrain->GetShininess_NonConst(), 0.1f, 128.0f, "%.3f");
-    ImGui::Checkbox("Enabled", &mTerrain->GetEnabled_NonConst());
-
-    if (ImGui::Button("Generate Seed##Terrain"))
-    {
-        mTerrain->SetSeed(Canavar::Engine::Util::GenerateRandomVector(1, 1, 1));
-    }
-
-    if (ImGui::Button("Reset##Terrain"))
-    {
-        mTerrain->Reset();
-    }
 }
 
 void Canavar::Editor::ImGuiWidget::DrawHaze()

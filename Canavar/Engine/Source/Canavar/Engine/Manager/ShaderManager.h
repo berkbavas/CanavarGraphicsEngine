@@ -21,7 +21,6 @@ namespace Canavar::Engine
 
         Shader* mModelShader{ nullptr };
         Shader* mSkyShader{ nullptr };
-        Shader* mTerrainShader{ nullptr };
         Shader* mBlurShader{ nullptr };
         Shader* mPostProcessShader{ nullptr };
         Shader* mNozzleEffect{ nullptr };

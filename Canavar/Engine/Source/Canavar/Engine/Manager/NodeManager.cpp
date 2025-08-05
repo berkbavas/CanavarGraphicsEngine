@@ -23,12 +23,10 @@ void Canavar::Engine::NodeManager::Initialize()
     mScenes = ModelImporter::Import(MODELS_FOLDER, { "*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf", "*.usdz" });
 
     mSky = std::make_shared<Sky>();
-    mTerrain = std::make_shared<Terrain>();
     mHaze = std::make_shared<Haze>();
     mSun = std::make_shared<Sun>();
 
     AddNode(mSky);
-    AddNode(mTerrain);
     AddNode(mHaze);
     AddNode(mSun);
 }
@@ -38,7 +36,6 @@ void Canavar::Engine::NodeManager::PostInitialize()
     LOG_DEBUG("NodeManager::PostInitialize: Initializing...");
 
     mSky->Initialize();
-    mTerrain->Initialize();
 
     mFreeCamera = mManagerProvider->GetCameraManager()->GetFreeCamera();
 
@@ -285,11 +282,6 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
             mSky->FromJson(object, nodes);
             nodes.insert(mSky);
         }
-        else if (nodeTypeName == "Terrain")
-        {
-            mTerrain->FromJson(object, nodes);
-            nodes.insert(mTerrain);
-        }
         else if (nodeTypeName == "Sun")
         {
             mSun->FromJson(object, nodes);
@@ -371,7 +363,6 @@ void Canavar::Engine::NodeManager::RemoveAllNodes()
     mModels.clear();
 
     AddNode(mSky);
-    AddNode(mTerrain);
     AddNode(mHaze);
     AddNode(mSun);
     AddNode(mFreeCamera);

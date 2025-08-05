@@ -36,7 +36,6 @@ namespace Canavar::Editor
 
         void DrawSun();
         void DrawSky();
-        void DrawTerrain();
         void DrawHaze();
 
         void DrawObject(Engine::ObjectPtr pObject);
@@ -64,7 +63,6 @@ namespace Canavar::Editor
 
         Engine::DirectionalLightPtr mSun;
         Engine::SkyPtr mSky;
-        Engine::TerrainPtr mTerrain;
         Engine::HazePtr mHaze;
 
         QVector3D mFragmentLocalPosition;

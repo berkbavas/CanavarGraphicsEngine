@@ -51,8 +51,6 @@ void Canavar::Editor::Editor::Initialize()
         mCameraManager->SetActiveCamera(mFreeCamera);
     });
 
-    mNodeManager->GetTerrain()->SetEnabled(false);
-
     mNodeManager->ImportNodes("Resources/mp7.json");
 
     // LightningStrikeGeneratorPtr pGenerator = std::make_shared<LightningStrikeGenerator>();
