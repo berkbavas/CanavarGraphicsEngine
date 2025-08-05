@@ -108,14 +108,13 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, ShadowBias, 0.00005f);
         DEFINE_MEMBER(int, ShadowSamples, 1);
 
-        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 5;
+        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 4;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
             {
                 GL_COLOR_ATTACHMENT0, // Color
                 GL_COLOR_ATTACHMENT1, // Fragment local position
                 GL_COLOR_ATTACHMENT2, // Fragment world position
                 GL_COLOR_ATTACHMENT3, // Node info
-                GL_COLOR_ATTACHMENT4, // Distance
             };
 
         float mIfps;

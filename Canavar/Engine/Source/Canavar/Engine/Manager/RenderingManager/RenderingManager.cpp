@@ -136,23 +136,23 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     // ----------------------- BLIT TO DEFAULT FBO -------------------
 
-    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp1], mFramebuffers[Multisample], GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Multisample], GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
-    mFramebuffers[Temp2]->bind();
-    glViewport(0, 0, mWidth, mHeight);
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    // mFramebuffers[Temp2]->bind();
+    // glViewport(0, 0, mWidth, mHeight);
+    // glClearColor(0, 0, 0, 0);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    mPostProcessShader->Bind();
-    mPostProcessShader->SetUniformValue("blurThreshold", mBlurThreshold);
-    mPostProcessShader->SetUniformValue("maxSamples", mMaxSamples);
-    mPostProcessShader->SetSampler("colorTexture", 0, mFramebuffers[Temp1]->texture());
-    mPostProcessShader->SetSampler("distanceTexture", 1, mFramebuffers[Singlesample]->textures().at(4));
-    mQuad->Render();
-    mPostProcessShader->Release();
-    mFramebuffers[Temp2]->release();
+    // mPostProcessShader->Bind();
+    // mPostProcessShader->SetUniformValue("blurThreshold", mBlurThreshold);
+    // mPostProcessShader->SetUniformValue("maxSamples", mMaxSamples);
+    // mPostProcessShader->SetSampler("colorTexture", 0, mFramebuffers[Temp1]->texture());
+    // mPostProcessShader->SetSampler("distanceTexture", 1, mFramebuffers[Singlesample]->textures().at(4));
+    // mQuad->Render();
+    // mPostProcessShader->Release();
+    // mFramebuffers[Temp2]->release();
 
-    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Temp2], GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    // QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Temp2], GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
     // For QPainter
     glDisable(GL_CULL_FACE);
@@ -180,7 +180,6 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
     SetUniforms(pCamera);
 
     mSky->Render(mSkyShader, mSun.get(), pCamera);
-
 
     RenderObjects(pCamera, mIfps);
 

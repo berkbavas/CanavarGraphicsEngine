@@ -86,7 +86,6 @@ layout(location = 0) out vec4 fragColor;
 layout(location = 1) out vec4 fragLocalPosition;
 layout(location = 2) out vec4 fragWorldPosition;
 layout(location = 3) out vec4 nodeInfo;
-layout(location = 4) out vec4 outDistance;
 
 const float EPSILON = 0.00001f;
 
@@ -438,9 +437,6 @@ void main()
 
     // Node Info
     nodeInfo = vec4(nodeId, meshId, float(gl_PrimitiveID), 1.0f);
-
-    // Distance
-    outDistance = vec4(distance, 0.0f, 0.0f, 1.0f);
 
     gl_FragDepth = log2(fsFlogZ) / log2(zFar + 1.0);
 }
