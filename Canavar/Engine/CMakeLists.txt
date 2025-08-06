@@ -4,7 +4,7 @@ project(Engine VERSION 1.0.0 LANGUAGES CXX)
 
 find_package(Qt6 COMPONENTS Core Widgets OpenGL Gui Concurrent OpenGLWidgets REQUIRED)
 
-file(GLOB_RECURSE SOURCES Source/*.cpp Engine.qrc)
+file(GLOB_RECURSE SOURCES Source/*.cpp Engine.qrc EngineBigObjects.qrc)
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Source" ${INCLUDE_DIR})
 

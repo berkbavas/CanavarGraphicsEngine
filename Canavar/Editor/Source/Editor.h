@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ImGuiWidget.h"
-
 #include <Canavar/Engine/Core/Controller.h>
 #include <Canavar/Engine/Core/EventReceiver.h>
 #include <Canavar/Engine/Manager/CameraManager.h>
@@ -12,6 +10,7 @@
 #include <Canavar/Engine/Node/Object/Camera/PersecutorCamera.h>
 #include <Canavar/Engine/Node/Object/DummyObject/DummyObject.h>
 #include <Canavar/Engine/Node/Object/Model/Model.h>
+#include <Canavar/Engine/Util/ImGuiWidget.h>
 
 namespace Canavar::Editor
 {
@@ -46,7 +45,7 @@ namespace Canavar::Editor
         Engine::CameraManager *mCameraManager;
         Engine::RenderingManager *mRenderingManager;
 
-        ImGuiWidget *mImGuiWidget;
+        Engine::ImGuiWidget *mImGuiWidget;
 
         Engine::FreeCameraPtr mFreeCamera;
     };

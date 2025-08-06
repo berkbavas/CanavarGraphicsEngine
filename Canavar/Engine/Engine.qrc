@@ -24,8 +24,9 @@
         <file>Resources/Shaders/CrossSection.frag</file>
         <file>Resources/Shaders/CrossSection.geom</file>
         <file>Resources/Shaders/CrossSection.vert</file>
-
-        <file>Resources/Sky/SkyRGB.data</file>
-        <file>Resources/Sky/SkyRGBRad.data</file>
+        <file>Resources/Shaders/Terrain.frag</file>
+        <file>Resources/Shaders/Terrain.tesc</file>
+        <file>Resources/Shaders/Terrain.tese</file>
+        <file>Resources/Shaders/Terrain.vert</file>
     </qresource>
 </RCC>

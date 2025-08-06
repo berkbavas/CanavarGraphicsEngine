@@ -1,11 +1,12 @@
 #pragma once
 
+#include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Node/Object/Camera/FreeCamera.h"
 
 namespace Canavar::Engine
 {
-    class CameraManager : public Manager
+    class CameraManager : public Manager, public EventReceiver
     {
       public:
         explicit CameraManager(QObject *parent = nullptr);
@@ -16,12 +17,12 @@ namespace Canavar::Engine
         void SetDevicePixelRatio(float dpr);
         void PreUpdate(float ifps) override;
 
-        void OnKeyPressed(QKeyEvent *);
-        void OnKeyReleased(QKeyEvent *);
-        void OnMousePressed(QMouseEvent *);
-        void OnMouseReleased(QMouseEvent *);
-        void OnMouseMoved(QMouseEvent *);
-        void OnWheelMoved(QWheelEvent *);
+        bool KeyPressed(QKeyEvent *) override;
+        bool KeyReleased(QKeyEvent *) override;
+        bool MousePressed(QMouseEvent *) override;
+        bool MouseReleased(QMouseEvent *) override;
+        bool MouseMoved(QMouseEvent *) override;
+        bool WheelMoved(QWheelEvent *) override;
 
         void SetActiveCamera(CameraPtr pCamera);
         CameraPtr GetActiveCamera() const;

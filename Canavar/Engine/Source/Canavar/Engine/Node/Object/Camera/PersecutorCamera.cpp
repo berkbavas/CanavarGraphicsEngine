@@ -11,36 +11,40 @@ Canavar::Engine::PersecutorCamera::PersecutorCamera()
     connect(mAnimator.get(), &PersecutorCameraAnimator::Updated, this, &PersecutorCamera::OnAnimationAnglesUpdated);
 }
 
-void Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
 {
     if (ShouldIgnoreEvents())
     {
-        return;
+        return false;
     }
 
     mMouse.x = event->position().x();
     mMouse.y = event->position().y();
     mMouse.button = event->button();
+
+    return true;
 }
 
-void Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
+bool Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
 {
     if (ShouldIgnoreEvents())
     {
-        return;
+        return false;
     }
 
     if (mMouse.button == event->button())
     {
         mMouse.Reset();
     }
+
+    return false;
 }
 
-void Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
 {
     if (ShouldIgnoreEvents())
     {
-        return;
+        return false;
     }
 
     if (mMouse.button == Qt::MiddleButton || mMouse.button == Qt::RightButton)
@@ -50,13 +54,17 @@ void Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
 
         mMouse.x = event->position().x();
         mMouse.y = event->position().y();
+
+        return true;
     }
+
+    return false;
 }
-void Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
+bool Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
 {
     if (ShouldIgnoreEvents())
     {
-        return;
+        return false;
     }
 
     if (event->angleDelta().y() < 0)
@@ -66,6 +74,8 @@ void Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
         mDistance -= 0.1;
 
     mDistance = qBound(0.1f, mDistance, 100.0f);
+
+    return true;
 }
 
 void Canavar::Engine::PersecutorCamera::Update(float ifps)

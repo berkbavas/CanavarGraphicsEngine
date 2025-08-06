@@ -50,6 +50,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mSky = mNodeManager->GetSky();
     mSun = mNodeManager->GetSun();
     mHaze = mNodeManager->GetHaze();
+    mTerrain = mNodeManager->GetTerrain();
 
     mShadowMappingRenderer->SetShaderManager(mShaderManager);
     mShadowMappingRenderer->SetNodeManager(mNodeManager);
@@ -66,6 +67,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mNozzleEffectShader = mShaderManager->GetShader(ShaderType::NozzleEffect);
     mLightningStrikeShader = mShaderManager->GetShader(ShaderType::LightningStrike);
     mLineShader = mShaderManager->GetShader(ShaderType::Line);
+    mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
 }
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
@@ -98,7 +100,8 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     SetUniforms(mActiveCamera);
 
-    mSky->Render(mSkyShader, mSun.get(), mActiveCamera);
+    RenderSky(mActiveCamera);
+    RenderTerrain(mTerrain.get(), mActiveCamera);
 
     if (mDrawBoundingBoxes)
     {
@@ -179,7 +182,8 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
 
     SetUniforms(pCamera);
 
-    mSky->Render(mSkyShader, mSun.get(), pCamera);
+    RenderSky(pCamera);
+    RenderTerrain(mTerrain.get(), pCamera);
 
     RenderObjects(pCamera, mIfps);
 
@@ -293,6 +297,55 @@ void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffe
     mNozzleEffectShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     pEffect->Render(ifps);
     mNozzleEffectShader->Release();
+}
+
+void Canavar::Engine::RenderingManager::RenderSky(Camera* pCamera)
+{
+    mSky->Render(mSkyShader, mSun.get(), pCamera);
+}
+
+void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera* pCamera)
+{
+    const auto& directional_lights = mLightManager->GetDirectionalLights();
+    const auto number_of_directional_lights = std::min(8, static_cast<int>(directional_lights.size()));
+
+    const auto& point_lights = mLightManager->GetPointLightsAround(pCamera->GetWorldPosition(), 20'000.0f);
+    const auto number_of_point_lights = std::min(8, static_cast<int>(point_lights.size()));
+
+    mTerrainShader->Bind();
+    mTerrainShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
+    mTerrainShader->SetUniformValue("z_far", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    mTerrainShader->SetUniformValue("eye_world_pos", pCamera->GetWorldPosition());
+    mTerrainShader->SetUniformValue("haze.enabled", mHaze->GetEnabled());
+    mTerrainShader->SetUniformValue("haze.color", mHaze->GetColor());
+    mTerrainShader->SetUniformValue("haze.density", mHaze->GetDensity());
+    mTerrainShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
+    mTerrainShader->SetUniformValue("number_of_directional_lights", number_of_directional_lights);
+    mTerrainShader->SetUniformValue("number_of_point_lights", number_of_point_lights);
+
+    for (int i = 0; i < number_of_directional_lights; i++)
+    {
+        mTerrainShader->SetUniformValue("directional_lights[" + QString::number(i) + "].direction", directional_lights[i]->GetDirection());
+        mTerrainShader->SetUniformValue("directional_lights[" + QString::number(i) + "].color", directional_lights[i]->GetColor());
+        mTerrainShader->SetUniformValue("directional_lights[" + QString::number(i) + "].ambient", directional_lights[i]->GetAmbient());
+        mTerrainShader->SetUniformValue("directional_lights[" + QString::number(i) + "].diffuse", directional_lights[i]->GetDiffuse());
+        mTerrainShader->SetUniformValue("directional_lights[" + QString::number(i) + "].specular", directional_lights[i]->GetSpecular());
+    }
+
+    for (int i = 0; i < number_of_point_lights; i++)
+    {
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].color", point_lights[i]->GetColor());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].position", point_lights[i]->GetWorldPosition());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].ambient", point_lights[i]->GetAmbient());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].diffuse", point_lights[i]->GetDiffuse());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].specular", point_lights[i]->GetSpecular());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].constant", point_lights[i]->GetConstant());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].linear", point_lights[i]->GetLinear());
+        mTerrainShader->SetUniformValue("point_lights[" + QString::number(i) + "].quadratic", point_lights[i]->GetQuadratic());
+    }
+
+    mTerrainShader->Release();
+    mTerrain->Render(mTerrainShader, pCamera);
 }
 
 void Canavar::Engine::RenderingManager::SetUniforms(Camera* pCamera)

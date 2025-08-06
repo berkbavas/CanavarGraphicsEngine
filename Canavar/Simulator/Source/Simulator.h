@@ -20,6 +20,7 @@
 #include <Canavar/Engine/Node/Object/Light/PointLight.h>
 #include <Canavar/Engine/Node/Object/Model/Model.h>
 #include <Canavar/Engine/Util/Logger.h>
+#include <Canavar/Engine/Util/ImGuiWidget.h>
 
 #include <QGridLayout>
 #include <QMainWindow>
@@ -54,6 +55,7 @@ namespace Canavar::Simulator
         Canavar::Engine::Controller *mController;
         Canavar::Engine::NodeManager *mNodeManager;
         Canavar::Engine::CameraManager *mCameraManager;
+        Canavar::Engine::ImGuiWidget *mImGuiWidget;
 
         Aircraft *mAircraft;
         AircraftController *mAircraftController;

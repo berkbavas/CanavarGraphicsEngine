@@ -19,11 +19,11 @@ namespace Canavar::Engine
         void Update(float ifps) override;
         void Reset() override;
 
-        void KeyPressed(QKeyEvent *) override;
-        void KeyReleased(QKeyEvent *) override;
-        void MousePressed(QMouseEvent *) override;
-        void MouseReleased(QMouseEvent *) override;
-        void MouseMoved(QMouseEvent *) override;
+        bool KeyPressed(QKeyEvent *) override;
+        bool KeyReleased(QKeyEvent *) override;
+        bool MousePressed(QMouseEvent *) override;
+        bool MouseReleased(QMouseEvent *) override;
+        bool MouseMoved(QMouseEvent *) override;
 
         void GoToObject(ObjectPtr pNode);
 

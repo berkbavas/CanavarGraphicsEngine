@@ -72,6 +72,7 @@ void Canavar::Engine::Controller::Run()
     qInstallMessageHandler(Logger::QtMessageOutputCallback);
 
     Q_INIT_RESOURCE(Engine);
+    Q_INIT_RESOURCE(EngineBigObjects);
 
     if (mContainerMode == ContainerMode::Window)
     {
@@ -103,6 +104,8 @@ void Canavar::Engine::Controller::Initialize()
     {
         pReceiver->Initialize();
     }
+
+    AddEventReceiver(mCameraManager);
 }
 
 void Canavar::Engine::Controller::Render(float ifps)
@@ -164,8 +167,6 @@ void Canavar::Engine::Controller::OnKeyPressed(QKeyEvent* event)
             return;
         }
     }
-
-    mCameraManager->OnKeyPressed(event);
 }
 
 void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
@@ -177,8 +178,6 @@ void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
             return;
         }
     }
-
-    mCameraManager->OnKeyReleased(event);
 }
 
 void Canavar::Engine::Controller::AddEventReceiver(EventReceiver* pReceiver)
@@ -241,8 +240,6 @@ void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
             return;
         }
     }
-
-    mCameraManager->OnMousePressed(event);
 }
 
 void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
@@ -254,8 +251,6 @@ void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
             return;
         }
     }
-
-    mCameraManager->OnMouseReleased(event);
 }
 
 void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
@@ -267,8 +262,6 @@ void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
             return;
         }
     }
-
-    mCameraManager->OnMouseMoved(event);
 }
 
 void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
@@ -280,6 +273,4 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
             return;
         }
     }
-
-    mCameraManager->OnWheelMoved(event);
 }

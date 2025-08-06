@@ -6,21 +6,23 @@ void Canavar::Engine::OrthographicCamera::Resize(int width, int height)
     mHeight = height;
 }
 
-void Canavar::Engine::OrthographicCamera::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::OrthographicCamera::MousePressed(QMouseEvent* event)
 {
     mMouse.x = event->position().x();
     mMouse.y = event->position().y();
     mMouse.dx = 0;
     mMouse.dy = 0;
     mMouse.button = event->button();
+    return true;
 }
 
-void Canavar::Engine::OrthographicCamera::MouseReleased(QMouseEvent*)
+bool Canavar::Engine::OrthographicCamera::MouseReleased(QMouseEvent*)
 {
     mMouse.button = Qt::NoButton;
+    return true;
 }
 
-void Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* event)
 {
     if (mMouse.button == mActionReceiveButton)
     {
@@ -34,10 +36,13 @@ void Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* event)
         mTop += mDevicePixelRatio * mZoom * mMouse.dy;
         mMouse.dx = 0;
         mMouse.dy = 0;
+        return true;
     }
+
+    return false;
 }
 
-void Canavar::Engine::OrthographicCamera::WheelMoved(QWheelEvent* event)
+bool Canavar::Engine::OrthographicCamera::WheelMoved(QWheelEvent* event)
 {
     QPointF cursorWorldPosition = CameraToWorld(event->position());
 
@@ -52,6 +57,8 @@ void Canavar::Engine::OrthographicCamera::WheelMoved(QWheelEvent* event)
     QPointF delta = cursorWorldPosition - newWorldPosition;
     mLeft += delta.x();
     mTop += delta.y();
+
+    return true;
 }
 
 const QMatrix4x4& Canavar::Engine::OrthographicCamera::GetProjectionMatrix()

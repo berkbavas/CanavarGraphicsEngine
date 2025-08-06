@@ -7,7 +7,6 @@
 Canavar::Simulator::Simulator::Simulator()
 {
     mController = new Canavar::Engine::Controller(Canavar::Engine::ContainerMode::Widget);
-    mController->AddEventReceiver(this);
 
     mPfd = new PrimaryFlightData;
     mOpenGLWidget = mController->GetWidget();
@@ -28,7 +27,15 @@ Canavar::Simulator::Simulator::Simulator()
     mOpenGLWidget->setLayout(mGridLayout);
 
     mBasicSix->installEventFilter(mOpenGLWidget);
-    mBasicSix->setVisible(false);
+    mBasicSix->setVisible(true);
+
+    mImGuiWidget = new Canavar::Engine::ImGuiWidget;
+    mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
+    mImGuiWidget->SetNodeManager(mController->GetNodeManager());
+    mImGuiWidget->SetCameraManager(mController->GetCameraManager());
+
+    mController->AddEventReceiver(mImGuiWidget);
+    mController->AddEventReceiver(this);
 }
 
 void Canavar::Simulator::Simulator::Run()
@@ -59,8 +66,6 @@ void Canavar::Simulator::Simulator::Initialize()
 
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
-    mPersecutorCamera->SetYaw(180.0f);
-    mPersecutorCamera->SetPitch(-10.0f);
 
     mAircraftController->SetRootNode(mRootNode);
     mAircraftController->SetJetNode(mJetNode);
@@ -79,6 +84,8 @@ void Canavar::Simulator::Simulator::Initialize()
 
         mPfd->setPressure(pfd.pressure);
     });
+
+    mImGuiWidget->Initialize();
 }
 
 void Canavar::Simulator::Simulator::PostRender(float ifps)
@@ -90,6 +97,7 @@ void Canavar::Simulator::Simulator::PostRender(float ifps)
 
     QtImGui::newFrame();
     mAircraftController->DrawGui();
+    mImGuiWidget->Draw();
     ImGui::Render();
     QtImGui::render();
 }

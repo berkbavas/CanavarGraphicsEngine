@@ -62,6 +62,21 @@ namespace Canavar::Engine
             }
         }
 
+
+        void SetUniformValueArray(const QString& name, const GLfloat *values, int count, int tupleSize)
+        {
+            const auto location = mProgram->uniformLocation(name);
+
+            if (0 <= location)
+            {
+                mProgram->setUniformValueArray(location, values, count, tupleSize);
+            }
+            else
+            {
+                LOG_FATAL("Shader::SetUniformValue: Uniform location '{}' could not be found.", name.toStdString());
+            }
+        }
+
         void SetSampler(const QString& name, GLuint unit, GLuint textureId, GLuint target = GL_TEXTURE_2D);
 
       private:

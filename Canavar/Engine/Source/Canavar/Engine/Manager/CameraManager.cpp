@@ -65,50 +65,61 @@ Canavar::Engine::CameraPtr Canavar::Engine::CameraManager::GetActiveCamera() con
     return mActiveCamera;
 }
 
-void Canavar::Engine::CameraManager::OnKeyPressed(QKeyEvent* event)
+bool Canavar::Engine::CameraManager::KeyPressed(QKeyEvent* event)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->KeyPressed(event);
+        return mActiveCamera->KeyPressed(event);
     }
+
+    return false;
 }
 
-void Canavar::Engine::CameraManager::OnKeyReleased(QKeyEvent* event)
+bool Canavar::Engine::CameraManager::KeyReleased(QKeyEvent* event)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->KeyReleased(event);
+        return mActiveCamera->KeyReleased(event);
     }
+
+    return false;
 }
 
-void Canavar::Engine::CameraManager::OnMousePressed(QMouseEvent* event)
+bool Canavar::Engine::CameraManager::MousePressed(QMouseEvent* event)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->MousePressed(event);
+        return mActiveCamera->MousePressed(event);
     }
+
+    return false;
 }
 
-void Canavar::Engine::CameraManager::OnMouseReleased(QMouseEvent* event)
+bool Canavar::Engine::CameraManager::MouseReleased(QMouseEvent* event)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->MouseReleased(event);
+        return mActiveCamera->MouseReleased(event);
     }
+
+    return false;
 }
 
-void Canavar::Engine::CameraManager::OnMouseMoved(QMouseEvent* event)
+bool Canavar::Engine::CameraManager::MouseMoved(QMouseEvent* event)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->MouseMoved(event);
+        return mActiveCamera->MouseMoved(event);
     }
+    return false;
 }
 
-void Canavar::Engine::CameraManager::OnWheelMoved(QWheelEvent* event)
+bool Canavar::Engine::CameraManager::WheelMoved(QWheelEvent* event)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->WheelMoved(event);
+        return mActiveCamera->WheelMoved(event);
     }
+
+    return false;
 }

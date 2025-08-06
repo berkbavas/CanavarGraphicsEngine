@@ -8,6 +8,7 @@
 #include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingRenderer.h"
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
+#include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
@@ -62,6 +63,8 @@ namespace Canavar::Engine
         void RenderObjects(Camera *pCamera, float ifps);
         void RenderModel(ModelPtr pModel, RenderPass renderPass);
         void RenderNozzleEffect(NozzleEffectPtr pEffect, Camera *pCamera, float ifps);
+        void RenderSky(Camera *pCamera);
+        void RenderTerrain(Terrain *pTerrain, Camera *pCamera);
 
         void SetUniforms(Camera *pCamera);
         void SetCommonUniforms(Shader *pShader, Camera *pCamera);
@@ -69,9 +72,6 @@ namespace Canavar::Engine
         void SetPointLights(Shader *pShader, Object *pObject);
 
         void ResizeFramebuffers();
-        void ResizeCustomFramebuffers();
-
-        void ApplyPingPong(Framebuffer target, int source, int pass);
 
         ShaderManager *mShaderManager;
         NodeManager *mNodeManager;
@@ -90,9 +90,11 @@ namespace Canavar::Engine
         Shader *mNozzleEffectShader{ nullptr };
         Shader *mLightningStrikeShader{ nullptr };
         Shader *mLineShader{ nullptr };
+        Shader *mTerrainShader{ nullptr };
 
         SkyPtr mSky;
         DirectionalLightPtr mSun;
+        TerrainPtr mTerrain;
         HazePtr mHaze;
 
         Quad *mQuad;

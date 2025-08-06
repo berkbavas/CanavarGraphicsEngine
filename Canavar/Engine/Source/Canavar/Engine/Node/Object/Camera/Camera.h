@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Node/Object/Object.h"
 
 #include <QMouseEvent>
@@ -7,7 +8,7 @@
 namespace Canavar::Engine
 {
 
-    class Camera : public Object
+    class Camera : public Object, public EventReceiver
     {
       protected:
         Camera() = default;
@@ -26,13 +27,6 @@ namespace Canavar::Engine
         virtual void Update(float ifps);
         virtual void Reset();
         virtual void Resize(int w, int h);
-
-        virtual void KeyPressed(QKeyEvent *);
-        virtual void KeyReleased(QKeyEvent *);
-        virtual void MousePressed(QMouseEvent *);
-        virtual void MouseReleased(QMouseEvent *);
-        virtual void MouseMoved(QMouseEvent *);
-        virtual void WheelMoved(QWheelEvent *);
 
       private:
         QMatrix4x4 mTransformCacheForSkyYOffset;

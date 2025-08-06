@@ -10,6 +10,7 @@
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Scene/Scene.h"
 #include "Canavar/Engine/Util/Macros.h"
+#include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 
 #include <map>
 #include <set>
@@ -86,6 +87,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER_CONST(HazePtr, Haze);
         DEFINE_MEMBER_CONST(SunPtr, Sun);
         DEFINE_MEMBER_CONST(FreeCameraPtr, FreeCamera);
+        DEFINE_MEMBER_CONST(TerrainPtr, Terrain);
 
         uint32_t mCurrentNodeId{ 0 };
     };

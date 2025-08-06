@@ -80,33 +80,39 @@ void Canavar::Engine::FreeCamera::Reset()
     mMouse.Reset();
 }
 
-void Canavar::Engine::FreeCamera::KeyPressed(QKeyEvent* event)
+bool Canavar::Engine::FreeCamera::KeyPressed(QKeyEvent* event)
 {
     mPressedKeys.insert((Qt::Key) event->key(), true);
     mUpdatePosition = true;
+    return true;
 }
 
-void Canavar::Engine::FreeCamera::KeyReleased(QKeyEvent* event)
+bool Canavar::Engine::FreeCamera::KeyReleased(QKeyEvent* event)
 {
     mPressedKeys.insert((Qt::Key) event->key(), false);
+    return false;
 }
 
-void Canavar::Engine::FreeCamera::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::FreeCamera::MousePressed(QMouseEvent* event)
 {
     mMouse.x = event->position().x();
     mMouse.y = event->position().y();
     mMouse.button = event->button();
+
+    return mMouse.button == mActionReceiveButton;
 }
 
-void Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* event)
+bool Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* event)
 {
     if (mMouse.button == event->button())
     {
         mMouse.button = Qt::NoButton;
     }
+
+    return false;
 }
 
-void Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
 {
     if (mMouse.button == mActionReceiveButton)
     {
@@ -116,7 +122,10 @@ void Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
         mMouse.x = event->position().x();
         mMouse.y = event->position().y();
         mUpdateRotation = true;
+        return true;
     }
+
+    return false;
 }
 
 void Canavar::Engine::FreeCamera::GoToObject(ObjectPtr pNode)

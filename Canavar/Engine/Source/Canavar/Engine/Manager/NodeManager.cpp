@@ -25,10 +25,12 @@ void Canavar::Engine::NodeManager::Initialize()
     mSky = std::make_shared<Sky>();
     mHaze = std::make_shared<Haze>();
     mSun = std::make_shared<Sun>();
+    mTerrain = std::make_shared<Terrain>();
 
     AddNode(mSky);
     AddNode(mHaze);
     AddNode(mSun);
+    AddNode(mTerrain);
 }
 
 void Canavar::Engine::NodeManager::PostInitialize()
@@ -365,5 +367,6 @@ void Canavar::Engine::NodeManager::RemoveAllNodes()
     AddNode(mSky);
     AddNode(mHaze);
     AddNode(mSun);
+    AddNode(mTerrain);
     AddNode(mFreeCamera);
 }

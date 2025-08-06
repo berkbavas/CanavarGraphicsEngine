@@ -10,27 +10,6 @@
             "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
         },
         {
-            "ambient": 0.20000000298023224,
-            "amplitude": 20,
-            "diffuse": 0.8500000238418579,
-            "enabled": true,
-            "frequency": 0.009999999776482582,
-            "grass_coverage": 0.6499999761581421,
-            "node_name": "Terrain",
-            "node_type_name": "Terrain",
-            "octaves": 13,
-            "power": 3,
-            "seed": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "shininess": 8,
-            "specular": 0,
-            "tessellation_multiplier": 1,
-            "uuid": "9537a87e-9d47-4072-9fdb-a25dcf1339c1"
-        },
-        {
             "color": {
                 "b": 0.4699999988079071,
                 "g": 0.3799999952316284,
@@ -41,7 +20,7 @@
             "gradient": 1.5,
             "node_name": "Haze",
             "node_type_name": "Haze",
-            "uuid": "cd896b56-aefc-4d87-ab52-e0277c20a954"
+            "uuid": "dd88480b-213d-4205-8229-4c71f1b3ace7"
         },
         {
             "ambient": 1,
@@ -64,6 +43,7 @@
                 "y": 0,
                 "z": 0
             },
+            "radience": 5,
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -81,19 +61,28 @@
             "visible": true
         },
         {
-            "node_name": "Dummy Camera",
-            "node_type_name": "DummyCamera",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "node_name": "Terrain",
+            "node_type_name": "Terrain",
+            "uuid": "b05a7d39-9b80-4fa3-a58c-764e7584ccdd"
+        },
+        {
+            "action_receive_button": 4,
+            "angular_speed": 25,
+            "angular_speed_muliplier": 1,
+            "linear_speed": 5,
+            "linear_speed_multiplier": 1,
+            "node_name": "Free Camera",
+            "node_type_name": "FreeCamera",
             "position": {
-                "x": 0,
-                "y": 2.760999917984009,
-                "z": 19.18000030517578
+                "x": 3.862852096557617,
+                "y": 151.0213165283203,
+                "z": -12.170076370239258
             },
             "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
+                "w": 0.24184076488018036,
+                "x": -0.02976199984550476,
+                "y": 0.9628214836120605,
+                "z": 0.11856257915496826
             },
             "scale": {
                 "x": 1,
@@ -101,46 +90,11 @@
                 "z": 1
             },
             "selectable": true,
-            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "uuid": "6509aada-6f81-4d42-864c-14c2b99580d4",
             "vertical_fov": 60,
             "visible": true,
             "z_far": 100000,
-            "z_near": 1
-        },
-        {
-            "ambient_occlusion": 2,
-            "color": {
-                "b": 0,
-                "g": 0,
-                "r": 1
-            },
-            "invert_normals": false,
-            "metallic": 0,
-            "node_name": "Sphere",
-            "node_type_name": "Model",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 2.896780490875244,
-                "y": -0.0908660888671875,
-                "z": -0.21536827087402344
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "roughness": 0,
-            "scale": {
-                "x": 0.0010000000474974513,
-                "y": 0.0010000000474974513,
-                "z": 0.0010000000474974513
-            },
-            "scene_name": "Sphere",
-            "selectable": true,
-            "useColor": false,
-            "uuid": "71a89cae-dc71-4f78-8888-b77956c22136",
-            "visible": true
+            "z_near": 0.10000000149011612
         },
         {
             "node_name": "Root Node",
@@ -166,60 +120,25 @@
             "visible": true
         },
         {
-            "ambient_occlusion": 2,
-            "color": {
-                "b": 0,
-                "g": 1,
-                "r": 0
-            },
-            "invert_normals": false,
-            "metallic": 0,
-            "node_name": "Sphere",
-            "node_type_name": "Model",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": -2.9050683975219727,
-                "y": -0.087432861328125,
-                "z": -0.21635150909423828
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "roughness": 0,
-            "scale": {
-                "x": 0.0010000000474974513,
-                "y": 0.0010000000474974513,
-                "z": 0.0010000000474974513
-            },
-            "scene_name": "Sphere",
-            "selectable": true,
-            "useColor": false,
-            "uuid": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
-            "visible": true
-        },
-        {
             "ambient": 1,
             "color": {
                 "b": 0,
                 "g": 1,
                 "r": 0
             },
-            "constant": 0.07500000298023224,
+            "constant": 1,
             "diffuse": 1,
             "enabled": true,
-            "linear": 0.25,
+            "linear": 0.5,
             "node_name": "Green Light",
             "node_type_name": "PointLight",
-            "parent": "ca3f81d9-363a-442b-b8ba-c331f373c9c9",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
-                "x": 0,
+                "x": 4.599999904632568,
                 "y": 0,
-                "z": 0
+                "z": -1.600000023841858
             },
-            "quadratic": 0.10000000149011612,
+            "quadratic": 0,
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -227,48 +146,13 @@
                 "z": 0
             },
             "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
             },
             "selectable": true,
             "specular": 1,
             "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
-            "visible": true
-        },
-        {
-            "ambient_occlusion": 8.689000129699707,
-            "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "invert_normals": true,
-            "metallic": 0,
-            "node_name": "f16c",
-            "node_type_name": "Model",
-            "parent": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": -10.300003051757812,
-                "z": 0
-            },
-            "rotation": {
-                "w": 0.7071129679679871,
-                "x": 0.7071006894111633,
-                "y": 0,
-                "z": 0
-            },
-            "roughness": 0,
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "scene_name": "f16c",
-            "selectable": true,
-            "useColor": false,
-            "uuid": "a6e8a282-763f-4630-845f-51509cb1e146",
             "visible": true
         },
         {
@@ -278,19 +162,44 @@
                 "g": 0,
                 "r": 1
             },
-            "constant": 0.07500000298023224,
+            "constant": 1,
             "diffuse": 1,
             "enabled": true,
-            "linear": 0.25,
+            "linear": 1,
             "node_name": "Red Light",
             "node_type_name": "PointLight",
-            "parent": "71a89cae-dc71-4f78-8888-b77956c22136",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
+                "x": -4.599999904632568,
+                "y": 0,
+                "z": -1.600000023841858
+            },
+            "quadratic": 0,
+            "rotation": {
+                "w": 1,
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "quadratic": 0.10000000149011612,
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
+            "visible": true
+        },
+        {
+            "node_name": "Dummy Camera",
+            "node_type_name": "DummyCamera",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 3,
+                "z": 25
+            },
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -303,35 +212,42 @@
                 "z": 1
             },
             "selectable": true,
-            "specular": 1,
-            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
+            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 1
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "f16",
+            "node_type_name": "Model",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0.5000044107437134,
+                "x": 0.49999570846557617,
+                "y": 0.5000044107437134,
+                "z": -0.4999956786632538
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "scene_name": "f16",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "a98471f6-5e00-499d-9f92-4cfd56389cc3",
             "visible": true
-        },
-        {
-            "color": {
-                "b": 0.4699999988079071,
-                "g": 0.3799999952316284,
-                "r": 0.33000001311302185
-            },
-            "density": 1,
-            "enabled": true,
-            "gradient": 1.5,
-            "node_name": "Haze",
-            "node_type_name": "Haze",
-            "uuid": "a50bfc23-2b94-489e-a843-7be20e597927"
-        },
-        {
-            "color": {
-                "b": 0.4699999988079071,
-                "g": 0.3799999952316284,
-                "r": 0.33000001311302185
-            },
-            "density": 1,
-            "enabled": true,
-            "gradient": 1.5,
-            "node_name": "Haze",
-            "node_type_name": "Haze",
-            "uuid": "dd88480b-213d-4205-8229-4c71f1b3ace7"
         }
     ]
 }

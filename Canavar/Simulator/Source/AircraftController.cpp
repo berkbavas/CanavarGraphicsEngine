@@ -235,7 +235,7 @@ void Canavar::Simulator::AircraftController::DrawGui()
     ImGui::Text("Roll:        %.1f °", mPfd.roll);
     ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
     ImGui::Text("Heading:     %.1f °", mPfd.heading);
-
+    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }
 

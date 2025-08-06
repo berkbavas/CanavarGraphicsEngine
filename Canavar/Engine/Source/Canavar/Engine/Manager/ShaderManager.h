@@ -29,5 +29,6 @@ namespace Canavar::Engine
         Shader* mShadowMappingShader{ nullptr };
         Shader* mBasicShader{ nullptr };
         Shader* mCrossSection{ nullptr };
+        Shader* mTerrainShader{ nullptr };
     };
 }

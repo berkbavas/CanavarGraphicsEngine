@@ -17,10 +17,10 @@ namespace Canavar::Engine
 
         void Resize(int width, int height) override;
 
-        void MousePressed(QMouseEvent* event) override;
-        void MouseReleased(QMouseEvent* event) override;
-        void MouseMoved(QMouseEvent* event) override;
-        void WheelMoved(QWheelEvent* event) override;
+        bool MousePressed(QMouseEvent* event) override;
+        bool MouseReleased(QMouseEvent* event) override;
+        bool MouseMoved(QMouseEvent* event) override;
+        bool WheelMoved(QWheelEvent* event) override;
 
         const QMatrix4x4& GetProjectionMatrix();
         const QMatrix4x4& GetViewProjectionMatrix() override;

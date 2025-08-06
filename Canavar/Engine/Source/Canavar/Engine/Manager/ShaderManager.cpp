@@ -69,6 +69,13 @@ void Canavar::Engine::ShaderManager::Initialize()
     mCrossSection->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/CrossSection.frag");
     mCrossSection->Initialize();
 
+    mTerrainShader = new Shader(ShaderType::Terrain, "Terrain Shader");
+    mTerrainShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Terrain.vert");
+    mTerrainShader->AddPath(QOpenGLShader::TessellationControl, ":/Resources/Shaders/Terrain.tesc");
+    mTerrainShader->AddPath(QOpenGLShader::TessellationEvaluation, ":/Resources/Shaders/Terrain.tese");
+    mTerrainShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Terrain.frag");
+    mTerrainShader->Initialize();
+
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
@@ -80,6 +87,7 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::ShadowMapping, mShadowMappingShader));
     mShaders.emplace(std::pair(ShaderType::Basic, mBasicShader));
     mShaders.emplace(std::pair(ShaderType::CrossSection, mCrossSection));
+    mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType shaderType)
