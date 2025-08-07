@@ -16,5 +16,7 @@ namespace Canavar::Engine
 
         static float AngleBetween(const QVector3D& v1, const QVector3D& v2, const QVector3D& left);
         static float AngleBetween(const QVector3D& v1, const QVector3D& v2);
+
+        static QQuaternion RotationBetweenVectors(const QVector3D& from, const QVector3D& to);
     };
 }

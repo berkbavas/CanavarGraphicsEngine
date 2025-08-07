@@ -7,7 +7,6 @@
 
 namespace Canavar::Engine
 {
-
     class Camera : public Object, public EventReceiver
     {
       protected:

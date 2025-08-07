@@ -12,10 +12,19 @@
 Canavar::Engine::FreeCamera::FreeCamera()
 {
     SetNodeName("Free Camera");
+    mAnimator = std::make_shared<FreeCameraSlerpAnimator>(this);
+
+    connect(mAnimator.get(), &FreeCameraAnimator::AnimationFinished, this, [this]() { Reset(); });
 }
 
 void Canavar::Engine::FreeCamera::Update(float ifps)
 {
+    if (mAnimator->IsAnimating())
+    {
+        mAnimator->Update(ifps);
+        return;
+    }
+
     // Rotation
     if (mUpdateRotation)
     {
@@ -130,7 +139,7 @@ bool Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
 
 void Canavar::Engine::FreeCamera::GoToObject(ObjectPtr pNode)
 {
-    SetWorldPosition(pNode->GetWorldPosition());
+    mAnimator->AnimateTo(pNode->GetWorldPosition());
 }
 
 void Canavar::Engine::FreeCamera::ToJson(QJsonObject& object)

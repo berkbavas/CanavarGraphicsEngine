@@ -1,15 +1,16 @@
 #pragma once
 
 #include "Canavar/Engine/Core/Structs.h"
+#include "Canavar/Engine/Node/Object/Camera/FreeCameraSlerpAnimator.h"
 #include "Canavar/Engine/Node/Object/Camera/PerspectiveCamera.h"
 
 #include <QMap>
 #include <QMouseEvent>
-
+#include <QObject>
 
 namespace Canavar::Engine
 {
-    class FreeCamera : public PerspectiveCamera
+    class FreeCamera : public PerspectiveCamera, public QObject
     {
       public:
         FreeCamera();
@@ -43,6 +44,8 @@ namespace Canavar::Engine
 
         bool mUpdateRotation{ false };
         bool mUpdatePosition{ false };
+
+        FreeCameraSlerpAnimatorPtr mAnimator{ nullptr };
 
         static const QMap<Qt::Key, QVector3D> KEY_BINDINGS;
 

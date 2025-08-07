@@ -81,3 +81,35 @@ float Canavar::Engine::Math::AngleBetween(const QVector3D& v1, const QVector3D& 
         return qRadiansToDegrees(acos(dot));
     }
 }
+
+QQuaternion Canavar::Engine::Math::RotationBetweenVectors(const QVector3D& v0, const QVector3D& v1)
+{
+    QVector3D from = v0.normalized();
+    QVector3D to = v1.normalized();
+
+    float dot = QVector3D::dotProduct(from, to);
+
+    // If vectors are almost the same
+    if (qFuzzyCompare(dot, 1.0f))
+    {
+        return QQuaternion(); // Identity
+    }
+
+    // If vectors are opposite
+    if (qFuzzyCompare(dot, -1.0f))
+    {
+        // Find an orthogonal vector to use as the rotation axis
+        QVector3D orthogonal = QVector3D(1, 0, 0).crossProduct(from, QVector3D(1, 0, 0));
+        if (orthogonal.lengthSquared() < 1e-6)
+        {
+            orthogonal = QVector3D(0, 1, 0).crossProduct(from, QVector3D(0, 1, 0));
+        }
+        orthogonal.normalize();
+        return QQuaternion::fromAxisAndAngle(orthogonal, 180.0f);
+    }
+
+    QVector3D axis = QVector3D::crossProduct(from, to);
+    float angle = qRadiansToDegrees(std::acos(dot));
+
+    return QQuaternion::fromAxisAndAngle(axis.normalized(), angle);
+}
