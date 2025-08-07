@@ -1,4 +1,5 @@
-#version 420
+// Taken from https://github.com/AntonHakansson/procedural-terrain
+#version 450
 
 // attributes of the input CPs
 // define the number of CPs in the output patch

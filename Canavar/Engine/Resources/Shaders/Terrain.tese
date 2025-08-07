@@ -1,4 +1,5 @@
-#version 420
+// Taken from https://github.com/AntonHakansson/procedural-terrain
+#version 450
 
 layout(triangles, equal_spacing, ccw) in;
 
