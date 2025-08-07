@@ -27,15 +27,21 @@ Canavar::Simulator::Simulator::Simulator()
     mOpenGLWidget->setLayout(mGridLayout);
 
     mBasicSix->installEventFilter(mOpenGLWidget);
-    mBasicSix->setVisible(true);
+    mBasicSix->setVisible(false);
 
     mImGuiWidget = new Canavar::Engine::ImGuiWidget;
     mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
     mImGuiWidget->SetNodeManager(mController->GetNodeManager());
     mImGuiWidget->SetCameraManager(mController->GetCameraManager());
 
+    connect(mImGuiWidget, &Canavar::Engine::ImGuiWidget::GoToObject, this, [=](Canavar::Engine::ObjectPtr pObject) {
+        mController->GetCameraManager()->GetFreeCamera()->GoToObject(pObject);
+        mController->GetCameraManager()->SetActiveCamera(mController->GetCameraManager()->GetFreeCamera());
+    });
+    
     mController->AddEventReceiver(mImGuiWidget);
     mController->AddEventReceiver(this);
+
 }
 
 void Canavar::Simulator::Simulator::Run()

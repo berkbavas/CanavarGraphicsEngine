@@ -31,7 +31,7 @@ bool Canavar::Simulator::AircraftController::Initialize()
 {
     emit Command(Aircraft::Command::Hold);
 
-    mTimer.start(10);
+    mTimer.start(5);
 
     return true;
 }
@@ -217,14 +217,25 @@ void Canavar::Simulator::AircraftController::DrawGui()
     ImGui::SliderFloat("Throttle", &mThrottle, 0.0f, 1.0f, "%.3f");
     ImGui::EndDisabled();
 
+    if (ImGui::SliderFloat("Smooth Position Multiplier", &mSmoothPositionCoefficent, 1.1f, 20.0f))
+    {
+        emit Command(Aircraft::Command::ChangeSmoothPositionCoefficient, mSmoothPositionCoefficent);
+    }
+
     if (ImGui::Button("Init Running"))
+    {
         emit Command(Aircraft::Command::InitRunning);
+    }
 
     if (ImGui::Button("Hold"))
+    {
         emit Command(Aircraft::Command::Hold);
+    }
 
     if (ImGui::Button("Resume"))
+    {
         emit Command(Aircraft::Command::Resume);
+    }
 
     ImGui::Checkbox("Auto Pilot", &mAutoPilotEnabled);
 
@@ -235,6 +246,7 @@ void Canavar::Simulator::AircraftController::DrawGui()
     ImGui::Text("Roll:        %.1f °", mPfd.roll);
     ImGui::Text("Pitch:       %.1f °", mPfd.pitch);
     ImGui::Text("Heading:     %.1f °", mPfd.heading);
+    ImGui::Text("Delta Pos:   %.2f meters", (mPfd.position - mPfd.actualPosition).length());
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }

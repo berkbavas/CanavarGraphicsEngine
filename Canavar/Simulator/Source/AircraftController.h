@@ -56,5 +56,7 @@ namespace Canavar::Simulator
         bool mAutoPilotEnabled{ false };
 
         float mTimeElapsed;
+        
+        float mSmoothPositionCoefficent{ 10.0f }; // Multiplier for smoothing position updates
     };
 }

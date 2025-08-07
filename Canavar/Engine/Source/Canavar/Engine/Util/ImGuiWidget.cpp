@@ -710,7 +710,6 @@ bool Canavar::Engine::ImGuiWidget::MousePressed(QMouseEvent *pEvent)
     {
         mSavedWorldPositions << mFragmentWorldPosition;
         mSelectedWorldPositionIndex = mSavedWorldPositions.lastIndexOf(mFragmentWorldPosition);
-        return true;
     }
 
     return ImGui::GetIO().WantCaptureMouse;
@@ -728,7 +727,7 @@ bool Canavar::Engine::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
     mFragmentLocalPosition = mRenderingManager->FetchFragmentLocalPositionFromScreen(x, y);
     mFragmentWorldPosition = mRenderingManager->FetchFragmentWorldPositionFromScreen(x, y);
     mNodeInfo = mRenderingManager->FetchNodeInfoFromScreenCoordinates(x, y);
-
+    
     return ImGui::GetIO().WantCaptureMouse;
 }
 

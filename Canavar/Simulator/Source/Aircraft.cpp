@@ -52,12 +52,15 @@ bool Canavar::Simulator::Aircraft::Initialize()
     mPropagate = mExecutor->GetPropagate();
     mPropulsion = mExecutor->GetPropulsion();
     mAuxiliary = mExecutor->GetAuxiliary();
-    mExecutor->Setdt(0.01);
 
     double latitude = mExecutor->GetIC()->GetLatitudeDegIC();
     double longitude = mExecutor->GetIC()->GetLongitudeDegIC();
+    double altitude = mExecutor->GetIC()->GetAltitudeASLFtIC() * FEET_TO_METER; // Convert feet to meters;
 
-    mConverter = new Converter(latitude, longitude, 0.0);
+    mConverter = new Converter(latitude, longitude, 0.0f);
+
+    mPreviousPosition = mConverter->ConvertPositionToCartesian(latitude, longitude, altitude);
+    mCurrentPosition = mPreviousPosition;
 
     // Restore the current path
     QDir::setCurrent(currentPath);
@@ -125,13 +128,21 @@ void Canavar::Simulator::Aircraft::ProcessCommand(Canavar::Simulator::Aircraft::
     case Command::PropellerFeather:
         mCommander->SetFeatherCmd(-1, variant.toDouble());
         break;
+    case Command::ChangeSmoothPositionCoefficient:
+        mSmoothPositionCoefficient = variant.toFloat();
+        break;
     }
 }
 
 void Canavar::Simulator::Aircraft::Tick()
 {
+    mCurrentTime = QDateTime::currentMSecsSinceEpoch();
+    const float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
+    mPreviousTime = mCurrentTime;
+
     mPropagate->SetTerrainElevation(0);
 
+    mExecutor->Setdt(ifps);
     mExecutor->Run();
 
     mPfd.angleOfAttack = mAuxiliary->Getalpha();
@@ -149,7 +160,7 @@ void Canavar::Simulator::Aircraft::Tick()
 
     mPfd.latitude = mPropagate->GetLatitudeDeg();
     mPfd.longitude = mPropagate->GetLongitudeDeg();
-    mPfd.altitude = 0.3048 * mPropagate->GetGeodeticAltitude();
+    mPfd.altitude = FEET_TO_METER * mPropagate->GetGeodeticAltitude();
 
     mPfd.rudderPos = qRadiansToDegrees(mCommander->GetDrPos());
     mPfd.elevatorPos = qRadiansToDegrees(mCommander->GetDePos());
@@ -159,8 +170,14 @@ void Canavar::Simulator::Aircraft::Tick()
     JSBSim::FGQuaternion rotation = mPropagate->GetQuaternion();
     QQuaternion localToBody = QQuaternion(rotation(1), rotation(2), rotation(3), rotation(4));
 
+    const auto actual = mConverter->ConvertPositionToCartesian(mPfd.latitude, mPfd.longitude, mPfd.altitude);
+    const auto temp = mCurrentPosition;
+    mCurrentPosition += (actual - mPreviousPosition) / mSmoothPositionCoefficient; // Smooth the position change
+    mPreviousPosition = temp;
+
     mPfd.rotation = mConverter->ConvertRotation(mPfd.latitude, mPfd.longitude, localToBody);
-    mPfd.position = mConverter->ConvertPositionToCartesian(mPfd.latitude, mPfd.longitude, mPfd.altitude);
+    mPfd.position = mCurrentPosition;
+    mPfd.actualPosition = actual;
 
     emit PfdChanged(mPfd);
 }

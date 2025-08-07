@@ -47,6 +47,7 @@ namespace Canavar::Simulator
             InitRunning,
             Hold,
             Resume,
+            ChangeSmoothPositionCoefficient,
         };
         Q_ENUM(Command);
 
@@ -72,6 +73,7 @@ namespace Canavar::Simulator
             double elevatorPos;
             double leftAileronPos;
             double rightAileronPos;
+            QVector3D actualPosition;
         };
 
       public slots:
@@ -91,6 +93,17 @@ namespace Canavar::Simulator
         Converter* mConverter;
 
         PrimaryFlightData mPfd;
+
+        qint64 mCurrentTime{ 0 };
+        qint64 mPreviousTime{ 0 };
+
+        QVector3D mPreviousPosition{ 0.0f, 0.0f, 0.0f };
+        QVector3D mCurrentPosition{ 0.0f, 0.0f, 0.0f };
+
+        float mSmoothPositionCoefficient{ 10.0f }; // Multiplier for smoothing position updates
+
+        static constexpr float FEET_TO_METER{ 0.3048f }; // 1 foot = 0.3048 meters
+        static constexpr float METER_TO_FEET{ 1 / FEET_TO_METER };
     };
 
     Q_DECLARE_METATYPE(Aircraft::Command);
