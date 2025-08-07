@@ -1,5 +1,6 @@
-// Taken from https://github.com/AntonHakansson/procedural-terrain
 #version 450
+
+// Taken from https://github.com/AntonHakansson/procedural-terrain
 
 #define PI 3.14159265359
 

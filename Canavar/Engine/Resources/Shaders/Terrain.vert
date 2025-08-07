@@ -1,5 +1,7 @@
 #version 450
 
+// Taken from https://github.com/AntonHakansson/procedural-terrain
+
 layout(location = 0) in vec3 pos_in;
 layout(location = 1) in vec2 offset_in;
 
