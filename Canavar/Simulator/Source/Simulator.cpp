@@ -38,10 +38,9 @@ Canavar::Simulator::Simulator::Simulator()
         mController->GetCameraManager()->GetFreeCamera()->GoToObject(pObject);
         mController->GetCameraManager()->SetActiveCamera(mController->GetCameraManager()->GetFreeCamera());
     });
-    
+
     mController->AddEventReceiver(mImGuiWidget);
     mController->AddEventReceiver(this);
-
 }
 
 void Canavar::Simulator::Simulator::Run()

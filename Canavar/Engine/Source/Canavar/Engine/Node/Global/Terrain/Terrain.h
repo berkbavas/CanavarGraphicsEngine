@@ -39,8 +39,8 @@ namespace Canavar::Engine
         QVector2D mPreviousTilePosition;
 
         int mSubdivision{ 4 };
-        int mTiles{ 16 };
-        float mWidth{ 4096.0f };
+        int mTiles{ 32 };
+        float mWidth{ 2048.0f };
 
         GLuint mVAO{ 0 };
         GLuint mEBO{ 0 };
