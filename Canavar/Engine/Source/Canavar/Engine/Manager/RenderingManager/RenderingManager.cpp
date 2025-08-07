@@ -19,10 +19,10 @@ void Canavar::Engine::RenderingManager::Initialize()
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormats[Singlesample].setSamples(0);
-    mFramebufferFormats[Temp1].setSamples(0);
-    mFramebufferFormats[Temp2].setSamples(0);
+    mFramebufferFormats[Ping].setSamples(0);
+    mFramebufferFormats[Pong].setSamples(0);
 
-    for (const auto type : { Multisample, Singlesample, Temp1, Temp2 })
+    for (const auto type : { Multisample, Singlesample, Ping, Pong })
     {
         mFramebuffers[type] = nullptr;
     }
@@ -420,7 +420,7 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, Object* 
 
 void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 {
-    for (const auto type : { Multisample, Singlesample, Temp1, Temp2 })
+    for (const auto type : { Multisample, Singlesample, Ping, Pong })
     {
         if (mFramebuffers[type])
         {
@@ -443,7 +443,7 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         mFramebuffers[type]->release();
     }
 
-    for (const auto type : { Temp1, Temp2 })
+    for (const auto type : { Ping, Pong })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
     }

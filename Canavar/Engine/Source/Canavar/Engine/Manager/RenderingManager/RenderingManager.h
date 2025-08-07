@@ -32,8 +32,8 @@ namespace Canavar::Engine
     {
         Multisample,
         Singlesample,
-        Temp1,
-        Temp2
+        Ping,
+        Pong
     };
 
     class RenderingManager : public Manager, protected QOpenGLFunctions_4_3_Core
