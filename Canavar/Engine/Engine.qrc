@@ -28,6 +28,10 @@
         <file>Resources/Shaders/Terrain.tesc</file>
         <file>Resources/Shaders/Terrain.tese</file>
         <file>Resources/Shaders/Terrain.vert</file>
+        <file>Resources/Shaders/Text2D.vert</file>
+        <file>Resources/Shaders/Text2D.frag</file>
+        <file>Resources/Shaders/Text3D.vert</file>
+        <file>Resources/Shaders/Text3D.frag</file>
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>
 </RCC>

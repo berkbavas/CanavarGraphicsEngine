@@ -63,7 +63,7 @@
         {
             "node_name": "Terrain",
             "node_type_name": "Terrain",
-            "uuid": "531cf52e-63c2-4ccc-b6c5-e771fa9ad6db"
+            "uuid": "6b45c764-588e-4244-af6d-1e469bc1dac7"
         },
         {
             "action_receive_button": 4,
@@ -97,65 +97,6 @@
             "z_near": 0.10000000149011612
         },
         {
-            "ambient": 1,
-            "color": {
-                "b": 0,
-                "g": 1,
-                "r": 0
-            },
-            "constant": 1,
-            "diffuse": 1,
-            "enabled": true,
-            "linear": 0.5,
-            "node_name": "Green Light",
-            "node_type_name": "PointLight",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 4.599999904632568,
-                "y": 0,
-                "z": -1.600000023841858
-            },
-            "quadratic": 0,
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 0.10000000149011612,
-                "y": 0.10000000149011612,
-                "z": 0.10000000149011612
-            },
-            "selectable": true,
-            "specular": 1,
-            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
-            "visible": true
-        },
-        {
-            "node_name": "Root Node",
-            "node_type_name": "DummyObject",
-            "position": {
-                "x": 3.19183349609375,
-                "y": 914.4969482421875,
-                "z": 0.0003662109375
-            },
-            "rotation": {
-                "w": -4.371138828673793e-08,
-                "x": 0,
-                "y": -1,
-                "z": 8.82046576141384e-17
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "visible": true
-        },
-        {
             "color": {
                 "b": 1,
                 "g": 1,
@@ -187,13 +128,41 @@
             "visible": true
         },
         {
-            "node_name": "Dummy Camera",
-            "node_type_name": "DummyCamera",
+            "node_name": "Root Node",
+            "node_type_name": "DummyObject",
+            "position": {
+                "x": 3.19183349609375,
+                "y": 914.4969482421875,
+                "z": 0.0003662109375
+            },
+            "rotation": {
+                "w": -4.371138828673793e-08,
+                "x": 0,
+                "y": -1,
+                "z": 8.82046576141384e-17
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "Text3D",
+            "node_type_name": "Text3D",
             "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
                 "x": 0,
-                "y": 3,
-                "z": 25
+                "y": 2,
+                "z": 6
             },
             "rotation": {
                 "w": 1,
@@ -202,16 +171,14 @@
                 "z": 0
             },
             "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
+                "x": 0.009999999776482582,
+                "y": 0.009999999776482582,
+                "z": 0.009999999776482582
             },
             "selectable": true,
-            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
-            "vertical_fov": 60,
-            "visible": true,
-            "z_far": 100000,
-            "z_near": 1
+            "text": "Canavar Graphics Engine",
+            "uuid": "1cbd7c02-c62c-45ff-a711-5840a21f385e",
+            "visible": true
         },
         {
             "ambient": 1,
@@ -250,6 +217,69 @@
             "visible": true
         },
         {
+            "node_name": "Dummy Camera",
+            "node_type_name": "DummyCamera",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 3,
+                "z": 25
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 1
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 0,
+                "g": 1,
+                "r": 0
+            },
+            "constant": 1,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.5,
+            "node_name": "Green Light",
+            "node_type_name": "PointLight",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 4.599999904632568,
+                "y": 0,
+                "z": -1.600000023841858
+            },
+            "quadratic": 0,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
+            "visible": true
+        },
+        {
             "max_length": 1.5,
             "max_life": 0.22499999403953552,
             "max_radius": 0.4000000059604645,
@@ -276,6 +306,22 @@
             "selectable": true,
             "uuid": "a8c1a7e9-0ee8-4dce-abc2-387b6a1e38cc",
             "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "node_name": "Text2D",
+            "node_type_name": "Text2D",
+            "position": {
+                "x": 50,
+                "y": 50
+            },
+            "scale": 0.7400000095367432,
+            "text": "Canavar Graphics Engine",
+            "uuid": "915054f9-11b7-47e4-865a-0b8fd3e53b2a"
         }
     ]
 }

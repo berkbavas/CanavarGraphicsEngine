@@ -30,5 +30,7 @@ namespace Canavar::Engine
         Shader* mBasicShader{ nullptr };
         Shader* mCrossSection{ nullptr };
         Shader* mTerrainShader{ nullptr };
+        Shader* mText2DShader{ nullptr };
+        Shader* mText3DShader{ nullptr };
     };
 }

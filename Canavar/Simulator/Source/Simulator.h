@@ -68,5 +68,8 @@ namespace Canavar::Simulator
         Canavar::Engine::FreeCameraPtr mFreeCamera;
         Canavar::Engine::DummyCameraPtr mDummyCamera;
         Canavar::Engine::PersecutorCameraPtr mPersecutorCamera;
+        Canavar::Engine::Text2DPtr mText2D;
+
+        float mTime{0.0f};
     };
 }

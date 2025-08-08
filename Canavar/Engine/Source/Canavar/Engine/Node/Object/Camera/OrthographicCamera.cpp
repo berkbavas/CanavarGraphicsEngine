@@ -1,11 +1,5 @@
 #include "OrthographicCamera.h"
 
-void Canavar::Engine::OrthographicCamera::Resize(int width, int height)
-{
-    mWidth = width;
-    mHeight = height;
-}
-
 bool Canavar::Engine::OrthographicCamera::MousePressed(QMouseEvent* event)
 {
     mMouse.x = event->position().x();

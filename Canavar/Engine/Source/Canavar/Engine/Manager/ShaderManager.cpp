@@ -76,6 +76,16 @@ void Canavar::Engine::ShaderManager::Initialize()
     mTerrainShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Terrain.frag");
     mTerrainShader->Initialize();
 
+    mText2DShader = new Shader(ShaderType::Text2D, "2D Text Shader");
+    mText2DShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Text2D.vert");
+    mText2DShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Text2D.frag");
+    mText2DShader->Initialize();
+
+    mText3DShader = new Shader(ShaderType::Text2D, "3D Text Shader");
+    mText3DShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Text3D.vert");
+    mText3DShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Text3D.frag");
+    mText3DShader->Initialize();
+
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
@@ -88,6 +98,8 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Basic, mBasicShader));
     mShaders.emplace(std::pair(ShaderType::CrossSection, mCrossSection));
     mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
+    mShaders.emplace(std::pair(ShaderType::Text2D, mText2DShader));
+    mShaders.emplace(std::pair(ShaderType::Text3D, mText3DShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType shaderType)

@@ -1,6 +1,8 @@
 #include "Simulator.h"
 
 #include <Canavar/Engine/Core/Window.h>
+#include <Canavar/Engine/Node/Object/Text/Text2D.h>
+#include <Canavar/Engine/Node/Object/Text/Text3D.h>
 
 #include <QQmlContext>
 
@@ -66,8 +68,9 @@ void Canavar::Simulator::Simulator::Initialize()
     mNodeManager->ImportNodes("Resources/f16.json");
     mFreeCamera = mCameraManager->GetFreeCamera();
     mRootNode = mNodeManager->FindNodeByName<Canavar::Engine::DummyObject>("Root Node");
-    mJetNode = mNodeManager->FindNodeByName<Canavar::Engine::Model>("f16c");
+    mJetNode = mNodeManager->FindNodeByName<Canavar::Engine::Model>("f16");
     mDummyCamera = mNodeManager->FindNodeByName<Canavar::Engine::DummyCamera>("Dummy Camera");
+    mText2D = mNodeManager->FindNodeByName<Canavar::Engine::Text2D>("Text2D");
 
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
@@ -95,6 +98,15 @@ void Canavar::Simulator::Simulator::Initialize()
 
 void Canavar::Simulator::Simulator::PostRender(float ifps)
 {
+    mTime += ifps;
+
+    // Update the 2D text every 0.5 seconds
+    if (mTime >= 0.5f)
+    {
+        mText2D->SetText(QString("FPS: %1").arg(static_cast<int>(1.0f / ifps)));
+        mTime = 0.0f; // Reset the timer
+    }
+
     glDisable(GL_CULL_FACE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

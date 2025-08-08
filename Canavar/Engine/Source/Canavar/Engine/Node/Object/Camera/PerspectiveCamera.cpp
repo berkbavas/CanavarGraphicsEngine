@@ -36,12 +36,6 @@ const QVector3D& Canavar::Engine::PerspectiveCamera::GetViewDirection()
     return mViewDirection;
 }
 
-void Canavar::Engine::PerspectiveCamera::Resize(int width, int height)
-{
-    mWidth = width;
-    mHeight = height;
-}
-
 float Canavar::Engine::PerspectiveCamera::GetHorizontalFov() const
 {
     const auto hfov = std::atan(std::tan(qDegreesToRadians(mVerticalFov) / 2.0f) * GetAspectRatio()) * 2.0f;

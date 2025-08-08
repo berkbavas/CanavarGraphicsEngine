@@ -58,9 +58,9 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
             ImGui::Text("Node Type: %s", pNode->GetNodeTypeName());
             ImGui::Text("Node ID:   %u", pNode->GetNodeId());
 
-            if (const auto newNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
+            if (const auto NewNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
             {
-                pNode->SetNodeName(newNodeName.value().c_str());
+                pNode->SetNodeName(NewNodeName.value().c_str());
             }
         }
 
@@ -80,6 +80,10 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
         {
             DrawTerrain();
         }
+        else if (Engine::Text2DPtr pText2D = std::dynamic_pointer_cast<Engine::Text2D>(mSelectedNode))
+        {
+            DrawText2D(pText2D);
+        }
         else if (Engine::ObjectPtr pObject = std::dynamic_pointer_cast<Engine::Object>(mSelectedNode))
         {
             DrawObject(pObject);
@@ -87,6 +91,10 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
             if (Engine::ModelPtr pModel = std::dynamic_pointer_cast<Engine::Model>(mSelectedNode))
             {
                 DrawModel(pModel);
+            }
+            else if (Engine::Text3DPtr pText3D = std::dynamic_pointer_cast<Engine::Text3D>(mSelectedNode))
+            {
+                DrawText3D(pText3D);
             }
             else if (Engine::PerspectiveCameraPtr pPerspectiveCamera = std::dynamic_pointer_cast<Engine::PerspectiveCamera>(mSelectedNode))
             {
@@ -397,6 +405,27 @@ void Canavar::Engine::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
     ImGui::Checkbox("Use Model Color##Model", &pModel->GetUseModelColor_NonConst());
     ImGui::ColorEdit3("Color##Model", &pModel->GetColor_NonConst()[0]);
     ImGui::Checkbox("Visible##Model", &pModel->GetVisible_NonConst());
+}
+
+void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2DPtr pText)
+{
+    if (const auto newText = InputText("Text##DrawText2D", pText->GetText().toStdString()))
+    {
+        pText->SetText(newText.value().c_str());
+    }
+    ImGui::InputFloat2("Position##Text2D", &pText->GetPosition_NonConst()[0]);
+    ImGui::SliderFloat("Scale##Text2D", &pText->GetScale_NonConst(), 0.0f, 8.0f, "%.2f");
+    ImGui::ColorEdit3("Color##Text2D", &pText->GetColor_NonConst()[0]);
+}
+
+void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3DPtr pText)
+{
+    if (const auto newText = InputText("Text##DrawText3D", pText->GetText().toStdString()))
+    {
+        pText->SetText(newText.value().c_str());
+    }
+
+    ImGui::ColorEdit3("Color##Text3D", &pText->GetColor_NonConst()[0]);
 }
 
 void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCameraPtr pCamera)
@@ -727,7 +756,7 @@ bool Canavar::Engine::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
     mFragmentLocalPosition = mRenderingManager->FetchFragmentLocalPositionFromScreen(x, y);
     mFragmentWorldPosition = mRenderingManager->FetchFragmentWorldPositionFromScreen(x, y);
     mNodeInfo = mRenderingManager->FetchNodeInfoFromScreenCoordinates(x, y);
-    
+
     return ImGui::GetIO().WantCaptureMouse;
 }
 

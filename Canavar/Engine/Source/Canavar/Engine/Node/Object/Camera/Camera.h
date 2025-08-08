@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Node/Object/Object.h"
 
@@ -13,19 +14,26 @@ namespace Canavar::Engine
         Camera() = default;
 
       public:
+        int GetWidth() const;
+        int GetHeight() const;
+
+        QVector2D Project3DTo2D(const QVector3D &pos3D);
+
+        float CalculateSkyYOffset(float horizonDistance);
+
         virtual const QMatrix4x4 &GetProjectionMatrix() = 0;
         virtual const QMatrix4x4 &GetViewProjectionMatrix() = 0;
         virtual const QMatrix4x4 &GetRotationMatrix() = 0;
         virtual const QMatrix4x4 &GetViewMatrix() = 0;
         virtual const QVector3D &GetViewDirection() = 0;
-        virtual int GetWidth() const = 0;
-        virtual int GetHeight() const = 0;
-
-        virtual float CalculateSkyYOffset(float horizonDistance);
 
         virtual void Update(float ifps);
         virtual void Reset();
         virtual void Resize(int w, int h);
+
+      protected:
+        int mWidth{ INITIAL_WIDTH };
+        int mHeight{ INITIAL_HEIGHT };
 
       private:
         QMatrix4x4 mTransformCacheForSkyYOffset;

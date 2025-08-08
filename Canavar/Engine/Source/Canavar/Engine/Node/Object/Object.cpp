@@ -247,6 +247,11 @@ void Canavar::Engine::Object::SetScale(float x, float y, float z)
     SetScale(QVector3D(x, y, z));
 }
 
+void Canavar::Engine::Object::SetScale(float uniformScale)
+{
+    SetScale(uniformScale, uniformScale, uniformScale);
+}
+
 void Canavar::Engine::Object::RotateGlobal(const QVector3D& axis, float angle)
 {
     SetWorldRotation(QQuaternion::fromAxisAndAngle(axis, angle) * GetWorldRotation());

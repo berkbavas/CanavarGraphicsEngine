@@ -9,8 +9,10 @@
 #include "Canavar/Engine/Node/Object/Light/PointLight.h"
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
-#include "Canavar/Engine/Util/Macros.h"
+#include "Canavar/Engine/Node/Object/Text/Text2D.h"
+#include "Canavar/Engine/Node/Object/Text/Text3D.h"
 #include "Canavar/Engine/Util/ImGuiClient.h"
+#include "Canavar/Engine/Util/Macros.h"
 
 namespace Canavar::Engine
 {
@@ -20,7 +22,7 @@ namespace Canavar::Engine
       public:
         void Initialize();
         void Draw();
-        void AddClient(ImGuiClient* pClient);
+        void AddClient(ImGuiClient *pClient);
 
         // EventReceiver overrides
         bool KeyPressed(QKeyEvent *) override;
@@ -46,6 +48,8 @@ namespace Canavar::Engine
 
         void DrawObject(Engine::ObjectPtr pObject);
         void DrawModel(Engine::ModelPtr pModel);
+        void DrawText2D(Engine::Text2DPtr pText);
+        void DrawText3D(Engine::Text3DPtr pText);
         void DrawCamera(Engine::PerspectiveCameraPtr pCamera);
         void DrawDirectionalLight(Engine::DirectionalLightPtr pLight);
         void DrawPointLight(Engine::PointLightPtr pLight);
@@ -82,7 +86,7 @@ namespace Canavar::Engine
         QString mSelectedSceneName = "-";  // To be created
         QString mSelectedObjectName = "-"; // To be created
 
-        QVector<ImGuiClient*> mClients;
+        QVector<ImGuiClient *> mClients;
 
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(Engine::CameraManager, CameraManager);

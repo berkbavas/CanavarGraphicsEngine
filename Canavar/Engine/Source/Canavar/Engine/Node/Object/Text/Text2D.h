@@ -12,6 +12,8 @@ namespace Canavar::Engine
       public:
         Text2D();
 
+        const char *GetNodeTypeName() const override { return "Text2D"; }
+
         void ToJson(QJsonObject &object) override;
         void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
 

@@ -16,7 +16,9 @@ namespace Canavar::Engine
         PointCloud,
         Basic,
         CrossSection,
-        Terrain
+        Terrain,
+        Text2D,
+        Text3D
     };
 
     enum class ViewDirection

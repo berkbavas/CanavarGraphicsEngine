@@ -7,6 +7,9 @@
 #include "Canavar/Engine/Node/Object/Light/PointLight.h"
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeAttractor.h"
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
+#include "Canavar/Engine/Node/Object/Text/Text2D.h"
+#include "Canavar/Engine/Node/Object/Text/Text3D.h"
+
 
 #define RETURN_NODE(TYPE) \
     if (type == #TYPE) \
@@ -23,6 +26,8 @@ Canavar::Engine::NodePtr Canavar::Engine::NodeFactory::CreateNode(const QString 
     RETURN_NODE(PointLight);
     RETURN_NODE(LightningStrikeAttractor);
     RETURN_NODE(LightningStrikeGenerator);
+    RETURN_NODE(Text2D);
+    RETURN_NODE(Text3D);
 
     return nullptr;
 }
@@ -38,4 +43,6 @@ QVector<QString> Canavar::Engine::NodeFactory::mNodeNames = { "DummyCamera",
                                                               "DirectionalLight",
                                                               "PointLight",
                                                               "LightningStrikeAttractor", //
-                                                              "LightningStrikeGenerator" };
+                                                              "LightningStrikeGenerator",
+                                                              "Text2D",
+                                                              "Text3D" };

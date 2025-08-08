@@ -27,6 +27,7 @@ namespace Canavar::Engine
     class CameraManager;
     class LightManager;
     class BoundingBoxRenderer;
+    class TextRenderer;
 
     enum Framebuffer
     {
@@ -79,6 +80,7 @@ namespace Canavar::Engine
         LightManager *mLightManager;
 
         BoundingBoxRenderer *mBoundingBoxRenderer;
+        TextRenderer *mTextRenderer;
         DEFINE_MEMBER_PTR_CONST(ShadowMappingRenderer, ShadowMappingRenderer);
 
         Camera *mActiveCamera{ nullptr };

@@ -48,6 +48,7 @@ namespace Canavar::Engine
         void SetPosition(float x, float y, float z);
         void SetScale(const QVector3D& newScale);
         void SetScale(float x, float y, float z);
+        void SetScale(float uniformScale);
 
         void RotateGlobal(const QVector3D& axis, float angle);
         void RotateLocal(const QVector3D& axis, float angle);

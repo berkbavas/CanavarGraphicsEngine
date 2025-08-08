@@ -15,8 +15,6 @@ namespace Canavar::Engine
 
         const char* GetNodeTypeName() const override { return "OrthographicCamera"; }
 
-        void Resize(int width, int height) override;
-
         bool MousePressed(QMouseEvent* event) override;
         bool MouseReleased(QMouseEvent* event) override;
         bool MouseMoved(QMouseEvent* event) override;
@@ -27,9 +25,6 @@ namespace Canavar::Engine
         const QMatrix4x4& GetRotationMatrix() override;
         const QMatrix4x4& GetViewMatrix() override;
         const QVector3D& GetViewDirection() override;
-
-        int GetWidth() const override { return mWidth; }
-        int GetHeight() const override { return mHeight; }
 
         float GetAspectRatio() const;
 
@@ -53,9 +48,6 @@ namespace Canavar::Engine
         QMatrix4x4 mViewMatrix;
         QMatrix4x4 mRotationMatrix;
         QVector3D mViewDirection;
-
-        int mWidth{ INITIAL_WIDTH };
-        int mHeight{ INITIAL_HEIGHT };
 
         DEFINE_MEMBER(float, Zoom, 1.0f);
         DEFINE_MEMBER(float, Top, 0.0f);

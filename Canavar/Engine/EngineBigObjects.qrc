@@ -17,6 +17,5 @@
         <file>Resources/Terrain/grass/displacement.jpg</file>
         <file>Resources/Terrain/rock/displacement.jpg</file>
         <file>Resources/Terrain/snow/displacement.jpg</file>
-        
     </qresource>
 </RCC>

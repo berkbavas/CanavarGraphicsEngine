@@ -4,6 +4,7 @@
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/BoundingBoxRenderer.h"
+#include "Canavar/Engine/Manager/RenderingManager/TextRenderer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
 
@@ -30,6 +31,7 @@ void Canavar::Engine::RenderingManager::Initialize()
     mQuad = new Quad;
 
     mBoundingBoxRenderer = new BoundingBoxRenderer;
+    mTextRenderer = new TextRenderer;
     mShadowMappingRenderer = new ShadowMappingRenderer;
     mCrossSectionAnalyzer = new CrossSectionAnalyzer;
 
@@ -46,6 +48,10 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mBoundingBoxRenderer->SetShaderManager(mShaderManager);
     mBoundingBoxRenderer->SetNodeManager(mNodeManager);
     mBoundingBoxRenderer->Initialize();
+
+    mTextRenderer->SetShaderManager(mShaderManager);
+    mTextRenderer->SetNodeManager(mNodeManager);
+    mTextRenderer->Initialize();
 
     mSky = mNodeManager->GetSky();
     mSun = mNodeManager->GetSun();
@@ -118,6 +124,8 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
         mCrossSectionAnalyzer->RenderPlane();
     }
 
+    mTextRenderer->Render(mActiveCamera);
+
     emit RenderLoop(ifps);
 
     mFramebuffers[Multisample]->release();
@@ -187,6 +195,8 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
 
     RenderObjects(pCamera, mIfps);
 
+    mTextRenderer->Render(mActiveCamera);
+
     // For QPainter
     glDisable(GL_CULL_FACE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -198,6 +208,8 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     mWidth = width;
     mHeight = height;
 
+    mTextRenderer->Resize(width, height);
+    
     ResizeFramebuffers();
 }
 

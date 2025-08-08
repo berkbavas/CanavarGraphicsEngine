@@ -23,7 +23,7 @@ set(INCLUDE_DIR
     ${ASSIMP_DIR}/include
     ${JSBSIM_DIR}/include
     ${OPENCV_DIR}/include
-    ${FREETYPE_DIR}/include
+    ${FREETYPE_DIR}/include/freetype2
 )
 				
 set(LIBS_DIR
