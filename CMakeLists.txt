@@ -16,12 +16,14 @@ set(QT_IMGUI_DIR Libs/qtimgui)
 set(ASSIMP_DIR Libs/assimp)
 set(JSBSIM_DIR Libs/JSBSim)
 set(OPENCV_DIR Libs/opencv-4.10.0)
+set(FREETYPE_DIR Libs/freetype)
 
 set(INCLUDE_DIR 
     ${QT_IMGUI_DIR}/include 
     ${ASSIMP_DIR}/include
     ${JSBSIM_DIR}/include
     ${OPENCV_DIR}/include
+    ${FREETYPE_DIR}/include
 )
 				
 set(LIBS_DIR
@@ -29,6 +31,7 @@ set(LIBS_DIR
     ${ASSIMP_DIR}/lib
     ${JSBSIM_DIR}/lib
     ${OPENCV_DIR}/x64/vc17/lib
+    ${FREETYPE_DIR}/lib
 )
 			 
 set(LIBS
@@ -44,6 +47,7 @@ set(LIBS
     opencv_calib3d4100
     opencv_imgproc4100
     opencv_highgui4100
+    freetype
 )
 
 link_directories(${LIBS_DIR})

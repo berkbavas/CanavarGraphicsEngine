@@ -9,10 +9,10 @@ in float gsForkLevel[];
 out vec3 outWorldPosition;
 out float outForkLevel;
 
-uniform float gElapsedTime = 0;
-uniform float gJitterDisplacement;
-uniform float gForkLength;
-uniform int gMode; // 0-> Jitter, 1-> Fork
+uniform float uElapsedTime = 0;
+uniform float uJitterDisplacement;
+uniform float uForkLength;
+uniform int uMode; // 0-> Jitter, 1-> Fork
 
 // ########## The code below is taken from https://stackoverflow.com/a/17479300 ##########
 // A single iteration of Bob Jenkins' One-At-A-Time hashing algorithm.
@@ -57,7 +57,7 @@ float floatConstruct(uint m)
 // Pseudo-random value in half-open range [0:1].
 float random(float x)
 {
-    return floatConstruct(hash(floatBitsToUint(gElapsedTime + x)));
+    return floatConstruct(hash(floatBitsToUint(uElapsedTime + x)));
 }
 float random(vec2 v)
 {
@@ -92,7 +92,7 @@ void main()
     vec3 p1 = gsWorldPosition[1];
     vec3 middlePoint = 0.5f * (p0 + p1);
     vec3 jitterJumpVector = generateJumpVector(p0, p1);
-    vec3 newMiddlePoint = middlePoint + gJitterDisplacement * jitterJumpVector;
+    vec3 newMiddlePoint = middlePoint + uJitterDisplacement * jitterJumpVector;
 
     // Jittering
     outWorldPosition = p0;
@@ -113,13 +113,13 @@ void main()
     EmitVertex();
     EndPrimitive();
 
-    if (gMode == 1) // Fork
+    if (uMode == 1) // Fork
     {
         vec3 newDirection = normalize(newMiddlePoint - p0);
         vec3 prevDir = normalize(p1 - p0);
         float s = random(10.0f);
         vec3 forkDirection = normalize(s * prevDir + (1 - s) * newDirection);
-        vec3 forkEndPoint = newMiddlePoint + gForkLength * forkDirection;
+        vec3 forkEndPoint = newMiddlePoint + uForkLength * forkDirection;
 
         outWorldPosition = newMiddlePoint;
         outForkLevel = forkLevel + 1.0f;

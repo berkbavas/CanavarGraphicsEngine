@@ -1,13 +1,13 @@
 #version 430 core
 
-uniform vec4 color;
+uniform vec4 uColor;
 
-layout(location = 0) out vec4 outColor;
-layout(location = 1) out vec4 fragLocalPosition;
-layout(location = 2) out vec4 fragWorldPosition;
-layout(location = 3) out vec4 nodeInfo;
+layout(location = 0) out vec4 OutColor;
+layout(location = 1) out vec4 OutFragLocalPosition;
+layout(location = 2) out vec4 OutFragWorldPosition;
+layout(location = 3) out vec4 OutNodeInfo;
 
 void main()
 {
-    outColor = color;
+    OutColor = uColor;
 }

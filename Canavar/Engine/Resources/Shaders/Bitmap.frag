@@ -2,11 +2,11 @@
 
 in vec2 fsTextureCoords;
 
-uniform sampler2D sourceTexture;
+uniform sampler2D uSourceTexture;
 
-out vec4 outColor;
+out vec4 OutColor;
 
 void main()
 {
-    outColor = texture(sourceTexture, fsTextureCoords);
+    OutColor = texture(uSourceTexture, fsTextureCoords);
 }

@@ -8,9 +8,9 @@ struct Plane
     vec3 normal;
 };
 
-uniform Plane plane;
+uniform Plane uPlane;
 
-uniform mat4 VP;
+uniform mat4 uVP;
 
 layout(line_strip, max_vertices = 3) out;
 
@@ -20,11 +20,11 @@ layout(line_strip, max_vertices = 3) out;
 // neccessarily normalized) plane normal, and d is a scalar. Any way the plane is given -
 // DistFromPlane should just let the input vector into the plane equation.
 
-const float planeD = -dot(plane.normal, plane.point);
+const float planeD = -dot(uPlane.normal, uPlane.point);
 
 float DistFromPlane(vec3 P)
 {
-    return dot(plane.normal, P) + planeD;
+    return dot(uPlane.normal, P) + planeD;
 }
 
 bool GetSegmentPlaneIntersection(vec3 P1, vec3 P2, out vec3 outP)
@@ -54,21 +54,21 @@ void main()
     if (GetSegmentPlaneIntersection(triA, triB, IntersectionPoint))
     {
         NumberOfIntersections++;
-        gl_Position = VP * vec4(IntersectionPoint, 1.0f);
+        gl_Position = uVP * vec4(IntersectionPoint, 1.0f);
         EmitVertex();
     }
 
     if (GetSegmentPlaneIntersection(triB, triC, IntersectionPoint))
     {
         NumberOfIntersections++;
-        gl_Position = VP * vec4(IntersectionPoint, 1.0f);
+        gl_Position = uVP * vec4(IntersectionPoint, 1.0f);
         EmitVertex();
     }
 
     if (GetSegmentPlaneIntersection(triC, triA, IntersectionPoint))
     {
         NumberOfIntersections++;
-        gl_Position = VP * vec4(IntersectionPoint, 1.0f);
+        gl_Position = uVP * vec4(IntersectionPoint, 1.0f);
         EmitVertex();
     }
 }

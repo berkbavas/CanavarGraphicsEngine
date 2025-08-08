@@ -60,8 +60,8 @@ void Canavar::Engine::CrossSectionAnalyzer::RenderPlane()
     mPlane->SetScale(mPlaneScale);
 
     mBasicShader->Bind();
-    mBasicShader->SetUniformValue("MVP", mCameraManager->GetActiveCamera()->GetViewProjectionMatrix() * mPlane->GetTransformation());
-    mBasicShader->SetUniformValue("color", mPlaneColor);
+    mBasicShader->SetUniformValue("uMVP", mCameraManager->GetActiveCamera()->GetViewProjectionMatrix() * mPlane->GetTransformation());
+    mBasicShader->SetUniformValue("ucolor", mPlaneColor);
     mPlane->Render();
     mBasicShader->Release();
 
@@ -97,10 +97,10 @@ void Canavar::Engine::CrossSectionAnalyzer::RenderCrossSection()
     glLineWidth(2.0f);
 
     mCrossSectionShader->Bind();
-    mCrossSectionShader->SetUniformValue("VP", mCrossSectionProjectionMatrix * mCrossSectionViewMatrix);
-    mCrossSectionShader->SetUniformValue("plane.point", mPlane->GetPosition());
-    mCrossSectionShader->SetUniformValue("plane.normal", mPlane->GetRotation() * QVector3D(0, 0, -1));
-    mCrossSectionShader->SetUniformValue("color", mCrossSectionColor);
+    mCrossSectionShader->SetUniformValue("uVP", mCrossSectionProjectionMatrix * mCrossSectionViewMatrix);
+    mCrossSectionShader->SetUniformValue("uPlane.point", mPlane->GetPosition());
+    mCrossSectionShader->SetUniformValue("uPlane.normal", mPlane->GetRotation() * QVector3D(0, 0, -1));
+    mCrossSectionShader->SetUniformValue("uColor", mCrossSectionColor);
 
     const auto& nodes = mNodeManager->GetNodes();
 

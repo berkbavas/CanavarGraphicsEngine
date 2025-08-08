@@ -16,8 +16,8 @@ void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
     const auto& objects = mNodeManager->GetObjects();
 
     mLineShader->Bind();
-    mLineShader->SetUniformValue("color", LINE_COLOR);
-    mLineShader->SetUniformValue("zFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    mLineShader->SetUniformValue("uColor", LINE_COLOR);
+    mLineShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
 
     for (const auto& pObject : objects)
     {
@@ -30,7 +30,7 @@ void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
         {
             if (const auto pScene = mNodeManager->GetScene(pModel))
             {
-                mLineShader->SetUniformValue("MVP", VP * pModel->GetWorldTransformation() * pScene->GetAABB().GetTransformation());
+                mLineShader->SetUniformValue("uMVP", VP * pModel->GetWorldTransformation() * pScene->GetAABB().GetTransformation());
                 mCubeStrip->Render();
             }
             else
@@ -40,7 +40,7 @@ void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
         }
         else
         {
-            mLineShader->SetUniformValue("MVP", VP * pObject->GetWorldTransformation() * pObject->GetAABB().GetTransformation());
+            mLineShader->SetUniformValue("uMVP", VP * pObject->GetWorldTransformation() * pObject->GetAABB().GetTransformation());
             mCubeStrip->Render();
         }
     }

@@ -82,12 +82,12 @@ void Canavar::Engine::LightningStrikeBase::Update(Shader* pLightningStrikeShader
 
         if (mFreeze == false)
         {
-            pLightningStrikeShader->SetUniformValue("gElapsedTime", mElapsedTime);
+            pLightningStrikeShader->SetUniformValue("uElapsedTime", mElapsedTime);
         }
 
-        pLightningStrikeShader->SetUniformValue("gJitterDisplacement", JitterDisplacement);
-        pLightningStrikeShader->SetUniformValue("gForkLength", ForkLength);
-        pLightningStrikeShader->SetUniformValue("gMode", index % 4 < 2 ? 1 : 0);
+        pLightningStrikeShader->SetUniformValue("uJitterDisplacement", JitterDisplacement);
+        pLightningStrikeShader->SetUniformValue("uForkLength", ForkLength);
+        pLightningStrikeShader->SetUniformValue("uMode", index % 4 < 2 ? 1 : 0);
 
         glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffers[mCurrentVertexBufferIndex]);
         glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, mTransformFeedbacks[mCurrentTransformFeedbackBufferIndex]);
@@ -133,8 +133,8 @@ void Canavar::Engine::LightningStrikeBase::Update(Shader* pLightningStrikeShader
 void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLineShader, float ifps)
 {
     pLineShader->Bind();
-    pLineShader->SetUniformValue("MVP", pCamera->GetViewProjectionMatrix());
-    pLineShader->SetUniformValue("color", mColor);
+    pLineShader->SetUniformValue("uMVP", pCamera->GetViewProjectionMatrix());
+    pLineShader->SetUniformValue("uColor", mColor);
 
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffers[mCurrentTransformFeedbackBufferIndex]);
 

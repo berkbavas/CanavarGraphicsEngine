@@ -37,7 +37,7 @@ void Canavar::Engine::ShadowMappingRenderer::Render(float ifps)
     mFramebuffer->Bind();
     mShadowMappingShader->Bind();
 
-    mShadowMappingShader->SetUniformValue("LVP", mLightViewProjectionMatrix);
+    mShadowMappingShader->SetUniformValue("uLightViewProjectionMatrix", mLightViewProjectionMatrix);
 
     const auto& nodes = mNodeManager->GetNodes();
 
