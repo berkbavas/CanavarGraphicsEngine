@@ -1,7 +1,7 @@
 #include "LightningStrikeBase.h"
 
 #include "Canavar/Engine/Core/Shader.h"
-#include "Canavar/Engine/Node/Object/Camera/Camera.h"
+#include "Canavar/Engine/Node/Object/Camera/PerspectiveCamera.h"
 
 Canavar::Engine::LightningStrikeBase::LightningStrikeBase()
     : Object()
@@ -135,6 +135,7 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLine
     pLineShader->Bind();
     pLineShader->SetUniformValue("uMVP", pCamera->GetViewProjectionMatrix());
     pLineShader->SetUniformValue("uColor", mColor);
+    pLineShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
 
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffers[mCurrentTransformFeedbackBufferIndex]);
 

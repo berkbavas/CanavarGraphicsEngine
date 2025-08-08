@@ -203,6 +203,7 @@ void Canavar::Engine::TextRenderer::Render3DTexts()
         {
             mText3DShader->SetUniformValue("uModelMatrix", pText3D->GetWorldTransformation());
             mText3DShader->SetUniformValue("uMVP", mActiveCamera->GetViewProjectionMatrix() * pText3D->GetWorldTransformation());
+            mText3DShader->SetUniformValue("uNodeId", static_cast<float>(pText3D->GetNodeId()));
             RenderText(mText3DShader, pText3D->GetText(), 0, 0, 1, pText3D->GetColor());
         }
     }

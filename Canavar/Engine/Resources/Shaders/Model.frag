@@ -213,7 +213,7 @@ vec3 ProcessHaze(float distance, vec3 fragWorldPos, vec3 subjectColor)
     {
         float factor = exp(-pow(distance * 0.00005f * uHaze.density, uHaze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(uHaze.color * clamp(uDirectionalLights[0].direction.y, 0.0f, 1.0f), subjectColor, factor);
+        result = mix(uHaze.color * clamp(-uDirectionalLights[0].direction.y, 0.0f, 1.0f), subjectColor, factor);
     }
 
     return result;
