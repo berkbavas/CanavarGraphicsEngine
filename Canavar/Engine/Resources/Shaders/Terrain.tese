@@ -14,6 +14,7 @@ In[];
 
 uniform mat4 VP;
 uniform mat4 V;
+uniform mat4 LVP; // Light view-projection matrix
 uniform float z_far;
 
 // Noise
@@ -40,6 +41,7 @@ out DATA
     vec3 bitangent;
     mat3 tangent_matrix;
     float f_log_z;
+    vec4 light_space_pos; // Position in light space
 }
 Out;
 
@@ -204,6 +206,7 @@ void main()
     Out.tangent = normalize(cross(Out.normal, vec3(0, 1, 0)));
     Out.bitangent = normalize(cross(Out.tangent, Out.normal));
     Out.tangent_matrix = mat3(Out.tangent, Out.bitangent, Out.normal);
+    Out.light_space_pos = LVP * vec4(Out.world_pos, 1.0);
 
     gl_Position = VP * vec4(Out.world_pos, 1.0);
 

@@ -495,19 +495,29 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
 {
     if (ImGui::CollapsingHeader("Render Settings"))
     {
+        const auto pShadowMappingRenderer = mRenderingManager->GetShadowMappingRenderer();
         ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
 
-        // ImGui::Checkbox("Shadows Enabled", &mRenderingManager->GetShadowsEnabled_NonConst());
-        // ImGui::Checkbox("Use Orthographic Projection", &mRenderingManager->GetShadowMappingRenderer()->GetUseOrthographicProjection_NonConst());
-        // ImGui::SliderFloat("Shadow Bias", &mRenderingManager->GetShadowBias_NonConst(), 0.00001f, 0.001f, "%.5f");
-        // ImGui::SliderInt("Shadow Samples", &mRenderingManager->GetShadowSamples_NonConst(), 1, 6);
-        // ImGui::SliderFloat("Shadow Projection FOV", &mRenderingManager->GetShadowMappingRenderer()->GetFov_NonConst(), 5, 90);
-        // ImGui::SliderFloat("Shadow Projection Z-Near", &mRenderingManager->GetShadowMappingRenderer()->GetZNear_NonConst(), 1, 20);
-        // ImGui::SliderFloat("Shadow Projection Z-Far", &mRenderingManager->GetShadowMappingRenderer()->GetZFar_NonConst(), 20, 1000);
-        // ImGui::SliderFloat("Shadow Sun Distance", &mRenderingManager->GetShadowMappingRenderer()->GetSunDistance_NonConst(), 1, 1000);
+        ImGui::Checkbox("Shadows Enabled", &mRenderingManager->GetShadowsEnabled_NonConst());
+        ImGui::Checkbox("Use Orthographic Projection", &pShadowMappingRenderer->GetUseOrthographicProjection_NonConst());
+        ImGui::SliderFloat("Shadow Bias", &mRenderingManager->GetShadowBias_NonConst(), 0.00001f, 0.001f, "%.5f");
+        ImGui::SliderInt("Shadow Samples", &mRenderingManager->GetShadowSamples_NonConst(), 1, 6);
 
-        ImGui::SliderFloat("Blur Threshold", &mRenderingManager->GetBlurThreshold_NonConst(), 100, 10'000);
-        ImGui::SliderInt("Max Samples##DrawRenderSettings", &mRenderingManager->GetMaxSamples_NonConst(), 1, 6);
+        if (pShadowMappingRenderer->GetUseOrthographicProjection())
+        {
+            ImGui::SliderFloat("Shadow Orthographic Projection Size", &pShadowMappingRenderer->GetOrthographicSize_NonConst(), 10, 1000);
+        }
+        else
+        {
+            ImGui::SliderFloat("Shadow Perspective Projection FOV", &pShadowMappingRenderer->GetFov_NonConst(), 5, 90);
+            ImGui::SliderFloat("Shadow Perspective Projection Z-Near", &pShadowMappingRenderer->GetZNear_NonConst(), 1, 20);
+            ImGui::SliderFloat("Shadow Perspective Projection Z-Far", &pShadowMappingRenderer->GetZFar_NonConst(), 20, 1000);
+        }
+
+        ImGui::SliderFloat("Sun Distance", &pShadowMappingRenderer->GetSunDistance_NonConst(), 1, 1000);
+
+        // ImGui::SliderFloat("Blur Threshold", &mRenderingManager->GetBlurThreshold_NonConst(), 100, 10'000);
+        // ImGui::SliderInt("Max Samples##DrawRenderSettings", &mRenderingManager->GetMaxSamples_NonConst(), 1, 6);
 
         ImGui::Checkbox("ACES Enabled", &mRenderingManager->GetEnableAces_NonConst());
 

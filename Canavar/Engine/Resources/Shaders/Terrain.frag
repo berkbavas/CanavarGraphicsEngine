@@ -15,6 +15,7 @@ in DATA
     vec3 bitangent;
     mat3 tangent_matrix;
     float f_log_z;
+    vec4 light_space_pos; // Position in light space for shadow mapping
 }
 In;
 
@@ -64,6 +65,14 @@ struct PointLight
     float quadratic;
 };
 
+struct Shadow
+{
+    sampler2D map;
+    bool enabled;
+    float bias;
+    int samples;
+};
+
 layout(binding = 0) uniform sampler2DArray albedos;
 layout(binding = 1) uniform sampler2DArray normals;
 layout(binding = 2) uniform sampler2DArray displacement;
@@ -87,6 +96,7 @@ uniform float texture_displacement_weights[4];
 uniform Noise noise;
 uniform Haze haze;
 uniform Terrain terrain;
+uniform Shadow shadow;
 
 uniform PointLight point_lights[8];
 uniform int number_of_point_lights;
@@ -219,7 +229,7 @@ vec3 terrainNormal(vec3 world_pos, vec3 normal)
     return norm;
 }
 
-vec3 process_directional_lights(vec3 color, vec3 normal, vec3 light_out)
+vec3 process_directional_lights(vec3 color, vec3 normal, vec3 light_out, float shadow_factor)
 {
     vec3 result = vec3(0.0f);
 
@@ -239,14 +249,15 @@ vec3 process_directional_lights(vec3 color, vec3 normal, vec3 light_out)
         vec3 hd = normalize(ld + light_out);
         float sf = max(dot(normal, hd), 0.0);
         float specular = pow(sf, terrain.shininess) * terrain.specular * light.specular;
+        float light_factor = (ambient * (1 - 0.5 * shadow_factor) + diffuse * (1 - shadow_factor) + specular * (1 - shadow_factor));
 
-        result += (ambient + diffuse + specular) * color * light.color;
+        result += light_factor * color * light.color;
     }
 
     return result;
 }
 
-vec3 process_point_lights(vec3 color, vec3 normal, vec3 light_out, vec3 world_pos)
+vec3 process_point_lights(vec3 color, vec3 normal, vec3 light_out, vec3 world_pos, float shadow_factor)
 {
     vec3 result = vec3(0);
 
@@ -270,8 +281,9 @@ vec3 process_point_lights(vec3 color, vec3 normal, vec3 light_out, vec3 world_po
         // Attenuation
         float distance = length(light.position - world_pos);
         float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
+        float light_factor = (ambient * (1 - 0.5 * shadow_factor) + diffuse * (1 - shadow_factor) + specular * (1 - shadow_factor));
 
-        result += (ambient + diffuse + specular) * color * light.color * attenuation;
+        result += light_factor * color * light.color * attenuation;
     }
 
     return result;
@@ -286,6 +298,46 @@ vec3 process_haze(float distance, vec3 color)
         float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
         result = mix(haze.color * clamp(-directional_lights[0].direction.y, 0.0f, 1.0f), color, factor);
+    }
+
+    return result;
+}
+
+// Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
+float calculate_shadow()
+{
+    // perform perspective divide
+    vec3 projCoords = In.light_space_pos.xyz / In.light_space_pos.w;
+
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadow.map, projCoords.xy).r;
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+    vec2 texelSize = 1.0 / textureSize(shadow.map, 0);
+
+    int samples = shadow.samples;
+    float result = 0.0f;
+
+    for (int x = -samples; x <= samples; ++x)
+    {
+        for (int y = -samples; y <= samples; ++y)
+        {
+            float pcfDepth = texture(shadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
+            result += currentDepth - shadow.bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+
+    result /= pow(2 * samples + 1, 2);
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (projCoords.z > 1.0)
+    {
+        result = 0.0;
     }
 
     return result;
@@ -314,12 +366,19 @@ void main()
         normal += getWorldNormal(tex_coords[i]) * weights[i];
     }
 
+    float shadow_factor = 0.0f;
+
+    if (shadow.enabled)
+    {
+        shadow_factor = calculate_shadow();
+    }
+
     vec3 light_out = normalize(eye_world_pos - In.world_pos);
     float distance = length(eye_world_pos - In.world_pos);
 
     vec3 result = vec3(0.0f);
-    result += process_directional_lights(color, normal, light_out);
-    result += process_point_lights(color, normal, light_out, In.world_pos);
+    result += process_directional_lights(color, normal, light_out, shadow_factor);
+    result += process_point_lights(color, normal, light_out, In.world_pos, shadow_factor);
     result = process_haze(distance, result);
 
     // Note that the terrain has no model matrix so its local and world coordinates are equal.

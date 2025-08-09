@@ -90,11 +90,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     if (mShadowsEnabled)
     {
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_FRONT);
         mShadowMappingRenderer->Render(ifps);
-        glCullFace(GL_BACK);
-        glDisable(GL_CULL_FACE);
     }
 
     mActiveCamera = mCameraManager->GetActiveCamera().get();
@@ -209,7 +205,7 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     mHeight = height;
 
     mTextRenderer->Resize(width, height);
-    
+
     ResizeFramebuffers();
 }
 
@@ -288,6 +284,11 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel, RenderPass 
     mModelShader->SetUniformValue("uModel.diffuse", pModel->GetDiffuse());
     mModelShader->SetUniformValue("uModel.specular", pModel->GetSpecular());
     mModelShader->SetUniformValue("uModel.shininess", pModel->GetShininess());
+    mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
+    mModelShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+    mModelShader->SetUniformValue("uShadow.enabled", mShadowsEnabled);
+    mModelShader->SetUniformValue("uShadow.bias", mShadowBias);
+    mModelShader->SetUniformValue("uShadow.samples", mShadowSamples);
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
@@ -325,7 +326,9 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera*
     const auto number_of_point_lights = std::min(8, static_cast<int>(point_lights.size()));
 
     mTerrainShader->Bind();
+
     mTerrainShader->SetUniformValue("VP", pCamera->GetViewProjectionMatrix());
+    mTerrainShader->SetUniformValue("LVP", mShadowMappingRenderer->GetLightViewProjectionMatrix());
     mTerrainShader->SetUniformValue("z_far", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
     mTerrainShader->SetUniformValue("eye_world_pos", pCamera->GetWorldPosition());
     mTerrainShader->SetUniformValue("haze.enabled", mHaze->GetEnabled());
@@ -334,6 +337,10 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera*
     mTerrainShader->SetUniformValue("haze.gradient", mHaze->GetGradient());
     mTerrainShader->SetUniformValue("number_of_directional_lights", number_of_directional_lights);
     mTerrainShader->SetUniformValue("number_of_point_lights", number_of_point_lights);
+    mTerrainShader->SetSampler("shadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+    mTerrainShader->SetUniformValue("shadow.enabled", mShadowsEnabled);
+    mTerrainShader->SetUniformValue("shadow.bias", mShadowBias);
+    mTerrainShader->SetUniformValue("shadow.samples", mShadowSamples);
 
     for (int i = 0; i < number_of_directional_lights; i++)
     {

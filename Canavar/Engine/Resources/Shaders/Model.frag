@@ -44,8 +44,17 @@ struct Haze
     bool enabled;
 };
 
+struct Shadow
+{
+    sampler2D map;
+    bool enabled;
+    float bias;
+    int samples;
+};
+
 uniform Haze uHaze;
 uniform Model uModel;
+uniform Shadow uShadow;
 
 uniform PointLight uPointLights[8];
 uniform int uNumberOfPointLights;
@@ -81,6 +90,7 @@ in vec2 fsTextureCoords;
 in mat3 fsTBN;
 flat in int fsVertexId;
 in float fsFlogZ;
+in vec4 fsLightSpacePosition; // Position in light space
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutFragLocalPosition;
@@ -147,7 +157,7 @@ vec3 CalculateNormal()
     return normal;
 }
 
-vec3 ProcessDirectionalLights(vec3 color, vec3 normal, vec3 Lo)
+vec3 ProcessDirectionalLights(vec3 color, vec3 normal, vec3 Lo, float shadowFactor)
 {
     vec3 result = vec3(0.0f);
 
@@ -167,14 +177,14 @@ vec3 ProcessDirectionalLights(vec3 color, vec3 normal, vec3 Lo)
         vec3 hd = normalize(ld + Lo);
         float sf = max(dot(normal, hd), 0.0);
         float specular = pow(sf, uModel.shininess) * uModel.specular * light.specular;
-
-        result += (ambient + diffuse + specular) * color * light.color;
+        float lightFactor = (ambient * (1.0f - 0.5 * shadowFactor) + diffuse * (1.0f - shadowFactor) + specular * (1.0f - shadowFactor));
+        result += lightFactor * color * light.color;
     }
 
     return result;
 }
 
-vec3 ProcessPointLights(vec3 color, vec3 normal, vec3 Lo, vec3 fragWorldPos)
+vec3 ProcessPointLights(vec3 color, vec3 normal, vec3 Lo, vec3 fragWorldPos, float shadowFactor)
 {
     vec3 result = vec3(0);
 
@@ -198,8 +208,8 @@ vec3 ProcessPointLights(vec3 color, vec3 normal, vec3 Lo, vec3 fragWorldPos)
         // Attenuation
         float distance = length(light.position - fragWorldPos);
         float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-
-        result += (ambient + diffuse + specular) * color * light.color * attenuation;
+        float lightFactor = (ambient * (1.0f - 0.5 * shadowFactor) + diffuse * (1.0f - shadowFactor) + specular * (1.0f - shadowFactor));
+        result += lightFactor * color * light.color * attenuation;
     }
 
     return result;
@@ -242,7 +252,7 @@ vec3 CalculateColor()
     return color;
 }
 
-vec3 ProcessDirectionalLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 Lo)
+vec3 ProcessDirectionalLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 Lo, float shadowFactor)
 {
     vec3 F0 = mix(vec3(0.04f), albedo, metallic);
 
@@ -275,12 +285,12 @@ vec3 ProcessDirectionalLightsPbr(vec3 albedo, float metallic, float roughness, f
 
     // Ambient (no IBL, just constant AO term)
     vec3 ambient = vec3(0.03f) * albedo * ambientOcclusion;
-    vec3 color = ambient + result;
+    vec3 color = ambient * (1 - 0.5 * shadowFactor) + result * (1 - shadowFactor);
 
     return color;
 }
 
-vec3 ProcessPointLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 Lo, vec3 fragWorldPos)
+vec3 ProcessPointLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 Lo, vec3 fragWorldPos, float shadowFactor)
 {
     vec3 F0 = mix(vec3(0.04f), albedo, metallic);
 
@@ -315,7 +325,7 @@ vec3 ProcessPointLightsPbr(vec3 albedo, float metallic, float roughness, float a
 
     // Ambient (no IBL, just constant AO term)
     vec3 ambient = vec3(0.03f) * albedo * ambientOcclusion;
-    vec3 color = ambient + result;
+    vec3 color = ambient * (1 - 0.5 * shadowFactor) + result * (1 - shadowFactor);
 
     return color;
 }
@@ -389,6 +399,46 @@ vec3 ACESFittedToneMapping(vec3 color)
     return clamp(pow(color, vec3(1.0f / 2.2f)), 0.0, 1.0);
 }
 
+// Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
+float CalculateShadow()
+{
+    // perform perspective divide
+    vec3 projCoords = fsLightSpacePosition.xyz / fsLightSpacePosition.w;
+
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(uShadow.map, projCoords.xy).r;
+
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+
+    vec2 texelSize = 1.0 / textureSize(uShadow.map, 0);
+
+    int samples = uShadow.samples;
+    float result = 0.0f;
+
+    for (int x = -samples; x <= samples; ++x)
+    {
+        for (int y = -samples; y <= samples; ++y)
+        {
+            float pcfDepth = texture(uShadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
+            result += currentDepth - uShadow.bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+
+    result /= pow(2 * samples + 1, 2);
+
+    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+    if (projCoords.z > 1.0)
+    {
+        result = 0.0;
+    }
+
+    return result;
+}
+
 void main()
 {
     float alpha = texture(uTextureBaseColor, fsTextureCoords).a;
@@ -403,6 +453,13 @@ void main()
     vec3 Lo = normalize(uCameraPosition - fsWorldPosition);
     float distance = length(uCameraPosition - fsWorldPosition);
 
+    // Calculate shadow if enabled
+    float shadowFactor = 0.0f;
+    if (uShadow.enabled)
+    {
+        shadowFactor = CalculateShadow();
+    }
+
     // Process
     vec3 result = vec3(0.0f);
 
@@ -412,13 +469,13 @@ void main()
         float roughness = CalculateRoughness();
         float ambientOcclusion = CalculateAmbientOcclusion();
 
-        result += ProcessDirectionalLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo);
-        result += ProcessPointLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, fsWorldPosition);
+        result += ProcessDirectionalLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, shadowFactor);
+        result += ProcessPointLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, fsWorldPosition, shadowFactor);
     }
     else if (uModel.shadingMode == PHONG_SHADING)
     {
-        result += ProcessDirectionalLights(color, normal, Lo);
-        result += ProcessPointLights(color, normal, Lo, fsWorldPosition);
+        result += ProcessDirectionalLights(color, normal, Lo, shadowFactor);
+        result += ProcessPointLights(color, normal, Lo, fsWorldPosition, shadowFactor);
     }
 
     if (uEnableAces)
