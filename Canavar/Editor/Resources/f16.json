@@ -61,9 +61,20 @@
             "visible": true
         },
         {
+            "ambient": 0.25,
+            "amplitude": 1055,
+            "diffuse": 0.75,
+            "enabled": true,
+            "frequency": 0.10999999940395355,
+            "lacunarity": 8.149999618530273,
             "node_name": "Terrain",
             "node_type_name": "Terrain",
-            "uuid": "b05a7d39-9b80-4fa3-a58c-764e7584ccdd"
+            "octaves": 7,
+            "persistence": 0.06300000101327896,
+            "shininess": 8,
+            "specular": 0.25,
+            "tessellation_multiplier": 8,
+            "uuid": "6b45c764-588e-4244-af6d-1e469bc1dac7"
         },
         {
             "action_receive_button": 4,
@@ -97,12 +108,70 @@
             "z_near": 0.10000000149011612
         },
         {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "Text3D",
+            "node_type_name": "Text3D",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 2,
+                "z": 6
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.009999999776482582,
+                "y": 0.009999999776482582,
+                "z": 0.009999999776482582
+            },
+            "selectable": true,
+            "text": "Canavar Graphics Engine",
+            "uuid": "1cbd7c02-c62c-45ff-a711-5840a21f385e",
+            "visible": true
+        },
+        {
             "node_name": "Root Node",
             "node_type_name": "DummyObject",
             "position": {
+                "x": 3.19183349609375,
+                "y": 914.4969482421875,
+                "z": 0.0003662109375
+            },
+            "rotation": {
+                "w": -4.371138828673793e-08,
                 "x": 0,
-                "y": 147.5,
-                "z": 0
+                "y": -1,
+                "z": 8.82046576141384e-17
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "visible": true
+        },
+        {
+            "max_length": 1.5,
+            "max_life": 0.22499999403953552,
+            "max_radius": 0.4000000059604645,
+            "max_speed": 2,
+            "node_name": "Nozzle Effect",
+            "node_type_name": "NozzleEffect",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 4.019999980926514
             },
             "rotation": {
                 "w": 1,
@@ -116,7 +185,70 @@
                 "z": 1
             },
             "selectable": true,
-            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "uuid": "a8c1a7e9-0ee8-4dce-abc2-387b6a1e38cc",
+            "visible": true
+        },
+        {
+            "node_name": "Dummy Camera",
+            "node_type_name": "DummyCamera",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 3,
+                "z": 25
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 1
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "constant": 1,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 1,
+            "node_name": "Red Light",
+            "node_type_name": "PointLight",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": -4.599999904632568,
+                "y": 0,
+                "z": -1.600000023841858
+            },
+            "quadratic": 0,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
             "visible": true
         },
         {
@@ -156,69 +288,6 @@
             "visible": true
         },
         {
-            "ambient": 1,
-            "color": {
-                "b": 0,
-                "g": 0,
-                "r": 1
-            },
-            "constant": 1,
-            "diffuse": 1,
-            "enabled": true,
-            "linear": 1,
-            "node_name": "Red Light",
-            "node_type_name": "PointLight",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": -4.599999904632568,
-                "y": 0,
-                "z": -1.600000023841858
-            },
-            "quadratic": 0,
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 0.10000000149011612,
-                "y": 0.10000000149011612,
-                "z": 0.10000000149011612
-            },
-            "selectable": true,
-            "specular": 1,
-            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
-            "visible": true
-        },
-        {
-            "node_name": "Dummy Camera",
-            "node_type_name": "DummyCamera",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 3,
-                "z": 25
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
-            "vertical_fov": 60,
-            "visible": true,
-            "z_far": 100000,
-            "z_near": 1
-        },
-        {
             "color": {
                 "b": 1,
                 "g": 1,
@@ -248,6 +317,22 @@
             "use_model_color": false,
             "uuid": "a98471f6-5e00-499d-9f92-4cfd56389cc3",
             "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "node_name": "Text2D",
+            "node_type_name": "Text2D",
+            "position": {
+                "x": 50,
+                "y": 50
+            },
+            "scale": 0.7400000095367432,
+            "text": "FPS: 90",
+            "uuid": "915054f9-11b7-47e4-865a-0b8fd3e53b2a"
         }
     ]
 }

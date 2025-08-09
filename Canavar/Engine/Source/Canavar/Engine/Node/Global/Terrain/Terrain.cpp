@@ -9,6 +9,43 @@ Canavar::Engine::Terrain::Terrain()
     SetUpTextures();
 }
 
+void Canavar::Engine::Terrain::ToJson(QJsonObject &object)
+{
+    Global::ToJson(object);
+
+    object["octaves"] = mOctaves;
+    object["amplitude"] = mAmplitude;
+    object["frequency"] = mFrequency;
+    object["persistence"] = mPersistence;
+    object["lacunarity"] = mLacunarity;
+    object["tessellation_multiplier"] = mTesselationMultiplier;
+
+    object["ambient"] = mAmbient;
+    object["diffuse"] = mDiffuse;
+    object["specular"] = mSpecular;
+    object["shininess"] = mShininess;
+    object["enabled"] = mEnabled;
+}
+
+void Canavar::Engine::Terrain::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+{
+    Global::FromJson(object, nodes);
+
+
+    mOctaves = object["octaves"].toInt(7);
+    mAmplitude = object["amplitude"].toDouble(1055.0f);
+    mFrequency = object["frequency"].toDouble(0.110f);
+    mPersistence = object["persistence"].toDouble(0.063f);
+    mLacunarity = object["lacunarity"].toDouble(8.150f);
+    mTesselationMultiplier = object["tessellation_multiplier"].toDouble(8);
+
+    mAmbient = object["ambient"].toDouble(0.25f);
+    mDiffuse = object["diffuse"].toDouble(0.75f);
+    mSpecular = object["specular"].toDouble(0.25f);
+    mShininess = object["shininess"].toDouble(8.0f);
+    mEnabled = object["enabled"].toBool(true);
+}
+
 void Canavar::Engine::Terrain::Generate()
 {
     auto vertices_x_count = (mSubdivision + 2);

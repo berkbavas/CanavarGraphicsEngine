@@ -2,13 +2,14 @@
 
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Global/Global.h"
-#include "Canavar/Engine/Util/Macros.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
+#include "Canavar/Engine/Util/Macros.h"
 
 #include <QImage>
 #include <QOpenGLFunctions_4_5_Core>
 #include <QVector3D>
 #include <QVector>
+
 
 namespace Canavar::Engine
 {
@@ -18,9 +19,12 @@ namespace Canavar::Engine
       public:
         Terrain();
 
+        void ToJson(QJsonObject& object) override;
+        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
+        
         const char* GetNodeTypeName() const override { return "Terrain"; }
 
-        void Render(Shader* pShader, Camera * pCamera);
+        void Render(Shader* pShader, Camera* pCamera);
 
       private:
         void Generate();

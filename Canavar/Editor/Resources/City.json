@@ -1,0 +1,203 @@
+{
+    "nodes": [
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": true,
+            "node_name": "Sky",
+            "node_type_name": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "turbidity": 4,
+            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type_name": "Haze",
+            "uuid": "2e26293f-6a8d-4640-8e6f-af8ffad96e7b"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": -0.2471228837966919,
+                "y": -0.8300188183784485,
+                "z": -0.5000149607658386
+            },
+            "enabled": true,
+            "node_name": "Sun",
+            "node_type_name": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radience": 5,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "amplitude": 1055,
+            "diffuse": 0.75,
+            "enabled": false,
+            "frequency": 0.10999999940395355,
+            "lacunarity": 8.149999618530273,
+            "node_name": "Terrain",
+            "node_type_name": "Terrain",
+            "octaves": 7,
+            "persistence": 0.06300000101327896,
+            "shininess": 8,
+            "specular": 0.25,
+            "subdivision": 4,
+            "tessellation_multiplier": 8,
+            "tiles": 32,
+            "uuid": "0a1c49ad-d021-46ff-b698-d437ccec51f5",
+            "width": 2048
+        },
+        {
+            "action_receive_button": 4,
+            "angular_speed": 25,
+            "angular_speed_muliplier": 1,
+            "linear_speed": 5,
+            "linear_speed_multiplier": 1,
+            "node_name": "Free Camera",
+            "node_type_name": "FreeCamera",
+            "position": {
+                "x": -14054.9130859375,
+                "y": 589.2300415039062,
+                "z": -4832.60595703125
+            },
+            "rotation": {
+                "w": -0.9907693862915039,
+                "x": 0.13049912452697754,
+                "y": 0.03659629821777344,
+                "z": 0.00481613352894783
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "b6eeb111-0bc8-40d0-80f7-f7739b6302d9",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 0.10000000149011612
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "ccity_building_set_1",
+            "node_type_name": "Model",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": -22880.576171875
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "ccity_building_set_1",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "feece408-f982-4ddd-bc7c-4e931ba7036e",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "Text3D",
+            "node_type_name": "Text3D",
+            "position": {
+                "x": -13827.09375,
+                "y": 358.2112121582031,
+                "z": -6622.064453125
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "text": "Canavar Graphics Engine",
+            "uuid": "371b2279-a4a0-46be-957b-c743467271ba",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "ccity_building_set_1",
+            "node_type_name": "Model",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 300
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "ccity_building_set_1",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "e1bbb0dc-3d64-425f-beeb-ce70e1d0bdd0",
+            "visible": true
+        }
+    ]
+}

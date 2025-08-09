@@ -256,105 +256,110 @@ void Canavar::Engine::NodeManager::ExportNodes(const QString& path)
 
 void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
 {
-    QJsonDocument document = Util::ReadJson(path);
-    QJsonObject root = document.object();
-    QJsonArray array = root["nodes"].toArray();
+    QJsonDocument Document = Util::ReadJson(path);
+    QJsonObject Root = Document.object();
+    QJsonArray Array = Root["nodes"].toArray();
 
-    QSet<NodePtr> nodes;
+    QSet<NodePtr> Nodes;
 
-    for (const auto element : array)
+    for (const auto Element : Array)
     {
-        QJsonObject object = element.toObject();
-        QString nodeTypeName = object["node_type_name"].toString();
-        QString uuid = object["uuid"].toString();
+        QJsonObject Object = Element.toObject();
+        QString NodeTypeName = Object["node_type_name"].toString();
+        QString Uuid = Object["uuid"].toString();
 
-        LOG_DEBUG("NodeManager::ImportNodes: uuid: {}, node_type_name: {}", uuid.toStdString(), nodeTypeName.toStdString());
+        LOG_DEBUG("NodeManager::ImportNodes: uuid: {}, node_type_name: {}", Uuid.toStdString(), NodeTypeName.toStdString());
 
-        if (nodeTypeName.isNull() || nodeTypeName.isEmpty())
+        if (NodeTypeName.isNull() || NodeTypeName.isEmpty())
         {
             continue;
         }
-        else if (nodeTypeName == "Haze")
+        else if (NodeTypeName == "Haze")
         {
-            mHaze->FromJson(object, nodes);
-            nodes.insert(mHaze);
+            mHaze->FromJson(Object, Nodes);
+            Nodes.insert(mHaze);
         }
-        else if (nodeTypeName == "Sky")
+        else if (NodeTypeName == "Terrain")
         {
-            mSky->FromJson(object, nodes);
-            nodes.insert(mSky);
+            mTerrain->FromJson(Object, Nodes);
+            Nodes.insert(mTerrain);
         }
-        else if (nodeTypeName == "Sun")
+        else if (NodeTypeName == "Sky")
         {
-            mSun->FromJson(object, nodes);
-            nodes.insert(mSun);
+            mSky->FromJson(Object, Nodes);
+            Nodes.insert(mSky);
         }
-        else if (nodeTypeName == "FreeCamera")
+        else if (NodeTypeName == "Sun")
         {
-            mFreeCamera->FromJson(object, nodes);
-            nodes.insert(mFreeCamera);
+            mSun->FromJson(Object, Nodes);
+            Nodes.insert(mSun);
         }
-        else if (nodeTypeName == "Model")
+        else if (NodeTypeName == "FreeCamera")
         {
-            QString sceneName = object["scene_name"].toString();
+            mFreeCamera->FromJson(Object, Nodes);
+            Nodes.insert(mFreeCamera);
+        }
+        else if (NodeTypeName == "Model")
+        {
+            QString SceneName = Object["scene_name"].toString();
 
-            if (sceneName.isNull() == false && sceneName.isEmpty() == false)
+            if (SceneName.isNull() == false && SceneName.isEmpty() == false)
             {
-                ModelPtr pModel = std::make_shared<Model>(sceneName);
-                pModel->SetUuid(uuid);
-                nodes.insert(pModel);
+                ModelPtr pModel = std::make_shared<Model>(SceneName);
+                pModel->SetUuid(Uuid);
+                Nodes.insert(pModel);
             }
         }
         else
         {
-            if (NodePtr pNode = NodeFactory::CreateNode(nodeTypeName))
+            if (NodePtr pNode = NodeFactory::CreateNode(NodeTypeName))
             {
-                pNode->SetUuid(uuid);
-                nodes.insert(pNode);
+                pNode->SetUuid(Uuid);
+                Nodes.insert(pNode);
             }
             else
             {
-                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", nodeTypeName.toStdString());
+                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", NodeTypeName.toStdString());
             }
         }
     }
 
-    for (const auto element : array)
+    for (const auto element : Array)
     {
-        QJsonObject object = element.toObject();
-        QString nodeTypeName = object["node_type_name"].toString();
-        QString uuid = object["uuid"].toString();
+        QJsonObject Object = element.toObject();
+        QString NodeTypeName = Object["node_type_name"].toString();
+        QString Uuid = Object["uuid"].toString();
 
-        for (const auto pNode : nodes)
+        for (const auto pNode : Nodes)
         {
-            if (uuid == pNode->GetUuid())
+            if (Uuid == pNode->GetUuid())
             {
-                pNode->FromJson(object, nodes);
+                pNode->FromJson(Object, Nodes);
             }
         }
     }
 
-    for (const auto element : array)
+    for (const auto element : Array)
     {
-        QJsonObject object = element.toObject();
-        QString nodeTypeName = object["node_type_name"].toString();
-        QString uuid = object["uuid"].toString();
+        QJsonObject Object = element.toObject();
+        QString NodeTypeName = Object["node_type_name"].toString();
+        QString Uuid = Object["uuid"].toString();
 
-        for (const auto pNode : nodes)
+        for (const auto pNode : Nodes)
         {
-            if (uuid == pNode->GetUuid())
+            if (Uuid == pNode->GetUuid())
             {
-                pNode->FromJson(object, nodes);
+                pNode->FromJson(Object, Nodes);
             }
         }
     }
 
-    for (const auto pNode : nodes)
+    for (const auto pNode : Nodes)
     {
         AddNode(pNode);
     }
 
-    LOG_DEBUG("NodeManager::ImportNodes: {} node(s) have been imported.", nodes.size());
+    LOG_DEBUG("NodeManager::ImportNodes: {} node(s) have been imported.", Nodes.size());
 }
 
 void Canavar::Engine::NodeManager::RemoveAllNodes()
