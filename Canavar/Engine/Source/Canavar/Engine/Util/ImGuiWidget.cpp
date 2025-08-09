@@ -60,7 +60,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
 
             if (const auto NewNodeName = InputText("Node Name", pNode->GetNodeName().c_str()))
             {
-                pNode->SetNodeName(NewNodeName.value().c_str());
+                pNode->SetNodeName(NewNodeName.value());
             }
         }
 
@@ -186,7 +186,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                             ImGui::TableNextColumn();
                             ImGui::Text(pObject->GetNodeTypeName());
                             ImGui::TableNextColumn();
-                            if (ImGui::Selectable(std::format("{}", pObject->GetNodeId()).c_str(), pSelectedNode == pObject)) // Column 2
+                            if (ImGui::Selectable(pObject->GetNodeIdString().c_str(), pSelectedNode == pObject)) // Column 2
                             {
                                 pSelectedNode = pObject;
                             }
@@ -209,7 +209,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                             ImGui::TableNextColumn();
                             ImGui::Text(pNode->GetNodeTypeName());
                             ImGui::TableNextColumn();
-                            if (ImGui::Selectable(std::format("{}", pNode->GetNodeId()).c_str(), pSelectedNode == pNode)) // Column 2
+                            if (ImGui::Selectable(pObject->GetNodeIdString().c_str(), pSelectedNode == pNode)) // Column 2
                             {
                                 pSelectedNode = pNode;
                             }
@@ -638,7 +638,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeInfo()
     {
         if (mNodeInfo.Success)
         {
-            if (const auto pNode = mNodeManager->GetNodeById(mNodeInfo.NodeId))
+            if (const auto pNode = mNodeManager->FindNodeById(mNodeInfo.NodeId))
             {
                 ImGui::Text("Node Name:  %s", pNode->GetNodeName().c_str());
                 ImGui::Text("Node ID:    %u", pNode->GetNodeId());
@@ -761,13 +761,13 @@ QVector3D Canavar::Engine::ImGuiWidget::GetWorldPositionForCreatedObject() const
 
 std::optional<std::string> Canavar::Engine::ImGuiWidget::InputText(const std::string &label, const std::string &text)
 {
-    char buffer[255];
+    static char BUFFER[255];
 
-    strncpy(buffer, text.c_str(), sizeof(buffer) - 1);
+    strncpy(BUFFER, text.c_str(), sizeof(BUFFER) - 1);
 
-    if (ImGui::InputText(label.c_str(), buffer, sizeof(buffer), ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText(label.c_str(), BUFFER, sizeof(BUFFER), ImGuiInputTextFlags_EnterReturnsTrue))
     {
-        return std::string(buffer);
+        return std::string(BUFFER);
     }
 
     return std::nullopt;
@@ -790,13 +790,31 @@ bool Canavar::Engine::ImGuiWidget::KeyReleased(QKeyEvent *)
 
 bool Canavar::Engine::ImGuiWidget::MousePressed(QMouseEvent *pEvent)
 {
-    if (pEvent->button() == Qt::RightButton)
+    if (ImGui::GetIO().WantCaptureMouse)
+    {
+        return true;
+    }
+    else if (pEvent->button() == Qt::RightButton)
     {
         mSavedWorldPositions << mFragmentWorldPosition;
         mSelectedWorldPositionIndex = mSavedWorldPositions.lastIndexOf(mFragmentWorldPosition);
+        return true;
+    }
+    else if (pEvent->button() == Qt::LeftButton)
+    {
+        const int x = pEvent->position().x();
+        const int y = pEvent->position().y();
+        ProcessMouseAction(x, y);
+        if (mNodeInfo.Success)
+        {
+            const auto pSelectedNode = mNodeManager->FindNodeById(mNodeInfo.NodeId);
+            SetSelectedNode(pSelectedNode);
+            SetSelectedMesh(pSelectedNode, mNodeInfo.MeshId);
+        }
+        return true;
     }
 
-    return ImGui::GetIO().WantCaptureMouse;
+    return false;
 }
 
 bool Canavar::Engine::ImGuiWidget::MouseReleased(QMouseEvent *)
@@ -808,10 +826,7 @@ bool Canavar::Engine::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
 {
     const int x = pEvent->position().x();
     const int y = pEvent->position().y();
-    mFragmentLocalPosition = mRenderingManager->FetchFragmentLocalPositionFromScreen(x, y);
-    mFragmentWorldPosition = mRenderingManager->FetchFragmentWorldPositionFromScreen(x, y);
-    mNodeInfo = mRenderingManager->FetchNodeInfoFromScreenCoordinates(x, y);
-
+    ProcessMouseAction(x, y);
     return ImGui::GetIO().WantCaptureMouse;
 }
 
@@ -839,4 +854,29 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(NodePtr pNode)
 {
     mSelectedNode = pNode;
     mSelectedMesh = nullptr;
+}
+
+void Canavar::Engine::ImGuiWidget::SetSelectedMesh(NodePtr pNode, uint32_t MeshId)
+{
+    if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pNode))
+    {
+        const auto pScene = mNodeManager->GetScene(pModel->GetSceneName());
+        const auto &Meshes = pScene->GetMeshes();
+
+        for (const auto &pMesh : Meshes)
+        {
+            if (pMesh->GetMeshId() == MeshId)
+            {
+                mSelectedMesh = pMesh;
+                return;
+            }
+        }
+    }
+}
+
+void Canavar::Engine::ImGuiWidget::ProcessMouseAction(int x, int y)
+{
+    mFragmentLocalPosition = mRenderingManager->FetchFragmentLocalPositionFromScreen(x, y);
+    mFragmentWorldPosition = mRenderingManager->FetchFragmentWorldPositionFromScreen(x, y);
+    mNodeInfo = mRenderingManager->FetchNodeInfoFromScreenCoordinates(x, y);
 }

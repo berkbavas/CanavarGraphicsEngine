@@ -43,7 +43,7 @@ namespace Canavar::Engine
         MeshPtr GetMeshById(ModelPtr pModel, uint32_t MeshId) const;
 
         template<typename T = Node>
-        std::shared_ptr<T> GetNodeById(uint32_t NodeId) const
+        std::shared_ptr<T> FindNodeById(uint32_t NodeId) const
         {
             for (const auto &pNode : mNodes)
             {

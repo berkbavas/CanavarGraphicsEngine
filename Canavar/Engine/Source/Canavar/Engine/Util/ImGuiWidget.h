@@ -70,7 +70,10 @@ namespace Canavar::Engine
         std::optional<std::string> InputText(const std::string &label, const std::string &text);
 
         void RemoveNode(NodePtr pNode);
+
         void SetSelectedNode(NodePtr pNode);
+        void SetSelectedMesh(NodePtr pNode, uint32_t MeshId);
+        void ProcessMouseAction(int x, int y);
 
         Engine::NodePtr mSelectedNode{ nullptr };
         Engine::MeshPtr mSelectedMesh{ nullptr };

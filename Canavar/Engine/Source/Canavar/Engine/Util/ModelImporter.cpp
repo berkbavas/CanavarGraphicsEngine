@@ -273,7 +273,7 @@ bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, Mater
 void Canavar::Engine::ModelImporter::CalculateAABB(ScenePtr pScene)
 {
     const auto pRootNode = pScene->GetRootNode();
-    const auto AABB = pRootNode->CalculateAABB();
+    const auto AABB = pRootNode->CalculateAABB(pRootNode->GetTransformation());
 
     pScene->SetAABB(AABB);
 }
