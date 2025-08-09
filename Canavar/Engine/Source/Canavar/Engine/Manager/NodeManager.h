@@ -4,13 +4,13 @@
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
 #include "Canavar/Engine/Node/Global/Sun/Sun.h"
+#include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 #include "Canavar/Engine/Node/Object/Camera/FreeCamera.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Scene/Scene.h"
 #include "Canavar/Engine/Util/Macros.h"
-#include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 
 #include <map>
 #include <set>
@@ -31,22 +31,23 @@ namespace Canavar::Engine
         void AddNode(NodePtr pNode);
         void RemoveNode(NodePtr pNode);
 
-        ScenePtr GetScene(const QString &sceneName) const;
+        ScenePtr GetScene(const std::string &sceneName) const;
         ScenePtr GetScene(ModelPtr pModel) const;
+        ScenePtr GetScene(Model *pModel) const;
 
-        const std::map<QString, ScenePtr> &GetScenes() const;
+        const std::map<std::string, ScenePtr> &GetScenes() const;
         const QList<ModelPtr> &GetModels() const;
         const QList<NodePtr> &GetNodes() const;
         const QList<ObjectPtr> &GetObjects() const;
 
-        MeshPtr GetMeshById(ModelPtr pModel, uint32_t meshId) const;
+        MeshPtr GetMeshById(ModelPtr pModel, uint32_t MeshId) const;
 
         template<typename T = Node>
-        std::shared_ptr<T> GetNodeById(uint32_t nodeId) const
+        std::shared_ptr<T> GetNodeById(uint32_t NodeId) const
         {
             for (const auto &pNode : mNodes)
             {
-                if (pNode->GetNodeId() == nodeId)
+                if (pNode->GetNodeId() == NodeId)
                 {
                     return std::dynamic_pointer_cast<T>(pNode);
                 }
@@ -75,7 +76,7 @@ namespace Canavar::Engine
         void RemoveAllNodes();
 
       private:
-        std::map<QString, ScenePtr> mScenes; // 3D model data
+        std::map<std::string, ScenePtr> mScenes; // 3D model data
 
         QList<NodePtr> mNodes;
         QList<ObjectPtr> mObjects;

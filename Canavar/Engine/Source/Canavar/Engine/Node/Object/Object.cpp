@@ -71,7 +71,7 @@ void Canavar::Engine::Object::ToJson(QJsonObject& object)
 
     if (const auto pParent = GetParent<Node>())
     {
-        object.insert("parent_uuid", pParent->GetUuid());
+        object.insert("parent_uuid", QString::fromStdString(pParent->GetUuid()));
     }
 
     object.insert("visible", mVisible);

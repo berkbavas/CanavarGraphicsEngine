@@ -11,9 +11,9 @@ namespace Canavar::Engine
     {
       public:
         NodeFactory() = delete;
-        static NodePtr CreateNode(const QString& type);
-        static const QVector<QString>& GetNodeNames();
+        static NodePtr CreateNode(const std::string& type);
+        static const QVector<std::string>& GetNodeNames();
 
-        static QVector<QString> mNodeNames;
+        static QVector<std::string> mNodeNames;
     };
 }

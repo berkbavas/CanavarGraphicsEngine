@@ -15,6 +15,7 @@ Canavar::Engine::RenderingManager::RenderingManager(QObject* parent)
 void Canavar::Engine::RenderingManager::Initialize()
 {
     initializeOpenGLFunctions();
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
     mFramebufferFormats[Multisample].setSamples(4);
     mFramebufferFormats[Multisample].setMipmap(true);
@@ -109,9 +110,6 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
     {
         mBoundingBoxRenderer->Render(mActiveCamera, ifps);
     }
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     RenderObjects(mActiveCamera, ifps);
 
@@ -211,23 +209,15 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
 
 void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifps)
 {
-    const auto& nodes = mNodeManager->GetNodes();
+    const auto& Nodes = mNodeManager->GetNodes();
 
-    // std::sort(nodes.begin(), nodes.end(), [&](const NodePtr& left, const NodePtr& right) {
-    //     const auto l = std::dynamic_pointer_cast<Object>(left);
-    //     const auto r = std::dynamic_pointer_cast<Object>(right);
-    //     if (l && r)
-    //     {
-    //         float dl = (pCamera->GetWorldPosition() - l->GetWorldPosition()).length();
-    //         float dr = (pCamera->GetWorldPosition() - r->GetWorldPosition()).length();
+    // Opaque render pass
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //         return dl > dr;
-    //     }
+    QVector<Model*> VisibleModels;
 
-    //     return false;
-    // });
-
-    for (const auto& pNode : nodes)
+    for (const auto& pNode : Nodes)
     {
         if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
         {
@@ -238,11 +228,12 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
 
             if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
             {
-                RenderModel(pModel, RenderPass::Opaque);
+                VisibleModels.append(pModel.get());
+                RenderModel(pModel.get(), RenderPass::Opaque);
             }
             else if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pObject))
             {
-                RenderNozzleEffect(pEffect, pCamera, ifps);
+                RenderNozzleEffect(pEffect.get(), pCamera, ifps);
             }
             else if (LightningStrikeBasePtr pLightning = std::dynamic_pointer_cast<LightningStrikeBase>(pObject))
             {
@@ -251,33 +242,65 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
         }
     }
 
+    // Transparent render pass
+
+    // First add transparent meshes to render list
+    QVector<TransparentMeshListElement> TransparentMeshes;
+
+    for (auto* pModel : VisibleModels)
+    {
+        if (const auto pScene = mNodeManager->GetScene(pModel))
+        {
+            pScene->AddMeshesToListIfHasTransparency(pModel, TransparentMeshes);
+        }
+    }
+
+    // Sort transparent meshes back to front
+    std::sort(TransparentMeshes.begin(), TransparentMeshes.end(), [&](const TransparentMeshListElement& left, const TransparentMeshListElement& right) {
+        const auto l = left.CombinedTransformation * ORIGIN;
+        const auto r = right.CombinedTransformation * ORIGIN;
+
+        float dl = (pCamera->GetWorldPosition() - l).length();
+        float dr = (pCamera->GetWorldPosition() - r).length();
+
+        return dl > dr;
+    });
+
+    // Render transparent objects
     glDepthMask(GL_FALSE);
 
-    for (const auto& pNode : nodes)
+    for (const auto& Element : TransparentMeshes)
     {
-        if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
-        {
-            if (pObject->GetVisible() == false)
-            {
-                continue;
-            }
+        const auto pModel = Element.pModel;
 
-            if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
-            {
-                RenderModel(pModel, RenderPass::Transparent);
-            }
-        }
+        mModelShader->Bind();
+        mModelShader->SetUniformValue("uModel.color", pModel->GetColor());
+        mModelShader->SetUniformValue("uModel.transparencyColor", pModel->GetTransparencyColor());
+        mModelShader->SetUniformValue("uModel.shadingMode", pModel->GetShadingMode());
+        mModelShader->SetUniformValue("uModel.useModelColor", pModel->GetUseModelColor());
+        mModelShader->SetUniformValue("uModel.ambient", pModel->GetAmbient());
+        mModelShader->SetUniformValue("uModel.diffuse", pModel->GetDiffuse());
+        mModelShader->SetUniformValue("uModel.specular", pModel->GetSpecular());
+        mModelShader->SetUniformValue("uModel.shininess", pModel->GetShininess());
+        mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
+        mModelShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+        mModelShader->SetUniformValue("uShadow.enabled", mShadowsEnabled);
+        mModelShader->SetUniformValue("uShadow.bias", mShadowBias);
+        mModelShader->SetUniformValue("uShadow.samples", mShadowSamples);
+        Element.pMesh->Render(pModel, mModelShader, Element.NodeMatrix, RenderPass::Transparent);
+        mModelShader->Release();
     }
 
     glDepthMask(GL_TRUE);
 }
 
-void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel, RenderPass renderPass)
+void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass RenderPass)
 {
-    SetPointLights(mModelShader, pModel.get());
+    SetPointLights(mModelShader, pModel);
 
     mModelShader->Bind();
     mModelShader->SetUniformValue("uModel.color", pModel->GetColor());
+    mModelShader->SetUniformValue("uModel.transparencyColor", pModel->GetTransparencyColor());
     mModelShader->SetUniformValue("uModel.shadingMode", pModel->GetShadingMode());
     mModelShader->SetUniformValue("uModel.useModelColor", pModel->GetUseModelColor());
     mModelShader->SetUniformValue("uModel.ambient", pModel->GetAmbient());
@@ -292,17 +315,15 @@ void Canavar::Engine::RenderingManager::RenderModel(ModelPtr pModel, RenderPass 
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
-        pScene->Render(pModel.get(), mModelShader, renderPass);
+        pScene->Render(pModel, mModelShader, RenderPass);
     }
     else
     {
-        LOG_FATAL("RenderingManager::RenderModel: Model data is not found for this model: {}", pModel->GetSceneName().toStdString());
+        LOG_FATAL("RenderingManager::RenderModel: Model data is not found for this model: {}", pModel->GetSceneName());
     }
-
-    mModelShader->Release();
 }
 
-void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffectPtr pEffect, Camera* pCamera, float ifps)
+void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffect* pEffect, Camera* pCamera, float ifps)
 {
     mNozzleEffectShader->Bind();
     mNozzleEffectShader->SetUniformValue("uMaxRadius", pEffect->GetMaxRadius());

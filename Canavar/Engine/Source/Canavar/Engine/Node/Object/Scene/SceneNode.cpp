@@ -1,15 +1,37 @@
 #include "SceneNode.h"
 
-void Canavar::Engine::SceneNode::Render(Model *pModel, Shader *pShader, RenderPass renderPass, const QMatrix4x4 &parentTransformation)
+void Canavar::Engine::SceneNode::Render(Model *pModel, Shader *pShader, RenderPass RenderPass, const QMatrix4x4 &ParentTransformation)
 {
     for (const auto &pMesh : mMeshes)
     {
-        pMesh->Render(pModel, pShader, parentTransformation * mTransformation, renderPass);
+        pMesh->Render(pModel, pShader, (ParentTransformation * mTransformation), RenderPass);
     }
 
     for (const auto &pChild : mChildren)
     {
-        pChild->Render(pModel, pShader, renderPass, parentTransformation * mTransformation);
+        pChild->Render(pModel, pShader, RenderPass, (ParentTransformation * mTransformation));
+    }
+}
+
+void Canavar::Engine::SceneNode::AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List, const QMatrix4x4 &ParentTransformation)
+{
+    for (const auto &pMesh : mMeshes)
+    {
+        const auto &ModelMatrix = pModel->GetWorldTransformation();
+        const auto MeshMatrix = pModel->GetMeshTransformation(pMesh->GetUniqueMeshName());
+        const auto NodeMatrix = ParentTransformation * mTransformation;
+        const auto CombinedTranformation = ModelMatrix * (MeshMatrix * NodeMatrix);
+
+        // If the mesh has transparency, add it to the list.
+        if (pMesh->HasTransparency(pModel))
+        {
+            List.push_back({ pModel, pMesh.get(), NodeMatrix, CombinedTranformation });
+        }
+    }
+
+    for (const auto &pChild : mChildren)
+    {
+        pChild->AddMeshesToListIfHasTransparency(pModel, List, (ParentTransformation * mTransformation));
     }
 }
 
@@ -23,7 +45,7 @@ void Canavar::Engine::SceneNode::AddChild(SceneNodePtr pChild)
     mChildren.emplace(pChild);
 }
 
-Canavar::Engine::AABB Canavar::Engine::SceneNode::CalculateAABB(const QMatrix4x4 &parentTransformation) const
+Canavar::Engine::AABB Canavar::Engine::SceneNode::CalculateAABB(const QMatrix4x4 &ParentTransformation) const
 {
     // AABB
     float minX = std::numeric_limits<float>::infinity();
@@ -34,11 +56,11 @@ Canavar::Engine::AABB Canavar::Engine::SceneNode::CalculateAABB(const QMatrix4x4
     float maxY = -std::numeric_limits<float>::infinity();
     float maxZ = -std::numeric_limits<float>::infinity();
 
-    const auto &worldTransformation = parentTransformation * mTransformation;
+    const auto &WorldTransformation = ParentTransformation * mTransformation;
 
     for (const auto &pMesh : mMeshes)
     {
-        const auto aabb = pMesh->GetAABB().Transform(worldTransformation);
+        const auto aabb = pMesh->GetAABB().Transform(WorldTransformation);
         const auto min = aabb.GetMin();
         const auto max = aabb.GetMax();
 
@@ -63,7 +85,7 @@ Canavar::Engine::AABB Canavar::Engine::SceneNode::CalculateAABB(const QMatrix4x4
 
     for (const auto &pChild : mChildren)
     {
-        const auto aabb = pChild->CalculateAABB(worldTransformation);
+        const auto aabb = pChild->CalculateAABB(WorldTransformation);
 
         const auto min = aabb.GetMin();
         const auto max = aabb.GetMax();

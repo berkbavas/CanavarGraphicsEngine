@@ -75,23 +75,28 @@ void Canavar::Simulator::Simulator::Initialize()
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
 
-    mAircraftController->SetRootNode(mRootNode);
-    mAircraftController->SetJetNode(mJetNode);
-
     mAircraftController->Initialize();
     mAircraft->Initialize();
 
-    connect(mAircraft, &Aircraft::PfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) {
-        mPfd->setAirspeed(pfd.airspeed);
-        mPfd->setRoll(pfd.roll);
-        mPfd->setPitch(pfd.pitch);
+    connect(
+        mAircraft,
+        &Aircraft::PfdChanged,
+        this,
+        [=](Aircraft::PrimaryFlightData pfd) {
+            mPfd->setAirspeed(pfd.airspeed);
+            mPfd->setRoll(pfd.roll);
+            mPfd->setPitch(pfd.pitch);
 
-        mPfd->setAltitude(pfd.altitude);
-        mPfd->setClimbRate(pfd.climbRate / 20.0f);
-        mPfd->setHeading(pfd.heading);
+            mPfd->setAltitude(pfd.altitude);
+            mPfd->setClimbRate(pfd.climbRate / 20.0f);
+            mPfd->setHeading(pfd.heading);
 
-        mPfd->setPressure(pfd.pressure);
-    });
+            mPfd->setPressure(pfd.pressure);
+
+            mRootNode->SetWorldPosition(pfd.position);
+            mRootNode->SetWorldRotation(pfd.rotation);
+        },
+        Qt::QueuedConnection);
 
     mImGuiWidget->Initialize();
 }
@@ -109,9 +114,6 @@ void Canavar::Simulator::Simulator::PostRender(float ifps)
 
     glDisable(GL_CULL_FACE);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    mAircraftController->Update(ifps);
-
     QtImGui::newFrame();
     mAircraftController->DrawGui();
     mImGuiWidget->Draw();
@@ -126,10 +128,12 @@ bool Canavar::Simulator::Simulator::KeyPressed(QKeyEvent* pEvent)
     if (pEvent->key() == Qt::Key_1)
     {
         mCameraManager->SetActiveCamera(mFreeCamera);
+        return true;
     }
     else if (pEvent->key() == Qt::Key_2)
     {
         mCameraManager->SetActiveCamera(mPersecutorCamera);
+        return true;
     }
     else if (pEvent->key() == Qt::Key_3)
     {

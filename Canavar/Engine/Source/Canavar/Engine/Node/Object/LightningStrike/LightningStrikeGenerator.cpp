@@ -32,7 +32,7 @@ void Canavar::Engine::LightningStrikeGenerator::ToJson(QJsonObject &object)
 
     for (const auto &pAttractor : mAttractors)
     {
-        attractors.append(pAttractor->GetUuid());
+        attractors.append(QString::fromStdString(pAttractor->GetUuid()));
     }
 
     object.insert("attractors", attractors);
@@ -53,7 +53,7 @@ void Canavar::Engine::LightningStrikeGenerator::FromJson(const QJsonObject &obje
     {
         for (const auto pNode : nodes)
         {
-            if (uuid == pNode->GetUuid())
+            if (uuid == QString::fromStdString(pNode->GetUuid()))
             {
                 AddAttractor(std::dynamic_pointer_cast<LightningStrikeAttractor>(pNode));
             }

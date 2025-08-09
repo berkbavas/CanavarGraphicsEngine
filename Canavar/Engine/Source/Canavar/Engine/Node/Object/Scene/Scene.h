@@ -19,6 +19,8 @@ namespace Canavar::Engine
         void Destroy();
         void Render(Model *pModel, Shader *pShader, RenderPass renderPass);
 
+        void AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List);
+
         void AddMesh(MeshPtr pMesh);
         void AddMaterial(MaterialPtr pMaterial);
 
@@ -34,7 +36,7 @@ namespace Canavar::Engine
         QVector<MaterialPtr> mMaterials;
 
         DEFINE_MEMBER(SceneNodePtr, RootNode);
-        DEFINE_MEMBER(QString, SceneName);
+        DEFINE_MEMBER(std::string, SceneName);
         DEFINE_MEMBER(AABB, AABB);
     };
 

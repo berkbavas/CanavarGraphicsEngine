@@ -69,7 +69,11 @@ namespace Canavar::Engine
 
         std::optional<std::string> InputText(const std::string &label, const std::string &text);
 
+        void RemoveNode(NodePtr pNode);
+        void SetSelectedNode(NodePtr pNode);
+
         Engine::NodePtr mSelectedNode{ nullptr };
+        Engine::MeshPtr mSelectedMesh{ nullptr };
 
         Engine::DirectionalLightPtr mSun;
         Engine::SkyPtr mSky;
@@ -83,8 +87,8 @@ namespace Canavar::Engine
         QVector<QVector3D> mSavedWorldPositions;
         int mSelectedWorldPositionIndex{ -1 };
 
-        QString mSelectedSceneName = "-";  // To be created
-        QString mSelectedObjectName = "-"; // To be created
+        std::string mSelectedSceneName = "-";
+        std::string mSelectedObjectName = "-";
 
         QVector<ImGuiClient *> mClients;
 

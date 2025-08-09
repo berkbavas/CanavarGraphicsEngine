@@ -152,7 +152,7 @@ void Canavar::Engine::PersecutorCamera::ToJson(QJsonObject& object)
 
     if (mTarget)
     {
-        object.insert("target_uuid", mTarget->GetUuid());
+        object.insert("target_uuid", QString::fromStdString(mTarget->GetUuid()));
     }
 
     object.insert("angular_speed", mAngularSpeed);

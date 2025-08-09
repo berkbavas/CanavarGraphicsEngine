@@ -10,34 +10,13 @@
             "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
         },
         {
-            "ambient": 0.20000000298023224,
-            "amplitude": 20,
-            "diffuse": 0.8500000238418579,
-            "enabled": false,
-            "frequency": 0.009999999776482582,
-            "grass_coverage": 0.6499999761581421,
-            "node_name": "Terrain",
-            "node_type_name": "Terrain",
-            "octaves": 13,
-            "power": 3,
-            "seed": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "shininess": 8,
-            "specular": 0,
-            "tessellation_multiplier": 1,
-            "uuid": "9537a87e-9d47-4072-9fdb-a25dcf1339c1"
-        },
-        {
             "color": {
                 "b": 0.4699999988079071,
                 "g": 0.3799999952316284,
                 "r": 0.33000001311302185
             },
             "density": 1,
-            "enabled": true,
+            "enabled": false,
             "gradient": 1.5,
             "node_name": "Haze",
             "node_type_name": "Haze",
@@ -52,9 +31,9 @@
             },
             "diffuse": 1,
             "direction": {
-                "x": 0.308341383934021,
-                "y": -0.718131959438324,
-                "z": -0.6238812804222107
+                "x": -0.2471228837966919,
+                "y": -0.8300188183784485,
+                "z": -0.5000149607658386
             },
             "enabled": true,
             "node_name": "Sun",
@@ -64,6 +43,7 @@
                 "y": 0,
                 "z": 0
             },
+            "radience": 5,
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -79,6 +59,53 @@
             "specular": 1,
             "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
             "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "amplitude": 1055,
+            "diffuse": 0.75,
+            "enabled": false,
+            "frequency": 0.10999999940395355,
+            "lacunarity": 8.149999618530273,
+            "node_name": "Terrain",
+            "node_type_name": "Terrain",
+            "octaves": 7,
+            "persistence": 0.06300000101327896,
+            "shininess": 8,
+            "specular": 0.25,
+            "tessellation_multiplier": 8,
+            "uuid": "0a1c49ad-d021-46ff-b698-d437ccec51f5"
+        },
+        {
+            "action_receive_button": 4,
+            "angular_speed": 25,
+            "angular_speed_muliplier": 1,
+            "linear_speed": 5,
+            "linear_speed_multiplier": 1,
+            "node_name": "Free Camera",
+            "node_type_name": "FreeCamera",
+            "position": {
+                "x": -34.669898986816406,
+                "y": 364.88507080078125,
+                "z": 380.6650390625
+            },
+            "rotation": {
+                "w": -0.9568531513214111,
+                "x": 0.2871319651603699,
+                "y": 0.043113112449645996,
+                "z": 0.012932639569044113
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "b6eeb111-0bc8-40d0-80f7-f7739b6302d9",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 0.10000000149011612
         }
     ]
 }

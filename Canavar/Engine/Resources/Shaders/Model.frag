@@ -3,6 +3,7 @@
 struct Model
 {
     vec3 color;
+    vec3 transparencyColor;
     float ambient;
     float diffuse;
     float specular;
@@ -67,6 +68,7 @@ uniform float uZFar;
 
 uniform bool uEnableAces;
 uniform float uExposure;
+uniform float uMeshOpacity;
 
 uniform sampler2D uTextureBaseColor;
 uniform sampler2D uTextureMetallic;
@@ -229,13 +231,20 @@ vec3 ProcessHaze(float distance, vec3 fragWorldPos, vec3 subjectColor)
     return result;
 }
 
-vec3 CalculateColor()
+vec3 CalculateColor(float opacity)
 {
     vec3 color;
 
     if (uModel.useModelColor)
     {
-        color = uModel.color;
+        if (opacity < 1.0f)
+        {
+            color = uModel.transparencyColor;
+        }
+        else
+        {
+            color = uModel.color;
+        }
     }
     else
     {
@@ -245,7 +254,14 @@ vec3 CalculateColor()
         }
         else
         {
-            color = uModel.color;
+            if (opacity < 1.0f)
+            {
+                color = uModel.transparencyColor;
+            }
+            else
+            {
+                color = uModel.color;
+            }
         }
     }
 
@@ -336,8 +352,7 @@ float CalculateMetallic()
 
     if (uHasTextureMetallic)
     {
-        vec3 rgb = texture(uTextureMetallic, fsTextureCoords).rgb;
-        metallic = (rgb.r + rgb.g + rgb.b) / 3.0f;
+        metallic = texture(uTextureMetallic, fsTextureCoords).r;
     }
     else
     {
@@ -353,8 +368,7 @@ float CalculateRoughness()
 
     if (uHasTextureRoughness)
     {
-        vec3 rgb = texture(uTextureRoughness, fsTextureCoords).rgb;
-        roughness = (rgb.r + rgb.g + rgb.b) / 3.0f;
+        roughness = texture(uTextureRoughness, fsTextureCoords).r;
     }
     else
     {
@@ -370,8 +384,7 @@ float CalculateAmbientOcclusion()
 
     if (uHasTextureAmbientOcclusion)
     {
-        vec3 rgb = texture(uTextureAmbientOcclusion, fsTextureCoords).rgb;
-        ao = (rgb.r + rgb.g + rgb.b) / 3.0f;
+        ao = texture(uTextureAmbientOcclusion, fsTextureCoords).r;
     }
     else
     {
@@ -439,17 +452,27 @@ float CalculateShadow()
     return result;
 }
 
-void main()
+float CalculateOpacity()
 {
-    float alpha = texture(uTextureBaseColor, fsTextureCoords).a;
+    float opacity;
 
-    if (alpha < 0.1f)
+    if (uHasTextureBaseColor)
     {
-        discard;
+        opacity = texture(uTextureBaseColor, fsTextureCoords).a;
+    }
+    else
+    {
+        opacity = uMeshOpacity;
     }
 
+    return opacity;
+}
+
+void main()
+{
+    float opacity = CalculateOpacity();
     vec3 normal = CalculateNormal();
-    vec3 color = CalculateColor();
+    vec3 color = CalculateColor(opacity);
     vec3 Lo = normalize(uCameraPosition - fsWorldPosition);
     float distance = length(uCameraPosition - fsWorldPosition);
 
@@ -486,7 +509,7 @@ void main()
     // Final
     result = ProcessHaze(distance, fsWorldPosition, result);
 
-    OutFragColor = vec4(result, alpha);
+    OutFragColor = vec4(result, opacity);
 
     // Fragment position
     OutFragLocalPosition = vec4(fsLocalPosition, 1.0f);

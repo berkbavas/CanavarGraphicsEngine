@@ -61,7 +61,7 @@ namespace Canavar::Engine
         void OnMouseMoved(QMouseEvent*);
         void OnWheelMoved(QWheelEvent*);
 
-        void onRenderLoop(float ifps);
+        void OnRenderLoop(float ifps);
 
       private:
         ContainerMode mContainerMode{ ContainerMode::Window };

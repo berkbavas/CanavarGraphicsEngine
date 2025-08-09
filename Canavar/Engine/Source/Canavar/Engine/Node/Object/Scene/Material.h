@@ -7,6 +7,7 @@
 #include <QMap>
 #include <QOpenGLExtraFunctions>
 #include <QOpenGLTexture>
+#include <QVector3D>
 
 namespace Canavar::Engine
 {
@@ -27,7 +28,9 @@ namespace Canavar::Engine
         Material();
         ~Material();
 
-        void LoadTexture(TextureType type, const QImage& image);
+        bool LoadTextureFromPath(TextureType type, const QString &path, int components);
+        bool LoadTextureFromImage(TextureType type, const QImage &image, int components);
+
         GLuint GetTexture(TextureType type);
 
         bool HasTextureBaseColor() const;

@@ -1,15 +1,25 @@
 #pragma once
 
+#include "Canavar/Engine/Node/Object/Scene/Mesh.h"
+
 #include <QObject>
 
 namespace Canavar::Engine
 {
     struct NodeInfo
     {
-        float nodeId;
-        float meshId;
-        float primitiveId;
-        float success;
+        float NodeId;
+        float MeshId;
+        float PrimitiveId;
+        float Success;
+    };
+
+    struct TransparentMeshListElement
+    {
+        Model *pModel;
+        Mesh *pMesh;
+        QMatrix4x4 NodeMatrix;
+        QMatrix4x4 CombinedTransformation;
     };
 
     struct Mouse

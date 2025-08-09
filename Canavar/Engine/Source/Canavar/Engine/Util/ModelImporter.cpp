@@ -5,11 +5,11 @@
 
 #include <QDir>
 
-std::map<QString, Canavar::Engine::ScenePtr> Canavar::Engine::ModelImporter::Import(const QString& directory, const QStringList& formats)
+std::map<std::string, Canavar::Engine::ScenePtr> Canavar::Engine::ModelImporter::Import(const QString& directory, const QStringList& formats)
 {
     qInfo() << "Loading and models at" << directory << "whose extensions are" << formats;
 
-    std::map<QString, ScenePtr> result;
+    std::map<std::string, ScenePtr> result;
 
     QDir dir(directory);
     QStringList dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -78,7 +78,7 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
     const QString filename = fullpath.right(lastIndexOf);
 
     ScenePtr pScene = std::make_shared<Scene>();
-    pScene->SetSceneName(sceneName);
+    pScene->SetSceneName(sceneName.toStdString());
 
     // Materials
     for (unsigned int i = 0; i < aiScene->mNumMaterials; ++i)
@@ -94,10 +94,12 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
         MeshPtr pMesh = ProcessMesh(aiScene->mMeshes[i]);
         pMesh->SetMeshId(i);
         pMesh->SetMaterial(pMaterial);
-        pMesh->SetHasTransparency(pMaterial->GetOpacity() < 0.9f);
+        pMesh->SetOpacity(pMaterial->GetOpacity());
 
         pScene->AddMesh(pMesh);
     }
+
+    qDebug() << "ModelImporter::Import: Number of meshes:" << aiScene->mNumMeshes;
 
     // Nodes
     SceneNodePtr pRootNode = ProcessNode(pScene, aiScene->mRootNode);
@@ -192,23 +194,57 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
     MaterialPtr pMaterial = std::make_shared<Material>();
 
     std::map<const char*, bool> results;
-    results["aiTextureType_BASE_COLOR"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory);
-    results["aiTextureType_METALNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory);
-    results["aiTextureType_DIFFUSE_ROUGHNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory);
-    results["aiTextureType_AMBIENT_OCCLUSION"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory);
-    results["aiTextureType_NORMALS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory);
+    results["aiTextureType_BASE_COLOR"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory, 4);
+    results["aiTextureType_METALNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory, 1);
+    results["aiTextureType_DIFFUSE_ROUGHNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory, 1);
+    results["aiTextureType_AMBIENT_OCCLUSION"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory, 1);
+    results["aiTextureType_NORMALS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory, 4);
 
     for (const auto [textureType, result] : results)
     {
         qDebug() << "ModelImporter::ProcessMaterial:" << textureType << ":" << result;
     }
 
-    aiMaterial->Get(AI_MATKEY_OPACITY, pMaterial->GetOpacity_NonConst());
+    // Process opacity
+    float Opacity = 1.0f;
+    if (AI_SUCCESS == aiMaterial->Get(AI_MATKEY_OPACITY, Opacity))
+    {
+        LOG_DEBUG("ModelImporter::ProcessMaterial: AI_MATKEY_OPACITY found, setting opacity to {}.", Opacity);
+        pMaterial->SetOpacity(Opacity);
+    }
+    else
+    {
+        // If opacity not found, try transparency factor
+        LOG_DEBUG("ModelImporter::ProcessMaterial: AI_MATKEY_OPACITY not found, trying AI_MATKEY_TRANSPARENCYFACTOR.");
+
+        if (AI_SUCCESS == aiMaterial->Get(AI_MATKEY_TRANSPARENCYFACTOR, Opacity))
+        {
+            LOG_DEBUG("ModelImporter::ProcessMaterial: AI_MATKEY_TRANSPARENCYFACTOR found, setting opacity to {}.", Opacity);
+            pMaterial->SetOpacity(Opacity);
+        }
+        else
+        {
+            LOG_DEBUG("ModelImporter::ProcessMaterial: AI_MATKEY_TRANSPARENCYFACTOR not found as well.");
+
+            aiColor4D Color;
+
+            if (AI_SUCCESS == aiMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, Color))
+            {
+                LOG_DEBUG("ModelImporter::ProcessMaterial: AI_MATKEY_COLOR_DIFFUSE found, setting opacity to {}.", Color.a);
+                pMaterial->SetOpacity(Color.a);
+            }
+            else
+            {
+                LOG_DEBUG("ModelImporter::ProcessMaterial: AI_MATKEY_COLOR_DIFFUSE not found as well, setting default opacity to 1.0f.");
+                pMaterial->SetOpacity(1.0f);
+            }
+        }
+    }
 
     return pMaterial;
 }
 
-bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory)
+bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory, int components)
 {
     for (int i = 0; i < aiMaterial->GetTextureCount(aiType); i++)
     {
@@ -217,37 +253,17 @@ bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, Mater
 
         if (const auto* pTexture = pScene->GetEmbeddedTexture(str.C_Str()))
         {
+            LOG_DEBUG("ModelImporter::ProcessTexture: Loading embedded texture for {}", str.C_Str());
             QImage image(reinterpret_cast<uchar*>(pTexture->pcData), pTexture->mWidth, pTexture->mHeight, QImage::Format_RGBA8888);
-
-            if (image.isNull())
-            {
-                LOG_WARN("ModelImporter::ProcessTexture: Image at '{}' is null.", str.C_Str());
-            }
-            else
-            {
-                LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", str.C_Str());
-                pMaterial->LoadTexture(type, image);
-                return true;
-            }
+            return pMaterial->LoadTextureFromImage(type, image, components);
         }
         else
         {
             QString filename(str.C_Str());
+            QString path = directory + "/" + filename;
 
-            const auto path = directory + "/" + filename;
-
-            QImage image(path);
-
-            if (image.isNull())
-            {
-                LOG_WARN("ModelImporter::ProcessTexture: Image at '{}' is null.", path.toStdString());
-            }
-            else
-            {
-                LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", path.toStdString());
-                pMaterial->LoadTexture(type, image);
-                return true;
-            }
+            LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", path.toStdString());
+            return pMaterial->LoadTextureFromPath(type, path, components);
         }
     }
 

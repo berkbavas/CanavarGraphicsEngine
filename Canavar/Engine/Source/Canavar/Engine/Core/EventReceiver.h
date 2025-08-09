@@ -10,6 +10,7 @@ namespace Canavar::Engine
         // Core Events
         virtual void Initialize();
         virtual void Resize(int w, int h);
+        virtual void PreRender(float ifps);
         virtual void PostRender(float ifps);
         virtual void Render(float ifps);
 

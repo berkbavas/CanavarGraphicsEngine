@@ -62,8 +62,8 @@ namespace Canavar::Engine
 
       private:
         void RenderObjects(Camera *pCamera, float ifps);
-        void RenderModel(ModelPtr pModel, RenderPass renderPass);
-        void RenderNozzleEffect(NozzleEffectPtr pEffect, Camera *pCamera, float ifps);
+        void RenderModel(Model* pModel, RenderPass RenderPass);
+        void RenderNozzleEffect(NozzleEffect* pEffect, Camera *pCamera, float ifps);
         void RenderSky(Camera *pCamera);
         void RenderTerrain(Terrain *pTerrain, Camera *pCamera);
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Core/Shader.h"
+#include "Canavar/Engine/Core/Structs.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Scene/Mesh.h"
 
@@ -19,12 +20,14 @@ namespace Canavar::Engine
       public:
         SceneNode() = default;
 
-        void Render(Model *pModel, Shader *pShader, RenderPass renderPass, const QMatrix4x4 &parentTransformation = QMatrix4x4());
+        void Render(Model *pModel, Shader *pShader, RenderPass renderPass, const QMatrix4x4 &ParentTransformation = QMatrix4x4());
+
+        void AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List, const QMatrix4x4 &ParentTransformation = QMatrix4x4());
 
         void AddMesh(MeshPtr pMesh);
         void AddChild(SceneNodePtr pChild);
 
-        AABB CalculateAABB(const QMatrix4x4 &parentTransformation = QMatrix4x4()) const;
+        AABB CalculateAABB(const QMatrix4x4 &ParentTransformation = QMatrix4x4()) const;
 
       private:
         std::set<SceneNodePtr> mChildren; // Our children.

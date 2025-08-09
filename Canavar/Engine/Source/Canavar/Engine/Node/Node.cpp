@@ -6,25 +6,32 @@
 
 Canavar::Engine::Node::Node()
 {
-    mUuid = Util::GenerateUuid();
+    mUuid = Util::GenerateUuid().toStdString();
 }
 
-QString Canavar::Engine::Node::GetUniqueNodeName() const
+const std::string &Canavar::Engine::Node::GetUniqueNodeName()
 {
-    return mNodeName + "##" + QString::number(mNodeId);
+    mUniqueNodeName = mNodeName + "##" + std::to_string(mNodeId);
+    return mUniqueNodeName;
+}
+
+const std::string &Canavar::Engine::Node::GetNodeIdString()
+{
+    mNodeIdString = std::to_string(mNodeId);
+    return mNodeIdString;
 }
 
 void Canavar::Engine::Node::ToJson(QJsonObject &object)
 {
-    object.insert("node_name", mNodeName);
-    object.insert("uuid", mUuid);
-    object.insert("node_type_name", GetNodeTypeName());
+    object.insert("node_name", QString::fromStdString(mNodeName));
+    object.insert("uuid", QString::fromStdString(mUuid));
+    object.insert("node_type_name", QString::fromStdString(GetNodeTypeName()));
 }
 
 void Canavar::Engine::Node::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
 {
-    mNodeName = object["node_name"].toString();
-    mUuid = object["uuid"].toString();
+    mNodeName = object["node_name"].toString().toStdString();
+    mUuid = object["uuid"].toString().toStdString();
 }
 
 void Canavar::Engine::Node::RemoveParent()

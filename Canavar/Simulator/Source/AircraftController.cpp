@@ -10,11 +10,10 @@ Canavar::Simulator::AircraftController::AircraftController(Aircraft* aircraft, Q
     , mRudder(0)
     , mThrottle(0)
     , mAutoPilotEnabled(false)
-    , mTimeElapsed(0.0f)
 {
-    connect(this, &Canavar::Simulator::AircraftController::Command, mAircraft, &Aircraft::ProcessCommand, Qt::QueuedConnection);
     connect(&mTimer, &QTimer::timeout, this, &Canavar::Simulator::AircraftController::Tick);
     connect(mAircraft, &Aircraft::PfdChanged, this, [=](Aircraft::PrimaryFlightData pfd) { mPfd = pfd; }, Qt::QueuedConnection);
+    connect(this, &Canavar::Simulator::AircraftController::Command, mAircraft, &Aircraft::ProcessCommand, Qt::QueuedConnection);
 }
 
 void Canavar::Simulator::AircraftController::KeyPressed(QKeyEvent* event)
@@ -25,6 +24,11 @@ void Canavar::Simulator::AircraftController::KeyPressed(QKeyEvent* event)
 void Canavar::Simulator::AircraftController::KeyReleased(QKeyEvent* event)
 {
     mPressedKeys.remove((Qt::Key) event->key());
+}
+
+const Canavar::Simulator::Aircraft::PrimaryFlightData& Canavar::Simulator::AircraftController::GetPrimaryFlightData() const
+{
+    return mPfd;
 }
 
 bool Canavar::Simulator::AircraftController::Initialize()
@@ -38,9 +42,9 @@ bool Canavar::Simulator::AircraftController::Initialize()
 
 void Canavar::Simulator::AircraftController::Tick()
 {
-    if (mPressedKeys.contains(Qt::Key_Up))
+    if (mPressedKeys.contains(Qt::Key_Up) || mPressedKeys.contains(Qt::Key_W))
         mElevator += 0.025;
-    else if (mPressedKeys.contains(Qt::Key_Down))
+    else if (mPressedKeys.contains(Qt::Key_Down) || mPressedKeys.contains(Qt::Key_S))
         mElevator -= 0.025;
     else if (mElevator < -0.025)
         mElevator += 0.025;
@@ -49,9 +53,9 @@ void Canavar::Simulator::AircraftController::Tick()
     else
         mElevator = 0.0;
 
-    if (mPressedKeys.contains(Qt::Key_Left))
+    if (mPressedKeys.contains(Qt::Key_Left) || mPressedKeys.contains(Qt::Key_A))
         mAileron -= 0.025;
-    else if (mPressedKeys.contains(Qt::Key_Right))
+    else if (mPressedKeys.contains(Qt::Key_Right) || mPressedKeys.contains(Qt::Key_D))
         mAileron += 0.025;
     else if (mAileron < -0.025)
         mAileron += 0.025;
@@ -117,94 +121,6 @@ QVariant Canavar::Simulator::AircraftController::GetCmd(Aircraft::Command comman
     return QVariant();
 }
 
-void Canavar::Simulator::AircraftController::Update(float ifps)
-{
-    mTimeElapsed += ifps;
-
-    if (mRootNode == nullptr)
-    {
-        CGE_EXIT_FAILURE("mRootNode is nullptr. Exiting...");
-    }
-
-    // if (mJetNode == nullptr)
-    // {
-    //     CGE_EXIT_FAILURE("mJetNode is nullptr. Exiting...");
-    // }
-
-    mRootNode->SetWorldRotation(mPfd.rotation);
-    mRootNode->SetWorldPosition(mPfd.position);
-
-    // Rudder
-    // if (mJetNode)
-    // {
-    //     QVector3D p0 = QVector3D(0.0f, 3.0193f, 10.3473f);
-    //     QVector3D p1 = QVector3D(0.0f, 7.742f, 13.4306f);
-    //     QVector3D axis = (p0 - p1).normalized();
-    //     QMatrix4x4 t0, t1, t2;
-
-    //     t0.translate(-p0);
-    //     t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rudderPos));
-    //     t2.translate(p0);
-    //     mJetNode->SetMeshTransformation("Object_18", t2 * t1 * t0);
-    // }
-
-    // // Left elevator
-    // if (mJetNode)
-    // {
-    //     QVector3D p0 = QVector3D(-2.6f, 0.4204f, 8.4395f);
-    //     QVector3D p1 = QVector3D(-6.8575f, -0.4848f, 11.7923f);
-    //     QVector3D axis = (p0 - p1).normalized();
-    //     QMatrix4x4 t0, t1, t2;
-
-    //     t0.translate(-p0);
-    //     t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.elevatorPos));
-    //     t2.translate(p0);
-    //     mJetNode->SetMeshTransformation("Object_16", t2 * t1 * t0);
-    // }
-
-    // // Right elevator
-    // if (mJetNode)
-    // {
-    //     QVector3D p0 = QVector3D(2.6f, 0.4204f, 8.4395f);
-    //     QVector3D p1 = QVector3D(6.8575f, -0.4848f, 11.7923f);
-    //     QVector3D axis = (p0 - p1).normalized();
-    //     QMatrix4x4 t0, t1, t2;
-
-    //     t0.translate(-p0);
-    //     t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.elevatorPos));
-    //     t2.translate(p0);
-    //     mJetNode->SetMeshTransformation("Object_7", t2 * t1 * t0);
-    // }
-
-    // // Left aileron
-    // if (mJetNode)
-    // {
-    //     QVector3D p0 = QVector3D(-2.6074f, 0.3266f, 3.4115f);
-    //     QVector3D p1 = QVector3D(-8.7629f, -0.2083f, 4.333f);
-    //     QVector3D axis = (p0 - p1).normalized();
-    //     QMatrix4x4 t0, t1, t2;
-
-    //     t0.translate(-p0);
-    //     t1.rotate(QQuaternion::fromAxisAndAngle(axis, -mPfd.leftAileronPos));
-    //     t2.translate(p0);
-    //     mJetNode->SetMeshTransformation("Object_9", t2 * t1 * t0);
-    // }
-
-    // // Right aileron
-    // if (mJetNode)
-    // {
-    //     QVector3D p0 = QVector3D(2.6072f, 0.3266f, 3.4115f);
-    //     QVector3D p1 = QVector3D(8.7623f, 0.1772f, 4.3218f);
-    //     QVector3D axis = (p0 - p1).normalized();
-    //     QMatrix4x4 t0, t1, t2;
-
-    //     t0.translate(-p0);
-    //     t1.rotate(QQuaternion::fromAxisAndAngle(axis, mPfd.rightAileronPos));
-    //     t2.translate(p0);
-    //     mJetNode->SetMeshTransformation("Object_8", t2 * t1 * t0);
-    // }
-}
-
 void Canavar::Simulator::AircraftController::DrawGui()
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
@@ -249,14 +165,4 @@ void Canavar::Simulator::AircraftController::DrawGui()
     ImGui::Text("Delta Pos:   %.2f meters", (mPfd.position - mPfd.actualPosition).length());
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
-}
-
-void Canavar::Simulator::AircraftController::SetRootNode(Canavar::Engine::ObjectPtr pRootNode)
-{
-    mRootNode = pRootNode;
-}
-
-void Canavar::Simulator::AircraftController::SetJetNode(Canavar::Engine::ModelPtr pJetNode)
-{
-    mJetNode = pJetNode;
 }

@@ -35,7 +35,7 @@ void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
             }
             else
             {
-                LOG_FATAL("BoundingBoxRenderer::Render: Model data is not found for this model: {}", pModel->GetSceneName().toStdString());
+                LOG_FATAL("BoundingBoxRenderer::Render: Model data is not found for this model: {}", pModel->GetSceneName());
             }
         }
         else

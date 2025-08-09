@@ -109,32 +109,33 @@
         },
         {
             "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
+                "b": 0,
+                "g": 0,
+                "r": 0
             },
-            "node_name": "Text3D",
-            "node_type_name": "Text3D",
+            "node_name": "f16",
+            "node_type_name": "Model",
             "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
             "position": {
-                "x": 0,
-                "y": 2,
-                "z": 6
-            },
-            "rotation": {
-                "w": 1,
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
-            "scale": {
-                "x": 0.009999999776482582,
-                "y": 0.009999999776482582,
-                "z": 0.009999999776482582
+            "rotation": {
+                "w": 0.5000044107437134,
+                "x": 0.49999570846557617,
+                "y": 0.5000044107437134,
+                "z": -0.4999956786632538
             },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "scene_name": "f16",
             "selectable": true,
-            "text": "Canavar Graphics Engine",
-            "uuid": "1cbd7c02-c62c-45ff-a711-5840a21f385e",
+            "use_model_color": false,
+            "uuid": "a98471f6-5e00-499d-9f92-4cfd56389cc3",
             "visible": true
         },
         {
@@ -216,6 +217,36 @@
             "z_near": 1
         },
         {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "Text3D",
+            "node_type_name": "Text3D",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 2,
+                "z": 6
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.009999999776482582,
+                "y": 0.009999999776482582,
+                "z": 0.009999999776482582
+            },
+            "selectable": true,
+            "text": "Canavar Graphics Engine",
+            "uuid": "1cbd7c02-c62c-45ff-a711-5840a21f385e",
+            "visible": true
+        },
+        {
             "ambient": 1,
             "color": {
                 "b": 0,
@@ -289,37 +320,6 @@
         },
         {
             "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "node_name": "f16",
-            "node_type_name": "Model",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "rotation": {
-                "w": 0.5000044107437134,
-                "x": 0.49999570846557617,
-                "y": 0.5000044107437134,
-                "z": -0.4999956786632538
-            },
-            "scale": {
-                "x": 0.10000000149011612,
-                "y": 0.10000000149011612,
-                "z": 0.10000000149011612
-            },
-            "scene_name": "f16",
-            "selectable": true,
-            "use_model_color": false,
-            "uuid": "a98471f6-5e00-499d-9f92-4cfd56389cc3",
-            "visible": true
-        },
-        {
-            "color": {
                 "b": 0,
                 "g": 0,
                 "r": 1
@@ -331,7 +331,7 @@
                 "y": 50
             },
             "scale": 0.7400000095367432,
-            "text": "FPS: 83",
+            "text": "FPS: 62",
             "uuid": "915054f9-11b7-47e4-865a-0b8fd3e53b2a"
         }
     ]

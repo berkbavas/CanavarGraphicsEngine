@@ -17,7 +17,7 @@
         return std::make_shared<TYPE>(); \
     }
 
-Canavar::Engine::NodePtr Canavar::Engine::NodeFactory::CreateNode(const QString &type)
+Canavar::Engine::NodePtr Canavar::Engine::NodeFactory::CreateNode(const std::string &type)
 {
     RETURN_NODE(DummyCamera);
     RETURN_NODE(DummyObject);
@@ -32,12 +32,12 @@ Canavar::Engine::NodePtr Canavar::Engine::NodeFactory::CreateNode(const QString 
     return nullptr;
 }
 
-const QVector<QString> &Canavar::Engine::NodeFactory::GetNodeNames()
+const QVector<std::string> &Canavar::Engine::NodeFactory::GetNodeNames()
 {
     return mNodeNames;
 }
 
-QVector<QString> Canavar::Engine::NodeFactory::mNodeNames = { "DummyCamera",
+QVector<std::string> Canavar::Engine::NodeFactory::mNodeNames = { "DummyCamera",
                                                               "DummyObject",
                                                               "NozzleEffect",
                                                               "DirectionalLight",

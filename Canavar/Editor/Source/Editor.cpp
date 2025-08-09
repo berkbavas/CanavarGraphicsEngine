@@ -51,7 +51,7 @@ void Canavar::Editor::Editor::Initialize()
         mCameraManager->SetActiveCamera(mFreeCamera);
     });
 
-    mNodeManager->ImportNodes("Resources/City.json");
+    mNodeManager->ImportNodes("Resources/Transparency.json");
 
     // LightningStrikeGeneratorPtr pGenerator = std::make_shared<LightningStrikeGenerator>();
     // pGenerator->SetPosition(0, 0, -10);

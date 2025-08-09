@@ -11,11 +11,11 @@ void Canavar::Engine::Mesh::Initialize()
 {
     if (mVAO != 0)
     {
-        LOG_WARN("Mesh::Initialize: '{}' has been initialized already.", mMeshName.toStdString());
+        LOG_WARN("Mesh::Initialize: '{}' has been initialized already.", mMeshName);
         return;
     }
 
-    LOG_DEBUG("Mesh::Initialize: Initializing '{}'...", mMeshName.toStdString());
+    LOG_DEBUG("Mesh::Initialize: Initializing '{}'...", mMeshName);
 
     initializeOpenGLFunctions();
 
@@ -52,7 +52,7 @@ void Canavar::Engine::Mesh::Initialize()
 
     glBindVertexArray(0);
 
-    LOG_DEBUG("Mesh::Initialize: Initialization of '{}' is done.", mMeshName.toStdString());
+    LOG_DEBUG("Mesh::Initialize: Initialization of '{}' is done.", mMeshName);
 }
 
 void Canavar::Engine::Mesh::Destroy()
@@ -76,21 +76,22 @@ void Canavar::Engine::Mesh::Destroy()
     }
 }
 
-void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass renderPass)
+void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass RenderPass)
 {
     if (mVAO == 0)
     {
-        LOG_FATAL("Mesh::Render: '{}' is not initialized yet. Returning...", mMeshName.toStdString());
+        LOG_FATAL("Mesh::Render: '{}' is not initialized yet. Returning...", mMeshName);
         return;
     }
 
-    if (!ShouldRender(renderPass))
+    if (!ShouldRender(pModel, RenderPass))
     {
         return;
     }
 
     const auto &Model4x4 = pModel->GetWorldTransformation();
-    const auto &Mesh4x4 = pModel->GetMeshTransformation(mMeshName);
+    const auto &Mesh4x4 = pModel->GetMeshTransformation(GetUniqueMeshName());
+    const auto &MeshOpacity = pModel->GetMeshOpacity(GetUniqueMeshName(), mOpacity);
 
     const auto M = Model4x4 * (Mesh4x4 * Node4x4);
 
@@ -118,6 +119,8 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix
     }
     else
     {
+        pShader->SetUniformValue("uMeshOpacity", MeshOpacity);
+
         pShader->SetUniformValue("uNormalMatrix", M.normalMatrix());
         pShader->SetUniformValue("uNodeId", static_cast<float>(pModel->GetNodeId()));
         pShader->SetUniformValue("uMeshId", static_cast<float>(mMeshId));
@@ -154,18 +157,34 @@ void Canavar::Engine::Mesh::AddIndex(unsigned int index)
     mIndices.push_back(index);
 }
 
-bool Canavar::Engine::Mesh::ShouldRender(RenderPass renderPass) const
+const std::string &Canavar::Engine::Mesh::GetUniqueMeshName()
 {
-    switch (renderPass)
+    mUniqueMeshName = mMeshName + "_" + std::to_string(mMeshId);
+    return mUniqueMeshName;
+}
+
+bool Canavar::Engine::Mesh::HasTransparency(const Model *pModel) const
+{
+    return pModel->GetMeshOpacity(mUniqueMeshName, mOpacity) < 1.0f;
+}
+
+bool Canavar::Engine::Mesh::ShouldRender(const Model *pModel, RenderPass RenderPass) const
+{
+    if (pModel->GetMeshVisibility(mUniqueMeshName) == false)
+    {
+        return false;
+    }
+
+    switch (RenderPass)
     {
     case RenderPass::Opaque:
-        if (mHasTransparency)
+        if (HasTransparency(pModel))
         {
             return false;
         }
         break;
     case RenderPass::Transparent:
-        if (!mHasTransparency)
+        if (!HasTransparency(pModel))
         {
             return false;
         }

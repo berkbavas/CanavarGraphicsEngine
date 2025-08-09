@@ -84,8 +84,6 @@ void Canavar::Engine::TextRenderer::InitializeCharacters()
     // For example, you might use FreeType to load a font and create Character objects.
     // mCharacters['A'] = { textureID, size, bearing, advance };
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
-
     for (unsigned char c = 0; c < 128; c++)
     {
         // load character glyph

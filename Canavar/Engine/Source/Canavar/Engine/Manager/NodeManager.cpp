@@ -59,7 +59,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
         return;
     }
 
-    LOG_DEBUG("NodeManager::AddNode: > I will try to add this Node to my list. Node is '{}' at {}", pNode->GetNodeName().toStdString(), PRINT_ADDRESS(pNode.get()));
+    LOG_DEBUG("NodeManager::AddNode: > I will try to add this Node to my list. Node is '{}' at {}", pNode->GetNodeName(), PRINT_ADDRESS(pNode.get()));
 
     if (mNodes.contains(pNode))
     {
@@ -84,7 +84,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
 
         if (const auto pParent = pObject->GetParent<Node>())
         {
-            LOG_DEBUG("NodeManager::AddNode: This Object has a parent. Let's see if its parent added to my list. Parent is '{}' at {}", pParent->GetNodeName().toStdString(), PRINT_ADDRESS(pParent.get()));
+            LOG_DEBUG("NodeManager::AddNode: This Object has a parent. Let's see if its parent added to my list. Parent is '{}' at {}", pParent->GetNodeName(), PRINT_ADDRESS(pParent.get()));
 
             if (mNodes.contains(pParent) == false)
             {
@@ -108,13 +108,13 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
 
             if (mNodes.contains(pChild) == false)
             {
-                LOG_DEBUG("NodeManager::AddNode: Object has a child which is not added to my list. Child is '{}' at {}", pChild->GetNodeName().toStdString(), PRINT_ADDRESS(pChild.get()));
+                LOG_DEBUG("NodeManager::AddNode: Object has a child which is not added to my list. Child is '{}' at {}", pChild->GetNodeName(), PRINT_ADDRESS(pChild.get()));
                 LOG_DEBUG("NodeManager::AddNode: I am calling AddNode on this child. This is a recursive call.");
                 AddNode(pChild);
             }
             else
             {
-                LOG_DEBUG("NodeManager::AddNode: This child is on my list: '{}' at {}", pChild->GetNodeName().toStdString(), PRINT_ADDRESS(pChild.get()));
+                LOG_DEBUG("NodeManager::AddNode: This child is on my list: '{}' at {}", pChild->GetNodeName(), PRINT_ADDRESS(pChild.get()));
             }
         }
 
@@ -125,12 +125,12 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
         }
     }
 
-    LOG_DEBUG("NodeManager::AddNode: < I have added this Node: '{}' at {}", pNode->GetNodeName().toStdString(), PRINT_ADDRESS(pNode.get()));
+    LOG_DEBUG("NodeManager::AddNode: < I have added this Node: '{}' at {}", pNode->GetNodeName(), PRINT_ADDRESS(pNode.get()));
 }
 
 void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
 {
-    LOG_DEBUG("NodeManager::RemoveNode: > I will remove this Node: '{}' at {}", pNode->GetNodeName().toStdString(), PRINT_ADDRESS(pNode.get()));
+    LOG_DEBUG("NodeManager::RemoveNode: > I will remove this Node: '{}' at {}", pNode->GetNodeName(), PRINT_ADDRESS(pNode.get()));
 
     int count = mNodes.removeAll(pNode);
 
@@ -158,7 +158,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
         {
             if (const auto pChild = *it)
             {
-                LOG_DEBUG("NodeManager::RemoveNode: Removing this Object's child: '{}' at {}. This is a recursive call.", pChild->GetNodeName().toStdString(), PRINT_ADDRESS(pChild.get()));
+                LOG_DEBUG("NodeManager::RemoveNode: Removing this Object's child: '{}' at {}. This is a recursive call.", pChild->GetNodeName(), PRINT_ADDRESS(pChild.get()));
                 RemoveNode(pChild);
             }
         }
@@ -179,7 +179,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
     LOG_DEBUG("NodeManager::RemoveNode: < Node is removed.");
 }
 
-Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& sceneName) const
+Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const std::string& sceneName) const
 {
     ScenePtr pResult = nullptr;
 
@@ -193,10 +193,15 @@ Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const QString& 
 
 Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(ModelPtr pModel) const
 {
+    return GetScene(pModel.get());
+}
+
+Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(Model* pModel) const
+{
     return GetScene(pModel->GetSceneName());
 }
 
-const std::map<QString, Canavar::Engine::ScenePtr>& Canavar::Engine::NodeManager::GetScenes() const
+const std::map<std::string, Canavar::Engine::ScenePtr>& Canavar::Engine::NodeManager::GetScenes() const
 {
     return mScenes;
 }
@@ -216,11 +221,11 @@ const QList<Canavar::Engine::ObjectPtr>& Canavar::Engine::NodeManager::GetObject
     return mObjects;
 }
 
-Canavar::Engine::MeshPtr Canavar::Engine::NodeManager::GetMeshById(ModelPtr pModel, uint32_t meshId) const
+Canavar::Engine::MeshPtr Canavar::Engine::NodeManager::GetMeshById(ModelPtr pModel, uint32_t MeshId) const
 {
     if (const auto pScene = GetScene(pModel))
     {
-        return pScene->GetMesh(meshId);
+        return pScene->GetMesh(MeshId);
     }
 
     return nullptr;
@@ -268,9 +273,9 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         QString NodeTypeName = Object["node_type_name"].toString();
         QString Uuid = Object["uuid"].toString();
 
-        LOG_DEBUG("NodeManager::ImportNodes: uuid: {}, node_type_name: {}", Uuid.toStdString(), NodeTypeName.toStdString());
+        LOG_DEBUG("NodeManager::ImportNodes: uuid: {}, node_type_name: {}", Uuid.toUtf8().constData(), NodeTypeName.toUtf8().constData());
 
-        if (NodeTypeName.isNull() || NodeTypeName.isEmpty())
+        if (NodeTypeName == "")
         {
             continue;
         }
@@ -305,21 +310,21 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
 
             if (SceneName.isNull() == false && SceneName.isEmpty() == false)
             {
-                ModelPtr pModel = std::make_shared<Model>(SceneName);
-                pModel->SetUuid(Uuid);
+                ModelPtr pModel = std::make_shared<Model>(SceneName.toStdString());
+                pModel->SetUuid(Uuid.toStdString());
                 Nodes.insert(pModel);
             }
         }
         else
         {
-            if (NodePtr pNode = NodeFactory::CreateNode(NodeTypeName))
+            if (NodePtr pNode = NodeFactory::CreateNode(NodeTypeName.toStdString()))
             {
-                pNode->SetUuid(Uuid);
+                pNode->SetUuid(Uuid.toStdString());
                 Nodes.insert(pNode);
             }
             else
             {
-                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", NodeTypeName.toStdString());
+                LOG_FATAL("NodeManager::ImportNodes: Could not find factory for this node type: {}", NodeTypeName.toStdString().c_str());
             }
         }
     }

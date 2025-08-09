@@ -19,8 +19,8 @@
 #include <Canavar/Engine/Node/Object/DummyObject/DummyObject.h>
 #include <Canavar/Engine/Node/Object/Light/PointLight.h>
 #include <Canavar/Engine/Node/Object/Model/Model.h>
-#include <Canavar/Engine/Util/Logger.h>
 #include <Canavar/Engine/Util/ImGuiWidget.h>
+#include <Canavar/Engine/Util/Logger.h>
 
 #include <QGridLayout>
 #include <QMainWindow>
@@ -60,7 +60,7 @@ namespace Canavar::Simulator
         Aircraft *mAircraft;
         AircraftController *mAircraftController;
 
-        PrimaryFlightData* mPfd;
+        PrimaryFlightData *mPfd;
 
         Canavar::Engine::DummyObjectPtr mRootNode;
         Canavar::Engine::ModelPtr mJetNode;
@@ -70,6 +70,6 @@ namespace Canavar::Simulator
         Canavar::Engine::PersecutorCameraPtr mPersecutorCamera;
         Canavar::Engine::Text2DPtr mText2D;
 
-        float mTime{0.0f};
+        float mTime{ 0.0f };
     };
 }

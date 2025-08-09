@@ -58,7 +58,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
             ImGui::Text("Node Type: %s", pNode->GetNodeTypeName());
             ImGui::Text("Node ID:   %u", pNode->GetNodeId());
 
-            if (const auto NewNodeName = InputText("Node Name", pNode->GetNodeName().toStdString()))
+            if (const auto NewNodeName = InputText("Node Name", pNode->GetNodeName().c_str()))
             {
                 pNode->SetNodeName(NewNodeName.value().c_str());
             }
@@ -182,7 +182,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                     {
                         if (pObject->GetChildren().size() > 0)
                         {
-                            bool open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().toStdString().c_str()); // Column 1
+                            bool open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().c_str()); // Column 1
                             ImGui::TableNextColumn();
                             ImGui::Text(pObject->GetNodeTypeName());
                             ImGui::TableNextColumn();
@@ -205,7 +205,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                         }
                         else
                         {
-                            ImGui::TreeNodeEx(pNode->GetUniqueNodeName().toStdString().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
+                            ImGui::TreeNodeEx(pNode->GetUniqueNodeName().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
                             ImGui::TableNextColumn();
                             ImGui::Text(pNode->GetNodeTypeName());
                             ImGui::TableNextColumn();
@@ -217,11 +217,11 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                     }
                     else
                     {
-                        ImGui::TreeNodeEx(pNode->GetUniqueNodeName().toStdString().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
+                        ImGui::TreeNodeEx(pNode->GetUniqueNodeName().c_str(), ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen); // Column 1
                         ImGui::TableNextColumn();
                         ImGui::Text(pNode->GetNodeTypeName());
                         ImGui::TableNextColumn();
-                        if (ImGui::Selectable(std::format("{}", pNode->GetNodeId()).c_str(), pSelectedNode == pNode)) // Column 2
+                        if (ImGui::Selectable(pNode->GetNodeIdString().c_str(), pSelectedNode == pNode)) // Column 2
                         {
                             pSelectedNode = pNode;
                         }
@@ -229,21 +229,27 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                 }
             };
 
-            const auto &nodes = mNodeManager->GetNodes();
+            const auto &Nodes = mNodeManager->GetNodes();
+            auto pSelectedNode = mSelectedNode;
 
-            for (const auto &pNode : nodes)
+            for (const auto &pNode : Nodes)
             {
                 if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(pNode))
                 {
                     if (pObject->GetParent<Engine::Node>() == nullptr) // Call only root objects, children will be handled by recursion
                     {
-                        CanavarTreeNode::DisplayNode(pObject, mSelectedNode);
+                        CanavarTreeNode::DisplayNode(pObject, pSelectedNode);
                     }
                 }
                 else
                 {
-                    CanavarTreeNode::DisplayNode(pNode, mSelectedNode);
+                    CanavarTreeNode::DisplayNode(pNode, pSelectedNode);
                 }
+            }
+
+            if (pSelectedNode != mSelectedNode)
+            {
+                SetSelectedNode(pSelectedNode);
             }
 
             ImGui::EndTable();
@@ -301,18 +307,18 @@ void Canavar::Engine::ImGuiWidget::DrawTerrain()
 void Canavar::Engine::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
 {
     const auto pParent = pObject->GetParent<Engine::Node>();
-    const auto &objects = mNodeManager->GetObjects();
+    const auto &Objects = mNodeManager->GetObjects();
 
-    if (ImGui::BeginCombo("Parent", pParent ? pParent->GetNodeName().toStdString().c_str() : "-"))
+    if (ImGui::BeginCombo("Parent", pParent ? pParent->GetNodeName().c_str() : "-"))
     {
-        for (const auto &pParentCandidate : objects)
+        for (const auto &pParentCandidate : Objects)
         {
             if (pParentCandidate == pObject)
             {
                 continue;
             }
 
-            if (ImGui::Selectable(pParentCandidate->GetNodeName().toStdString().c_str(), pParentCandidate == pParent))
+            if (ImGui::Selectable(pParentCandidate->GetNodeName().c_str(), pParentCandidate == pParent))
             {
                 pObject->SetParent(pParentCandidate);
             }
@@ -367,12 +373,7 @@ void Canavar::Engine::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
 
     if (ImGui::Button("Remove Object"))
     {
-        mNodeManager->RemoveNode(pObject);
-        if (pObject == mSelectedNode)
-        {
-            mSelectedNode = nullptr;
-            pObject = nullptr;
-        }
+        RemoveNode(pObject);
     }
 }
 
@@ -404,7 +405,46 @@ void Canavar::Engine::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
     ImGui::SliderFloat("Ambient Occlusion##Model", &pModel->GetAmbientOcclusion_NonConst(), 0.0f, 10.0f, "%.2f");
     ImGui::Checkbox("Use Model Color##Model", &pModel->GetUseModelColor_NonConst());
     ImGui::ColorEdit3("Color##Model", &pModel->GetColor_NonConst()[0]);
+    ImGui::ColorEdit3("Transparency Color##Model", &pModel->GetTransparencyColor_NonConst()[0]);
     ImGui::Checkbox("Visible##Model", &pModel->GetVisible_NonConst());
+
+    ImGui::Text("Mesh Parameters");
+
+    if (ImGui::BeginCombo("Mesh Selector##Model", mSelectedMesh ? mSelectedMesh->GetUniqueMeshName().c_str() : "Select Mesh"))
+    {
+        const auto pScene = mNodeManager->GetScene(pModel->GetSceneName());
+        const auto &Meshes = pScene->GetMeshes();
+
+        for (const auto &pMesh : Meshes)
+        {
+            if (ImGui::Selectable(pMesh->GetUniqueMeshName().c_str(), mSelectedMesh == pMesh))
+            {
+                mSelectedMesh = pMesh;
+            }
+        }
+
+        ImGui::EndCombo();
+    }
+
+    if (mSelectedMesh)
+    {
+        auto nodeId = mSelectedMesh->GetMeshId();
+        auto opacity = pModel->GetMeshOpacity(mSelectedMesh->GetUniqueMeshName(), mSelectedMesh->GetOpacity());
+        auto visibility = pModel->GetMeshVisibility(mSelectedMesh->GetUniqueMeshName());
+
+        ImGui::Text("Mesh ID: %d", nodeId);
+        ImGui::Text("Opacity: %.3f", opacity);
+
+        if (ImGui::Checkbox("Mesh Visible", &visibility))
+        {
+            pModel->SetMeshVisibility(mSelectedMesh->GetUniqueMeshName(), visibility);
+        }
+
+        if (ImGui::SliderFloat("Mesh Opacity", &opacity, 0.0f, 1.0f))
+        {
+            pModel->SetMeshOpacity(mSelectedMesh->GetUniqueMeshName(), opacity);
+        }
+    }
 }
 
 void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2DPtr pText)
@@ -562,11 +602,11 @@ void Canavar::Engine::ImGuiWidget::DrawCreateObjectWidget()
 {
     if (ImGui::CollapsingHeader("Create Object##DrawCreateObjectWidget"))
     {
-        if (ImGui::BeginCombo("Create Object##DrawCreateObjectWidgetBeginCombo", mSelectedObjectName.toStdString().c_str()))
+        if (ImGui::BeginCombo("Create Object##DrawCreateObjectWidgetBeginCombo", mSelectedObjectName.c_str()))
         {
-            for (const auto name : Engine::NodeFactory::GetNodeNames())
+            for (const auto &name : Engine::NodeFactory::GetNodeNames())
             {
-                if (ImGui::Selectable(name.toStdString().c_str()))
+                if (ImGui::Selectable(name.c_str()))
                 {
                     mSelectedObjectName = name;
                 }
@@ -586,7 +626,7 @@ void Canavar::Engine::ImGuiWidget::DrawCreateObjectWidget()
                 }
 
                 mNodeManager->AddNode(pNewNode);
-                mSelectedNode = pNewNode;
+                SetSelectedNode(pNewNode);
             }
         }
     }
@@ -596,18 +636,18 @@ void Canavar::Engine::ImGuiWidget::DrawNodeInfo()
 {
     if (ImGui::CollapsingHeader("Node Information"))
     {
-        if (mNodeInfo.success)
+        if (mNodeInfo.Success)
         {
-            if (const auto pNode = mNodeManager->GetNodeById(mNodeInfo.nodeId))
+            if (const auto pNode = mNodeManager->GetNodeById(mNodeInfo.NodeId))
             {
-                ImGui::Text("Node Name:  %s", pNode->GetNodeName().toStdString().c_str());
+                ImGui::Text("Node Name:  %s", pNode->GetNodeName().c_str());
                 ImGui::Text("Node ID:    %u", pNode->GetNodeId());
 
                 if (const auto pModel = std::dynamic_pointer_cast<Engine::Model>(pNode))
                 {
-                    if (const auto pMesh = mNodeManager->GetMeshById(pModel, mNodeInfo.meshId))
+                    if (const auto pMesh = mNodeManager->GetMeshById(pModel, mNodeInfo.MeshId))
                     {
-                        ImGui::Text("Mesh Name:  %s", pMesh->GetMeshName().toStdString().c_str());
+                        ImGui::Text("Mesh Name:  %s", pMesh->GetMeshName().c_str());
                         ImGui::Text("Mesh ID:    %u", pMesh->GetMeshId());
                     }
                     else
@@ -647,13 +687,13 @@ void Canavar::Engine::ImGuiWidget::DrawCreateModelWidget()
 {
     if (ImGui::CollapsingHeader("Create Model##DrawCreateModelWidget"))
     {
-        const auto &scenes = mNodeManager->GetScenes();
+        const auto &Scenes = mNodeManager->GetScenes();
 
-        if (ImGui::BeginCombo("Create Model##DrawCreateModelWidgetBeginCombo", (mSelectedSceneName + "##DrawCreateModelWidget").toStdString().c_str()))
+        if (ImGui::BeginCombo("Create Model##DrawCreateModelWidgetBeginCombo", mSelectedSceneName.c_str()))
         {
-            for (const auto &[name, scene] : scenes)
+            for (const auto &[name, scene] : Scenes)
             {
-                if (ImGui::Selectable(name.toStdString().c_str()))
+                if (ImGui::Selectable(name.c_str(), mSelectedSceneName == name))
                 {
                     mSelectedSceneName = name;
                 }
@@ -667,7 +707,7 @@ void Canavar::Engine::ImGuiWidget::DrawCreateModelWidget()
             Engine::ModelPtr pModel = std::make_shared<Engine::Model>(mSelectedSceneName);
             pModel->SetWorldPosition(GetWorldPositionForCreatedObject());
             mNodeManager->AddNode(pModel);
-            mSelectedNode = pModel;
+            SetSelectedNode(pModel);
         }
     }
 }
@@ -733,8 +773,13 @@ std::optional<std::string> Canavar::Engine::ImGuiWidget::InputText(const std::st
     return std::nullopt;
 }
 
-bool Canavar::Engine::ImGuiWidget::KeyPressed(QKeyEvent *)
+bool Canavar::Engine::ImGuiWidget::KeyPressed(QKeyEvent *pEvent)
 {
+    if (pEvent->key() == Qt::Key_Delete)
+    {
+        RemoveNode(mSelectedNode);
+    }
+
     return ImGui::GetIO().WantCaptureKeyboard;
 }
 
@@ -773,4 +818,25 @@ bool Canavar::Engine::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
 bool Canavar::Engine::ImGuiWidget::WheelMoved(QWheelEvent *)
 {
     return ImGui::GetIO().WantCaptureMouse;
+}
+
+void Canavar::Engine::ImGuiWidget::RemoveNode(NodePtr pNode)
+{
+    if (pNode == nullptr)
+    {
+        return;
+    }
+
+    mNodeManager->RemoveNode(pNode);
+
+    if (pNode == mSelectedNode)
+    {
+        mSelectedNode = nullptr;
+    }
+}
+
+void Canavar::Engine::ImGuiWidget::SetSelectedNode(NodePtr pNode)
+{
+    mSelectedNode = pNode;
+    mSelectedMesh = nullptr;
 }

@@ -56,7 +56,7 @@ Canavar::Engine::Controller::Controller(ContainerMode mode, QObject* parent)
     mManagers.push_back(mRenderingManager);
     mManagers.push_back(mLightManager);
 
-    connect(mRenderingManager, &RenderingManager::RenderLoop, this, &Controller::onRenderLoop, Qt::DirectConnection);
+    connect(mRenderingManager, &RenderingManager::RenderLoop, this, &Controller::OnRenderLoop, Qt::DirectConnection);
 }
 
 Canavar::Engine::Controller::~Controller()
@@ -139,6 +139,11 @@ void Canavar::Engine::Controller::Render(float ifps)
         pManager->PostUpdate(ifps);
     }
 
+    for (const auto pReceiver : mEventReceivers)
+    {
+        pReceiver->PreRender(ifps);
+    }
+
     for (const auto pManager : mManagers)
     {
         pManager->Render(ifps);
@@ -150,7 +155,7 @@ void Canavar::Engine::Controller::Render(float ifps)
     }
 }
 
-void Canavar::Engine::Controller::onRenderLoop(float ifps)
+void Canavar::Engine::Controller::OnRenderLoop(float ifps)
 {
     for (const auto pReceiver : mEventReceivers)
     {

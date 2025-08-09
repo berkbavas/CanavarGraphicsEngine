@@ -33,13 +33,17 @@ namespace Canavar::Engine
 
         void Initialize();
         void Destroy();
-        void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass renderPass);
+        void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass RenderPass);
 
         void AddVertex(const Vertex &vertex);
         void AddIndex(unsigned int index);
 
+        const std::string &GetUniqueMeshName();
+
+        bool HasTransparency(const Model *pModel) const;
+
       private:
-        bool ShouldRender(RenderPass renderPass) const;
+        bool ShouldRender(const Model *pModel, RenderPass RenderPass) const;
 
         DEFINE_MEMBER_CONST(GLuint, VAO, 0);
         DEFINE_MEMBER_CONST(GLuint, VBO, 0);
@@ -49,10 +53,12 @@ namespace Canavar::Engine
         DEFINE_MEMBER_CONST(std::vector<unsigned int>, Indices);
 
         DEFINE_MEMBER(MaterialPtr, Material, nullptr);
-        DEFINE_MEMBER(QString, MeshName);
+        DEFINE_MEMBER(std::string, MeshName);
         DEFINE_MEMBER(uint32_t, MeshId);
         DEFINE_MEMBER(AABB, AABB);
-        DEFINE_MEMBER(bool, HasTransparency, false);
+        DEFINE_MEMBER(float, Opacity, 1.0f);
+
+        std::string mUniqueMeshName;
     };
 
     using MeshPtr = std::shared_ptr<Mesh>;

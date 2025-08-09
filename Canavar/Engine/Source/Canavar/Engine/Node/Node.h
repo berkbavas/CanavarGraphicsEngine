@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Canavar/Engine/Util/Macros.h"
 #include "Canavar/Engine/Core/Enums.h"
+#include "Canavar/Engine/Util/Macros.h"
 
 #include <functional>
 #include <map>
@@ -25,7 +25,8 @@ namespace Canavar::Engine
       public:
         virtual const char* GetNodeTypeName() const = 0;
 
-        QString GetUniqueNodeName() const;
+        const std::string& GetUniqueNodeName();
+        const std::string& GetNodeIdString();
 
         virtual void ToJson(QJsonObject& jsonObject);
         virtual void FromJson(const QJsonObject& jsonObject, const QSet<NodePtr>& nodes);
@@ -50,10 +51,12 @@ namespace Canavar::Engine
       private:
         NodeWeakPtr mParent;
         QSet<NodePtr> mChildren;
+        std::string mUniqueNodeName; // Unique name for this node, used for identification.
+        std::string mNodeIdString;
 
-        DEFINE_MEMBER(QString, NodeName, "Node");
-        DEFINE_MEMBER(QString, Uuid, "");   // Persistent ID
-        DEFINE_MEMBER(uint32_t, NodeId, 0); // Run-time ID
+        DEFINE_MEMBER(std::string, NodeName, "Node");
+        DEFINE_MEMBER(std::string, Uuid, ""); // Persistent ID
+        DEFINE_MEMBER(uint32_t, NodeId, 0);   // Run-time ID
     };
 
 }

@@ -2,7 +2,6 @@
 
 #include "Aircraft.h"
 
-#include <Canavar/Engine/Node/Object/Model/Model.h>
 #include <imgui.h>
 
 #include <QKeyEvent>
@@ -21,15 +20,10 @@ namespace Canavar::Simulator
         explicit AircraftController(Aircraft* aircraft, QObject* parent = nullptr);
 
         bool Initialize();
-        void Update(float ifps);
-
         void DrawGui();
-
         void KeyPressed(QKeyEvent*);
         void KeyReleased(QKeyEvent*);
-
-        void SetJetNode(Canavar::Engine::ModelPtr pJet);
-        void SetRootNode(Canavar::Engine::ObjectPtr pRoot);
+        const Aircraft::PrimaryFlightData& GetPrimaryFlightData() const;
 
       signals:
         void Command(Aircraft::Command command, QVariant variant = QVariant());
@@ -50,13 +44,8 @@ namespace Canavar::Simulator
 
         Aircraft::PrimaryFlightData mPfd;
 
-        Canavar::Engine::ModelPtr mJetNode{ nullptr };
-        Canavar::Engine::ObjectPtr mRootNode{ nullptr };
-
         bool mAutoPilotEnabled{ false };
 
-        float mTimeElapsed;
-        
         float mSmoothPositionCoefficent{ 10.0f }; // Multiplier for smoothing position updates
     };
 }
