@@ -122,8 +122,8 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix
         pShader->SetUniformValue("uMeshOpacity", MeshOpacity);
 
         pShader->SetUniformValue("uNormalMatrix", M.normalMatrix());
-        pShader->SetUniformValue("uNodeId", static_cast<float>(pModel->GetNodeId()));
-        pShader->SetUniformValue("uMeshId", static_cast<float>(mMeshId));
+        pShader->SetUniformValue("uNodeId", pModel->GetNodeId());
+        pShader->SetUniformValue("uMeshId", mMeshId);
 
         pShader->SetUniformValue("uModel.metallic", pModel->GetMetallic());
         pShader->SetUniformValue("uModel.roughness", pModel->GetRoughness());

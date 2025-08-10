@@ -16,6 +16,7 @@ in DATA
     mat3 tangent_matrix;
     float f_log_z;
     vec4 light_space_pos; // Position in light space for shadow mapping
+    float depth;
 }
 In;
 
@@ -84,6 +85,7 @@ layout(location = 0) out vec4 FragColor;
 layout(location = 1) out vec4 FragLocalPosition;
 layout(location = 2) out vec4 FragWorldPosition;
 layout(location = 3) out vec4 FragNodeInfo;
+layout(location = 4) out vec4 FragVelocity;
 
 uniform vec3 eye_world_pos;
 uniform float z_far;
@@ -104,7 +106,10 @@ uniform int number_of_point_lights;
 uniform DirectionalLight directional_lights[8]; // First element is the Sun
 uniform int number_of_directional_lights;
 
-uniform float node_id; // QOpenGLFramebuffer messes up when the internal texture format is GL_RGBA32UI.
+uniform int node_id;
+
+uniform mat4 uViewProjectionMatrix;         // View-Projection matrix
+uniform mat4 uPreviousViewProjectionMatrix; // Previous frame's View-Projection matrix
 
 /**
  * Functions
@@ -388,4 +393,9 @@ void main()
     FragNodeInfo = vec4(node_id, 0, 0, 1);
     FragColor = vec4(result, 1.0);
     gl_FragDepth = log2(In.f_log_z) / log2(z_far + 1.0);
+
+    vec4 curr = uViewProjectionMatrix * FragWorldPosition;
+    vec4 prev = uPreviousViewProjectionMatrix * FragWorldPosition;
+    vec2 fragVelocity = curr.xy / curr.w - prev.xy / prev.w;
+    FragVelocity = vec4(fragVelocity, In.depth, 1.0f);
 }

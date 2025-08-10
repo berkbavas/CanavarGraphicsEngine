@@ -104,7 +104,7 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
     }
 
     pShader->Bind();
-    pShader->SetUniformValue("uNodeId", static_cast<float>(GetNodeId()));
+    pShader->SetUniformValue("uNodeId", GetNodeId());
     pShader->SetUniformValue("uIVP", pCamera->GetRotationMatrix().inverted() * pCamera->GetProjectionMatrix().inverted());
     pShader->SetUniformValue("uSkyYOffset", pCamera->CalculateSkyYOffset(30000.0f));
     pShader->SetUniformValue("uSunDirection", sunDirection);

@@ -54,7 +54,7 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(MaterialPtr, Material, nullptr);
         DEFINE_MEMBER(std::string, MeshName);
-        DEFINE_MEMBER(uint32_t, MeshId);
+        DEFINE_MEMBER(int, MeshId);
         DEFINE_MEMBER(AABB, AABB);
         DEFINE_MEMBER(float, Opacity, 1.0f);
 

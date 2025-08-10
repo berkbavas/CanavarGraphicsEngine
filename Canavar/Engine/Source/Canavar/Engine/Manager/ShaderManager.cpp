@@ -16,16 +16,6 @@ void Canavar::Engine::ShaderManager::Initialize()
     mSkyShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Sky.frag");
     mSkyShader->Initialize();
 
-    mBlurShader = new Shader(ShaderType::Blur, "Blur Shader");
-    mBlurShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-    mBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
-    mBlurShader->Initialize();
-
-    mPostProcessShader = new Shader(ShaderType::PostProcess, "Post Process Shader");
-    mPostProcessShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-    mPostProcessShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/PostProcess.frag");
-    mPostProcessShader->Initialize();
-
     mNozzleEffect = new Shader(ShaderType::NozzleEffect, "Nozzle Effect Shader");
     mNozzleEffect->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/NozzleEffect.vert");
     mNozzleEffect->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/NozzleEffect.frag");
@@ -40,16 +30,17 @@ void Canavar::Engine::ShaderManager::Initialize()
     mLightningStrikeShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/LightningStrike.vert");
     mLightningStrikeShader->AddPath(QOpenGLShader::Geometry, ":/Resources/Shaders/LightningStrike.geom");
 
-    mLightningStrikeShader->SetCallbackBeforeLinking([=](QOpenGLContext* pContext, QOpenGLShaderProgram* pProgram) {
-        const GLchar* Varyings[2];
-        Varyings[0] = "outWorldPosition";
-        Varyings[1] = "outForkLevel";
+    mLightningStrikeShader->SetCallbackBeforeLinking([=](QOpenGLContext* pContext, QOpenGLShaderProgram* pProgram) //
+                                                     {
+                                                         const GLchar* Varyings[2];
+                                                         Varyings[0] = "outWorldPosition";
+                                                         Varyings[1] = "outForkLevel";
 
-        pProgram->create();
-        qDebug() << "Calling glTransformFeedbackVaryings()  with Program ID" << pProgram->programId();
-        qDebug() << "QOpenGLShaderProgram log is: " << pProgram->log();
-        pContext->extraFunctions()->glTransformFeedbackVaryings(pProgram->programId(), 2, Varyings, GL_INTERLEAVED_ATTRIBS);
-    });
+                                                         pProgram->create();
+                                                         qDebug() << "Calling glTransformFeedbackVaryings()  with Program ID" << pProgram->programId();
+                                                         qDebug() << "QOpenGLShaderProgram log is: " << pProgram->log();
+                                                         pContext->extraFunctions()->glTransformFeedbackVaryings(pProgram->programId(), 2, Varyings, GL_INTERLEAVED_ATTRIBS);
+                                                     });
 
     mLightningStrikeShader->Initialize();
 
@@ -86,11 +77,39 @@ void Canavar::Engine::ShaderManager::Initialize()
     mText3DShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Text3D.frag");
     mText3DShader->Initialize();
 
+    mCinematicShader = new Shader(ShaderType::Cinematic, "Cinematic Shader");
+    mCinematicShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mCinematicShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Cinematic.frag");
+    mCinematicShader->Initialize();
+
+    mBrightPassShader = new Shader(ShaderType::BrightPass, "Bright Pass Shader");
+    mBrightPassShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mBrightPassShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/BrightPass.frag");
+    mBrightPassShader->Initialize();
+
+    mGodRaysShader = new Shader(ShaderType::GodRays, "God Rays Shader");
+    mGodRaysShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mGodRaysShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/GodRays.frag");
+    mGodRaysShader->Initialize();
+
+    mCompositionShader = new Shader(ShaderType::Composition, "Composition Shader");
+    mCompositionShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mCompositionShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Composition.frag");
+    mCompositionShader->Initialize();
+
+    mAcesShader = new Shader(ShaderType::Aces, "ACES Shader");
+    mAcesShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mAcesShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Aces.frag");
+    mAcesShader->Initialize();
+
+    mMotionBlurShader = new Shader(ShaderType::MotionBlur, "Motion Blur Shader");
+    mMotionBlurShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mMotionBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MotionBlur.frag");
+    mMotionBlurShader->Initialize();
+
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
-    mShaders.emplace(std::pair(ShaderType::Blur, mBlurShader));
-    mShaders.emplace(std::pair(ShaderType::PostProcess, mPostProcessShader));
     mShaders.emplace(std::pair(ShaderType::NozzleEffect, mNozzleEffect));
     mShaders.emplace(std::pair(ShaderType::Line, mLineShader));
     mShaders.emplace(std::pair(ShaderType::LightningStrike, mLightningStrikeShader));
@@ -100,6 +119,12 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Terrain, mTerrainShader));
     mShaders.emplace(std::pair(ShaderType::Text2D, mText2DShader));
     mShaders.emplace(std::pair(ShaderType::Text3D, mText3DShader));
+    mShaders.emplace(std::pair(ShaderType::Cinematic, mCinematicShader));
+    mShaders.emplace(std::pair(ShaderType::BrightPass, mBrightPassShader));
+    mShaders.emplace(std::pair(ShaderType::GodRays, mGodRaysShader));
+    mShaders.emplace(std::pair(ShaderType::Composition, mCompositionShader));
+    mShaders.emplace(std::pair(ShaderType::Aces, mAcesShader));
+    mShaders.emplace(std::pair(ShaderType::MotionBlur, mMotionBlurShader));
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType shaderType)

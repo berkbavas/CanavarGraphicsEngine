@@ -1,0 +1,532 @@
+{
+    "nodes": [
+        {
+            "albedo": 0.10000000149011612,
+            "enabled": true,
+            "node_name": "Sky",
+            "node_type_name": "Sky",
+            "normalized_sun_y": 1.149999976158142,
+            "turbidity": 4,
+            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type_name": "Haze",
+            "uuid": "dd88480b-213d-4205-8229-4c71f1b3ace7"
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 1,
+            "direction": {
+                "x": 0.7071067094802856,
+                "y": -0.7071067094802856,
+                "z": 0
+            },
+            "enabled": true,
+            "node_name": "Sun",
+            "node_type_name": "Sun",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radience": 5,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "visible": true
+        },
+        {
+            "ambient": 0.25,
+            "amplitude": 1055,
+            "diffuse": 0.75,
+            "enabled": false,
+            "frequency": 0.10999999940395355,
+            "lacunarity": 8.149999618530273,
+            "node_name": "Terrain",
+            "node_type_name": "Terrain",
+            "octaves": 7,
+            "persistence": 0.06300000101327896,
+            "shininess": 8,
+            "specular": 0.25,
+            "tessellation_multiplier": 8,
+            "uuid": "6b45c764-588e-4244-af6d-1e469bc1dac7"
+        },
+        {
+            "action_receive_button": 4,
+            "angular_speed": 25,
+            "angular_speed_muliplier": 1,
+            "linear_speed": 5,
+            "linear_speed_multiplier": 1,
+            "node_name": "Free Camera",
+            "node_type_name": "FreeCamera",
+            "position": {
+                "x": 255.583251953125,
+                "y": 260.3899841308594,
+                "z": -214.2698974609375
+            },
+            "rotation": {
+                "w": -0.5873662233352661,
+                "x": 0.09870466589927673,
+                "y": -0.792336642742157,
+                "z": -0.13314640522003174
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "6509aada-6f81-4d42-864c-14c2b99580d4",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 0.10000000149011612
+        },
+        {
+            "node_name": "Dummy Camera",
+            "node_type_name": "DummyCamera",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 3,
+                "z": 25
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "vertical_fov": 60,
+            "visible": true,
+            "z_far": 100000,
+            "z_near": 1
+        },
+        {
+            "node_name": "Root Node",
+            "node_type_name": "DummyObject",
+            "position": {
+                "x": 3.19183349609375,
+                "y": 914.4969482421875,
+                "z": 0.0003662109375
+            },
+            "rotation": {
+                "w": -4.371138828673793e-08,
+                "x": 0,
+                "y": -1,
+                "z": 8.82046576141384e-17
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "visible": true
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "constant": 1,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 1,
+            "node_name": "Red Light",
+            "node_type_name": "PointLight",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": -4.599999904632568,
+                "y": 0,
+                "z": -1.600000023841858
+            },
+            "quadratic": 0,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
+            "visible": true
+        },
+        {
+            "ambient": 1,
+            "color": {
+                "b": 0,
+                "g": 1,
+                "r": 0
+            },
+            "constant": 1,
+            "diffuse": 1,
+            "enabled": true,
+            "linear": 0.5,
+            "node_name": "Green Light",
+            "node_type_name": "PointLight",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 4.599999904632568,
+                "y": 0,
+                "z": -1.600000023841858
+            },
+            "quadratic": 0,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "selectable": true,
+            "specular": 1,
+            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 0
+            },
+            "mesh_opacities": {
+            },
+            "mesh_transformations": {
+            },
+            "mesh_visibilities": {
+            },
+            "node_name": "f16",
+            "node_type_name": "Model",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "rotation": {
+                "w": 0.5000044107437134,
+                "x": 0.49999570846557617,
+                "y": 0.5000044107437134,
+                "z": -0.4999956786632538
+            },
+            "scale": {
+                "x": 0.10000000149011612,
+                "y": 0.10000000149011612,
+                "z": 0.10000000149011612
+            },
+            "scene_name": "f16",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "a98471f6-5e00-499d-9f92-4cfd56389cc3",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "node_name": "Text3D",
+            "node_type_name": "Text3D",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 2,
+                "z": 6
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 0.009999999776482582,
+                "y": 0.009999999776482582,
+                "z": 0.009999999776482582
+            },
+            "selectable": true,
+            "text": "Canavar Graphics Engine",
+            "uuid": "1cbd7c02-c62c-45ff-a711-5840a21f385e",
+            "visible": true
+        },
+        {
+            "max_length": 1.5,
+            "max_life": 0.22499999403953552,
+            "max_radius": 0.4000000059604645,
+            "max_speed": 2,
+            "node_name": "Nozzle Effect",
+            "node_type_name": "NozzleEffect",
+            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 4.019999980926514
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "selectable": true,
+            "uuid": "a8c1a7e9-0ee8-4dce-abc2-387b6a1e38cc",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 1
+            },
+            "node_name": "Text2D",
+            "node_type_name": "Text2D",
+            "position": {
+                "x": 50,
+                "y": 50
+            },
+            "scale": 0.7400000095367432,
+            "text": "FPS: 58",
+            "uuid": "915054f9-11b7-47e4-865a-0b8fd3e53b2a"
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "mesh_opacities": {
+            },
+            "mesh_transformations": {
+            },
+            "mesh_visibilities": {
+            },
+            "node_name": "sukhoi_su-35_-_fighter_jet_-_free",
+            "node_type_name": "Model",
+            "position": {
+                "x": 43.430938720703125,
+                "y": 194.48899841308594,
+                "z": -46.779273986816406
+            },
+            "rotation": {
+                "w": 0.7373657822608948,
+                "x": 0.6754936575889587,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "sukhoi_su-35_-_fighter_jet_-_free",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "201f020a-5500-402c-841a-075fd4c8f48b",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 0
+            },
+            "mesh_opacities": {
+                "Object_0_0": 0.9390000104904175
+            },
+            "mesh_transformations": {
+            },
+            "mesh_visibilities": {
+                "Object_0_0": true
+            },
+            "node_name": "van_realistic_abandoned_pbr_low_poly",
+            "node_type_name": "Model",
+            "position": {
+                "x": 32.516944885253906,
+                "y": 170.6039581298828,
+                "z": -46.16777420043945
+            },
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "van_realistic_abandoned_pbr_low_poly",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "6bf50bbe-97db-4a54-a667-0da639af4c5f",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 0
+            },
+            "mesh_opacities": {
+                "Object_0_0": 0.5519999861717224
+            },
+            "mesh_transformations": {
+            },
+            "mesh_visibilities": {
+                "Object_0_0": true
+            },
+            "node_name": "van_lowpoly_realistic_pbr",
+            "node_type_name": "Model",
+            "position": {
+                "x": 28.225757598876953,
+                "y": 170.60195922851562,
+                "z": 8.89146900177002
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "van_lowpoly_realistic_pbr",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "cef93e6a-6202-4449-bb47-dc4653260eb7",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 0,
+                "g": 0,
+                "r": 0
+            },
+            "mesh_opacities": {
+                "Object_0_0": 0.6959999799728394
+            },
+            "mesh_transformations": {
+            },
+            "mesh_visibilities": {
+            },
+            "node_name": "van_realistic_abandoned_pbr_low_poly",
+            "node_type_name": "Model",
+            "position": {
+                "x": 35.027523040771484,
+                "y": 167.51292419433594,
+                "z": -70.292236328125
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "scene_name": "van_realistic_abandoned_pbr_low_poly",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "03e2eac5-01aa-45ec-8066-8559d52f9cde",
+            "visible": true
+        },
+        {
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "mesh_opacities": {
+                "Object_0_0": 1,
+                "Object_2_2": 0.3569999933242798,
+                "Object_5_5": 0.22599999606609344
+            },
+            "mesh_transformations": {
+            },
+            "mesh_visibilities": {
+            },
+            "node_name": "f16c",
+            "node_type_name": "Model",
+            "position": {
+                "x": 212.00381469726562,
+                "y": 239.95347595214844,
+                "z": -110.74915313720703
+            },
+            "rotation": {
+                "w": 0.7071129679679871,
+                "x": 0.7071006894111633,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 10,
+                "y": 10,
+                "z": 10
+            },
+            "scene_name": "f16c",
+            "selectable": true,
+            "use_model_color": false,
+            "uuid": "b18e089c-0857-46da-86f8-dc233731a1cd",
+            "visible": true
+        }
+    ]
+}

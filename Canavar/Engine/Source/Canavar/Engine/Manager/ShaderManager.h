@@ -21,8 +21,6 @@ namespace Canavar::Engine
 
         Shader* mModelShader{ nullptr };
         Shader* mSkyShader{ nullptr };
-        Shader* mBlurShader{ nullptr };
-        Shader* mPostProcessShader{ nullptr };
         Shader* mNozzleEffect{ nullptr };
         Shader* mLineShader{ nullptr };
         Shader* mLightningStrikeShader{ nullptr };
@@ -32,5 +30,11 @@ namespace Canavar::Engine
         Shader* mTerrainShader{ nullptr };
         Shader* mText2DShader{ nullptr };
         Shader* mText3DShader{ nullptr };
+        Shader* mCinematicShader{ nullptr };
+        Shader* mBrightPassShader{ nullptr };
+        Shader* mGodRaysShader{ nullptr };
+        Shader* mCompositionShader{ nullptr };
+        Shader* mAcesShader{ nullptr };
+        Shader* mMotionBlurShader{ nullptr };
     };
 }

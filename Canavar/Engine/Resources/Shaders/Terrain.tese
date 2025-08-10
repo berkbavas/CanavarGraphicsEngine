@@ -42,6 +42,7 @@ out DATA
     mat3 tangent_matrix;
     float f_log_z;
     vec4 light_space_pos; // Position in light space
+    float depth;
 }
 Out;
 
@@ -209,6 +210,8 @@ void main()
     Out.light_space_pos = LVP * vec4(Out.world_pos, 1.0);
 
     gl_Position = VP * vec4(Out.world_pos, 1.0);
+    float ndc = gl_Position.z / gl_Position.w;
+    Out.depth = ndc * 0.5f + 0.5f;
 
     float coef = 2.0 / log2(z_far + 1.0);
     gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * coef - 1.0;

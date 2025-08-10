@@ -8,6 +8,7 @@ layout(location = 0) in vec3 fsDirection;
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 3) out vec4 OutNodeInfo;
+layout(location = 4) out vec4 OutFragVelocity;
 
 vec3 HosekWilkie(float cos_theta, float gamma, float cos_gamma)
 {
@@ -28,5 +29,6 @@ vec3 HosekWilkieSkyRgb(vec3 v, vec3 sun_direction)
 void main()
 {
     OutFragColor = vec4(HosekWilkieSkyRgb(fsDirection, uSunDirection), 1.0f);
-    OutNodeInfo = vec4(uNodeId, 0.0f, 0.0f, 1.0f);
+    OutNodeInfo = vec4(float(uNodeId), 0.0f, 0.0f, 1.0f);
+    OutFragVelocity = vec4(0.0f, 0.0f, 0.0f, 1.0f); // Placeholder for velocity output
 }

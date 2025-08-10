@@ -254,7 +254,7 @@ void Canavar::Engine::Terrain::Render(Shader *pShader, Camera *pCamera)
     glBindTextureUnit(1, mNormalTexture);
     glBindTextureUnit(2, mDisplacementTexture);
 
-    pShader->SetUniformValue("node_id", static_cast<float>(GetNodeId()));
+    pShader->SetUniformValue("node_id", GetNodeId());
     pShader->SetUniformValue("tess_multiplier", mTesselationMultiplier);
     pShader->SetUniformValue("width", mWidth);
 

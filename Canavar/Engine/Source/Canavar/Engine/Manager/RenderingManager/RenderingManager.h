@@ -33,8 +33,10 @@ namespace Canavar::Engine
     {
         Multisample,
         Singlesample,
-        Ping,
-        Pong
+        MotionBlur,
+        Aces,
+        Cinematic,
+        Temp
     };
 
     class RenderingManager : public Manager, protected QOpenGLFunctions_4_3_Core
@@ -62,8 +64,8 @@ namespace Canavar::Engine
 
       private:
         void RenderObjects(Camera *pCamera, float ifps);
-        void RenderModel(Model* pModel, RenderPass RenderPass);
-        void RenderNozzleEffect(NozzleEffect* pEffect, Camera *pCamera, float ifps);
+        void RenderModel(Model *pModel, RenderPass RenderPass);
+        void RenderNozzleEffect(NozzleEffect *pEffect, Camera *pCamera, float ifps);
         void RenderSky(Camera *pCamera);
         void RenderTerrain(Terrain *pTerrain, Camera *pCamera);
 
@@ -73,6 +75,13 @@ namespace Canavar::Engine
         void SetPointLights(Shader *pShader, Object *pObject);
 
         void ResizeFramebuffers();
+        void DoPostProcessing();
+
+        QVector2D CalculateSunScreenSpacePosition() const;
+
+        void ApplyAcesPass();
+        void ApplyCinematicPass();
+        void ApplyMotionBlurPass();
 
         ShaderManager *mShaderManager;
         NodeManager *mNodeManager;
@@ -81,6 +90,7 @@ namespace Canavar::Engine
 
         BoundingBoxRenderer *mBoundingBoxRenderer;
         TextRenderer *mTextRenderer;
+
         DEFINE_MEMBER_PTR_CONST(ShadowMappingRenderer, ShadowMappingRenderer);
 
         Camera *mActiveCamera{ nullptr };
@@ -93,6 +103,12 @@ namespace Canavar::Engine
         Shader *mLightningStrikeShader{ nullptr };
         Shader *mLineShader{ nullptr };
         Shader *mTerrainShader{ nullptr };
+        Shader *mCinematicShader{ nullptr };
+        Shader *mBrightPassShader{ nullptr };
+        Shader *mGodRaysShader{ nullptr };
+        Shader *mCompositionShader{ nullptr };
+        Shader *mAcesShader{ nullptr };
+        Shader *mMotionBlurShader{ nullptr };
 
         SkyPtr mSky;
         DirectionalLightPtr mSun;
@@ -103,6 +119,7 @@ namespace Canavar::Engine
 
         std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
+        static constexpr std::array<Framebuffer, 6> FBO_TYPES = { Multisample, Singlesample, MotionBlur, Aces, Cinematic, Temp };
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
@@ -112,24 +129,44 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, ShadowBias, 0.00005f);
         DEFINE_MEMBER(int, ShadowSamples, 1);
 
-        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 4;
+        static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 5;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
             {
                 GL_COLOR_ATTACHMENT0, // Color
                 GL_COLOR_ATTACHMENT1, // Fragment local position
                 GL_COLOR_ATTACHMENT2, // Fragment world position
                 GL_COLOR_ATTACHMENT3, // Node info
+                GL_COLOR_ATTACHMENT4, // Fragment velocity and depth
             };
 
         float mIfps;
+        float mTime{ 0.0f };
 
         DEFINE_MEMBER_PTR_CONST(CrossSectionAnalyzer, CrossSectionAnalyzer);
         DEFINE_MEMBER(bool, CrossSectionEnabled, false);
 
-        DEFINE_MEMBER(float, BlurThreshold, 5000.0f);
-        DEFINE_MEMBER(int, MaxSamples, 2);
+        // ACES
+        DEFINE_MEMBER(bool, AcesEnabled, false);
 
-        DEFINE_MEMBER(bool, EnableAces, false);
-        DEFINE_MEMBER(float, Exposure, 0.4f);
+        // Cinematic Look
+        DEFINE_MEMBER(bool, CinematicEnabled, true);
+        DEFINE_MEMBER(float, VignetteRadius, 0.95f);
+        DEFINE_MEMBER(float, VignetteSoftness, 0.5f);
+        DEFINE_MEMBER(float, GrainStrength, 0.00f);
+
+        // God Rays
+        DEFINE_MEMBER(float, BrightnessThreshold, 0.5f);
+        DEFINE_MEMBER(int, NumberOfSamples, 100);
+        DEFINE_MEMBER(float, Density, 0.1f);
+        DEFINE_MEMBER(float, Decay, 0.95f);
+        DEFINE_MEMBER(float, Weight, 0.1f);
+        DEFINE_MEMBER(float, Exposure, 0.3f);
+
+        // Motion Blur
+        DEFINE_MEMBER(bool, MotionBlurEnabled, true);
+        DEFINE_MEMBER(float, MotionBlurStrength, 0.5f);
+        DEFINE_MEMBER(int, MotionBlurSamples, 20);
+
+        QMatrix4x4 mPreviousViewProjectionMatrix;
     };
 };

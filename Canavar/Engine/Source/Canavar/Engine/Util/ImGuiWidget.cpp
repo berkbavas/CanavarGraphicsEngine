@@ -556,15 +556,27 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
 
         ImGui::SliderFloat("Sun Distance", &pShadowMappingRenderer->GetSunDistance_NonConst(), 1, 1000);
 
-        // ImGui::SliderFloat("Blur Threshold", &mRenderingManager->GetBlurThreshold_NonConst(), 100, 10'000);
-        // ImGui::SliderInt("Max Samples##DrawRenderSettings", &mRenderingManager->GetMaxSamples_NonConst(), 1, 6);
+        ImGui::Text("Motion Blur");
+        ImGui::Checkbox("Motion Blur Enabled", &mRenderingManager->GetMotionBlurEnabled_NonConst());
+        ImGui::SliderInt("Motion Blur Samples", &mRenderingManager->GetMotionBlurSamples_NonConst(), 2, 40);
+        ImGui::SliderFloat("Motion Blur Strength", &mRenderingManager->GetMotionBlurStrength_NonConst(), 0.0f, 10.0f, "%.2f");
 
-        ImGui::Checkbox("ACES Enabled", &mRenderingManager->GetEnableAces_NonConst());
+        ImGui::Text("ACES");
+        ImGui::Checkbox("ACES Enabled", &mRenderingManager->GetAcesEnabled_NonConst());
+        ImGui::SliderFloat("Exposure", &mRenderingManager->GetExposure_NonConst(), 0.0f, 1.0f, "%.2f");
 
-        if (mRenderingManager->GetEnableAces())
-        {
-            ImGui::SliderFloat("Exposure", &mRenderingManager->GetExposure_NonConst(), 0.0f, 1.0f, "%.4f");
-        }
+        ImGui::Text("Cinematic Look");
+        ImGui::Checkbox("Cinematic Enabled", &mRenderingManager->GetCinematicEnabled_NonConst());
+        ImGui::SliderFloat("Vignette Radius", &mRenderingManager->GetVignetteRadius_NonConst(), 0.0f, 1.0f, "%.2f");
+        ImGui::SliderFloat("Vignette Softness", &mRenderingManager->GetVignetteSoftness_NonConst(), 0.0f, 1.0f, "%.2f");
+        ImGui::SliderFloat("Grain Strength", &mRenderingManager->GetGrainStrength_NonConst(), 0.0f, 1.0f, "%.2f");
+
+        // God Rays
+        // ImGui::Text("God Rays");
+        // ImGui::SliderInt("Number of Samples", &mRenderingManager->GetNumberOfSamples_NonConst(), 1, 200);
+        // ImGui::SliderFloat("Density", &mRenderingManager->GetDensity_NonConst(), 0.0f, 1.0f, "%.2f");
+        // ImGui::SliderFloat("Decay", &mRenderingManager->GetDecay_NonConst(), 0.0f, 1.0f, "%.2f");
+        // ImGui::SliderFloat("Weight", &mRenderingManager->GetWeight_NonConst(), 0.0f, 1.0f, "%.2f");
     }
 }
 
@@ -852,8 +864,22 @@ void Canavar::Engine::ImGuiWidget::RemoveNode(NodePtr pNode)
 
 void Canavar::Engine::ImGuiWidget::SetSelectedNode(NodePtr pNode)
 {
+    if (mSelectedNode == pNode)
+    {
+        return;
+    }
+
+    if (ModelPtr pCurrentSelectedModel = std::dynamic_pointer_cast<Model>(mSelectedNode))
+    {
+        SetSelectedMesh(pCurrentSelectedModel, -1);
+    }
+
     mSelectedNode = pNode;
-    mSelectedMesh = nullptr;
+
+    if (ModelPtr pCurrentSelectedModel = std::dynamic_pointer_cast<Model>(mSelectedNode))
+    {
+        SetSelectedMesh(pCurrentSelectedModel, -1);
+    }
 }
 
 void Canavar::Engine::ImGuiWidget::SetSelectedMesh(NodePtr pNode, uint32_t MeshId)
@@ -868,9 +894,12 @@ void Canavar::Engine::ImGuiWidget::SetSelectedMesh(NodePtr pNode, uint32_t MeshI
             if (pMesh->GetMeshId() == MeshId)
             {
                 mSelectedMesh = pMesh;
+                pModel->SetSelectedMeshId(pMesh->GetMeshId());
                 return;
             }
         }
+
+        pModel->SetSelectedMeshId(-1);
     }
 }
 

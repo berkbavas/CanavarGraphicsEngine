@@ -6,9 +6,9 @@ layout(location = 2) in vec2 aTextureCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 
-uniform mat4 uModelMatrix;  // Model matrix
-uniform mat3 uNormalMatrix;  // Normal matrix
-uniform mat4 uViewProjectionMatrix; // View-Projection matrix
+uniform mat4 uModelMatrix;               // Model matrix
+uniform mat3 uNormalMatrix;              // Normal matrix
+uniform mat4 uViewProjectionMatrix;      // View-Projection matrix
 uniform mat4 uLightViewProjectionMatrix; // Light View-Projection matrix
 
 uniform float uZFar;
@@ -21,6 +21,7 @@ out mat3 fsTBN;
 flat out int fsVertexId;
 out float fsFlogZ;
 out vec4 fsLightSpacePosition; // Position in light space
+out float fsDepth;
 
 void main()
 {
@@ -38,6 +39,9 @@ void main()
     fsLightSpacePosition = uLightViewProjectionMatrix * worldPos;
 
     gl_Position = uViewProjectionMatrix * worldPos;
+
+    float ndc = gl_Position.z / gl_Position.w;
+    fsDepth = ndc * 0.5f + 0.5f;
 
     float coef = 2.0 / log2(uZFar + 1.0);
     gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * coef - 1.0;

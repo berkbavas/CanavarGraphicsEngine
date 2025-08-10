@@ -56,7 +56,7 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(std::string, NodeName, "Node");
         DEFINE_MEMBER(std::string, Uuid, ""); // Persistent ID
-        DEFINE_MEMBER(uint32_t, NodeId, 0);   // Run-time ID
+        DEFINE_MEMBER(int, NodeId, 0);   // Run-time ID
     };
 
 }

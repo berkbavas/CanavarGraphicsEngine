@@ -38,6 +38,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(bool, UseModelColor, false);
         DEFINE_MEMBER(int, ShadingMode, PBR_SHADING);
         DEFINE_MEMBER_CONST(std::string, SceneName);
+        DEFINE_MEMBER(int, SelectedMeshId, -1);
 
         QMap<std::string, QMatrix4x4> mMeshTransformations;
         QMap<std::string, bool> mMeshVisibilities;

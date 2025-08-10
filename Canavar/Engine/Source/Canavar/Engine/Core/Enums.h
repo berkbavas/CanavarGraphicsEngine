@@ -6,8 +6,6 @@ namespace Canavar::Engine
     {
         Model,
         Sky,
-        Blur,
-        PostProcess,
         NozzleEffect,
         Line,
         LightningStrike,
@@ -18,7 +16,13 @@ namespace Canavar::Engine
         CrossSection,
         Terrain,
         Text2D,
-        Text3D
+        Text3D,
+        Cinematic,
+        BrightPass,
+        GodRays,
+        Composition,
+        Aces,
+        MotionBlur
     };
 
     enum class ViewDirection

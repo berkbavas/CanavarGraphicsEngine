@@ -3,8 +3,6 @@
         <file>Resources/Shaders/Model.frag</file>
         <file>Resources/Shaders/Model.vert</file>
         <file>Resources/Shaders/Quad.vert</file>
-        <file>Resources/Shaders/Blur.frag</file>
-        <file>Resources/Shaders/PostProcess.frag</file>
         <file>Resources/Shaders/Sky.vert</file>
         <file>Resources/Shaders/Sky.frag</file>
         <file>Resources/Shaders/NozzleEffect.vert</file>
@@ -32,6 +30,13 @@
         <file>Resources/Shaders/Text2D.frag</file>
         <file>Resources/Shaders/Text3D.vert</file>
         <file>Resources/Shaders/Text3D.frag</file>
+        <file>Resources/Shaders/Cinematic.frag</file>
+        <file>Resources/Shaders/BrightPass.frag</file>
+        <file>Resources/Shaders/GodRays.frag</file>
+        <file>Resources/Shaders/Composition.frag</file>
+        <file>Resources/Shaders/Aces.frag</file>
+        <file>Resources/Shaders/MotionBlur.frag</file>
+
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>
 </RCC>
