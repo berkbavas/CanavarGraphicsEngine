@@ -9,7 +9,7 @@
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
 #include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
-#include "Canavar/Engine/Node/Object/Camera/Camera.h"
+#include "Canavar/Engine/Node/Object/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
@@ -93,7 +93,7 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER_PTR_CONST(ShadowMappingRenderer, ShadowMappingRenderer);
 
-        Camera *mActiveCamera{ nullptr };
+        PerspectiveCamera *mActiveCamera{ nullptr };
 
         Shader *mModelShader{ nullptr };
         Shader *mSkyShader{ nullptr };
@@ -166,6 +166,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(bool, MotionBlurEnabled, true);
         DEFINE_MEMBER(float, MotionBlurStrength, 0.5f);
         DEFINE_MEMBER(int, MotionBlurSamples, 20);
+        DEFINE_MEMBER(float, MotionBlurDepthThreshold, 0.5f);
 
         QMatrix4x4 mPreviousViewProjectionMatrix;
         QMatrix4x4 mAccumViewProjectionMatrix;

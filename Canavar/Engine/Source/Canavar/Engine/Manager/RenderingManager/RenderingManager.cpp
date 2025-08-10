@@ -101,7 +101,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     mShadowsEnabled ? mShadowMappingRenderer->Render(ifps) : void(0);
 
-    mActiveCamera = mCameraManager->GetActiveCamera().get();
+    mActiveCamera = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera().get());
 
     RenderToFramebuffer(mFramebuffers[Multisample], mActiveCamera);
 
@@ -244,6 +244,9 @@ void Canavar::Engine::RenderingManager::ApplyMotionBlurPass()
     mMotionBlurShader->SetSampler("uVelocityTexture", 10, mFramebuffers[Singlesample]->textures().at(4));
     mMotionBlurShader->SetUniformValue("uStrength", mMotionBlurStrength);
     mMotionBlurShader->SetUniformValue("uNumberOfSamples", mMotionBlurSamples);
+    mMotionBlurShader->SetUniformValue("uZNear", mActiveCamera->GetZNear());
+    mMotionBlurShader->SetUniformValue("uZFar", mActiveCamera->GetZFar());
+    mMotionBlurShader->SetUniformValue("uDepthThreshold", mMotionBlurDepthThreshold);
     mQuad->Render();
     mMotionBlurShader->Release();
     mFramebuffers[MotionBlur]->release();

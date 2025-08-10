@@ -560,6 +560,7 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
         ImGui::Checkbox("Motion Blur Enabled", &mRenderingManager->GetMotionBlurEnabled_NonConst());
         ImGui::SliderInt("Motion Blur Samples", &mRenderingManager->GetMotionBlurSamples_NonConst(), 2, 40);
         ImGui::SliderFloat("Motion Blur Strength", &mRenderingManager->GetMotionBlurStrength_NonConst(), 0.0f, 10.0f, "%.2f");
+        ImGui::SliderFloat("Motion Blur Depth Threshold", &mRenderingManager->GetMotionBlurDepthThreshold_NonConst(), 0.0f, 1.0f, "%.2f");
 
         ImGui::Text("ACES");
         ImGui::Checkbox("ACES Enabled", &mRenderingManager->GetAcesEnabled_NonConst());
