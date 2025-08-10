@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     format.setSwapInterval(1);                            // Enable vsync (1 frame per screen refresh)
     format.setOption(QSurfaceFormat::DebugContext);       // Request debug context (helps debugging)
 
-    //QSurfaceFormat::setDefaultFormat(format);
+    QSurfaceFormat::setDefaultFormat(format);
 
     QApplication app(argc, argv);
 
