@@ -4,22 +4,6 @@
 
 #define PI 3.14159265359
 
-in DATA
-{
-    vec3 world_pos;
-    vec3 view_space_pos;
-    vec3 view_space_normal;
-    vec2 tex_coord;
-    vec3 normal;
-    vec3 tangent;
-    vec3 bitangent;
-    mat3 tangent_matrix;
-    float f_log_z;
-    vec4 light_space_pos; // Position in light space for shadow mapping
-    float depth;
-}
-In;
-
 struct Terrain
 {
     float ambient;
@@ -38,7 +22,7 @@ struct Haze
 
 struct Noise
 {
-    int num_octaves;
+    int octaves;
     float amplitude;
     float frequency;
     float persistence;
@@ -74,39 +58,48 @@ struct Shadow
     int samples;
 };
 
-layout(binding = 0) uniform sampler2DArray albedos;
-layout(binding = 1) uniform sampler2DArray normals;
-layout(binding = 2) uniform sampler2DArray displacement;
+layout(binding = 0) uniform sampler2DArray uAlbedos;
+layout(binding = 1) uniform sampler2DArray uNormals;
+layout(binding = 2) uniform sampler2DArray uDisplacement;
 
-/**
- * Output
- */
-layout(location = 0) out vec4 FragColor;
-layout(location = 1) out vec4 FragLocalPosition;
-layout(location = 2) out vec4 FragWorldPosition;
-layout(location = 3) out vec4 FragNodeInfo;
-layout(location = 4) out vec4 FragVelocity;
+in vec3 fsWorldPosition;
+in vec3 fsViewSpacePosition;
+in vec3 fsViewSpaceNormal;
+in vec2 fsTextureCoords;
+in vec3 fsNormal;
+in vec3 fsTangent;
+in vec3 fsBitangent;
+in mat3 fsTangentMatrix;
+in float fsLogZ;
+in vec4 fsLightSpacePosition;
+in float fsDepth;
 
-uniform vec3 eye_world_pos;
-uniform float z_far;
+layout(location = 0) out vec4 OutFragColor;
+layout(location = 1) out vec4 OutFragLocalPosition;
+layout(location = 2) out vec4 OutFragWorldPosition;
+layout(location = 3) out vec4 OutFragNodeInfo;
+layout(location = 4) out vec4 OutFragVelocity;
 
-uniform float texture_start_heights[4];
-uniform float texture_blends[4];
-uniform float texture_sizes[4];
-uniform float texture_displacement_weights[4];
+uniform vec3 uCameraPosition;
+uniform float uZFar;
 
-uniform Noise noise;
-uniform Haze haze;
-uniform Terrain terrain;
-uniform Shadow shadow;
+uniform float uTextureStartHeights[4];
+uniform float uTextureBlends[4];
+uniform float uTextureSizes[4];
+uniform float uTextureDisplacementWeights[4];
 
-uniform PointLight point_lights[8];
-uniform int number_of_point_lights;
+uniform Noise uNoise;
+uniform Haze uHaze;
+uniform Terrain uTerrain;
+uniform Shadow uShadow;
 
-uniform DirectionalLight directional_lights[8]; // First element is the Sun
-uniform int number_of_directional_lights;
+uniform PointLight uPointLights[8];
+uniform int uNumberOfPointLights;
 
-uniform int node_id;
+uniform DirectionalLight uDirectionalLights[8]; // First element is the Sun
+uniform int uNumberOfDirectionalLights;
+
+uniform int uNodeId;
 
 uniform mat4 uViewProjectionMatrix;         // View-Projection matrix
 uniform mat4 uPreviousViewProjectionMatrix; // Previous frame's View-Projection matrix
@@ -115,29 +108,29 @@ uniform mat4 uPreviousViewProjectionMatrix; // Previous frame's View-Projection 
  * Functions
  */
 
-float inverseLerp(float a, float b, float x)
+float InverseLerp(float a, float b, float x)
 {
     return (x - a) / (b - a);
 }
-float inverseLerpClamped(float a, float b, float x)
+float InverseLerpClamped(float a, float b, float x)
 {
-    return clamp(inverseLerp(a, b, x), 0, 1);
+    return clamp(InverseLerp(a, b, x), 0, 1);
 }
 
-vec3 getWorldNormal(vec3 tex_coord)
+vec3 GetWorldNormal(vec3 textureCoords)
 {
-    vec3 tangent_normal = normalize(2.0 * texture(normals, tex_coord).xyz - 1.0);
-    return In.tangent_matrix * tangent_normal;
+    vec3 tangentNormal = normalize(2.0 * texture(uNormals, textureCoords).xyz - 1.0f);
+    return fsTangentMatrix * tangentNormal;
 }
 
-float[4] getTextureWeightsByDisplacement(vec3[4] t, float[4] a)
+float[4] GetTextureWeightsByDisplacement(vec3[4] t, float[4] a)
 {
-    const float depth = 0.1;
+    const float depth = 0.1f;
 
     float disp[t.length];
     for (int i = 0; i < t.length; i++)
     {
-        disp[i] = texture(displacement, t[i]).r * texture_displacement_weights[i];
+        disp[i] = texture(uDisplacement, t[i]).r * uTextureDisplacementWeights[i];
     }
 
     float ma = 0;
@@ -164,238 +157,237 @@ float[4] getTextureWeightsByDisplacement(vec3[4] t, float[4] a)
     return w;
 }
 
-float[4] terrainBlending(vec3 world_pos, vec3 normal)
+float[4] TerrainBlending(vec3 worldPos, vec3 normal)
 {
-    float height = world_pos.y;
+    float height = worldPos.y;
 
     // A completely flat terrain has slope=0
-    float slope = max(1 - dot(normal, vec3(0, 1, 0)), 0.0);
+    float slope = max(1 - dot(normal, vec3(0, 1, 0)), 0.0f);
 
     // For each fragment we compute how much each texture contributes depending on height and slope
-    float draw_strengths[4];
+    float drawStrengths[4];
 
-    float sand_grass_height = texture_start_heights[0];
-    float grass_rock_height = texture_start_heights[1];
-    float rock_snow_height = texture_start_heights[2];
+    float sandGrassHeight = uTextureStartHeights[0];
+    float grassRockHeight = uTextureStartHeights[1];
+    float rockSnowHeight = uTextureStartHeights[2];
 
-    float grass_falloff = texture_blends[1];
-    float rock_falloff = texture_blends[2];
-    float snow_falloff = texture_blends[3];
+    float grassFalloff = uTextureBlends[1];
+    float rockFalloff = uTextureBlends[2];
+    float snowFalloff = uTextureBlends[3];
 
     float a, b, c, d;
     {
-        b = inverseLerpClamped(sand_grass_height - grass_falloff / 2, sand_grass_height + grass_falloff / 2, height);
+        b = InverseLerpClamped(sandGrassHeight - grassFalloff / 2, sandGrassHeight + grassFalloff / 2, height);
     }
     {
-        c = inverseLerpClamped(grass_rock_height - rock_falloff / 2, grass_rock_height + rock_falloff / 2, height);
+        c = InverseLerpClamped(grassRockHeight - rockFalloff / 2, grassRockHeight + rockFalloff / 2, height);
     }
 
     float b_in, c_in, d_in;
-    b_in = inverseLerpClamped(sand_grass_height - grass_falloff / 2, sand_grass_height + grass_falloff / 2, height);
-    c_in = inverseLerpClamped(grass_rock_height - rock_falloff / 2, grass_rock_height + rock_falloff / 2, height);
-    d_in = inverseLerpClamped(rock_snow_height - snow_falloff / 2, rock_snow_height + snow_falloff / 2, height);
+    b_in = InverseLerpClamped(sandGrassHeight - grassFalloff / 2, sandGrassHeight + grassFalloff / 2, height);
+    c_in = InverseLerpClamped(grassRockHeight - rockFalloff / 2, grassRockHeight + rockFalloff / 2, height);
+    d_in = InverseLerpClamped(rockSnowHeight - snowFalloff / 2, rockSnowHeight + snowFalloff / 2, height);
 
     a = 1 - b_in;
     b *= 1 - c_in;
     c *= 1 - d_in;
     d = d_in;
 
-    // a *= 1 - inverseLerpClamped(0.1, 1, slope);
-    b *= 1 - inverseLerpClamped(0.1, 1.0, slope);
-    d *= 1 - inverseLerpClamped(0.1, 1, slope);
+    b *= 1 - InverseLerpClamped(0.1f, 1.0f, slope);
+    d *= 1 - InverseLerpClamped(0.1f, 1.0f, slope);
 
     float tot = a + b + c + d;
-    draw_strengths[0] = max(a / tot, 0);
-    draw_strengths[1] = max(b / tot, 0);
-    draw_strengths[2] = max(c / tot, 0);
-    draw_strengths[3] = max(d / tot, 0);
+    drawStrengths[0] = max(a / tot, 0);
+    drawStrengths[1] = max(b / tot, 0);
+    drawStrengths[2] = max(c / tot, 0);
+    drawStrengths[3] = max(d / tot, 0);
 
-    return draw_strengths;
+    return drawStrengths;
 }
 
-vec3 getTextureCoordinate(vec3 world_pos, int texture_index)
+vec3 GetTextureCoordinate(vec3 worldPos, int textureIndex)
 {
-    return vec3(In.tex_coord * texture_sizes[texture_index], texture_index);
+    return vec3(fsTextureCoords * uTextureSizes[textureIndex], textureIndex);
 }
 
-vec3 terrainNormal(vec3 world_pos, vec3 normal)
+vec3 TerrainNormal(vec3 worldPos, vec3 normal)
 {
-    float[] draw_strengths = terrainBlending(world_pos, normal);
+    float[] drawStrengths = TerrainBlending(worldPos, normal);
 
-    vec3 norm = vec3(0);
+    vec3 result = vec3(0);
 
     for (int i = 0; i < 4; i++)
     {
-        float d = draw_strengths[i];
-        vec3 normal = normalize(2.0 * texture(normals, getTextureCoordinate(world_pos, i)).xyz - 1.0);
-        norm = norm * (1 - draw_strengths[i]) + (In.tangent_matrix * normal) * d;
+        float d = drawStrengths[i];
+        vec3 normal = normalize(2.0 * texture(uNormals, GetTextureCoordinate(worldPos, i)).xyz - 1.0f);
+        result = result * (1 - drawStrengths[i]) + (fsTangentMatrix * normal) * d;
     }
 
-    return norm;
+    return result;
 }
 
-vec3 process_directional_lights(vec3 color, vec3 normal, vec3 light_out, float shadow_factor)
+vec3 ProcessDirectionalLights(vec3 color, vec3 normal, vec3 lightOut, float shadow)
 {
     vec3 result = vec3(0.0f);
 
-    for (int i = 0; i < number_of_directional_lights; i++)
+    for (int i = 0; i < uNumberOfDirectionalLights; i++)
     {
-        DirectionalLight light = directional_lights[i];
+        DirectionalLight light = uDirectionalLights[i];
 
         // Ambient
-        float ambient = terrain.ambient * light.ambient;
+        float ambient = uTerrain.ambient * light.ambient;
 
         // Diffuse
         vec3 ld = -light.direction;
         float df = dot(normal, ld);
-        float diffuse = max(df, 0.0f) * terrain.diffuse * light.diffuse;
+        float diffuse = max(df, 0.0f) * uTerrain.diffuse * light.diffuse;
 
         // Specular
-        vec3 hd = normalize(ld + light_out);
+        vec3 hd = normalize(ld + lightOut);
         float sf = max(dot(normal, hd), 0.0);
-        float specular = pow(sf, terrain.shininess) * terrain.specular * light.specular;
-        float light_factor = (ambient * (1 - 0.5 * shadow_factor) + diffuse * (1 - shadow_factor) + specular * (1 - shadow_factor));
+        float specular = pow(sf, uTerrain.shininess) * uTerrain.specular * light.specular;
+        float factor = (ambient * (1 - 0.5 * shadow) + diffuse * (1 - shadow) + specular * (1 - shadow));
 
-        result += light_factor * color * light.color;
+        result += factor * color * light.color;
     }
 
     return result;
 }
 
-vec3 process_point_lights(vec3 color, vec3 normal, vec3 light_out, vec3 world_pos, float shadow_factor)
+vec3 ProcessPointLights(vec3 color, vec3 normal, vec3 lightOut, vec3 worldPos, float shadow)
 {
     vec3 result = vec3(0);
 
-    for (int i = 0; i < number_of_point_lights; i++)
+    for (int i = 0; i < uNumberOfPointLights; i++)
     {
-        PointLight light = point_lights[i];
+        PointLight light = uPointLights[i];
 
         // Ambient
-        float ambient = terrain.ambient * light.ambient;
+        float ambient = uTerrain.ambient * light.ambient;
 
         // Diffuse
-        vec3 ld = normalize(light.position - world_pos);
+        vec3 ld = normalize(light.position - worldPos);
         float df = dot(normal, ld);
-        float diffuse = max(df, 0.0f) * terrain.diffuse * light.diffuse;
+        float diffuse = max(df, 0.0f) * uTerrain.diffuse * light.diffuse;
 
         // Specular
-        vec3 hd = normalize(ld + light_out);
-        float sf = max(dot(normal, hd), 0.0);
-        float specular = pow(sf, terrain.shininess) * terrain.specular * light.specular;
+        vec3 hd = normalize(ld + lightOut);
+        float sf = max(dot(normal, hd), 0.0f);
+        float specular = pow(sf, uTerrain.shininess) * uTerrain.specular * light.specular;
 
         // Attenuation
-        float distance = length(light.position - world_pos);
+        float distance = length(light.position - worldPos);
         float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-        float light_factor = (ambient * (1 - 0.5 * shadow_factor) + diffuse * (1 - shadow_factor) + specular * (1 - shadow_factor));
+        float factor = (ambient * (1 - 0.5 * shadow) + diffuse * (1 - shadow) + specular * (1 - shadow));
 
-        result += light_factor * color * light.color * attenuation;
+        result += factor * color * light.color * attenuation;
     }
 
     return result;
 }
 
-vec3 process_haze(float distance, vec3 color)
+vec3 ProcessHaze(float distance, vec3 color)
 {
     vec3 result = color;
 
-    if (haze.enabled)
+    if (uHaze.enabled)
     {
-        float factor = exp(-pow(distance * 0.00005f * haze.density, haze.gradient));
+        float factor = exp(-pow(distance * 0.00005f * uHaze.density, uHaze.gradient));
         factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(haze.color * clamp(-directional_lights[0].direction.y, 0.0f, 1.0f), color, factor);
+        result = mix(uHaze.color * clamp(-uDirectionalLights[0].direction.y, 0.0f, 1.0f), color, factor);
     }
 
     return result;
 }
 
 // Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
-float calculate_shadow()
+float CalculateShadow()
 {
-    // perform perspective divide
-    vec3 projCoords = In.light_space_pos.xyz / In.light_space_pos.w;
-
-    // transform to [0,1] range
-    projCoords = projCoords * 0.5 + 0.5;
-
-    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-    float closestDepth = texture(shadow.map, projCoords.xy).r;
-
-    // get depth of current fragment from light's perspective
-    float currentDepth = projCoords.z;
-
-    vec2 texelSize = 1.0 / textureSize(shadow.map, 0);
-
-    int samples = shadow.samples;
-    float result = 0.0f;
-
-    for (int x = -samples; x <= samples; ++x)
+    if (uShadow.enabled)
     {
-        for (int y = -samples; y <= samples; ++y)
+        // perform perspective divide
+        vec3 projCoords = fsLightSpacePosition.xyz / fsLightSpacePosition.w;
+
+        // transform to [0,1] range
+        projCoords = projCoords * 0.5 + 0.5;
+
+        // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+        float closestDepth = texture(uShadow.map, projCoords.xy).r;
+
+        // get depth of current fragment from light's perspective
+        float currentDepth = projCoords.z;
+
+        vec2 texelSize = 1.0 / textureSize(uShadow.map, 0);
+
+        int samples = uShadow.samples;
+        float result = 0.0f;
+
+        for (int x = -samples; x <= samples; ++x)
         {
-            float pcfDepth = texture(shadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
-            result += currentDepth - shadow.bias > pcfDepth ? 1.0 : 0.0;
+            for (int y = -samples; y <= samples; ++y)
+            {
+                float pcfDepth = texture(uShadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
+                result += currentDepth - uShadow.bias > pcfDepth ? 1.0 : 0.0;
+            }
         }
+
+        result /= pow(2 * samples + 1, 2);
+
+        // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
+        if (projCoords.z > 1.0)
+        {
+            result = 0.0;
+        }
+
+        return result;
     }
 
-    result /= pow(2 * samples + 1, 2);
-
-    // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-    if (projCoords.z > 1.0)
-    {
-        result = 0.0;
-    }
-
-    return result;
+    return 0.0f; // No shadow if shadow mapping is disabled
 }
 
 void main()
 {
-    vec3 out_color = vec3(0);
+    vec3 outColor = vec3(0.0f);
 
-    float[4] draw_strengths = terrainBlending(In.world_pos, In.normal);
+    float[4] drawStrengths = TerrainBlending(fsWorldPosition, fsNormal);
 
-    vec3[4] tex_coords;
-    tex_coords[0] = getTextureCoordinate(In.world_pos, 0);
-    tex_coords[1] = getTextureCoordinate(In.world_pos, 1);
-    tex_coords[2] = getTextureCoordinate(In.world_pos, 2);
-    tex_coords[3] = getTextureCoordinate(In.world_pos, 3);
+    vec3[4] textureCoords;
+    textureCoords[0] = GetTextureCoordinate(fsWorldPosition, 0);
+    textureCoords[1] = GetTextureCoordinate(fsWorldPosition, 1);
+    textureCoords[2] = GetTextureCoordinate(fsWorldPosition, 2);
+    textureCoords[3] = GetTextureCoordinate(fsWorldPosition, 3);
 
     vec3 color = vec3(0);
     vec3 normal = vec3(0);
 
-    float weights[4] = getTextureWeightsByDisplacement(tex_coords, draw_strengths);
+    float weights[4] = GetTextureWeightsByDisplacement(textureCoords, drawStrengths);
 
     for (int i = 0; i < weights.length; i++)
     {
-        color += texture(albedos, tex_coords[i]).rgb * weights[i];
-        normal += getWorldNormal(tex_coords[i]) * weights[i];
+        color += texture(uAlbedos, textureCoords[i]).rgb * weights[i];
+        normal += GetWorldNormal(textureCoords[i]) * weights[i];
     }
 
-    float shadow_factor = 0.0f;
+    float shadow = CalculateShadow();
 
-    if (shadow.enabled)
-    {
-        shadow_factor = calculate_shadow();
-    }
-
-    vec3 light_out = normalize(eye_world_pos - In.world_pos);
-    float distance = length(eye_world_pos - In.world_pos);
+    vec3 lightOut = normalize(uCameraPosition - fsWorldPosition);
+    float distance = length(uCameraPosition - fsWorldPosition);
 
     vec3 result = vec3(0.0f);
-    result += process_directional_lights(color, normal, light_out, shadow_factor);
-    result += process_point_lights(color, normal, light_out, In.world_pos, shadow_factor);
-    result = process_haze(distance, result);
+    result += ProcessDirectionalLights(color, normal, lightOut, shadow);
+    result += ProcessPointLights(color, normal, lightOut, fsWorldPosition, shadow);
+    result = ProcessHaze(distance, result);
 
     // Note that the terrain has no model matrix so its local and world coordinates are equal.
-    FragLocalPosition = vec4(In.world_pos, 1.0f);
-    FragWorldPosition = vec4(In.world_pos, 1.0f);
+    OutFragLocalPosition = vec4(fsWorldPosition, 1.0f);
+    OutFragWorldPosition = vec4(fsWorldPosition, 1.0f);
 
-    FragNodeInfo = vec4(node_id, 0, 0, 1);
-    FragColor = vec4(result, 1.0);
-    gl_FragDepth = log2(In.f_log_z) / log2(z_far + 1.0);
+    OutFragNodeInfo = vec4(uNodeId, 0, 0, 1);
+    OutFragColor = vec4(result, 1.0);
+    gl_FragDepth = log2(fsLogZ) / log2(uZFar + 1.0);
 
-    vec4 curr = uViewProjectionMatrix * FragWorldPosition;
-    vec4 prev = uPreviousViewProjectionMatrix * FragWorldPosition;
+    vec4 curr = uViewProjectionMatrix * OutFragWorldPosition;
+    vec4 prev = uPreviousViewProjectionMatrix * OutFragWorldPosition;
     vec2 fragVelocity = curr.xy / curr.w - prev.xy / prev.w;
-    FragVelocity = vec4(fragVelocity, In.depth, 1.0f);
+    OutFragVelocity = vec4(fragVelocity, fsDepth, 1.0f);
 }

@@ -18,7 +18,7 @@ void Canavar::Engine::Terrain::ToJson(QJsonObject &object)
     object["frequency"] = mFrequency;
     object["persistence"] = mPersistence;
     object["lacunarity"] = mLacunarity;
-    object["tessellation_multiplier"] = mTesselationMultiplier;
+    object["tessellation_multiplier"] = mTessellationMultiplier;
 
     object["ambient"] = mAmbient;
     object["diffuse"] = mDiffuse;
@@ -31,13 +31,12 @@ void Canavar::Engine::Terrain::FromJson(const QJsonObject &object, const QSet<No
 {
     Global::FromJson(object, nodes);
 
-
     mOctaves = object["octaves"].toInt(7);
     mAmplitude = object["amplitude"].toDouble(1055.0f);
     mFrequency = object["frequency"].toDouble(0.110f);
     mPersistence = object["persistence"].toDouble(0.063f);
     mLacunarity = object["lacunarity"].toDouble(8.150f);
-    mTesselationMultiplier = object["tessellation_multiplier"].toDouble(8);
+    mTessellationMultiplier = object["tessellation_multiplier"].toDouble(8);
 
     mAmbient = object["ambient"].toDouble(0.25f);
     mDiffuse = object["diffuse"].toDouble(0.75f);
@@ -250,29 +249,30 @@ void Canavar::Engine::Terrain::Render(Shader *pShader, Camera *pCamera)
     }
 
     pShader->Bind();
+
     glBindTextureUnit(0, mAlbedoTexture);
     glBindTextureUnit(1, mNormalTexture);
     glBindTextureUnit(2, mDisplacementTexture);
 
-    pShader->SetUniformValue("node_id", GetNodeId());
-    pShader->SetUniformValue("tess_multiplier", mTesselationMultiplier);
-    pShader->SetUniformValue("width", mWidth);
+    pShader->SetUniformValue("uNodeId", GetNodeId());
+    pShader->SetUniformValue("uTessellationMultiplier", mTessellationMultiplier);
+    pShader->SetUniformValue("uWidth", mWidth);
 
-    pShader->SetUniformValue("noise.num_octaves", mOctaves);
-    pShader->SetUniformValue("noise.amplitude", mAmplitude);
-    pShader->SetUniformValue("noise.frequency", mFrequency);
-    pShader->SetUniformValue("noise.persistence", mPersistence);
-    pShader->SetUniformValue("noise.lacunarity", mLacunarity);
+    pShader->SetUniformValue("uNoise.octaves", mOctaves);
+    pShader->SetUniformValue("uNoise.amplitude", mAmplitude);
+    pShader->SetUniformValue("uNoise.frequency", mFrequency);
+    pShader->SetUniformValue("uNoise.persistence", mPersistence);
+    pShader->SetUniformValue("uNoise.lacunarity", mLacunarity);
 
-    pShader->SetUniformValue("terrain.ambient", mAmbient);
-    pShader->SetUniformValue("terrain.diffuse", mDiffuse);
-    pShader->SetUniformValue("terrain.specular", mSpecular);
-    pShader->SetUniformValue("terrain.shininess", mShininess);
+    pShader->SetUniformValue("uTerrain.ambient", mAmbient);
+    pShader->SetUniformValue("uTerrain.diffuse", mDiffuse);
+    pShader->SetUniformValue("uTerrain.specular", mSpecular);
+    pShader->SetUniformValue("uTerrain.shininess", mShininess);
 
-    pShader->SetUniformValueArray("texture_start_heights", mTextureStartHeights.data(), mTextureStartHeights.size(), 1);
-    pShader->SetUniformValueArray("texture_blends", mTextureBlends.data(), mTextureBlends.size(), 1);
-    pShader->SetUniformValueArray("texture_sizes", mTextureSizes.data(), mTextureSizes.size(), 1);
-    pShader->SetUniformValueArray("texture_displacement_weights", mTextureDisplacementWeights.data(), mTextureDisplacementWeights.size(), 1);
+    pShader->SetUniformValueArray("uTextureStartHeights", mTextureStartHeights.data(), mTextureStartHeights.size(), 1);
+    pShader->SetUniformValueArray("uTextureBlends", mTextureBlends.data(), mTextureBlends.size(), 1);
+    pShader->SetUniformValueArray("uTextureSizes", mTextureSizes.data(), mTextureSizes.size(), 1);
+    pShader->SetUniformValueArray("uTextureDisplacementWeights", mTextureDisplacementWeights.data(), mTextureDisplacementWeights.size(), 1);
 
     glBindVertexArray(mVAO);
 

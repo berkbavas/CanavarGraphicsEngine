@@ -296,7 +296,7 @@ void Canavar::Engine::ImGuiWidget::DrawTerrain()
     ImGui::SliderFloat("Frequency##Terrain", &mTerrain->GetFrequency_NonConst(), 0, 1, "%.3f");
     ImGui::SliderFloat("Persistence##Terrain", &mTerrain->GetPersistence_NonConst(), 0, 1, "%.3f");
     ImGui::SliderFloat("Lacunarity##Terrain", &mTerrain->GetLacunarity_NonConst(), 0, 20, "%.3f");
-    ImGui::SliderFloat("Tesselation Multiplier##Terrain", &mTerrain->GetTesselationMultiplier_NonConst(), 1, 128, "%.3f");
+    ImGui::SliderFloat("Tessellation Multiplier##Terrain", &mTerrain->GetTessellationMultiplier_NonConst(), 1, 128, "%.3f");
     ImGui::SliderFloat("Ambient##Terrain", &mTerrain->GetAmbient_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Diffuse##Terrain", &mTerrain->GetDiffuse_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Specular##Terrain", &mTerrain->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");

@@ -4,47 +4,38 @@
 
 layout(triangles, equal_spacing, ccw) in;
 
-in DATA
-{
-    vec3 world_pos;
-    vec2 tex_coord;
-    vec3 normal;
-}
-In[];
-
-uniform mat4 VP;
-uniform mat4 V;
-uniform mat4 LVP; // Light view-projection matrix
-uniform float z_far;
+uniform mat4 uViewProjectionMatrix;
+uniform mat4 uViewMatrix;
+uniform mat4 uLightViewProjectionMatrix; // Light view-projection matrix
+uniform float uZFar;
 
 // Noise
 struct Noise
 {
-    int num_octaves;
+    int octaves;
     float amplitude;
     float frequency;
     float persistence;
     float lacunarity;
 };
 
-uniform Noise noise;
+uniform Noise uNoise;
 
-// Out data
-out DATA
-{
-    vec3 world_pos;
-    vec3 view_space_pos;
-    vec3 view_space_normal;
-    vec2 tex_coord;
-    vec3 normal;
-    vec3 tangent;
-    vec3 bitangent;
-    mat3 tangent_matrix;
-    float f_log_z;
-    vec4 light_space_pos; // Position in light space
-    float depth;
-}
-Out;
+in vec3 teWorldPosition[];
+in vec2 teTextureCoords[];
+in vec3 teNormal[];
+
+out vec3 fsWorldPosition;
+out vec3 fsViewSpacePosition;
+out vec3 fsViewSpaceNormal;
+out vec2 fsTextureCoords;
+out vec3 fsNormal;
+out vec3 fsTangent;
+out vec3 fsBitangent;
+out mat3 fsTangentMatrix;
+out float fsLogZ;
+out vec4 fsLightSpacePosition;
+out float fsDepth;
 
 vec3 mod289(vec3 x)
 {
@@ -141,23 +132,23 @@ float voronoi2d(const in vec2 point)
     return pow(1. / res, 0.0625);
 }
 
-vec2 interpolate2D(vec2 v0, vec2 v1, vec2 v2)
+vec2 Interpolate2D(vec2 v0, vec2 v1, vec2 v2)
 {
     return vec2(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
 }
 
-vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2)
+vec3 Interpolate3D(vec3 v0, vec3 v1, vec3 v2)
 {
     return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
 }
 
-float terrain_height(vec2 pos)
+float TerrainHeight(vec2 pos)
 {
-    float noise_value = 0;
-    float frequency = noise.frequency;
-    float amplitude = noise.amplitude;
+    float noiseValue = 0;
+    float frequency = uNoise.frequency;
+    float amplitude = uNoise.amplitude;
 
-    for (int i = 0; i < noise.num_octaves; i++)
+    for (int i = 0; i < uNoise.octaves; i++)
     {
         float n = 0;
 
@@ -171,49 +162,46 @@ float terrain_height(vec2 pos)
         }
         else
         {
-            // n = voronoi2d(pos * frequency / 400.0 + vec2(112, 532));
             n = snoise(pos * frequency / 800.0 + vec2(1231, 721)) / 2;
         }
 
-        noise_value += n * amplitude;
-        amplitude *= noise.persistence;
-        frequency *= noise.lacunarity;
+        noiseValue += n * amplitude;
+        amplitude *= uNoise.persistence;
+        frequency *= uNoise.lacunarity;
     }
 
-    return noise_value; // + snoise(pos / 10000.0) * 500.0 +  + max(0, voronoi2d(pos / 5000.0) *
-                        // 1000.0);
+    return noiseValue;
 }
 
-vec3 computeNormal(vec3 WorldPos)
+vec3 ComputeNormal(vec3 worldPos)
 {
     vec2 eps = vec2(0.1, 0.0);
-    return normalize(vec3(terrain_height(WorldPos.xz - eps.xy) - terrain_height(WorldPos.xz + eps.xy), //
+    return normalize(vec3(TerrainHeight(worldPos.xz - eps.xy) - TerrainHeight(worldPos.xz + eps.xy), //
                           2 * eps.x,
-                          terrain_height(WorldPos.xz - eps.yx) - terrain_height(WorldPos.xz + eps.yx)));
+                          TerrainHeight(worldPos.xz - eps.yx) - TerrainHeight(worldPos.xz + eps.yx)));
 }
 
 void main()
 {
     // Interpolate the attributes of the output vertex using the barycentric coordinates
-    Out.world_pos = interpolate3D(In[0].world_pos, In[1].world_pos, In[2].world_pos);
-    Out.tex_coord = interpolate2D(In[0].tex_coord, In[1].tex_coord, In[2].tex_coord);
+    fsWorldPosition = Interpolate3D(teWorldPosition[0], teWorldPosition[1], teWorldPosition[2]);
+    fsTextureCoords = Interpolate2D(teTextureCoords[0], teTextureCoords[1], teTextureCoords[2]);
 
     // Displace the vertex along the normal
-    float displacement = terrain_height(Out.world_pos.xz);
-    Out.world_pos += vec3(0.0, 1.0, 0.0) * displacement;
-    Out.view_space_pos = (V * vec4(Out.world_pos, 1.0)).xyz;
-    Out.normal = computeNormal(Out.world_pos);
-    Out.view_space_normal = (V * vec4(Out.normal, 0.0)).xyz;
-    Out.tangent = normalize(cross(Out.normal, vec3(0, 1, 0)));
-    Out.bitangent = normalize(cross(Out.tangent, Out.normal));
-    Out.tangent_matrix = mat3(Out.tangent, Out.bitangent, Out.normal);
-    Out.light_space_pos = LVP * vec4(Out.world_pos, 1.0);
+    float displacement = TerrainHeight(fsWorldPosition.xz);
+    fsWorldPosition += vec3(0.0f, 1.0f, 0.0f) * displacement;
+    fsViewSpacePosition = (uViewMatrix * vec4(fsWorldPosition, 1.0f)).xyz;
+    fsNormal = ComputeNormal(fsWorldPosition);
+    fsTangent = normalize(cross(fsNormal, vec3(0.0f, 1.0f, 0.0f)));
+    fsBitangent = normalize(cross(fsTangent, fsNormal));
+    fsTangentMatrix = mat3(fsTangent, fsBitangent, fsNormal);
+    fsLightSpacePosition = uLightViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
 
-    gl_Position = VP * vec4(Out.world_pos, 1.0);
+    gl_Position = uViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
     float ndc = gl_Position.z / gl_Position.w;
-    Out.depth = ndc * 0.5f + 0.5f;
+    fsDepth = ndc * 0.5f + 0.5f;
 
-    float coef = 2.0 / log2(z_far + 1.0);
-    gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * coef - 1.0;
-    Out.f_log_z = 1.0 + gl_Position.w;
+    float coef = 2.0f / log2(uZFar + 1.0f);
+    gl_Position.z = log2(max(1e-6, 1.0f + gl_Position.w)) * coef - 1.0f;
+    fsLogZ = 1.0f + gl_Position.w;
 }

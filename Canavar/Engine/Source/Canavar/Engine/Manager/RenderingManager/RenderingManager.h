@@ -168,5 +168,6 @@ namespace Canavar::Engine
         DEFINE_MEMBER(int, MotionBlurSamples, 20);
 
         QMatrix4x4 mPreviousViewProjectionMatrix;
+        QMatrix4x4 mAccumViewProjectionMatrix;
     };
 };

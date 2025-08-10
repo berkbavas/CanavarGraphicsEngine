@@ -10,7 +10,6 @@
 #include <QVector3D>
 #include <QVector>
 
-
 namespace Canavar::Engine
 {
 
@@ -21,7 +20,7 @@ namespace Canavar::Engine
 
         void ToJson(QJsonObject& object) override;
         void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
-        
+
         const char* GetNodeTypeName() const override { return "Terrain"; }
 
         void Render(Shader* pShader, Camera* pCamera);
@@ -31,6 +30,7 @@ namespace Canavar::Engine
         void SetUpBuffers();
         void SetUpTextures();
         void CleanUp();
+
         GLuint Load2DArray(const std::array<std::string, 4>& filepaths, int miplevels);
 
         QVector2D WhichTile(const QVector3D& subject) const;
@@ -56,7 +56,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Frequency, 0.110f);
         DEFINE_MEMBER(float, Persistence, 0.063f);
         DEFINE_MEMBER(float, Lacunarity, 8.150f);
-        DEFINE_MEMBER(float, TesselationMultiplier, 8.0f);
+        DEFINE_MEMBER(float, TessellationMultiplier, 8.0f);
 
         DEFINE_MEMBER(float, Ambient, 0.25f);
         DEFINE_MEMBER(float, Diffuse, 0.75f);
