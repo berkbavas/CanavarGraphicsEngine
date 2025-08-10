@@ -6,10 +6,11 @@ layout(location = 2) in vec2 aTextureCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
 
-uniform mat4 uModelMatrix;               // Model matrix
-uniform mat3 uNormalMatrix;              // Normal matrix
-uniform mat4 uViewProjectionMatrix;      // View-Projection matrix
-uniform mat4 uLightViewProjectionMatrix; // Light View-Projection matrix
+uniform mat4 uModelMatrix;                  // Model matrix
+uniform mat3 uNormalMatrix;                 // Normal matrix
+uniform mat4 uViewProjectionMatrix;         // View-Projection matrix
+uniform mat4 uLightViewProjectionMatrix;    // Light View-Projection matrix
+uniform mat4 uPreviousViewProjectionMatrix; // Previous frame's View-Projection matrix
 
 uniform float uZFar;
 
@@ -22,6 +23,7 @@ flat out int fsVertexId;
 out float fsFlogZ;
 out vec4 fsLightSpacePosition; // Position in light space
 out float fsDepth;
+out vec2 fsFragVelocity;
 
 void main()
 {
@@ -46,4 +48,8 @@ void main()
     float coef = 2.0 / log2(uZFar + 1.0);
     gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * coef - 1.0;
     fsFlogZ = 1.0 + gl_Position.w;
+
+    vec4 curr = uViewProjectionMatrix * worldPos;
+    vec4 prev = uPreviousViewProjectionMatrix * worldPos;
+    fsFragVelocity = curr.xy / curr.w - prev.xy / prev.w;
 }

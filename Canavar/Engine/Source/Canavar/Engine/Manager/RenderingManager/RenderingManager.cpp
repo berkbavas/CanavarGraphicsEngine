@@ -17,7 +17,7 @@ void Canavar::Engine::RenderingManager::Initialize()
     initializeOpenGLFunctions();
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
 
-    mFramebufferFormats[Multisample].setSamples(4);
+    mFramebufferFormats[Multisample].setSamples(SAMPLES);
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormats[Singlesample].setSamples(0);
@@ -122,8 +122,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     DoPostProcessing();
 
-    mAccumViewProjectionMatrix = 0.35f * mAccumViewProjectionMatrix + 0.65f * mActiveCamera->GetViewMatrix();
-    mPreviousViewProjectionMatrix = mActiveCamera->GetProjectionMatrix() * mAccumViewProjectionMatrix;
+    mPreviousViewProjectionMatrix = mActiveCamera->GetViewProjectionMatrix();
 }
 
 void Canavar::Engine::RenderingManager::DoPostProcessing()

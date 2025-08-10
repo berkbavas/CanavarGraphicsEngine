@@ -84,9 +84,6 @@ uniform int uNodeId;
 uniform int uMeshId;
 uniform int uSelectedMeshId;
 
-uniform mat4 uViewProjectionMatrix;         // View-Projection matrix
-uniform mat4 uPreviousViewProjectionMatrix; // Previous frame's View-Projection matrix
-
 in vec3 fsLocalPosition;
 in vec3 fsWorldPosition;
 in vec3 fsNormal;
@@ -96,6 +93,7 @@ flat in int fsVertexId;
 in float fsFlogZ;
 in vec4 fsLightSpacePosition; // Position in light space
 in float fsDepth;
+in vec2 fsFragVelocity;
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutFragLocalPosition;
@@ -508,8 +506,5 @@ void main()
 
     gl_FragDepth = log2(fsFlogZ) / log2(uZFar + 1.0);
 
-    vec4 curr = uViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
-    vec4 prev = uPreviousViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
-    vec2 fragVelocity = curr.xy / curr.w - prev.xy / prev.w;
-    OutFragVelocity = vec4(fragVelocity, fsDepth, 1.0f);
+    OutFragVelocity = vec4(fsFragVelocity, fsDepth, 1.0f);
 }

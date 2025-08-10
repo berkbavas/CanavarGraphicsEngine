@@ -811,7 +811,7 @@ bool Canavar::Engine::ImGuiWidget::MousePressed(QMouseEvent *pEvent)
     {
         mSavedWorldPositions << mFragmentWorldPosition;
         mSelectedWorldPositionIndex = mSavedWorldPositions.lastIndexOf(mFragmentWorldPosition);
-        return true;
+        return false; // Do not capture right-click, allow PersecutorCaemra to handle it
     }
     else if (pEvent->button() == Qt::LeftButton)
     {
