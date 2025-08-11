@@ -33,9 +33,8 @@ namespace Canavar::Engine
 
       private:
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
+        DEFINE_MEMBER(float, AngularSpeedSmoothness, 0.075f);
         DEFINE_MEMBER(float, LinearSpeed, 5.0f);
-        DEFINE_MEMBER(float, LinearSpeedMultiplier, 1.0f);
-        DEFINE_MEMBER(float, AngularSpeedMultiplier, 1.0f);
         DEFINE_MEMBER(Qt::MouseButton, ActionReceiveButton, Qt::MiddleButton)
 
         QMap<Qt::Key, bool> mPressedKeys;

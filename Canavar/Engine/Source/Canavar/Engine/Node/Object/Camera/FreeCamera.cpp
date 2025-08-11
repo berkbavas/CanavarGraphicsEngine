@@ -25,14 +25,16 @@ void Canavar::Engine::FreeCamera::Update(float ifps)
         return;
     }
 
+    float dx = mAngularSpeedSmoothness * mMouse.dx;
+    float dy = mAngularSpeedSmoothness * mMouse.dy;
+
     // Rotation
     if (mUpdateRotation)
     {
-        RotateGlobal(QVector3D(0, 1, 0), mAngularSpeedMultiplier * mAngularSpeed * mMouse.dx * ifps);
-        RotateLocal(QVector3D(1, 0, 0), mAngularSpeedMultiplier * mAngularSpeed * mMouse.dy * ifps);
-        mMouse.dx = 0.0f;
-        mMouse.dy = 0.0f;
-        mUpdateRotation = false;
+        RotateGlobal(QVector3D(0, 1, 0), mAngularSpeed * dx * ifps);
+        RotateLocal(QVector3D(1, 0, 0), mAngularSpeed * dy * ifps);
+        mMouse.dx -= dx;
+        mMouse.dy -= dy;
     }
 
     // Translation
@@ -63,7 +65,7 @@ void Canavar::Engine::FreeCamera::Update(float ifps)
             {
                 const auto binding = KEY_BINDINGS.value(key, QVector3D(0, 0, 0));
                 const auto direction = GetRotation().rotatedVector(binding);
-                const auto delta = mLinearSpeed * mLinearSpeedMultiplier * ifps * direction;
+                const auto delta = mLinearSpeed * ifps * direction;
                 Translate(delta);
             }
         }
@@ -148,8 +150,6 @@ void Canavar::Engine::FreeCamera::ToJson(QJsonObject& object)
 
     object.insert("angular_speed", mAngularSpeed);
     object.insert("linear_speed", mLinearSpeed);
-    object.insert("linear_speed_multiplier", mLinearSpeedMultiplier);
-    object.insert("angular_speed_muliplier", mAngularSpeedMultiplier);
     object.insert("action_receive_button", mActionReceiveButton);
 }
 
@@ -159,8 +159,6 @@ void Canavar::Engine::FreeCamera::FromJson(const QJsonObject& object, const QSet
 
     mAngularSpeed = object["angular_speed"].toDouble(25.0f);
     mLinearSpeed = object["linear_speed"].toDouble(5.0f);
-    mLinearSpeedMultiplier = object["linear_speed_multiplier"].toDouble(1.0f);
-    mAngularSpeedMultiplier = object["angular_speed_muliplier"].toDouble(1.0f);
     mActionReceiveButton = (Qt::MouseButton) object["action_receive_button"].toInt(Qt::MiddleButton);
 }
 

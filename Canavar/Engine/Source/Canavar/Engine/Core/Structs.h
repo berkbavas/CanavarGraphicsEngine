@@ -26,8 +26,12 @@ namespace Canavar::Engine
     {
         float x;
         float y;
+        float z;
+        float w;
         float dx;
         float dy;
+        float dz;
+        float dw;
 
         Qt::MouseButton button;
 
@@ -37,8 +41,12 @@ namespace Canavar::Engine
         {
             x = 0;
             y = 0;
+            z = 0;
+            w = 0;
             dx = 0;
             dy = 0;
+            dz = 0;
+            dw = 0;
             button = Qt::NoButton;
         }
     };

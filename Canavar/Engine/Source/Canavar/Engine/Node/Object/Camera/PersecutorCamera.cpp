@@ -18,8 +18,10 @@ bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
         return false;
     }
 
-    mMouse.x = event->position().x();
-    mMouse.y = event->position().y();
+    mMouse.x = event->position().x() * mDevicePixelRatio;
+    mMouse.y = event->position().y() * mDevicePixelRatio;
+    mMouse.z = event->position().x() * mDevicePixelRatio;
+    mMouse.w = event->position().y() * mDevicePixelRatio;
     mMouse.button = event->button();
 
     return true;
@@ -34,7 +36,7 @@ bool Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
 
     if (mMouse.button == event->button())
     {
-        mMouse.Reset();
+        mMouse.button = Qt::NoButton;
     }
 
     return false;
@@ -47,19 +49,33 @@ bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
         return false;
     }
 
-    if (mMouse.button == Qt::MiddleButton || mMouse.button == Qt::RightButton)
-    {
-        mMouse.dx += mMouse.x - event->position().x();
-        mMouse.dy += mMouse.y - event->position().y();
+    float x = event->position().x() * mDevicePixelRatio;
+    float y = event->position().y() * mDevicePixelRatio;
 
-        mMouse.x = event->position().x();
-        mMouse.y = event->position().y();
+    if (mMouse.button == Qt::MiddleButton)
+    {
+        mMouse.dx += mMouse.x - x;
+        mMouse.dy += mMouse.y - y;
+
+        mMouse.x = x;
+        mMouse.y = y;
+
+        return true;
+    }
+    else if (mMouse.button == Qt::RightButton)
+    {
+        mMouse.dz += mMouse.z - x;
+        mMouse.dw += mMouse.w - y;
+
+        mMouse.z = x;
+        mMouse.w = y;
 
         return true;
     }
 
     return false;
 }
+
 bool Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
 {
     if (ShouldIgnoreEvents())
@@ -68,12 +84,14 @@ bool Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
     }
 
     if (event->angleDelta().y() < 0)
-        mDistance += 0.1;
+    {
+        mDistanceBuffer += 0.5;
+    }
 
     if (event->angleDelta().y() > 0)
-        mDistance -= 0.1;
-
-    mDistance = qBound(0.1f, mDistance, 100.0f);
+    {
+        mDistanceBuffer -= 0.5;
+    }
 
     return true;
 }
@@ -85,38 +103,67 @@ void Canavar::Engine::PersecutorCamera::Update(float ifps)
         mAnimator->Update(ifps);
     }
 
-    QVector3D targetPos(0, 0, 0);
+    QVector3D TargetPosition(0, 0, 0);
 
     if (mTarget)
     {
-        targetPos = mTarget->GetWorldPosition();
+        TargetPosition = mTarget->GetWorldPosition();
     }
 
-    if (mMouse.button == Qt::MiddleButton)
+    float dx = mAngularSpeedSmoothness * mMouse.dx;
+    float dy = mAngularSpeedSmoothness * mMouse.dy;
+
+    float dz = mMouse.dz;
+    float dw = mMouse.dw;
+
+    if (dx != 0 || dy != 0)
     {
-        mYaw += mAngularSpeedMultiplier * mAngularSpeed * mMouse.dx * ifps;
-        mPitch += mAngularSpeedMultiplier * mAngularSpeed * mMouse.dy * ifps;
+        mYaw += mAngularSpeed * dx * ifps;
+        mPitch += mAngularSpeed * dy * ifps;
     }
 
-    if (mMouse.button == Qt::RightButton)
+    if (dz != 0 || dw != 0)
     {
         constexpr QVector3D DOWN_DIR(0, -1, 0);
         constexpr QVector3D LEFT_DIR(1, 0, 0);
 
-        mTranslation += (mLinearSpeed * mMouse.dx * ifps) * (GetRotation() * LEFT_DIR); // (...) are important
-        mTranslation += (mLinearSpeed * mMouse.dy * ifps) * (GetRotation() * DOWN_DIR);
+        mTranslation += (mLinearSpeed * dz * ifps) * (GetRotation() * LEFT_DIR); // (...) are important
+        mTranslation += (mLinearSpeed * dw * ifps) * (GetRotation() * DOWN_DIR);
     }
 
     ClampAngles();
 
+    if (abs(mDistanceBuffer) < mZoomSmoothness)
+    {
+        mDistanceBuffer = 0;
+    }
+
+    mDistance += mDistanceBuffer * mZoomSmoothness;
+    mDistanceBuffer -= mDistanceBuffer * mZoomSmoothness;
+
+    mDistance = qBound(0.1f, mDistance, 100.0f);
+
     auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
-    auto newWorldPosition = targetPos + mTranslation + mDistance * newRotation * QVector3D(0, 0, 1);
+    auto newWorldPosition = TargetPosition + mTranslation + mDistance * newRotation * QVector3D(0, 0, 1);
 
     SetWorldPosition(newWorldPosition);
     SetWorldRotation(newRotation);
 
-    mMouse.dx = 0.0f;
-    mMouse.dy = 0.0f;
+    mMouse.dx -= dx;
+    mMouse.dy -= dy;
+
+    mMouse.dz -= dz;
+    mMouse.dw -= dw;
+
+    if (abs(mMouse.dx) < mAngularSpeedSmoothness)
+    {
+        mMouse.dx = 0;
+    }
+
+    if (abs(mMouse.dy) < mAngularSpeedSmoothness)
+    {
+        mMouse.dy = 0;
+    }
 }
 
 void Canavar::Engine::PersecutorCamera::Reset()
@@ -156,7 +203,6 @@ void Canavar::Engine::PersecutorCamera::ToJson(QJsonObject& object)
     }
 
     object.insert("angular_speed", mAngularSpeed);
-    object.insert("angular_speed_muliplier", mAngularSpeedMultiplier);
 }
 
 void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
@@ -164,7 +210,6 @@ void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object, cons
     PerspectiveCamera::FromJson(object, nodes);
 
     mAngularSpeed = object["angular_speed"].toDouble(25.0f);
-    mAngularSpeedMultiplier = object["angular_speed_muliplier"].toDouble(1.0f);
 
     QString targetUuid = object["target_uuid"].toString("");
 
