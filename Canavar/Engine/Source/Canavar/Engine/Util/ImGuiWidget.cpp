@@ -291,7 +291,7 @@ void Canavar::Engine::ImGuiWidget::DrawHaze()
 
 void Canavar::Engine::ImGuiWidget::DrawTerrain()
 {
-    ImGui::SliderFloat("Amplitude##Terrain", &mTerrain->GetAmplitude_NonConst(), 0.0f, 50.0f, "%.3f");
+    ImGui::SliderFloat("Amplitude##Terrain", &mTerrain->GetAmplitude_NonConst(), 0.0f, 2000.0f, "%.3f");
     ImGui::SliderInt("Octaves##Terrain", &mTerrain->GetOctaves_NonConst(), 1, 20);
     ImGui::SliderFloat("Frequency##Terrain", &mTerrain->GetFrequency_NonConst(), 0, 1, "%.3f");
     ImGui::SliderFloat("Persistence##Terrain", &mTerrain->GetPersistence_NonConst(), 0, 1, "%.3f");
