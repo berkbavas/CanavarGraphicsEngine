@@ -26,13 +26,13 @@ namespace Canavar::Engine
         void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
 
       public:
-        const QMatrix4x4& GetWorldTransformation();
-        const QMatrix4x4& GetTransformation();
+        QMatrix4x4 GetWorldTransformation() const;
+        const QMatrix4x4& GetTransformation() const { return mTransformation; }
 
-        const QQuaternion& GetWorldRotation();
+        QQuaternion GetWorldRotation() const;
         const QQuaternion& GetRotation() const { return mRotation; }
 
-        const QVector3D& GetWorldPosition();
+        QVector3D GetWorldPosition() const;
         const QVector3D& GetPosition() const { return mPosition; }
 
         const QVector3D& GetScale() const { return mScale; }
@@ -54,8 +54,6 @@ namespace Canavar::Engine
         void RotateLocal(const QVector3D& axis, float angle);
         void Translate(const QVector3D& delta);
 
-        void MakeTransformationDirty() { mTransformationDirty = true; }
-        bool GetTransformationDirty() const { return mTransformationDirty; }
         void UpdateTransformation();
 
         float& GetYaw();
@@ -72,11 +70,6 @@ namespace Canavar::Engine
         QQuaternion mRotation;
         QVector3D mPosition{ QVector3D(0, 0, 0) };
         QVector3D mScale{ QVector3D(1, 1, 1) };
-
-        // For caching
-        QMatrix4x4 mWorldTransformation;
-        QQuaternion mWorldRotation;
-        QVector3D mWorldPosition;
 
         bool mTransformationDirty{ false };
 

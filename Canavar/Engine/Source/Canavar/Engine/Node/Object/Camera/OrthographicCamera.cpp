@@ -55,45 +55,43 @@ bool Canavar::Engine::OrthographicCamera::WheelMoved(QWheelEvent* event)
     return true;
 }
 
-const QMatrix4x4& Canavar::Engine::OrthographicCamera::GetProjectionMatrix()
+QMatrix4x4 Canavar::Engine::OrthographicCamera::GetProjectionMatrix() const
 {
-    mProjectionMatrix.setToIdentity();
-    mProjectionMatrix.ortho(mLeft, //
-                            mLeft + mWidth * mZoom,
-                            mTop + mHeight * mZoom,
-                            mTop,
-                            mZNear,
-                            mZFar);
-    return mProjectionMatrix;
+    QMatrix4x4 ProjectionMatrix;
+    ProjectionMatrix.ortho(mLeft, //
+                           mLeft + mWidth * mZoom,
+                           mTop + mHeight * mZoom,
+                           mTop,
+                           mZNear,
+                           mZFar);
+    return ProjectionMatrix;
 }
 
-const QMatrix4x4& Canavar::Engine::OrthographicCamera::GetViewProjectionMatrix()
+QMatrix4x4 Canavar::Engine::OrthographicCamera::GetViewProjectionMatrix() const
 {
-    mViewProjectionMatrix = GetProjectionMatrix() * GetViewMatrix();
-    return mViewProjectionMatrix;
+    return GetProjectionMatrix() * GetViewMatrix();
 }
 
-const QMatrix4x4& Canavar::Engine::OrthographicCamera::GetRotationMatrix()
+QMatrix4x4 Canavar::Engine::OrthographicCamera::GetRotationMatrix() const
 {
     constexpr QVector4D ZERO_TRANSLATION(0, 0, 0, 1);
-    mRotationMatrix = GetViewMatrix();
-    mRotationMatrix.setColumn(3, ZERO_TRANSLATION);
-    return mRotationMatrix;
+    QMatrix4x4 ViewMatrix = GetViewMatrix();
+    ViewMatrix.setColumn(3, ZERO_TRANSLATION);
+    return ViewMatrix;
 }
 
-const QMatrix4x4& Canavar::Engine::OrthographicCamera::GetViewMatrix()
+QMatrix4x4 Canavar::Engine::OrthographicCamera::GetViewMatrix() const
 {
-    mViewMatrix.setToIdentity();
-    mViewMatrix.rotate(GetWorldRotation().conjugated());
-    mViewMatrix.translate(-GetWorldPosition());
-    return mViewMatrix;
+    QMatrix4x4 ViewMatrix;
+    ViewMatrix.rotate(GetWorldRotation().conjugated());
+    ViewMatrix.translate(-GetWorldPosition());
+    return ViewMatrix;
 }
 
-const QVector3D& Canavar::Engine::OrthographicCamera::GetViewDirection()
+QVector3D Canavar::Engine::OrthographicCamera::GetViewDirection() const
 {
     constexpr QVector3D NEGATIVE_Z(0, 0, -1);
-    mViewDirection = GetWorldRotation() * NEGATIVE_Z;
-    return mViewDirection;
+    return GetWorldRotation() * NEGATIVE_Z;
 }
 
 float Canavar::Engine::OrthographicCamera::GetAspectRatio() const

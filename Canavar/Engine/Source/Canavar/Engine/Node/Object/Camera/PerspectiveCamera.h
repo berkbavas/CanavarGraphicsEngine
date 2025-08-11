@@ -11,12 +11,12 @@ namespace Canavar::Engine
         PerspectiveCamera() = default;
 
       public:
-        const QMatrix4x4 &GetProjectionMatrix() override;
-        const QMatrix4x4 &GetViewProjectionMatrix() override;
-        const QMatrix4x4 &GetRotationMatrix() override;
-        const QMatrix4x4 &GetViewMatrix() override;
-        const QVector3D &GetViewDirection() override;
-
+        QMatrix4x4 GetProjectionMatrix() const override;
+        QMatrix4x4 GetViewProjectionMatrix() const override;
+        QMatrix4x4 GetRotationMatrix() const override;
+        QMatrix4x4 GetViewMatrix() const override;
+        QVector3D GetViewDirection() const override;
+      
         float GetHorizontalFov() const;
         float GetAspectRatio() const;
 
@@ -24,13 +24,6 @@ namespace Canavar::Engine
         void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
 
       private:
-        // For caching
-        QMatrix4x4 mViewProjectionMatrix;
-        QMatrix4x4 mProjectionMatrix;
-        QMatrix4x4 mViewMatrix;
-        QMatrix4x4 mRotationMatrix;
-        QVector3D mViewDirection;
-
         DEFINE_MEMBER(float, ZNear, 0.1f);
         DEFINE_MEMBER(float, ZFar, 100'000.0f);
         DEFINE_MEMBER(float, VerticalFov, 60.0f);

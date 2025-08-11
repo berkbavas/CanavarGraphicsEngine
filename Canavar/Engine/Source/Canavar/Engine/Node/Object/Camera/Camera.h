@@ -21,11 +21,11 @@ namespace Canavar::Engine
 
         float CalculateSkyYOffset(float horizonDistance);
 
-        virtual const QMatrix4x4 &GetProjectionMatrix() = 0;
-        virtual const QMatrix4x4 &GetViewProjectionMatrix() = 0;
-        virtual const QMatrix4x4 &GetRotationMatrix() = 0;
-        virtual const QMatrix4x4 &GetViewMatrix() = 0;
-        virtual const QVector3D &GetViewDirection() = 0;
+        virtual QMatrix4x4 GetProjectionMatrix() const = 0;
+        virtual QMatrix4x4 GetViewProjectionMatrix() const = 0;
+        virtual QMatrix4x4 GetRotationMatrix() const = 0;
+        virtual QMatrix4x4 GetViewMatrix() const = 0;
+        virtual QVector3D GetViewDirection() const = 0;
 
         virtual void Update(float ifps);
         virtual void Reset();

@@ -1,46 +1,45 @@
 #include "PerspectiveCamera.h"
 
-const QMatrix4x4& Canavar::Engine::PerspectiveCamera::GetProjectionMatrix()
+QMatrix4x4 Canavar::Engine::PerspectiveCamera::GetProjectionMatrix() const
 {
-    mProjectionMatrix.setToIdentity();
-    mProjectionMatrix.perspective(mVerticalFov, GetAspectRatio(), GetZNear(), GetZFar());
-    return mProjectionMatrix;
+    QMatrix4x4 ProjectionMatrix;
+    ProjectionMatrix.perspective(mVerticalFov, GetAspectRatio(), GetZNear(), GetZFar());
+    return ProjectionMatrix;
 }
 
-const QMatrix4x4& Canavar::Engine::PerspectiveCamera::GetViewProjectionMatrix()
+QMatrix4x4 Canavar::Engine::PerspectiveCamera::GetViewProjectionMatrix() const
 {
-    mViewProjectionMatrix = GetProjectionMatrix() * GetViewMatrix();
-    return mViewProjectionMatrix;
+    return GetProjectionMatrix() * GetViewMatrix();
 }
 
-const QMatrix4x4& Canavar::Engine::PerspectiveCamera::GetViewMatrix()
+QMatrix4x4 Canavar::Engine::PerspectiveCamera::GetViewMatrix() const
 {
-    mViewMatrix.setToIdentity();
-    mViewMatrix.rotate(GetWorldRotation().conjugated());
-    mViewMatrix.translate(-GetWorldPosition());
-    return mViewMatrix;
+    QMatrix4x4 ViewMatrix;
+    ViewMatrix.rotate(GetWorldRotation().conjugated());
+    ViewMatrix.translate(-GetWorldPosition());
+    return ViewMatrix;
 }
 
-const QMatrix4x4& Canavar::Engine::PerspectiveCamera::GetRotationMatrix()
+QMatrix4x4 Canavar::Engine::PerspectiveCamera::GetRotationMatrix() const
 {
     constexpr QVector4D ZERO_TRANSLATION(0, 0, 0, 1);
-    mRotationMatrix = GetViewMatrix();
-    mRotationMatrix.setColumn(3, ZERO_TRANSLATION);
-    return mRotationMatrix;
+
+    QMatrix4x4 ViewMatrix = GetViewMatrix();
+    ViewMatrix.setColumn(3, ZERO_TRANSLATION);
+    return ViewMatrix;
 }
 
-const QVector3D& Canavar::Engine::PerspectiveCamera::GetViewDirection()
+QVector3D Canavar::Engine::PerspectiveCamera::GetViewDirection() const
 {
     constexpr QVector3D NEGATIVE_Z(0, 0, -1);
-    mViewDirection = GetWorldRotation() * NEGATIVE_Z;
-    return mViewDirection;
+    return GetWorldRotation() * NEGATIVE_Z;
 }
 
 float Canavar::Engine::PerspectiveCamera::GetHorizontalFov() const
 {
-    const auto hfov = std::atan(std::tan(qDegreesToRadians(mVerticalFov) / 2.0f) * GetAspectRatio()) * 2.0f;
+    const auto HFOV = std::atan(std::tan(qDegreesToRadians(mVerticalFov) / 2.0f) * GetAspectRatio()) * 2.0f;
 
-    return std::abs(qRadiansToDegrees(hfov));
+    return std::abs(qRadiansToDegrees(HFOV));
 }
 
 float Canavar::Engine::PerspectiveCamera::GetAspectRatio() const

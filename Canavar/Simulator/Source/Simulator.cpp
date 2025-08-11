@@ -9,18 +9,21 @@ Canavar::Simulator::Simulator::Simulator()
     mController = new Canavar::Engine::Controller(Canavar::Engine::ContainerMode::Window);
     mRendererContext = mController->GetWindow();
 
+    mNodeManager = mController->GetNodeManager();
+    mCameraManager = mController->GetCameraManager();
+
     mImGuiWidget = new Canavar::Engine::ImGuiWidget;
     mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
-    mImGuiWidget->SetNodeManager(mController->GetNodeManager());
-    mImGuiWidget->SetCameraManager(mController->GetCameraManager());
+    mImGuiWidget->SetNodeManager(mNodeManager);
+    mImGuiWidget->SetCameraManager(mCameraManager);
 
     connect(mImGuiWidget,
             &Canavar::Engine::ImGuiWidget::GoToObject,
             this,
             [=](Canavar::Engine::ObjectPtr pObject) //
             {
-                mController->GetCameraManager()->GetFreeCamera()->GoToObject(pObject);
-                mController->GetCameraManager()->SetActiveCamera(mController->GetCameraManager()->GetFreeCamera());
+                mCameraManager->GetFreeCamera()->GoToObject(pObject);
+                mCameraManager->SetActiveCamera(mCameraManager->GetFreeCamera());
             });
 
     mController->AddEventReceiver(mImGuiWidget);
@@ -44,8 +47,6 @@ void Canavar::Simulator::Simulator::Initialize()
 {
     mRenderRef = QtImGui::initialize(mRendererContext);
 
-    mNodeManager = mController->GetNodeManager();
-    mCameraManager = mController->GetCameraManager();
     mPersecutorCamera = std::make_shared<Canavar::Engine::PersecutorCamera>();
 
     mNodeManager->ImportNodes("Resources/f16.json");

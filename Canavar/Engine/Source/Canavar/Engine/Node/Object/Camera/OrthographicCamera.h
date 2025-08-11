@@ -20,11 +20,11 @@ namespace Canavar::Engine
         bool MouseMoved(QMouseEvent* event) override;
         bool WheelMoved(QWheelEvent* event) override;
 
-        const QMatrix4x4& GetProjectionMatrix();
-        const QMatrix4x4& GetViewProjectionMatrix() override;
-        const QMatrix4x4& GetRotationMatrix() override;
-        const QMatrix4x4& GetViewMatrix() override;
-        const QVector3D& GetViewDirection() override;
+        QMatrix4x4 GetProjectionMatrix() const override;
+        QMatrix4x4 GetViewProjectionMatrix() const override;
+        QMatrix4x4 GetRotationMatrix() const override;
+        QMatrix4x4 GetViewMatrix() const override;
+        QVector3D GetViewDirection() const override;
 
         float GetAspectRatio() const;
 
@@ -42,13 +42,6 @@ namespace Canavar::Engine
         void Reset();
 
       private:
-        // For caching
-        QMatrix4x4 mViewProjectionMatrix;
-        QMatrix4x4 mProjectionMatrix;
-        QMatrix4x4 mViewMatrix;
-        QMatrix4x4 mRotationMatrix;
-        QVector3D mViewDirection;
-
         DEFINE_MEMBER(float, Zoom, 1.0f);
         DEFINE_MEMBER(float, Top, 0.0f);
         DEFINE_MEMBER(float, Left, 0.0f);

@@ -6,44 +6,19 @@
 void Canavar::Engine::Object::SetRotation(const QQuaternion& newRotation)
 {
     mRotation = newRotation;
-
-    if (const auto pParent = GetParent<Object>())
-    {
-        mWorldRotation = pParent->GetWorldRotation() * mRotation;
-    }
-    else
-    {
-        mWorldRotation = mRotation;
-    }
-
-    MakeTransformationDirty();
+    UpdateTransformation();
 }
 
 void Canavar::Engine::Object::SetPosition(const QVector3D& newPosition)
 {
     mPosition = newPosition;
-
-    if (const auto pParent = GetParent<Object>())
-    {
-        mWorldPosition = pParent->GetWorldPosition() + pParent->GetWorldRotation() * mPosition;
-    }
-    else
-    {
-        mWorldPosition = mPosition;
-    }
-
-    MakeTransformationDirty();
+    UpdateTransformation();
 }
 
 void Canavar::Engine::Object::SetScale(const QVector3D& newScale)
 {
-    if (mScale == newScale)
-    {
-        return;
-    }
-
     mScale = newScale;
-    MakeTransformationDirty();
+    UpdateTransformation();
 }
 
 void Canavar::Engine::Object::ToJson(QJsonObject& object)
@@ -130,93 +105,72 @@ void Canavar::Engine::Object::FromJson(const QJsonObject& object, const QSet<Nod
     Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll);
 }
 
-const QMatrix4x4& Canavar::Engine::Object::GetWorldTransformation()
+QMatrix4x4 Canavar::Engine::Object::GetWorldTransformation() const
 {
-    mWorldTransformation.setToIdentity();
+    QMatrix4x4 WorldTransformation;
 
     if (const auto pParent = GetParent<Object>())
     {
-        const auto WorldPosition = pParent->GetWorldPosition();
-        const auto WorldRotation = pParent->GetWorldRotation();
+        WorldTransformation.rotate(pParent->GetWorldRotation().normalized());
+        WorldTransformation.setColumn(3, QVector4D(pParent->GetWorldPosition(), 1.0f));
 
-        mWorldTransformation.rotate(WorldRotation.normalized());
-        mWorldTransformation.setColumn(3, QVector4D(WorldPosition, 1.0f));
-
-        mWorldTransformation = mWorldTransformation * GetTransformation();
+        WorldTransformation = WorldTransformation * GetTransformation();
     }
     else
     {
-        mWorldTransformation.scale(mScale);
-        mWorldTransformation.rotate(mWorldRotation);
-        mWorldTransformation.setColumn(3, QVector4D(mWorldPosition, 1.0f));
+        WorldTransformation.scale(mScale);
+        WorldTransformation.rotate(GetWorldRotation());
+        WorldTransformation.setColumn(3, QVector4D(GetWorldPosition(), 1.0f));
     }
 
-    return mWorldTransformation;
+    return WorldTransformation;
 }
 
-const QMatrix4x4& Canavar::Engine::Object::GetTransformation()
-{
-    if (mTransformationDirty)
-    {
-        UpdateTransformation();
-    }
-
-    return mTransformation;
-}
-
-const QQuaternion& Canavar::Engine::Object::GetWorldRotation()
+QQuaternion Canavar::Engine::Object::GetWorldRotation() const
 {
     if (const auto pParent = GetParent<Object>())
     {
-        mWorldRotation = pParent->GetWorldRotation() * mRotation;
+        return pParent->GetWorldRotation() * mRotation;
     }
     else
     {
-        mWorldRotation = mRotation;
-    }
-
-    return mWorldRotation;
-}
-
-const QVector3D& Canavar::Engine::Object::GetWorldPosition()
-{
-    if (const auto pParent = GetParent<Object>())
-    {
-        mWorldPosition = pParent->GetWorldPosition() + pParent->GetWorldRotation() * mPosition;
-    }
-    else
-    {
-        mWorldPosition = mPosition;
-    }
-
-    return mWorldPosition;
-}
-
-void Canavar::Engine::Object::SetWorldRotation(const QQuaternion& newRotation)
-{
-    mWorldRotation = newRotation;
-
-    if (const auto pParent = GetParent<Object>())
-    {
-        SetRotation(pParent->GetWorldRotation().inverted() * mWorldRotation);
-    }
-    else
-    {
-        SetRotation(mWorldRotation);
+        return mRotation;
     }
 }
 
-void Canavar::Engine::Object::SetWorldPosition(const QVector3D& newPosition)
+QVector3D Canavar::Engine::Object::GetWorldPosition() const
 {
-    mWorldPosition = newPosition;
-
     if (const auto pParent = GetParent<Object>())
     {
-        SetPosition(pParent->GetWorldRotation().inverted() * (mWorldPosition - pParent->GetWorldPosition()));
+        return pParent->GetWorldPosition() + pParent->GetWorldRotation() * mPosition;
     }
     else
     {
-        SetPosition(mWorldPosition);
+        return mPosition;
+    }
+}
+
+void Canavar::Engine::Object::SetWorldRotation(const QQuaternion& NewRotation)
+{
+    if (const auto pParent = GetParent<Object>())
+    {
+        SetRotation(pParent->GetWorldRotation().inverted() * NewRotation);
+    }
+    else
+    {
+        SetRotation(NewRotation);
+    }
+}
+
+void Canavar::Engine::Object::SetWorldPosition(const QVector3D& NewPosition)
+{
+    if (const auto pParent = GetParent<Object>())
+    {
+        SetPosition(pParent->GetWorldRotation().inverted() * (NewPosition - pParent->GetWorldPosition()));
+    }
+    else
+    {
+        SetPosition(NewPosition);
     }
 }
 
@@ -224,17 +178,11 @@ void Canavar::Engine::Object::SetWorldPosition(float x, float y, float z)
 {
     SetWorldPosition(QVector3D(x, y, z));
 }
-void Canavar::Engine::Object::SetTransformation(const QMatrix4x4& newTransformation)
+void Canavar::Engine::Object::SetTransformation(const QMatrix4x4& NewTransformation)
 {
-    if (mTransformation == newTransformation)
-    {
-        return;
-    }
-
-    mTransformation = newTransformation;
+    mTransformation = NewTransformation;
     mPosition = mTransformation.column(3).toVector3D();
     mRotation = QQuaternion::fromRotationMatrix(mTransformation.normalMatrix());
-    MakeTransformationDirty();
 }
 
 void Canavar::Engine::Object::SetPosition(float x, float y, float z)

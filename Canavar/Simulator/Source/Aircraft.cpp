@@ -84,8 +84,8 @@ bool Canavar::Simulator::Aircraft::Initialize()
 
 void Canavar::Simulator::Aircraft::Tick(float ifps)
 {
-    ProcessInputs();
     ProcessAutoPilotIfEnabled();
+    ProcessInputs();
 
     // Clamp control surfaces
     mElevator = qBound(-1.0f, mElevator, 1.0f);
@@ -226,7 +226,7 @@ void Canavar::Simulator::Aircraft::Run(float ifps)
 {
     mPropagate->SetTerrainElevation(TERRAIN_ELEVATION);
 
-    mExecutor->Setdt(DELTA_TIME);
+    mExecutor->Setdt(ifps);
     mExecutor->Run();
 
     mPfd.AngleOfAttack = mAuxiliary->Getalpha();
@@ -306,7 +306,7 @@ void Canavar::Simulator::Aircraft::ProcessAutoPilotIfEnabled()
 {
     if (mAutoPilotEnabled && mPressedKeys.isEmpty())
     {
-        mElevator = GetAutoPilotCommand(Command::Elevator, 4.0).toDouble();
+        mElevator = GetAutoPilotCommand(Command::Elevator, 1.0).toDouble();
         mAileron = GetAutoPilotCommand(Command::Aileron, 0.0).toDouble();
     }
 }
