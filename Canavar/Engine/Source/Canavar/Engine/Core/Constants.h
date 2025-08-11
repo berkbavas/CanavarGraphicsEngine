@@ -11,11 +11,17 @@ namespace Canavar::Engine
     inline constexpr int SHADOW_MAP_TEXTURE_UNIT = 10;
     inline constexpr const char* MODELS_FOLDER = "C:/Canavar/Models";
 
-    inline constexpr QVector3D ORIGIN{ 0, 0, 0 };
-    inline constexpr QVector3D ZERO_3D{ 0, 0, 0 };
-
     inline constexpr int PBR_SHADING = 0;
     inline constexpr int PHONG_SHADING = 1;
+
+    // Vector Constants
+    inline constexpr QVector3D ORIGIN{ 0, 0, 0 };
+    inline constexpr QVector3D POSITIVE_Z{ 0, 0, 1 };
+    inline constexpr QVector3D NEGATIVE_Z{ 0, 0, -1 };
+    inline constexpr QVector3D POSITIVE_Y{ 0, 1, 0 };
+    inline constexpr QVector3D NEGATIVE_Y{ 0, -1, 0 };
+    inline constexpr QVector3D POSITIVE_X{ 1, 0, 0 };
+    inline constexpr QVector3D NEGATIVE_X{ -1, 0, 0 };
 
     enum class RenderPass
     {

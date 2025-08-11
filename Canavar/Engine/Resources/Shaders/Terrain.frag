@@ -1,4 +1,4 @@
-#version 450
+#version 450 core
 
 // Taken from https://github.com/AntonHakansson/procedural-terrain
 

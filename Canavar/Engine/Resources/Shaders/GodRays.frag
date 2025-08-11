@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 uniform sampler2D uBrightTexture; // Bright-pass result
 uniform sampler2D uDepthTexture;  // Scene depth
@@ -54,9 +54,9 @@ void main()
             break; // stop accumulating when blocked
         }
 
-        vec4 sample = texture(uBrightTexture, coord);
-        sample *= decayFactor * uWeight;
-        color += sample;
+        vec4 samp = texture(uBrightTexture, coord);
+        samp *= decayFactor * uWeight;
+        color += samp;
         decayFactor *= uDecay;
     }
 

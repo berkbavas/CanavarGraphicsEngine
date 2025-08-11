@@ -18,5 +18,23 @@ namespace Canavar::Engine
         static float AngleBetween(const QVector3D& v1, const QVector3D& v2);
 
         static QQuaternion RotationBetweenVectors(const QVector3D& from, const QVector3D& to);
+
+        template<typename T>
+        static void AddIfLess(T& value, T bound, T increment)
+        {
+            if (value < bound)
+            {
+                value += increment;
+            }
+        }
+
+        template<typename T>
+        static void AddIfGreater(T& value, T bound, T increment)
+        {
+            if (value > bound)
+            {
+                value += increment;
+            }
+        }
     };
 }

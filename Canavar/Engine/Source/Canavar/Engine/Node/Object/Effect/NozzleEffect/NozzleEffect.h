@@ -2,13 +2,13 @@
 
 #include "Canavar/Engine/Node/Object/Object.h"
 
-#include <QOpenGLFunctions_4_3_Core>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace Canavar::Engine
 {
     class Shader;
 
-    class NozzleEffect : public Object, protected QOpenGLFunctions_4_3_Core
+    class NozzleEffect : public Object, protected QOpenGLFunctions_4_5_Core
     {
       public:
         NozzleEffect();

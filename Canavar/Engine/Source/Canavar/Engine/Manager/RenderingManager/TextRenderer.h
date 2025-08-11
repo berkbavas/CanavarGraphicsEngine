@@ -3,7 +3,7 @@
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 
-#include <QOpenGLFunctions_4_3_Core>
+#include <QOpenGLFunctions_4_5_Core>
 #include <QVector2D>
 
 namespace Canavar::Engine
@@ -19,7 +19,7 @@ namespace Canavar::Engine
         unsigned int Advance;   // Offset to advance to next glyph
     };
 
-    class TextRenderer : protected QOpenGLFunctions_4_3_Core
+    class TextRenderer : protected QOpenGLFunctions_4_5_Core
     {
       public:
         TextRenderer() = default;
@@ -40,8 +40,6 @@ namespace Canavar::Engine
 
         void InitializeCharacters();
         void InitializeBuffers();
-
-        QVector2D Project3DTo2D(const QVector3D &pos3D);
 
         std::map<QChar, Character> mCharacters; // Holds all loaded characters
 

@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform vec3 A, B, C, D, E, F, G, H, I, Z;
 uniform vec3 uSunDirection;

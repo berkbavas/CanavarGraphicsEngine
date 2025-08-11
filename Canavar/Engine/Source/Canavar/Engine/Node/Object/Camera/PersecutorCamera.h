@@ -35,23 +35,31 @@ namespace Canavar::Engine
         void OnAnimationAnglesUpdated(float yaw, float pitch);
         void ClampAngles();
         bool ShouldIgnoreEvents() const;
+        void HandleZoom(float ifps);
+        void HandleRotation(float ifps);
+        void HandleTranslation(float ifps);
 
         ObjectPtr mTarget;
         Mouse mMouse;
 
-        DEFINE_MEMBER(float, AngularSpeed, 25.0f);
-        DEFINE_MEMBER(float, AngularSpeedSmoothness, 0.05f);
-        DEFINE_MEMBER(float, LinearSpeed, 1.0f);
         DEFINE_MEMBER(float, Distance, 5.0f);
         DEFINE_MEMBER(float, Yaw, 0.0f);
         DEFINE_MEMBER(float, Pitch, 0.0f);
+        DEFINE_MEMBER(float, AngularSpeed, 25.0f);
+        DEFINE_MEMBER(float, AngularSpeedSmoothness, 0.25f);
+        DEFINE_MEMBER(float, LinearSpeed, 1.0f);
+        DEFINE_MEMBER(float, LinearSpeedSmoothness, 0.25f);
+        DEFINE_MEMBER(float, ZoomStep, 0.5f);
+        DEFINE_MEMBER(float, ZoomSmoothness, 10.0f);
 
         float mDistanceBuffer{ 0.0f };
-        float mZoomSmoothness{ 0.1f };
 
         PersecutorCameraNonlinearAnimatorPtr mAnimator;
 
         QVector3D mTranslation;
+
+        static constexpr float MIN_DISTANCE{ 0.1f };
+        static constexpr float MAX_DISTANCE{ 20.0f };
     };
 
     using PersecutorCameraPtr = std::shared_ptr<PersecutorCamera>;

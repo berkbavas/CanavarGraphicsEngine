@@ -1,6 +1,7 @@
 #include "PersecutorCamera.h"
 
 #include "Canavar/Engine/Util/Logger.h"
+#include "Canavar/Engine/Util/Math.h"
 
 Canavar::Engine::PersecutorCamera::PersecutorCamera()
 {
@@ -18,10 +19,10 @@ bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
         return false;
     }
 
-    mMouse.x = event->position().x() * mDevicePixelRatio;
-    mMouse.y = event->position().y() * mDevicePixelRatio;
-    mMouse.z = event->position().x() * mDevicePixelRatio;
-    mMouse.w = event->position().y() * mDevicePixelRatio;
+    mMouse.x = event->position().x();
+    mMouse.y = event->position().y();
+    mMouse.z = event->position().x();
+    mMouse.w = event->position().y();
     mMouse.button = event->button();
 
     return true;
@@ -49,8 +50,8 @@ bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
         return false;
     }
 
-    float x = event->position().x() * mDevicePixelRatio;
-    float y = event->position().y() * mDevicePixelRatio;
+    float x = event->position().x();
+    float y = event->position().y();
 
     if (mMouse.button == Qt::MiddleButton)
     {
@@ -85,12 +86,12 @@ bool Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
 
     if (event->angleDelta().y() < 0)
     {
-        mDistanceBuffer += 0.5;
+        mDistanceBuffer += mZoomStep;
     }
 
     if (event->angleDelta().y() > 0)
     {
-        mDistanceBuffer -= 0.5;
+        mDistanceBuffer -= mZoomStep;
     }
 
     return true;
@@ -103,6 +104,10 @@ void Canavar::Engine::PersecutorCamera::Update(float ifps)
         mAnimator->Update(ifps);
     }
 
+    HandleRotation(ifps);
+    HandleZoom(ifps);
+    HandleTranslation(ifps);
+
     QVector3D TargetPosition(0, 0, 0);
 
     if (mTarget)
@@ -110,59 +115,60 @@ void Canavar::Engine::PersecutorCamera::Update(float ifps)
         TargetPosition = mTarget->GetWorldPosition();
     }
 
-    float dx = mAngularSpeedSmoothness * mMouse.dx;
-    float dy = mAngularSpeedSmoothness * mMouse.dy;
+    auto NewRotation = QQuaternion::fromAxisAndAngle(POSITIVE_Y, mYaw) * QQuaternion::fromAxisAndAngle(POSITIVE_X, mPitch);
+    auto NewWorldPosition = TargetPosition + mTranslation + mDistance * NewRotation * POSITIVE_Z;
 
-    float dz = mMouse.dz;
-    float dw = mMouse.dw;
+    SetWorldPosition(NewWorldPosition);
+    SetWorldRotation(NewRotation);
+}
 
-    if (dx != 0 || dy != 0)
-    {
-        mYaw += mAngularSpeed * dx * ifps;
-        mPitch += mAngularSpeed * dy * ifps;
-    }
-
-    if (dz != 0 || dw != 0)
-    {
-        constexpr QVector3D DOWN_DIR(0, -1, 0);
-        constexpr QVector3D LEFT_DIR(1, 0, 0);
-
-        mTranslation += (mLinearSpeed * dz * ifps) * (GetRotation() * LEFT_DIR); // (...) are important
-        mTranslation += (mLinearSpeed * dw * ifps) * (GetRotation() * DOWN_DIR);
-    }
-
-    ClampAngles();
-
-    if (abs(mDistanceBuffer) < mZoomSmoothness)
+void Canavar::Engine::PersecutorCamera::HandleZoom(float ifps)
+{
+    if (abs(mDistanceBuffer) < 0.1f)
     {
         mDistanceBuffer = 0;
     }
 
-    mDistance += mDistanceBuffer * mZoomSmoothness;
-    mDistanceBuffer -= mDistanceBuffer * mZoomSmoothness;
+    float Step = mDistanceBuffer * mZoomSmoothness * ifps;
+    mDistance += Step;
+    mDistanceBuffer -= Step;
+    mDistance = qBound(MIN_DISTANCE, mDistance, MAX_DISTANCE);
+}
 
-    mDistance = qBound(0.1f, mDistance, 100.0f);
+void Canavar::Engine::PersecutorCamera::HandleRotation(float ifps)
+{
+    float StepX = mAngularSpeedSmoothness * mMouse.dx;
+    float StepY = mAngularSpeedSmoothness * mMouse.dy;
 
-    auto newRotation = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
-    auto newWorldPosition = TargetPosition + mTranslation + mDistance * newRotation * QVector3D(0, 0, 1);
+    // Consume
+    mMouse.dx -= StepX;
+    mMouse.dy -= StepY;
 
-    SetWorldPosition(newWorldPosition);
-    SetWorldRotation(newRotation);
-
-    mMouse.dx -= dx;
-    mMouse.dy -= dy;
-
-    mMouse.dz -= dz;
-    mMouse.dw -= dw;
-
-    if (abs(mMouse.dx) < mAngularSpeedSmoothness)
+    if (StepX != 0 || StepY != 0)
     {
-        mMouse.dx = 0;
+        mYaw += mAngularSpeed * StepX * ifps;
+        mPitch += mAngularSpeed * StepY * ifps;
     }
 
-    if (abs(mMouse.dy) < mAngularSpeedSmoothness)
+    ClampAngles();
+}
+
+void Canavar::Engine::PersecutorCamera::HandleTranslation(float ifps)
+{
+    float StepZ = mLinearSpeedSmoothness * mMouse.dz;
+    float StepW = mLinearSpeedSmoothness * mMouse.dw;
+
+    // Consume
+    mMouse.dz -= StepZ;
+    mMouse.dw -= StepW;
+
+    if (StepZ != 0 || StepW != 0)
     {
-        mMouse.dy = 0;
+        constexpr QVector3D DOWN_DIR(0, -1, 0);
+        constexpr QVector3D LEFT_DIR(1, 0, 0);
+
+        mTranslation += (mLinearSpeed * StepZ * ifps) * (GetRotation() * LEFT_DIR); // (...) are important
+        mTranslation += (mLinearSpeed * StepW * ifps) * (GetRotation() * DOWN_DIR);
     }
 }
 
@@ -273,26 +279,12 @@ void Canavar::Engine::PersecutorCamera::OnAnimationAnglesUpdated(float yaw, floa
 
 void Canavar::Engine::PersecutorCamera::ClampAngles()
 {
-    if (mYaw < 0)
-    {
-        mYaw += 360;
-    }
-
-    if (mYaw > 360)
-    {
-        mYaw -= 360;
-    }
-
-    if (mPitch < 0)
-    {
-        mPitch += 360;
-    }
-
-    if (mPitch > 360)
-    {
-        mPitch -= 360;
-    }
+    Math::AddIfLess(mYaw, 0.0f, 360.0f);
+    Math::AddIfGreater(mYaw, 360.0f, -360.0f);
+    Math::AddIfLess(mPitch, 0.0f, 360.0f);
+    Math::AddIfGreater(mPitch, 360.0f, -360.0f);
 }
+
 bool Canavar::Engine::PersecutorCamera::IsAnimating() const
 {
     return mAnimator->IsAnimating();

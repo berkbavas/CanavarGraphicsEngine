@@ -1,4 +1,4 @@
-#version 330 core
+#version 450 core
 
 layout (location = 0) in vec4 aVertex; // <vec2 pos, vec2 tex>
 

@@ -3,11 +3,11 @@
 #include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/Macros.h"
 
-#include <QOpenGLFunctions_4_3_Core>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace Canavar::Engine
 {
-    class ShadowMappingFramebuffer : protected QOpenGLFunctions_4_3_Core
+    class ShadowMappingFramebuffer : protected QOpenGLFunctions_4_5_Core
     {
         DISABLE_COPY(ShadowMappingFramebuffer);
 

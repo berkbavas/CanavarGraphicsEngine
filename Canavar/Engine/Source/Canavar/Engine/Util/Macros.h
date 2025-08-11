@@ -75,21 +75,3 @@
 #define DISABLE_COPY(CLASS_NAME) \
     CLASS_NAME(const CLASS_NAME&) = delete; \
     CLASS_NAME& operator=(const CLASS_NAME&) = delete
-
-#define DEFINE_MESH_TYPE_ID(TYPE_ID) \
-    static constexpr int MESH_TYPE_ID \
-    { \
-        TYPE_ID \
-    }
-
-#define REGISTER_NODE_TYPE(TYPE) \
-  public: \
-    const QString& GetNodeType() const override \
-    { \
-        static const QString THIS_NODE_TYPE(#TYPE); \
-        return THIS_NODE_TYPE; \
-    } \
-    static constexpr const char* NODE_TYPE \
-    { \
-        #TYPE \
-    }

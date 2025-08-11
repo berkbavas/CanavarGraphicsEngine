@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
     format.setProfile(QSurfaceFormat::CoreProfile);       // Request Core Profile
     format.setDepthBufferSize(24);                        // 24-bit depth buffer
     format.setStencilBufferSize(8);                       // 8-bit stencil buffer
-    format.setSamples(0);                                 // No multisampling for anti-aliasing
+    format.setSamples(0);                                 // No multisampling
     format.setSwapBehavior(QSurfaceFormat::DoubleBuffer); // Double buffering (default)
     format.setSwapInterval(1);                            // Enable vsync (1 frame per screen refresh)
     format.setOption(QSurfaceFormat::DebugContext);       // Request debug context (helps debugging)

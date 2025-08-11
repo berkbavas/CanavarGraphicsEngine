@@ -42,6 +42,8 @@ namespace Canavar::Simulator
         bool KeyReleased(QKeyEvent *) override;
 
       private:
+        Aircraft *mAircraft;
+
         QtImGui::RenderRef mRenderRef;
         Canavar::Engine::Window *mRendererContext;
 
@@ -49,8 +51,6 @@ namespace Canavar::Simulator
         Canavar::Engine::NodeManager *mNodeManager;
         Canavar::Engine::CameraManager *mCameraManager;
         Canavar::Engine::ImGuiWidget *mImGuiWidget;
-
-        Aircraft *mAircraft;
 
         Canavar::Engine::DummyObjectPtr mRootNode;
         Canavar::Engine::ModelPtr mJetNode;

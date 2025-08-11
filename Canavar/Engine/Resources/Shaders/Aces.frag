@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform sampler2D uSceneTexture; // Input HDR texture
 uniform float uExposure;         // Exposure value

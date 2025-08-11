@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform float uMaxRadius;
 uniform float uZFar;

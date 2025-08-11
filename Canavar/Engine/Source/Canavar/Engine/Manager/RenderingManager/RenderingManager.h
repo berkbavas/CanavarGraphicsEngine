@@ -18,7 +18,7 @@
 
 #include <QOpenGLFramebufferObject>
 #include <QOpenGLFramebufferObjectFormat>
-#include <QOpenGLFunctions_4_3_Core>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace Canavar::Engine
 {
@@ -39,7 +39,7 @@ namespace Canavar::Engine
         Temp
     };
 
-    class RenderingManager : public Manager, protected QOpenGLFunctions_4_3_Core
+    class RenderingManager : public Manager, protected QOpenGLFunctions_4_5_Core
     {
         Q_OBJECT
       public:

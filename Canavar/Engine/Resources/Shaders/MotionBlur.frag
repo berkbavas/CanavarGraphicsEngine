@@ -1,4 +1,4 @@
-#version 430 core
+#version 450 core
 
 uniform sampler2D uSceneTexture;    // HDR scene color
 uniform sampler2D uVelocityTexture; // Screen-space velocity xy -> Velocity, z -> Depth
