@@ -103,6 +103,11 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     mActiveCamera = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera().get());
 
+    mPreviousViewMatrix.setToIdentity();
+    mPreviousViewMatrix.rotate(mPreviousRotation.conjugated());
+    mPreviousViewMatrix.translate(-mActiveCamera->GetWorldPosition());
+    mPreviousViewProjectionMatrix = mPreviousProjectionMatrix * mPreviousViewMatrix;
+
     RenderToFramebuffer(mFramebuffers[Multisample], mActiveCamera);
 
     // ----------------------- BLIT 4X MULTISAMPLE FBO TO SINGLESAMPLE FBO -------------------
@@ -122,7 +127,8 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     DoPostProcessing();
 
-    mPreviousViewProjectionMatrix = mActiveCamera->GetViewProjectionMatrix();
+    mPreviousRotation = mActiveCamera->GetWorldRotation();
+    mPreviousProjectionMatrix = mActiveCamera->GetProjectionMatrix();
 }
 
 void Canavar::Engine::RenderingManager::DoPostProcessing()

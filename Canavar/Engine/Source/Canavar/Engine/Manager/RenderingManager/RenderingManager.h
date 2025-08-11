@@ -163,11 +163,14 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Exposure, 0.3f);
 
         // Motion Blur
-        DEFINE_MEMBER(bool, MotionBlurEnabled, false); // Buggy
-        DEFINE_MEMBER(float, MotionBlurStrength, 0.5f);
+        DEFINE_MEMBER(bool, MotionBlurEnabled, false);
+        DEFINE_MEMBER(float, MotionBlurStrength, 0.15f);
         DEFINE_MEMBER(int, MotionBlurSamples, 20);
         DEFINE_MEMBER(float, MotionBlurDepthThreshold, 0.5f);
 
+        QQuaternion mPreviousRotation;
+        QMatrix4x4 mPreviousViewMatrix;
+        QMatrix4x4 mPreviousProjectionMatrix;
         QMatrix4x4 mPreviousViewProjectionMatrix;
     };
 };

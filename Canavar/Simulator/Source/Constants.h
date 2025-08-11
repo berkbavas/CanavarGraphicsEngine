@@ -4,7 +4,7 @@ namespace Canavar::Simulator
 {
 
     inline constexpr const char* RESOURCE_PATH{ "Resources/Data/" };
-    inline constexpr const char* JSBSIM_MODEL_PATH{ "c172p" };
+    inline constexpr const char* JSBSIM_MODEL_PATH{ "f16" };
     inline constexpr const char* JSBSIM_INITIAL_CONDITIONS_PATH{ "reset00.xml" };
 
     inline constexpr float FEET_TO_METER{ 0.3048f };
