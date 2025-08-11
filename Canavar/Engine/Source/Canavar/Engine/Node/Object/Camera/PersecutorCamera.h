@@ -40,11 +40,14 @@ namespace Canavar::Engine
         Mouse mMouse;
 
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
-        DEFINE_MEMBER(float, AngularSpeedMultiplier, 1.0f);
+        DEFINE_MEMBER(float, AngularSpeedSmoothness, 0.05f);
         DEFINE_MEMBER(float, LinearSpeed, 1.0f);
         DEFINE_MEMBER(float, Distance, 5.0f);
         DEFINE_MEMBER(float, Yaw, 0.0f);
         DEFINE_MEMBER(float, Pitch, 0.0f);
+
+        float mDistanceBuffer{ 0.0f };
+        float mZoomSmoothness{ 0.1f };
 
         PersecutorCameraNonlinearAnimatorPtr mAnimator;
 
