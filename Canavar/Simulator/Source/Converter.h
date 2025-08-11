@@ -12,12 +12,12 @@ namespace Canavar::Simulator
     class Converter
     {
       public:
-        Converter(double latitude, double longitude, double altitude);
-        QVector3D ConvertPositionToCartesian(double latitude, double longitude, double altitude);
-        QQuaternion ConvertRotation(double latitude, double longitude, const QQuaternion& localToBody);
+        Converter(double RefLat, double RefLon, double RefAlt);
+        QVector3D ConvertPositionToCartesian(double Latitude, double Longitude, double Altitude);
+        QQuaternion ConvertRotation(double Latitude, double Longitude, const QQuaternion& LocalToBody);
 
-        static QVector3D GeodeticToEcef(double latitude, double longitude, double altitude);
-        static double N(double latitude);
+        static QVector3D GeodeticToEcef(double Latitude, double Longitude, double Altitude);
+        static double N(double Latitude);
 
       private:
         double mReferenceLatitude;
@@ -25,7 +25,7 @@ namespace Canavar::Simulator
         double mReferenceAltitude;
         QVector3D mReferencePosition;
 
-        static const double SEMI_MAJOR_RADIUS; // a
-        static const double SEMI_MINOR_RADIUS; // b
+        static constexpr double SEMI_MAJOR_RADIUS = 6378137.0;      // A
+        static constexpr double SEMI_MINOR_RADIUS = 6356752.314245; // B
     };
 }

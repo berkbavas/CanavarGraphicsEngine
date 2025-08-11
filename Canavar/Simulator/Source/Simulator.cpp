@@ -4,118 +4,75 @@
 #include <Canavar/Engine/Node/Object/Text/Text2D.h>
 #include <Canavar/Engine/Node/Object/Text/Text3D.h>
 
-#include <QQmlContext>
-
 Canavar::Simulator::Simulator::Simulator()
 {
-    mController = new Canavar::Engine::Controller(Canavar::Engine::ContainerMode::Widget);
-
-    mPfd = new PrimaryFlightData;
-    mOpenGLWidget = mController->GetWidget();
-
-    QQuickWindow::setGraphicsApi(QSGRendererInterface::GraphicsApi::OpenGL);
-
-    mGridLayout = new QGridLayout;
-    mBasicSix = new QQuickWidget;
-    mBasicSix->rootContext()->setContextProperty("pfd", mPfd);
-    mBasicSix->setSource(QUrl("qrc:/Qml/BasicSix.qml"));
-    mBasicSix->setAttribute(Qt::WA_TranslucentBackground, true);
-    mBasicSix->setAttribute(Qt::WA_AlwaysStackOnTop, true);
-    mBasicSix->setClearColor(Qt::transparent);
-
-    mGridLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 0);
-    mGridLayout->addWidget(mBasicSix, 1, 1);
-    mGridLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding), 0, 2);
-    mOpenGLWidget->setLayout(mGridLayout);
-
-    mBasicSix->installEventFilter(mOpenGLWidget);
-    mBasicSix->setVisible(false);
+    mController = new Canavar::Engine::Controller(Canavar::Engine::ContainerMode::Window);
+    mRendererContext = mController->GetWindow();
 
     mImGuiWidget = new Canavar::Engine::ImGuiWidget;
     mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
     mImGuiWidget->SetNodeManager(mController->GetNodeManager());
     mImGuiWidget->SetCameraManager(mController->GetCameraManager());
 
-    connect(mImGuiWidget, &Canavar::Engine::ImGuiWidget::GoToObject, this, [=](Canavar::Engine::ObjectPtr pObject) {
-        mController->GetCameraManager()->GetFreeCamera()->GoToObject(pObject);
-        mController->GetCameraManager()->SetActiveCamera(mController->GetCameraManager()->GetFreeCamera());
-    });
+    connect(mImGuiWidget,
+            &Canavar::Engine::ImGuiWidget::GoToObject,
+            this,
+            [=](Canavar::Engine::ObjectPtr pObject) //
+            {
+                mController->GetCameraManager()->GetFreeCamera()->GoToObject(pObject);
+                mController->GetCameraManager()->SetActiveCamera(mController->GetCameraManager()->GetFreeCamera());
+            });
 
     mController->AddEventReceiver(mImGuiWidget);
     mController->AddEventReceiver(this);
+
+    mAircraft = new Aircraft;
 }
 
 void Canavar::Simulator::Simulator::Run()
 {
+    if (mAircraft->Initialize() == false)
+    {
+        CGE_EXIT_FAILURE("Simulator::Run: Aircraft initialization failed. Exiting...");
+    }
+
     mController->Run();
-    mOpenGLWidget->showMaximized();
+    mRendererContext->showMaximized();
 }
 
 void Canavar::Simulator::Simulator::Initialize()
 {
-    initializeOpenGLFunctions();
-
-    mRenderRef = QtImGui::initialize(mOpenGLWidget);
+    mRenderRef = QtImGui::initialize(mRendererContext);
 
     mNodeManager = mController->GetNodeManager();
     mCameraManager = mController->GetCameraManager();
     mPersecutorCamera = std::make_shared<Canavar::Engine::PersecutorCamera>();
 
-    mAircraft = new Aircraft;
-    mAircraftController = new AircraftController(mAircraft);
-
-    // Post initialize
     mNodeManager->ImportNodes("Resources/f16.json");
     mFreeCamera = mCameraManager->GetFreeCamera();
     mRootNode = mNodeManager->FindNodeByName<Canavar::Engine::DummyObject>("Root Node");
     mJetNode = mNodeManager->FindNodeByName<Canavar::Engine::Model>("f16");
     mDummyCamera = mNodeManager->FindNodeByName<Canavar::Engine::DummyCamera>("Dummy Camera");
-    mText2D = mNodeManager->FindNodeByName<Canavar::Engine::Text2D>("Text2D");
 
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
 
-    mAircraftController->Initialize();
-    mAircraft->Initialize();
-
-    connect(
-        mAircraft,
-        &Aircraft::PfdChanged,
-        this,
-        [=](Aircraft::PrimaryFlightData pfd) {
-            mPfd->setAirspeed(pfd.airspeed);
-            mPfd->setRoll(pfd.roll);
-            mPfd->setPitch(pfd.pitch);
-
-            mPfd->setAltitude(pfd.altitude);
-            mPfd->setClimbRate(pfd.climbRate / 20.0f);
-            mPfd->setHeading(pfd.heading);
-
-            mPfd->setPressure(pfd.pressure);
-
-            mRootNode->SetWorldPosition(pfd.position);
-            mRootNode->SetWorldRotation(pfd.rotation);
-        },
-        Qt::QueuedConnection);
-
     mImGuiWidget->Initialize();
+}
+
+void Canavar::Simulator::Simulator::Update(float ifps)
+{
+    mAircraft->Tick(ifps);
 }
 
 void Canavar::Simulator::Simulator::PostRender(float ifps)
 {
-    mTime += ifps;
+    const auto& pfd = mAircraft->GetPfd();
+    mRootNode->SetWorldPosition(pfd.Position);
+    mRootNode->SetWorldRotation(pfd.Rotation);
 
-    // Update the 2D text every 0.5 seconds
-    if (mTime >= 0.5f)
-    {
-        mText2D->SetText(QString("FPS: %1").arg(static_cast<int>(1.0f / ifps)));
-        mTime = 0.0f; // Reset the timer
-    }
-
-    glDisable(GL_CULL_FACE);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     QtImGui::newFrame();
-    mAircraftController->DrawGui();
+    mAircraft->DrawGui();
     mImGuiWidget->Draw();
     ImGui::Render();
     QtImGui::render();
@@ -123,7 +80,7 @@ void Canavar::Simulator::Simulator::PostRender(float ifps)
 
 bool Canavar::Simulator::Simulator::KeyPressed(QKeyEvent* pEvent)
 {
-    mAircraftController->KeyPressed(pEvent);
+    mAircraft->OnKeyPressed(pEvent);
 
     if (pEvent->key() == Qt::Key_1)
     {
@@ -146,7 +103,7 @@ bool Canavar::Simulator::Simulator::KeyPressed(QKeyEvent* pEvent)
 
 bool Canavar::Simulator::Simulator::KeyReleased(QKeyEvent* pEvent)
 {
-    mAircraftController->KeyReleased(pEvent);
+    mAircraft->OnKeyReleased(pEvent);
 
     return false;
 }

@@ -124,24 +124,14 @@ void Canavar::Engine::Controller::Render(float ifps)
         pManager->SetDevicePixelRatio(mDevicePixelRatio);
     }
 
-    for (const auto pManager : mManagers)
+    for (const auto pReceiver : mEventReceivers)
     {
-        pManager->PreUpdate(ifps);
+        pReceiver->Update(ifps);
     }
 
     for (const auto pManager : mManagers)
     {
         pManager->Update(ifps);
-    }
-
-    for (const auto pManager : mManagers)
-    {
-        pManager->PostUpdate(ifps);
-    }
-
-    for (const auto pReceiver : mEventReceivers)
-    {
-        pReceiver->PreRender(ifps);
     }
 
     for (const auto pManager : mManagers)

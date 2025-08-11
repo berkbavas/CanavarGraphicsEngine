@@ -1,11 +1,18 @@
 #pragma once
 
+#include "Canavar/Engine/Util/Logger.h"
+#include "Command.h"
 #include "Converter.h"
+#include "PrimaryFlightData.h"
 
+#include <imgui.h>
+
+#include <QKeyEvent>
+#include <QMatrix3x3>
 #include <QObject>
-#include <QQuaternion>
-#include <QTimer>
+#include <QSet>
 #include <QVariant>
+#include <QtImGui.h>
 
 namespace JSBSim
 {
@@ -18,94 +25,50 @@ namespace JSBSim
 
 namespace Canavar::Simulator
 {
-    class Aircraft : public QObject
+    class Aircraft
     {
-        Q_OBJECT
       public:
-        explicit Aircraft(QObject* parent = nullptr);
+        Aircraft() = default;
+
+        ~Aircraft();
 
         bool Initialize();
+        void DrawGui();
+        void OnKeyPressed(QKeyEvent* pEvent);
+        void OnKeyReleased(QKeyEvent* pEvent);
+        void Tick(float ifps);
         bool IsHolding() const;
 
-        enum class Command
-        {
-            Aileron,
-            Elevator,
-            Rudder,
-            Steering,
-            Flaps,
-            Speedbrake,
-            Spoiler,
-            PitchTrim,
-            RudderTrim,
-            AileronTrim,
-            Throttle,
-            Mixture,
-            Gear,
-            PropellerPitch,
-            PropellerFeather,
-            InitRunning,
-            Hold,
-            Resume,
-            ChangeSmoothPositionCoefficient,
-        };
-        Q_ENUM(Command);
-
-        struct PrimaryFlightData
-        {
-            double angleOfAttack;
-            double sideSlip;
-            double roll;
-            double pitch;
-            double heading;
-            double airspeed;
-            double machNumber;
-            double climbRate;
-            double latitude;
-            double longitude;
-            double altitude;
-            double pressure;
-            double turnRate;
-            double slipSkid;
-            QVector3D position;
-            QQuaternion rotation;
-            double rudderPos;
-            double elevatorPos;
-            double leftAileronPos;
-            double rightAileronPos;
-            QVector3D actualPosition;
-        };
-
-      public slots:
-        void ProcessCommand(Aircraft::Command command, QVariant variant = QVariant());
-        void Tick();
-
-      signals:
-        void PfdChanged(Aircraft::PrimaryFlightData);
+        const PrimaryFlightData& GetPfd() const;
 
       private:
-        JSBSim::FGFDMExec* mExecutor;
-        JSBSim::FGFCS* mCommander;
-        JSBSim::FGPropagate* mPropagate;
-        JSBSim::FGPropulsion* mPropulsion;
-        JSBSim::FGAuxiliary* mAuxiliary;
+        void ProcessInputs();
+        void ProcessAutoPilotIfEnabled();
+        void Run(float ifps);
+        void ProcessCommand(Command command, QVariant variant = QVariant());
 
-        Converter* mConverter;
+        QVariant GetAutoPilotCommand(Command command, QVariant value);
+
+        JSBSim::FGFDMExec* mExecutor{ nullptr };
+        JSBSim::FGFCS* mCommander{ nullptr };
+        JSBSim::FGPropagate* mPropagate{ nullptr };
+        JSBSim::FGPropulsion* mPropulsion{ nullptr };
+        JSBSim::FGAuxiliary* mAuxiliary{ nullptr };
 
         PrimaryFlightData mPfd;
+        Converter* mConverter{ nullptr };
 
-        qint64 mCurrentTime{ 0 };
-        qint64 mPreviousTime{ 0 };
+        QSet<Qt::Key> mPressedKeys;
 
-        QVector3D mPreviousPosition{ 0.0f, 0.0f, 0.0f };
-        QVector3D mCurrentPosition{ 0.0f, 0.0f, 0.0f };
+        float mAileron{ 0.0f };  // [-1, 1]
+        float mElevator{ 0.0f }; // [-1, 1]
+        float mRudder{ 0.0f };   // [-1, 1]
+        float mThrottle{ 0.0f }; // [0, 1]
 
-        float mSmoothPositionCoefficient{ 10.0f }; // Multiplier for smoothing position updates
+        bool mAutoPilotEnabled{ false };
 
-        static constexpr float FEET_TO_METER{ 0.3048f }; // 1 foot = 0.3048 meters
-        static constexpr float METER_TO_FEET{ 1 / FEET_TO_METER };
+        double mRefLatitude{ 0.0 };
+        double mRefLongitude{ 0.0 };
+        double mRefAltitude{ 0.0 };
     };
-
-    Q_DECLARE_METATYPE(Aircraft::Command);
-    Q_DECLARE_METATYPE(Aircraft::PrimaryFlightData);
 }

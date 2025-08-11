@@ -17,7 +17,6 @@ float LinearizeDepth(float depth, float near, float far)
     return (2.0 * near) / (far + near - depth * (far - near));
 }
 
-
 void main()
 {
     vec2 velocity = texture(uVelocityTexture, fsTextureCoords).xy * uStrength;

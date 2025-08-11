@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Aircraft.h"
-#include "AircraftController.h"
-#include "PrimaryFlightData.h"
 
 #include <Canavar/Engine/Core/Controller.h>
 #include <Canavar/Engine/Core/EventReceiver.h>
@@ -22,15 +20,11 @@
 #include <Canavar/Engine/Util/ImGuiWidget.h>
 #include <Canavar/Engine/Util/Logger.h>
 
-#include <QGridLayout>
-#include <QMainWindow>
-#include <QOpenGLFunctions>
-#include <QQuickWidget>
 #include <QtImGui.h>
 
 namespace Canavar::Simulator
 {
-    class Simulator : public QObject, public Canavar::Engine::EventReceiver, protected QOpenGLFunctions
+    class Simulator : public QObject, public Canavar::Engine::EventReceiver
     {
       public:
         Simulator();
@@ -39,6 +33,7 @@ namespace Canavar::Simulator
 
         // Core Events
         void Initialize() override;
+        void Update(float ifps) override;
         void PostRender(float ifps) override;
 
         // Input Events
@@ -48,9 +43,7 @@ namespace Canavar::Simulator
 
       private:
         QtImGui::RenderRef mRenderRef;
-        QGridLayout *mGridLayout;
-        Canavar::Engine::Widget *mOpenGLWidget;
-        QQuickWidget *mBasicSix;
+        Canavar::Engine::Window *mRendererContext;
 
         Canavar::Engine::Controller *mController;
         Canavar::Engine::NodeManager *mNodeManager;
@@ -58,9 +51,6 @@ namespace Canavar::Simulator
         Canavar::Engine::ImGuiWidget *mImGuiWidget;
 
         Aircraft *mAircraft;
-        AircraftController *mAircraftController;
-
-        PrimaryFlightData *mPfd;
 
         Canavar::Engine::DummyObjectPtr mRootNode;
         Canavar::Engine::ModelPtr mJetNode;
@@ -68,8 +58,5 @@ namespace Canavar::Simulator
         Canavar::Engine::FreeCameraPtr mFreeCamera;
         Canavar::Engine::DummyCameraPtr mDummyCamera;
         Canavar::Engine::PersecutorCameraPtr mPersecutorCamera;
-        Canavar::Engine::Text2DPtr mText2D;
-
-        float mTime{ 0.0f };
     };
 }

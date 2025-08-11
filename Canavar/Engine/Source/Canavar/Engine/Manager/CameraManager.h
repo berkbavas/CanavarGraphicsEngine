@@ -15,7 +15,7 @@ namespace Canavar::Engine
 
         void Resize(int w, int h);
         void SetDevicePixelRatio(float dpr);
-        void PreUpdate(float ifps) override;
+        void Update(float ifps) override;
 
         bool KeyPressed(QKeyEvent *) override;
         bool KeyReleased(QKeyEvent *) override;

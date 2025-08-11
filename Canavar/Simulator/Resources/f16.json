@@ -317,22 +317,6 @@
             "specular": 1,
             "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
             "visible": true
-        },
-        {
-            "color": {
-                "b": 0,
-                "g": 0,
-                "r": 1
-            },
-            "node_name": "Text2D",
-            "node_type_name": "Text2D",
-            "position": {
-                "x": 50,
-                "y": 50
-            },
-            "scale": 0.7400000095367432,
-            "text": "FPS: 62",
-            "uuid": "915054f9-11b7-47e4-865a-0b8fd3e53b2a"
         }
     ]
 }

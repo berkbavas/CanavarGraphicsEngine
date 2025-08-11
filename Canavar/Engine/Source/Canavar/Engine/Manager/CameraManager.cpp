@@ -31,7 +31,7 @@ void Canavar::Engine::CameraManager::SetDevicePixelRatio(float dpr)
     }
 }
 
-void Canavar::Engine::CameraManager::PreUpdate(float ifps)
+void Canavar::Engine::CameraManager::Update(float ifps)
 {
     if (mActiveCamera)
     {
