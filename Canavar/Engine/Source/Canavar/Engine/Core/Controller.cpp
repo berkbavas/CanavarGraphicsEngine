@@ -107,31 +107,6 @@ Canavar::Engine::Controller::~Controller()
     mRenderingContext->DoneCurrent();
 }
 
-Canavar::Engine::NodeManager* Canavar::Engine::Controller::GetNodeManager()
-{
-    return mNodeManager;
-}
-
-Canavar::Engine::ShaderManager* Canavar::Engine::Controller::GetShaderManager()
-{
-    return mShaderManager;
-}
-
-Canavar::Engine::CameraManager* Canavar::Engine::Controller::GetCameraManager()
-{
-    return mCameraManager;
-}
-
-Canavar::Engine::LightManager* Canavar::Engine::Controller::GetLightManager()
-{
-    return mLightManager;
-}
-
-Canavar::Engine::RenderingManager* Canavar::Engine::Controller::GetRenderingManager()
-{
-    return mRenderingManager;
-}
-
 void Canavar::Engine::Controller::Initialize()
 {
     qInstallMessageHandler(Logger::QtMessageOutputCallback);
@@ -160,11 +135,11 @@ void Canavar::Engine::Controller::Initialize()
     {
         if (mWindow)
         {
-            mRenderRef = QtImGui::initialize(mWindow);
+            mRenderRef = QtImGui::initialize(mWindow, false);
         }
         else if (mWidget)
         {
-            mRenderRef = QtImGui::initialize(mWidget);
+            mRenderRef = QtImGui::initialize(mWidget, false);
         }
         else
         {
@@ -202,15 +177,18 @@ void Canavar::Engine::Controller::Render(float ifps)
         pReceiver->PostRender(ifps);
     }
 
-    QtImGui::newFrame(mRenderRef);
-
-    for (const auto pReceiver : mEventReceivers)
+    if (mImGuiWidget)
     {
-        pReceiver->DrawImGui(ifps);
-    }
+        QtImGui::newFrame(mRenderRef);
 
-    ImGui::Render();
-    QtImGui::render(mRenderRef);
+        for (const auto pReceiver : mEventReceivers)
+        {
+            pReceiver->DrawImGui(ifps);
+        }
+
+        ImGui::Render();
+        QtImGui::render(mRenderRef);
+    }
 }
 
 void Canavar::Engine::Controller::OnRenderLoop(float ifps)
@@ -336,4 +314,29 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
     }
 
     mRenderingContext->DoneCurrent();
+}
+
+Canavar::Engine::NodeManager* Canavar::Engine::Controller::GetNodeManager()
+{
+    return mNodeManager;
+}
+
+Canavar::Engine::ShaderManager* Canavar::Engine::Controller::GetShaderManager()
+{
+    return mShaderManager;
+}
+
+Canavar::Engine::CameraManager* Canavar::Engine::Controller::GetCameraManager()
+{
+    return mCameraManager;
+}
+
+Canavar::Engine::LightManager* Canavar::Engine::Controller::GetLightManager()
+{
+    return mLightManager;
+}
+
+Canavar::Engine::RenderingManager* Canavar::Engine::Controller::GetRenderingManager()
+{
+    return mRenderingManager;
 }

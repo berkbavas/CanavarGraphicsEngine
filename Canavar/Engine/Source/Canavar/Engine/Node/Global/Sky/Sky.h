@@ -46,7 +46,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Albedo, 0.1f);
         DEFINE_MEMBER(float, Turbidity, 4.0f);
         DEFINE_MEMBER(float, NormalizedSunY, 1.15f);
-        DEFINE_MEMBER(bool, Enabled);
+        DEFINE_MEMBER(bool, Enabled, true);
     };
 
     using SkyPtr = std::shared_ptr<Sky>;
