@@ -9,10 +9,13 @@ namespace Canavar::Engine
       public:
         // Core Events
         virtual void Initialize();
+        virtual void PostInitialize();
         virtual void Resize(int w, int h);
         virtual void Update(float ifps);
-        virtual void PostRender(float ifps);
         virtual void Render(float ifps);
+        virtual void InRender(float ifps);
+        virtual void PostRender(float ifps);
+        virtual void DrawImGui(float ifps);
         virtual void Shutdown();
 
         // Input Events

@@ -7,27 +7,12 @@
 Canavar::Simulator::Simulator::Simulator()
 {
     mWindow = new Canavar::Engine::Window(nullptr);
-    mController = new Canavar::Engine::Controller(mWindow, this);
+    mController = new Canavar::Engine::Controller(mWindow, true, this);
+
+    mController->AddEventReceiver(this);
 
     mNodeManager = mController->GetNodeManager();
     mCameraManager = mController->GetCameraManager();
-
-    mImGuiWidget = new Canavar::Engine::ImGuiWidget(this);
-    mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
-    mImGuiWidget->SetNodeManager(mNodeManager);
-    mImGuiWidget->SetCameraManager(mCameraManager);
-
-    connect(mImGuiWidget,
-            &Canavar::Engine::ImGuiWidget::GoToObject,
-            this,
-            [=](Canavar::Engine::ObjectPtr pObject) //
-            {
-                mCameraManager->GetFreeCamera()->GoToObject(pObject);
-                mCameraManager->SetActiveCamera(mCameraManager->GetFreeCamera());
-            });
-
-    mController->AddEventReceiver(mImGuiWidget);
-    mController->AddEventReceiver(this);
 
     mAircraft = new Aircraft;
 }
@@ -44,13 +29,11 @@ void Canavar::Simulator::Simulator::Run()
         CGE_EXIT_FAILURE("Simulator::Run: Aircraft initialization failed. Exiting...");
     }
 
-    mWindow->showFullScreen();
+    mWindow->showMinimized();
 }
 
-void Canavar::Simulator::Simulator::Initialize()
+void Canavar::Simulator::Simulator::PostInitialize()
 {
-    mRenderRef = QtImGui::initialize(mWindow);
-
     mPersecutorCamera = std::make_shared<Canavar::Engine::PersecutorCamera>();
 
     mNodeManager->ImportNodes("Resources/f16.json");
@@ -62,7 +45,7 @@ void Canavar::Simulator::Simulator::Initialize()
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
 
-    mImGuiWidget->Initialize();
+    mWindow->showMaximized();
 }
 
 void Canavar::Simulator::Simulator::Update(float ifps)
@@ -75,12 +58,11 @@ void Canavar::Simulator::Simulator::PostRender(float ifps)
     const auto& pfd = mAircraft->GetPfd();
     mRootNode->SetWorldPosition(pfd.Position);
     mRootNode->SetWorldRotation(pfd.Rotation);
+}
 
-    QtImGui::newFrame();
+void Canavar::Simulator::Simulator::DrawImGui(float ifps)
+{
     mAircraft->DrawGui();
-    mImGuiWidget->Draw();
-    ImGui::Render();
-    QtImGui::render();
 }
 
 bool Canavar::Simulator::Simulator::KeyPressed(QKeyEvent* pEvent)

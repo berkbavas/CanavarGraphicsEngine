@@ -13,8 +13,6 @@ namespace Canavar::Engine
       public:
         explicit LightManager(QObject *pParent);
 
-        void Initialize() override;
-
         QVector<PointLightPtr> GetPointLightsAround(QVector3D targetPosition, float radius);
 
         const QVector<PointLightPtr> &GetPointLights() const;

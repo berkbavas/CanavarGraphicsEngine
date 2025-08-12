@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Core/ManagerProvider.h"
 #include "Canavar/Engine/Util/Macros.h"
 
@@ -8,17 +9,10 @@
 namespace Canavar::Engine
 {
 
-    class Manager : public QObject
+    class Manager : public QObject, public EventReceiver
     {
       public:
         explicit Manager(QObject* pParent);
-
-        virtual void Initialize() = 0;
-        virtual void PostInitialize();
-        virtual void Shutdown();
-
-        virtual void Update(float ifps);
-        virtual void Render(float ifps);
 
         DEFINE_MEMBER_PTR(ManagerProvider, ManagerProvider);
         DEFINE_MEMBER(float, DevicePixelRatio, 1.0f);

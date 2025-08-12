@@ -6,8 +6,6 @@ Canavar::Engine::LightManager::LightManager(QObject* pParent)
     : Manager(pParent)
 {}
 
-void Canavar::Engine::LightManager::Initialize() {}
-
 QVector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D targetPosition, float radius)
 {
     QVector<PointLightPtr> result;

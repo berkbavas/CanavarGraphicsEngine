@@ -11,48 +11,77 @@
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Util/Logger.h"
 
-#include <QThread>
+#include <imgui.h>
 
-Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, QObject* pParent)
+#include <QThread>
+#include <QtImGui.h>
+
+Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, bool withImGui, QObject* pParent)
     : QObject(pParent)
     , mRenderingContext(pRenderingContext)
 {
     CGE_ASSERT(mRenderingContext != nullptr);
+    mWindow = dynamic_cast<Window*>(mRenderingContext);
+    mWidget = dynamic_cast<Widget*>(mRenderingContext);
 
-    if (Window* pWindow = dynamic_cast<Window*>(mRenderingContext))
+    if (mWindow)
     {
-        connect(pWindow, &Window::Initialize, this, &Controller::Initialize);
-        connect(pWindow, &Window::Render, this, &Controller::Render);
-        connect(pWindow, &Window::Resize, this, &Controller::Resize);
-        connect(pWindow, &Window::MousePressed, this, &Controller::OnMousePressed);
-        connect(pWindow, &Window::MouseReleased, this, &Controller::OnMouseReleased);
-        connect(pWindow, &Window::MouseMoved, this, &Controller::OnMouseMoved);
-        connect(pWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
-        connect(pWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
-        connect(pWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
+        if (withImGui)
+        {
+            mImGuiWidget = new ImGuiWidget(this);
+        }
+
+        connect(mWindow, &Window::Initialize, this, &Controller::Initialize);
+        connect(mWindow, &Window::Render, this, &Controller::Render);
+        connect(mWindow, &Window::Resize, this, &Controller::Resize);
+        connect(mWindow, &Window::MousePressed, this, &Controller::OnMousePressed);
+        connect(mWindow, &Window::MouseReleased, this, &Controller::OnMouseReleased);
+        connect(mWindow, &Window::MouseMoved, this, &Controller::OnMouseMoved);
+        connect(mWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
+        connect(mWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
+        connect(mWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
     }
-    else if (Widget* pWidget = dynamic_cast<Widget*>(mRenderingContext))
+    else if (mWidget)
     {
-        connect(pWidget, &Widget::Initialize, this, &Controller::Initialize);
-        connect(pWidget, &Widget::Render, this, &Controller::Render);
-        connect(pWidget, &Widget::Resize, this, &Controller::Resize);
-        connect(pWidget, &Widget::MousePressed, this, &Controller::OnMousePressed);
-        connect(pWidget, &Widget::MouseReleased, this, &Controller::OnMouseReleased);
-        connect(pWidget, &Widget::MouseMoved, this, &Controller::OnMouseMoved);
-        connect(pWidget, &Widget::WheelMoved, this, &Controller::OnWheelMoved);
-        connect(pWidget, &Widget::KeyPressed, this, &Controller::OnKeyPressed);
-        connect(pWidget, &Widget::KeyReleased, this, &Controller::OnKeyReleased);
+        if (withImGui)
+        {
+            mImGuiWidget = new ImGuiWidget(this);
+        }
+
+        connect(mWidget, &Widget::Initialize, this, &Controller::Initialize);
+        connect(mWidget, &Widget::Render, this, &Controller::Render);
+        connect(mWidget, &Widget::Resize, this, &Controller::Resize);
+        connect(mWidget, &Widget::MousePressed, this, &Controller::OnMousePressed);
+        connect(mWidget, &Widget::MouseReleased, this, &Controller::OnMouseReleased);
+        connect(mWidget, &Widget::MouseMoved, this, &Controller::OnMouseMoved);
+        connect(mWidget, &Widget::WheelMoved, this, &Controller::OnWheelMoved);
+        connect(mWidget, &Widget::KeyPressed, this, &Controller::OnKeyPressed);
+        connect(mWidget, &Widget::KeyReleased, this, &Controller::OnKeyReleased);
     }
     else
     {
         CGE_EXIT_FAILURE("Controller: Unsupported rendering context!");
     }
 
-    mShaderManager = new ShaderManager(nullptr);
-    mNodeManager = new NodeManager(nullptr);
-    mCameraManager = new CameraManager(nullptr);
-    mRenderingManager = new RenderingManager(nullptr);
-    mLightManager = new LightManager(nullptr);
+    mShaderManager = new ShaderManager(this);
+    mNodeManager = new NodeManager(this);
+    mCameraManager = new CameraManager(this);
+    mRenderingManager = new RenderingManager(this);
+    mLightManager = new LightManager(this);
+
+    if (mImGuiWidget)
+    {
+        mImGuiWidget->SetCameraManager(mCameraManager);
+        mImGuiWidget->SetNodeManager(mNodeManager);
+        mImGuiWidget->SetRenderingManager(mRenderingManager);
+        AddEventReceiver(mImGuiWidget);
+    }
+
+    AddEventReceiver(mShaderManager);
+    AddEventReceiver(mNodeManager);
+    AddEventReceiver(mCameraManager);
+    AddEventReceiver(mRenderingManager);
+    AddEventReceiver(mLightManager);
 
     mManagers.push_back(mShaderManager);
     mManagers.push_back(mNodeManager);
@@ -69,11 +98,6 @@ Canavar::Engine::Controller::~Controller()
     qDebug() << "Controller::~Controller: Application closing...";
 
     mRenderingContext->MakeCurrent();
-
-    for (const auto pManager : mManagers)
-    {
-        pManager->Shutdown();
-    }
 
     for (const auto pReceiver : mEventReceivers)
     {
@@ -120,12 +144,6 @@ void Canavar::Engine::Controller::Initialize()
     for (const auto pManager : mManagers)
     {
         pManager->SetManagerProvider(this);
-        pManager->Initialize();
-    }
-
-    for (const auto pManager : mManagers)
-    {
-        pManager->PostInitialize();
     }
 
     for (const auto pReceiver : mEventReceivers)
@@ -133,7 +151,31 @@ void Canavar::Engine::Controller::Initialize()
         pReceiver->Initialize();
     }
 
-    AddEventReceiver(mCameraManager);
+    for (const auto pReceiver : mEventReceivers)
+    {
+        pReceiver->PostInitialize();
+    }
+
+    if (mImGuiWidget)
+    {
+        if (mWindow)
+        {
+            mRenderRef = QtImGui::initialize(mWindow);
+        }
+        else if (mWidget)
+        {
+            mRenderRef = QtImGui::initialize(mWidget);
+        }
+        else
+        {
+            CGE_EXIT_FAILURE("Controller::Initialize: Unsupported rendering context for ImGui!");
+        }
+
+        connect(mImGuiWidget, &ImGuiWidget::GoToObject, this, [=](Engine::ObjectPtr pObject) {
+            mCameraManager->SetActiveCamera(mCameraManager->GetFreeCamera());
+            mCameraManager->GetFreeCamera()->GoToObject(pObject);
+        });
+    }
 }
 
 void Canavar::Engine::Controller::Render(float ifps)
@@ -150,32 +192,39 @@ void Canavar::Engine::Controller::Render(float ifps)
         pReceiver->Update(ifps);
     }
 
-    for (const auto pManager : mManagers)
+    for (const auto pReceiver : mEventReceivers)
     {
-        pManager->Update(ifps);
-    }
-
-    for (const auto pManager : mManagers)
-    {
-        pManager->Render(ifps);
+        pReceiver->Render(ifps);
     }
 
     for (const auto pReceiver : mEventReceivers)
     {
         pReceiver->PostRender(ifps);
     }
+
+    QtImGui::newFrame(mRenderRef);
+
+    for (const auto pReceiver : mEventReceivers)
+    {
+        pReceiver->DrawImGui(ifps);
+    }
+
+    ImGui::Render();
+    QtImGui::render(mRenderRef);
 }
 
 void Canavar::Engine::Controller::OnRenderLoop(float ifps)
 {
     for (const auto pReceiver : mEventReceivers)
     {
-        pReceiver->Render(ifps);
+        pReceiver->InRender(ifps);
     }
 }
 
 void Canavar::Engine::Controller::OnKeyPressed(QKeyEvent* event)
 {
+    mRenderingContext->MakeCurrent();
+
     for (const auto pReceiver : mEventReceivers)
     {
         if (pReceiver->KeyPressed(event))
@@ -183,10 +232,14 @@ void Canavar::Engine::Controller::OnKeyPressed(QKeyEvent* event)
             return;
         }
     }
+
+    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
 {
+    mRenderingContext->MakeCurrent();
+
     for (const auto pReceiver : mEventReceivers)
     {
         if (pReceiver->KeyReleased(event))
@@ -194,6 +247,8 @@ void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
             return;
         }
     }
+
+    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::AddEventReceiver(EventReceiver* pReceiver)
@@ -215,18 +270,18 @@ void Canavar::Engine::Controller::Resize(int width, int height)
 
     mRenderingContext->MakeCurrent();
 
-    mRenderingManager->Resize(mWidth, mHeight);
-    mCameraManager->Resize(mWidth, mHeight);
-
     for (const auto pReceiver : mEventReceivers)
     {
         pReceiver->Resize(mWidth, mHeight);
     }
+
     mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
 {
+    mRenderingContext->MakeCurrent();
+
     for (const auto pReceiver : mEventReceivers)
     {
         if (pReceiver->MousePressed(event))
@@ -234,10 +289,14 @@ void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
             return;
         }
     }
+
+    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
 {
+    mRenderingContext->MakeCurrent();
+
     for (const auto pReceiver : mEventReceivers)
     {
         if (pReceiver->MouseReleased(event))
@@ -245,10 +304,14 @@ void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
             return;
         }
     }
+
+    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
 {
+    mRenderingContext->MakeCurrent();
+
     for (const auto pReceiver : mEventReceivers)
     {
         if (pReceiver->MouseMoved(event))
@@ -256,10 +319,14 @@ void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
             return;
         }
     }
+
+    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
 {
+    mRenderingContext->MakeCurrent();
+
     for (const auto pReceiver : mEventReceivers)
     {
         if (pReceiver->WheelMoved(event))
@@ -267,4 +334,6 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
             return;
         }
     }
+
+    mRenderingContext->DoneCurrent();
 }

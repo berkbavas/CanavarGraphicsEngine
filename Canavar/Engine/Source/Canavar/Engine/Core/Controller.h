@@ -3,11 +3,13 @@
 #include "Canavar/Engine/Core/Constants.h"
 #include "Canavar/Engine/Core/RenderingContext.h"
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Util/ImGuiWidget.h"
 
 #include <QMouseEvent>
 #include <QObject>
 #include <QOpenGLExtraFunctions>
 #include <QVector>
+#include <QtImGui.h>
 
 namespace Canavar::Engine
 {
@@ -20,12 +22,14 @@ namespace Canavar::Engine
     class RenderingManager;
     class LightManager;
     class EventReceiver;
+    class Window;
+    class Widget;
 
     class Controller : public QObject, public ManagerProvider
     {
         Q_OBJECT
       public:
-        explicit Controller(RenderingContext* pRenderingContext, QObject* pParent = nullptr);
+        explicit Controller(RenderingContext* pRenderingContext, bool withImGui, QObject* pParent = nullptr);
         ~Controller();
 
         NodeManager* GetNodeManager() override;
@@ -55,7 +59,7 @@ namespace Canavar::Engine
 
       private:
         RenderingContext* mRenderingContext{ nullptr };
-
+        ImGuiWidget* mImGuiWidget{ nullptr };
         CameraManager* mCameraManager;
         NodeManager* mNodeManager;
         ShaderManager* mShaderManager;
@@ -69,5 +73,9 @@ namespace Canavar::Engine
         float mDevicePixelRatio{ 1.0f };
         float mWidth{ INITIAL_WIDTH };
         float mHeight{ INITIAL_HEIGHT };
+
+        QtImGui::RenderRef mRenderRef;
+        Window* mWindow{ nullptr };
+        Widget* mWidget{ nullptr };
     };
 }

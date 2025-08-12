@@ -20,8 +20,6 @@
 #include <Canavar/Engine/Util/ImGuiWidget.h>
 #include <Canavar/Engine/Util/Logger.h>
 
-#include <QtImGui.h>
-
 namespace Canavar::Simulator
 {
     class Simulator : public QObject, public Canavar::Engine::EventReceiver
@@ -33,9 +31,10 @@ namespace Canavar::Simulator
         void Run();
 
         // Core Events
-        void Initialize() override;
+        void PostInitialize() override;
         void Update(float ifps) override;
         void PostRender(float ifps) override;
+        void DrawImGui(float ifps) override;  
 
         // Input Events
         // Returns true if the event is consumed so that it should not be dispatched others anymore.
@@ -45,13 +44,11 @@ namespace Canavar::Simulator
       private:
         Aircraft *mAircraft;
 
-        QtImGui::RenderRef mRenderRef;
         Canavar::Engine::Window *mWindow;
 
         Canavar::Engine::Controller *mController;
         Canavar::Engine::NodeManager *mNodeManager;
         Canavar::Engine::CameraManager *mCameraManager;
-        Canavar::Engine::ImGuiWidget *mImGuiWidget;
 
         Canavar::Engine::DummyObjectPtr mRootNode;
         Canavar::Engine::ModelPtr mJetNode;

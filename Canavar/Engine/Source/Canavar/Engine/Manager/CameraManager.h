@@ -6,7 +6,7 @@
 
 namespace Canavar::Engine
 {
-    class CameraManager : public Manager, public EventReceiver
+    class CameraManager : public Manager
     {
       public:
         explicit CameraManager(QObject *pParent);

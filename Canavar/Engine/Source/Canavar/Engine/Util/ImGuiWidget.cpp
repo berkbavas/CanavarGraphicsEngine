@@ -12,12 +12,13 @@
 #include <imgui.h>
 
 #include <QFileDialog>
+#include <QtImGui.h>
 
 Canavar::Engine::ImGuiWidget::ImGuiWidget(QObject *pParent)
     : QObject(pParent)
 {}
-    
-void Canavar::Engine::ImGuiWidget::Initialize()
+
+void Canavar::Engine::ImGuiWidget::PostInitialize()
 {
     mSky = mNodeManager->GetSky();
     mHaze = mNodeManager->GetHaze();
@@ -25,7 +26,7 @@ void Canavar::Engine::ImGuiWidget::Initialize()
     mTerrain = mNodeManager->GetTerrain();
 }
 
-void Canavar::Engine::ImGuiWidget::Draw()
+void Canavar::Engine::ImGuiWidget::DrawImGui(float ifps)
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_MenuBar);
@@ -39,16 +40,6 @@ void Canavar::Engine::ImGuiWidget::Draw()
     DrawNodeInfo();
     DrawStats();
     ImGui::End();
-
-    for (auto *pClient : mClients)
-    {
-        pClient->Draw();
-    }
-}
-
-void Canavar::Engine::ImGuiWidget::AddClient(ImGuiClient *pClient)
-{
-    mClients.push_back(pClient);
 }
 
 void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()

@@ -11,7 +11,6 @@
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Text/Text2D.h"
 #include "Canavar/Engine/Node/Object/Text/Text3D.h"
-#include "Canavar/Engine/Util/ImGuiClient.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 namespace Canavar::Engine
@@ -22,9 +21,8 @@ namespace Canavar::Engine
       public:
         explicit ImGuiWidget(QObject *pParent);
 
-        void Initialize();
-        void Draw();
-        void AddClient(ImGuiClient *pClient);
+        void PostInitialize() override;
+        void DrawImGui(float ifps) override;
 
         // EventReceiver overrides
         bool KeyPressed(QKeyEvent *) override;
@@ -76,6 +74,10 @@ namespace Canavar::Engine
         void SetSelectedMesh(NodePtr pNode, uint32_t MeshId);
         void ProcessMouseAction(int x, int y);
 
+        DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
+        DEFINE_MEMBER_PTR(Engine::CameraManager, CameraManager);
+        DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);
+
         Engine::NodePtr mSelectedNode{ nullptr };
         Engine::MeshPtr mSelectedMesh{ nullptr };
 
@@ -93,12 +95,6 @@ namespace Canavar::Engine
 
         std::string mSelectedSceneName = "-";
         std::string mSelectedObjectName = "-";
-
-        QVector<ImGuiClient *> mClients;
-
-        DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
-        DEFINE_MEMBER_PTR(Engine::CameraManager, CameraManager);
-        DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);
     };
 
 }
