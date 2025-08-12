@@ -1,42 +1,11 @@
-cmake_minimum_required(VERSION 3.25.1)
-
 project(Simulator VERSION 1.0.0 LANGUAGES CXX)
 
-find_package(Qt6 COMPONENTS Core Widgets OpenGL Gui REQUIRED)
+file(GLOB_RECURSE SIMULATOR_SOURCES CONFIGURE_DEPENDS Source/*.cpp)
 
-file(GLOB_RECURSE SOURCES Source/*.cpp)
+add_executable(Simulator ${SIMULATOR_SOURCES})
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Source" ${INCLUDE_DIR})
+target_include_directories(Simulator PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
-link_directories(${LIBS_DIR})
+target_link_libraries(Simulator PUBLIC Qt6::Core Qt6::Widgets Qt6::OpenGL Engine EngineVendor)
 
-add_executable(Simulator ${SOURCES})
-
-target_link_libraries(Simulator Engine Qt6::Core Qt6::Widgets Qt6::OpenGL ${LIBS})
-
-add_custom_command(TARGET Simulator
-    POST_BUILD COMMAND ${CMAKE_COMMAND}
-    -E rm -rf
-    "$<TARGET_FILE_DIR:Simulator>/Resources/"
-)
-
-add_custom_command(TARGET Simulator
-    POST_BUILD COMMAND ${CMAKE_COMMAND}
-    -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/Resources/"
-    "$<TARGET_FILE_DIR:Simulator>/Resources/"
-)
-
-add_custom_command(TARGET Simulator
-    POST_BUILD COMMAND ${CMAKE_COMMAND} 
-    -E copy_directory 
-    "${CMAKE_SOURCE_DIR}/${ASSIMP_DIR}/bin/" 
-    "$<TARGET_FILE_DIR:Simulator>"
-)
-    
-add_custom_command(TARGET Simulator
-    POST_BUILD COMMAND
-    Qt6::windeployqt
-    --dir "$<TARGET_FILE_DIR:Simulator>"
-    "$<TARGET_FILE_DIR:Simulator>/$<TARGET_FILE_NAME:Simulator>"
-)
+configure_app_runtime(Simulator)

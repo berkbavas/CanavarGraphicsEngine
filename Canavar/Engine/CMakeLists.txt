@@ -1,16 +1,9 @@
-cmake_minimum_required(VERSION 3.25.1)
-
 project(Engine VERSION 1.0.0 LANGUAGES CXX)
 
-find_package(Qt6 COMPONENTS Core Widgets OpenGL Gui Concurrent OpenGLWidgets REQUIRED)
+file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS Source/*.cpp Engine.qrc EngineBigObjects.qrc)
 
-file(GLOB_RECURSE SOURCES Source/*.cpp Engine.qrc EngineBigObjects.qrc)
+add_library(Engine STATIC ${ENGINE_SOURCES})
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/Source" ${INCLUDE_DIR})
+target_include_directories(Engine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source" )
 
-link_directories(${LIBS_DIR})
-
-add_library(Engine STATIC ${SOURCES})
-
-target_include_directories(Engine PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source")
-target_link_libraries(Engine Qt6::Core Qt6::Widgets Qt6::OpenGL Qt6::Concurrent Qt6::OpenGLWidgets ${LIBS})
+target_link_libraries(Engine PUBLIC Qt6::Core Qt6::Widgets Qt6::OpenGL Qt6::OpenGLWidgets EngineVendor)

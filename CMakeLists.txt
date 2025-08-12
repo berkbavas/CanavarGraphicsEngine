@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 3.25.1)
 
 project(Canavar VERSION 1.0.0 LANGUAGES CXX)
 
-set(CMAKE_PREFIX_PATH $ENV{Qt6_DIR})
+if(DEFINED ENV{Qt6_DIR})
+  list(APPEND CMAKE_PREFIX_PATH "$ENV{Qt6_DIR}")
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -11,26 +13,32 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-set(QT_IMGUI_DIR Libs/qtimgui)
-set(ASSIMP_DIR Libs/assimp)
-set(JSBSIM_DIR Libs/JSBSim)
-set(FREETYPE_DIR Libs/freetype)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets)
 
-set(INCLUDE_DIR 
-    ${QT_IMGUI_DIR}/include 
-    ${ASSIMP_DIR}/include
-    ${JSBSIM_DIR}/include
-    ${FREETYPE_DIR}/include/freetype2
+set(LIBS_DIR "${CMAKE_SOURCE_DIR}/Libs")
+
+set(QT_IMGUI_DIR    "${LIBS_DIR}/qtimgui")
+set(ASSIMP_DIR      "${LIBS_DIR}/assimp")
+set(JSBSIM_DIR      "${LIBS_DIR}/JSBSim")
+set(FREETYPE_DIR    "${LIBS_DIR}/freetype")
+
+add_library(EngineVendor INTERFACE)
+
+target_include_directories(EngineVendor INTERFACE
+    "${QT_IMGUI_DIR}/include"
+    "${ASSIMP_DIR}/include"
+    "${JSBSIM_DIR}/include"
+    "${FREETYPE_DIR}/include/freetype2"
 )
-				
-set(LIBS_DIR
-    ${QT_IMGUI_DIR}/lib
-    ${ASSIMP_DIR}/lib
-    ${JSBSIM_DIR}/lib
-    ${FREETYPE_DIR}/lib
+
+target_link_directories(EngineVendor INTERFACE
+    "${QT_IMGUI_DIR}/lib"
+    "${ASSIMP_DIR}/lib"
+    "${JSBSIM_DIR}/lib"
+    "${FREETYPE_DIR}/lib"
 )
-			 
-set(LIBS
+
+target_link_libraries(EngineVendor INTERFACE
     imgui
     qt_imgui_widgets
     assimp-vc143-mt
@@ -40,8 +48,35 @@ set(LIBS
     freetype
 )
 
-link_directories(${LIBS_DIR})
-include_directories(${INCLUDE_DIR})
+
+function(configure_app_runtime TARGET_NAME)
+  if (WIN32)
+    # Copy Assimp DLLs if present
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+              "${LIBS_DIR}/assimp/bin"
+              "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E rm -rf
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/Resources/"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
+    )
+
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+      COMMAND Qt6::windeployqt
+              --dir "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+              "$<TARGET_FILE_DIR:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+    )
+  endif()
+endfunction()
+
 
 add_subdirectory(Canavar/Engine Canavar/Engine)
 add_subdirectory(Canavar/Editor Canavar/Editor)
