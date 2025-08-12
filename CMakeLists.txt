@@ -54,7 +54,7 @@ function(configure_app_runtime TARGET_NAME)
     # Copy Assimp DLLs if present
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_directory
-              "${LIBS_DIR}/assimp/bin"
+              "${ASSIMP_DIR}/bin"
               "$<TARGET_FILE_DIR:${TARGET_NAME}>"
     )
 
@@ -76,7 +76,6 @@ function(configure_app_runtime TARGET_NAME)
     )
   endif()
 endfunction()
-
 
 add_subdirectory(Canavar/Engine Canavar/Engine)
 add_subdirectory(Canavar/Editor Canavar/Editor)
