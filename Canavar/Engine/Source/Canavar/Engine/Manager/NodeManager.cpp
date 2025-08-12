@@ -12,8 +12,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-Canavar::Engine::NodeManager::NodeManager(QObject* parent)
-    : Manager(parent)
+Canavar::Engine::NodeManager::NodeManager(QObject* pParent)
+    : Manager(pParent)
 {}
 
 void Canavar::Engine::NodeManager::Initialize()

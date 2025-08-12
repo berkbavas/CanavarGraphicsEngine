@@ -1,29 +1,23 @@
 #pragma once
 
+#include "Canavar/Engine/Core/RenderingContext.h"
+
 #include <QInputEvent>
-#include <QOpenGLExtraFunctions>
 #include <QOpenGLWidget>
 
 namespace Canavar::Engine
 {
-    class Widget : public QOpenGLWidget, public QOpenGLExtraFunctions
+    class Widget : public QOpenGLWidget, public RenderingContext
     {
         Q_OBJECT
+
       public:
-        Widget(QWidget *parent = nullptr);
+        explicit Widget(QWidget *pParent = nullptr);
 
-      private:
-        void initializeGL() override;
-        void resizeGL(int width, int height) override;
-        void paintGL() override;
-        void keyPressEvent(QKeyEvent *) override;
-        void keyReleaseEvent(QKeyEvent *) override;
-        void mousePressEvent(QMouseEvent *) override;
-        void mouseReleaseEvent(QMouseEvent *) override;
-        void mouseMoveEvent(QMouseEvent *) override;
-        void wheelEvent(QWheelEvent *) override;
+        void MakeCurrent() override;
+        void DoneCurrent() override;
 
-        bool eventFilter(QObject *obj, QEvent *event) override;
+        float GetDevicePixelRatio() const override;
 
       signals:
         // Core Events
@@ -38,6 +32,19 @@ namespace Canavar::Engine
         void MouseReleased(QMouseEvent *);
         void MouseMoved(QMouseEvent *);
         void WheelMoved(QWheelEvent *);
+
+      private:
+        void initializeGL() override;
+        void resizeGL(int width, int height) override;
+        void paintGL() override;
+        void keyPressEvent(QKeyEvent *) override;
+        void keyReleaseEvent(QKeyEvent *) override;
+        void mousePressEvent(QMouseEvent *) override;
+        void mouseReleaseEvent(QMouseEvent *) override;
+        void mouseMoveEvent(QMouseEvent *) override;
+        void wheelEvent(QWheelEvent *) override;
+
+        bool eventFilter(QObject *obj, QEvent *event) override;
 
       private:
         long long mPreviousTime;

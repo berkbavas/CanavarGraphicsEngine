@@ -6,13 +6,13 @@
 
 Canavar::Simulator::Simulator::Simulator()
 {
-    mController = new Canavar::Engine::Controller(Canavar::Engine::ContainerMode::Window);
-    mRendererContext = mController->GetWindow();
+    mWindow = new Canavar::Engine::Window(nullptr);
+    mController = new Canavar::Engine::Controller(mWindow, this);
 
     mNodeManager = mController->GetNodeManager();
     mCameraManager = mController->GetCameraManager();
 
-    mImGuiWidget = new Canavar::Engine::ImGuiWidget;
+    mImGuiWidget = new Canavar::Engine::ImGuiWidget(this);
     mImGuiWidget->SetRenderingManager(mController->GetRenderingManager());
     mImGuiWidget->SetNodeManager(mNodeManager);
     mImGuiWidget->SetCameraManager(mCameraManager);
@@ -32,6 +32,11 @@ Canavar::Simulator::Simulator::Simulator()
     mAircraft = new Aircraft;
 }
 
+Canavar::Simulator::Simulator::~Simulator()
+{
+    LOG_DEBUG("Simulator::~Simulator: Destructor called");
+}
+
 void Canavar::Simulator::Simulator::Run()
 {
     if (mAircraft->Initialize() == false)
@@ -39,13 +44,12 @@ void Canavar::Simulator::Simulator::Run()
         CGE_EXIT_FAILURE("Simulator::Run: Aircraft initialization failed. Exiting...");
     }
 
-    mController->Run();
-    mRendererContext->showMaximized();
+    mWindow->showFullScreen();
 }
 
 void Canavar::Simulator::Simulator::Initialize()
 {
-    mRenderRef = QtImGui::initialize(mRendererContext);
+    mRenderRef = QtImGui::initialize(mWindow);
 
     mPersecutorCamera = std::make_shared<Canavar::Engine::PersecutorCamera>();
 

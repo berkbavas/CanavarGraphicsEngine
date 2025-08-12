@@ -8,8 +8,8 @@
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
 
-Canavar::Engine::RenderingManager::RenderingManager(QObject* parent)
-    : Manager(parent)
+Canavar::Engine::RenderingManager::RenderingManager(QObject* pParent)
+    : Manager(pParent)
 {}
 
 void Canavar::Engine::RenderingManager::Initialize()
@@ -41,7 +41,6 @@ void Canavar::Engine::RenderingManager::Initialize()
     mBoundingBoxRenderer = new BoundingBoxRenderer;
     mTextRenderer = new TextRenderer;
     mShadowMappingRenderer = new ShadowMappingRenderer;
-    mCrossSectionAnalyzer = new CrossSectionAnalyzer;
 
     ResizeFramebuffers();
 }
@@ -72,8 +71,6 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mShadowMappingRenderer->SetSun(mSun);
     mShadowMappingRenderer->Initialize();
 
-    mCrossSectionAnalyzer->Initialize(mManagerProvider);
-
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
     mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
     mCinematicShader = mShaderManager->GetShader(ShaderType::Cinematic);
@@ -86,6 +83,16 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mCompositionShader = mShaderManager->GetShader(ShaderType::Composition);
     mAcesShader = mShaderManager->GetShader(ShaderType::Aces);
     mMotionBlurShader = mShaderManager->GetShader(ShaderType::MotionBlur);
+}
+
+void Canavar::Engine::RenderingManager::Shutdown()
+{
+    DestroyFramebuffers();
+
+    delete mShadowMappingRenderer;
+    delete mTextRenderer;
+    delete mBoundingBoxRenderer;
+    delete mQuad;
 }
 
 void Canavar::Engine::RenderingManager::Render(float ifps)
@@ -101,7 +108,7 @@ void Canavar::Engine::RenderingManager::Render(float ifps)
 
     mShadowsEnabled ? mShadowMappingRenderer->Render(ifps) : void(0);
 
-    mActiveCamera = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera().get());
+    mActiveCamera = dynamic_cast<PerspectiveCamera*>(mCameraManager->GetActiveCamera().get());
 
     mPreviousViewMatrix.setToIdentity();
     mPreviousViewMatrix.rotate(mPreviousRotation.conjugated());
@@ -259,6 +266,18 @@ void Canavar::Engine::RenderingManager::ApplyMotionBlurPass()
     QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[MotionBlur], GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
+void Canavar::Engine::RenderingManager::DestroyFramebuffers()
+{
+    for (const auto type : FBO_TYPES)
+    {
+        if (mFramebuffers[type])
+        {
+            delete mFramebuffers[type];
+            mFramebuffers[type] = nullptr;
+        }
+    }
+}
+
 QVector2D Canavar::Engine::RenderingManager::CalculateSunScreenSpacePosition() const
 {
     const auto lightPosition = 100000 * mSun->GetDirection();
@@ -284,7 +303,6 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
     RenderObjects(mActiveCamera, mIfps);
 
     mDrawBoundingBoxes ? mBoundingBoxRenderer->Render(mActiveCamera, mIfps) : void(0);
-    mCrossSectionEnabled ? mCrossSectionAnalyzer->RenderPlane() : void(0);
     mTextRenderer->Render(mActiveCamera);
 
     emit RenderLoop(mIfps);
@@ -556,14 +574,7 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, Object* 
 
 void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 {
-    for (const auto type : FBO_TYPES)
-    {
-        if (mFramebuffers[type])
-        {
-            delete mFramebuffers[type];
-            mFramebuffers[type] = nullptr;
-        }
-    }
+    DestroyFramebuffers();
 
     for (const auto type : { Multisample, Singlesample })
     {

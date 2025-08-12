@@ -9,7 +9,7 @@ namespace Canavar::Engine
     class CameraManager : public Manager, public EventReceiver
     {
       public:
-        explicit CameraManager(QObject *parent = nullptr);
+        explicit CameraManager(QObject *pParent);
 
         void Initialize() override;
 

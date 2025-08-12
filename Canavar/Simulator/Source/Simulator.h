@@ -28,6 +28,7 @@ namespace Canavar::Simulator
     {
       public:
         Simulator();
+        ~Simulator();
 
         void Run();
 
@@ -45,7 +46,7 @@ namespace Canavar::Simulator
         Aircraft *mAircraft;
 
         QtImGui::RenderRef mRenderRef;
-        Canavar::Engine::Window *mRendererContext;
+        Canavar::Engine::Window *mWindow;
 
         Canavar::Engine::Controller *mController;
         Canavar::Engine::NodeManager *mNodeManager;

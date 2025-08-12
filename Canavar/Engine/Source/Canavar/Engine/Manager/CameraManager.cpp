@@ -2,8 +2,8 @@
 
 #include "Canavar/Engine/Util/Logger.h"
 
-Canavar::Engine::CameraManager::CameraManager(QObject* parent)
-    : Manager(parent)
+Canavar::Engine::CameraManager::CameraManager(QObject* pParent)
+    : Manager(pParent)
 {}
 
 void Canavar::Engine::CameraManager::Initialize()

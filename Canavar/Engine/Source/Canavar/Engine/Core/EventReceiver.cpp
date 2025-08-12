@@ -10,6 +10,8 @@ void Canavar::Engine::EventReceiver::Render(float ifps) {}
 
 void Canavar::Engine::EventReceiver::PostRender(float ifps) {}
 
+void Canavar::Engine::EventReceiver::Shutdown() {}
+
 bool Canavar::Engine::EventReceiver::KeyPressed(QKeyEvent *)
 {
     return false;

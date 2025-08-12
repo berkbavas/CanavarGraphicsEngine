@@ -4,18 +4,30 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-Canavar::Engine::Widget::Widget(QWidget *parent)
-    : QOpenGLWidget(parent)
+Canavar::Engine::Widget::Widget(QWidget *pParent)
+    : QOpenGLWidget(pParent)
 {
-    connect(this, &QOpenGLWidget::frameSwapped, [this]() { update(); });
-
+    QOpenGLWidget::connect(this, &QOpenGLWidget::frameSwapped, [this]() { update(); });
     setMouseTracking(true);
+}
+
+void Canavar::Engine::Widget::MakeCurrent()
+{
+    makeCurrent();
+}
+
+void Canavar::Engine::Widget::DoneCurrent()
+{
+    doneCurrent();
+}
+
+float Canavar::Engine::Widget::GetDevicePixelRatio() const
+{
+    return devicePixelRatio();
 }
 
 void Canavar::Engine::Widget::initializeGL()
 {
-    initializeOpenGLFunctions();
-
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     mPreviousTime = mCurrentTime;
 

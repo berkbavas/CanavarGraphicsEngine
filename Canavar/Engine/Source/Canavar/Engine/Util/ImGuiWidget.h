@@ -20,6 +20,8 @@ namespace Canavar::Engine
     {
         Q_OBJECT
       public:
+        explicit ImGuiWidget(QObject *pParent);
+
         void Initialize();
         void Draw();
         void AddClient(ImGuiClient *pClient);
@@ -59,7 +61,6 @@ namespace Canavar::Engine
         void DrawCreateObjectWidget();
         void DrawCreateModelWidget();
         void DrawRenderSettings();
-        void DrawCrossSectionAnalyzerWidget();
         void DrawNodeInfo();
         void DrawStats();
 

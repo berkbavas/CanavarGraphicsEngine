@@ -13,6 +13,10 @@
 
 #include <QFileDialog>
 
+Canavar::Engine::ImGuiWidget::ImGuiWidget(QObject *pParent)
+    : QObject(pParent)
+{}
+    
 void Canavar::Engine::ImGuiWidget::Initialize()
 {
     mSky = mNodeManager->GetSky();
@@ -31,7 +35,6 @@ void Canavar::Engine::ImGuiWidget::Draw()
     DrawCreateObjectWidget();
     DrawCreateModelWidget();
     DrawRenderSettings();
-    DrawCrossSectionAnalyzerWidget();
     DrawWorldPositionsWidget();
     DrawNodeInfo();
     DrawStats();
@@ -578,36 +581,6 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
         // ImGui::SliderFloat("Density", &mRenderingManager->GetDensity_NonConst(), 0.0f, 1.0f, "%.2f");
         // ImGui::SliderFloat("Decay", &mRenderingManager->GetDecay_NonConst(), 0.0f, 1.0f, "%.2f");
         // ImGui::SliderFloat("Weight", &mRenderingManager->GetWeight_NonConst(), 0.0f, 1.0f, "%.2f");
-    }
-}
-
-void Canavar::Engine::ImGuiWidget::DrawCrossSectionAnalyzerWidget()
-{
-    if (ImGui::CollapsingHeader("Cross Section Analyzer##DrawCrossSectionAnalyzerWidget"))
-    {
-        ImGui::ColorEdit4("Plane Color##DrawCrossSectionAnalyzerWidget", (float *) &mRenderingManager->GetCrossSectionAnalyzer()->GetPlaneColor_NonConst());
-        ImGui::DragFloat3("Plane Position##DrawCrossSectionAnalyzerWidget", (float *) &mRenderingManager->GetCrossSectionAnalyzer()->GetPlanePosition_NonConst(), 0.005f);
-        ImGui::DragFloat3("Plane Scale##DrawCrossSectionAnalyzerWidget", (float *) &mRenderingManager->GetCrossSectionAnalyzer()->GetPlaneScale_NonConst(), 0.005f);
-
-        if (ImGui::Checkbox("Enabled##DrawCrossSectionAnalyzerWidget", &mRenderingManager->GetCrossSectionEnabled_NonConst()))
-        {
-            if (mRenderingManager->GetCrossSectionEnabled())
-            {
-                mRenderingManager->GetCrossSectionAnalyzer()->ShowWidget();
-            }
-            else
-            {
-                mRenderingManager->GetCrossSectionAnalyzer()->CloseWidget();
-            }
-        }
-
-        if (ImGui::Button("Assign Position"))
-        {
-            if (mSelectedWorldPositionIndex != -1)
-            {
-                mRenderingManager->GetCrossSectionAnalyzer()->SetPlanePosition(mSavedWorldPositions[mSelectedWorldPositionIndex]);
-            }
-        }
     }
 }
 

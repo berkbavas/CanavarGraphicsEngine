@@ -18,22 +18,31 @@
 
 using namespace Canavar::Engine;
 
-Canavar::Editor::Editor::Editor()
+Canavar::Editor::Editor::Editor(QObject *pParent)
+    : QObject(pParent)
 {
-    mController = new Controller;
+    mWindow = new Engine::Window(nullptr);
+    mController = new Controller(mWindow, this);
     mController->AddEventReceiver(this);
 
-    mImGuiWidget = new ImGuiWidget;
+    mImGuiWidget = new ImGuiWidget(this);
+}
+
+Canavar::Editor::Editor::~Editor()
+{
+    LOG_DEBUG("Editor::~Editor: Destructor called");
 }
 
 void Canavar::Editor::Editor::Run()
 {
-    mController->Run();
+    mWindow->showMinimized();
 }
 
 void Canavar::Editor::Editor::Initialize()
 {
-    QtImGui::initialize(mController->GetWindow());
+    mWindow->showMaximized();
+
+    QtImGui::initialize(mWindow);
 
     mNodeManager = mController->GetNodeManager();
     mCameraManager = mController->GetCameraManager();
@@ -52,23 +61,6 @@ void Canavar::Editor::Editor::Initialize()
     });
 
     mNodeManager->ImportNodes("Resources/Empty.json");
-
-    // LightningStrikeGeneratorPtr pGenerator = std::make_shared<LightningStrikeGenerator>();
-    // pGenerator->SetPosition(0, 0, -10);
-
-    // LightningStrikeAttractorPtr pAttractor0 = std::make_shared<LightningStrikeAttractor>();
-    // pAttractor0->SetPosition(10, 0, -10);
-
-    // LightningStrikeAttractorPtr pAttractor1 = std::make_shared<LightningStrikeAttractor>();
-    // pAttractor1->SetPosition(5, 5, -10);
-
-    // pGenerator->AddAttractor(pAttractor0);
-    // pGenerator->AddAttractor(pAttractor1);
-
-    // mNodeManager->AddNode(pGenerator);
-    // mNodeManager->AddNode(pAttractor0);
-    // mNodeManager->AddNode(pAttractor1);
-    // mNodeManager->GetSun()->SetDirectionFromThetaPhi(0, 45);
 }
 
 void Canavar::Editor::Editor::PostRender(float ifps)

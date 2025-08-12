@@ -11,10 +11,11 @@ namespace Canavar::Engine
     class Manager : public QObject
     {
       public:
-        explicit Manager(QObject* parent = nullptr);
+        explicit Manager(QObject* pParent);
 
         virtual void Initialize() = 0;
         virtual void PostInitialize();
+        virtual void Shutdown();
 
         virtual void Update(float ifps);
         virtual void Render(float ifps);

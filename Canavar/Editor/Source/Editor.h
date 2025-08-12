@@ -20,7 +20,8 @@ namespace Canavar::Editor
     {
         Q_OBJECT
       public:
-        Editor();
+        explicit Editor(QObject *pParent);
+        ~Editor();
 
         void Run();
 
@@ -40,6 +41,8 @@ namespace Canavar::Editor
         bool WheelMoved(QWheelEvent *) override;
 
       private:
+        Engine::Window *mWindow;
+
         Engine::Controller *mController;
         Engine::NodeManager *mNodeManager;
         Engine::CameraManager *mCameraManager;

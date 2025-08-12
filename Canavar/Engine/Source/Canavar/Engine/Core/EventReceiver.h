@@ -13,6 +13,7 @@ namespace Canavar::Engine
         virtual void Update(float ifps);
         virtual void PostRender(float ifps);
         virtual void Render(float ifps);
+        virtual void Shutdown();
 
         // Input Events
         // Returns true if the event is consumed so that it should not be dispatched others anymore.

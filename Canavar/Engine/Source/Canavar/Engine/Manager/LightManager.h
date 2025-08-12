@@ -11,7 +11,7 @@ namespace Canavar::Engine
     class LightManager : public Manager
     {
       public:
-        explicit LightManager(QObject *parent = nullptr);
+        explicit LightManager(QObject *pParent);
 
         void Initialize() override;
 

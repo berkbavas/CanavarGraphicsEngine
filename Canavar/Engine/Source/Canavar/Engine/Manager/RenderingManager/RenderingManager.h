@@ -4,7 +4,6 @@
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Core/Structs.h"
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Manager/RenderingManager/CrossSectionAnalyzer/CrossSectionAnalyzer.h"
 #include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingRenderer.h"
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
@@ -43,10 +42,11 @@ namespace Canavar::Engine
     {
         Q_OBJECT
       public:
-        explicit RenderingManager(QObject *parent = nullptr);
+        explicit RenderingManager(QObject *pParent);
 
         void Initialize() override;
         void PostInitialize() override;
+        void Shutdown() override;
 
         void Render(float ifps) override;
         void Resize(int width, int height);
@@ -82,6 +82,8 @@ namespace Canavar::Engine
         void ApplyAcesPass();
         void ApplyCinematicPass();
         void ApplyMotionBlurPass();
+
+        void DestroyFramebuffers();
 
         ShaderManager *mShaderManager;
         NodeManager *mNodeManager;
@@ -142,8 +144,6 @@ namespace Canavar::Engine
         float mIfps;
         float mTime{ 0.0f };
 
-        DEFINE_MEMBER_PTR_CONST(CrossSectionAnalyzer, CrossSectionAnalyzer);
-        DEFINE_MEMBER(bool, CrossSectionEnabled, false);
 
         // ACES
         DEFINE_MEMBER(bool, AcesEnabled, false);

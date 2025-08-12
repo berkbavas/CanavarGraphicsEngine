@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Core/Constants.h"
+#include "Canavar/Engine/Core/RenderingContext.h"
 #include "Canavar/Engine/Manager/Manager.h"
 
 #include <QMouseEvent>
@@ -20,29 +21,18 @@ namespace Canavar::Engine
     class LightManager;
     class EventReceiver;
 
-    enum class ContainerMode
-    {
-        Widget,
-        Window
-    };
-
     class Controller : public QObject, public ManagerProvider
     {
         Q_OBJECT
       public:
-        explicit Controller(ContainerMode mode = ContainerMode::Window, QObject* parent = nullptr);
+        explicit Controller(RenderingContext* pRenderingContext, QObject* pParent = nullptr);
         ~Controller();
 
-        void Run();
-
-        NodeManager* GetNodeManager() override { return mNodeManager; }
-        ShaderManager* GetShaderManager() override { return mShaderManager; }
-        CameraManager* GetCameraManager() override { return mCameraManager; }
-        LightManager* GetLightManager() override { return mLightManager; }
-        RenderingManager* GetRenderingManager() override { return mRenderingManager; }
-
-        Window* GetWindow() { return mWindow; }
-        Widget* GetWidget() { return mWidget; }
+        NodeManager* GetNodeManager() override;
+        ShaderManager* GetShaderManager() override;
+        CameraManager* GetCameraManager() override;
+        LightManager* GetLightManager() override;
+        RenderingManager* GetRenderingManager() override;
 
         void AddEventReceiver(EventReceiver* pReceiver);
         void RemoveEventReceiver(EventReceiver* pReceiver);
@@ -64,9 +54,7 @@ namespace Canavar::Engine
         void OnRenderLoop(float ifps);
 
       private:
-        ContainerMode mContainerMode{ ContainerMode::Window };
-        Window* mWindow{ nullptr };
-        Widget* mWidget{ nullptr };
+        RenderingContext* mRenderingContext{ nullptr };
 
         CameraManager* mCameraManager;
         NodeManager* mNodeManager;
@@ -81,8 +69,5 @@ namespace Canavar::Engine
         float mDevicePixelRatio{ 1.0f };
         float mWidth{ INITIAL_WIDTH };
         float mHeight{ INITIAL_HEIGHT };
-
-        bool mCaptureMouse{ false };
-        bool mBlockNextMouseMoveEvent{ false };
     };
 }

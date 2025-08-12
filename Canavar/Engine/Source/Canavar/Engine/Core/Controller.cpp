@@ -13,40 +13,44 @@
 
 #include <QThread>
 
-Canavar::Engine::Controller::Controller(ContainerMode mode, QObject* parent)
-    : QObject(parent)
-    , mContainerMode(mode)
+Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, QObject* pParent)
+    : QObject(pParent)
+    , mRenderingContext(pRenderingContext)
 {
-    if (mContainerMode == ContainerMode::Window)
+    CGE_ASSERT(mRenderingContext != nullptr);
+
+    if (Window* pWindow = dynamic_cast<Window*>(mRenderingContext))
     {
-        mWindow = new Window;
-        connect(mWindow, &Window::Initialize, this, &Controller::Initialize);
-        connect(mWindow, &Window::Render, this, &Controller::Render);
-        connect(mWindow, &Window::Resize, this, &Controller::Resize);
-        connect(mWindow, &Window::MousePressed, this, &Controller::OnMousePressed);
-        connect(mWindow, &Window::MouseReleased, this, &Controller::OnMouseReleased);
-        connect(mWindow, &Window::MouseMoved, this, &Controller::OnMouseMoved);
-        connect(mWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
-        connect(mWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
-        connect(mWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
+        connect(pWindow, &Window::Initialize, this, &Controller::Initialize);
+        connect(pWindow, &Window::Render, this, &Controller::Render);
+        connect(pWindow, &Window::Resize, this, &Controller::Resize);
+        connect(pWindow, &Window::MousePressed, this, &Controller::OnMousePressed);
+        connect(pWindow, &Window::MouseReleased, this, &Controller::OnMouseReleased);
+        connect(pWindow, &Window::MouseMoved, this, &Controller::OnMouseMoved);
+        connect(pWindow, &Window::WheelMoved, this, &Controller::OnWheelMoved);
+        connect(pWindow, &Window::KeyPressed, this, &Controller::OnKeyPressed);
+        connect(pWindow, &Window::KeyReleased, this, &Controller::OnKeyReleased);
+    }
+    else if (Widget* pWidget = dynamic_cast<Widget*>(mRenderingContext))
+    {
+        connect(pWidget, &Widget::Initialize, this, &Controller::Initialize);
+        connect(pWidget, &Widget::Render, this, &Controller::Render);
+        connect(pWidget, &Widget::Resize, this, &Controller::Resize);
+        connect(pWidget, &Widget::MousePressed, this, &Controller::OnMousePressed);
+        connect(pWidget, &Widget::MouseReleased, this, &Controller::OnMouseReleased);
+        connect(pWidget, &Widget::MouseMoved, this, &Controller::OnMouseMoved);
+        connect(pWidget, &Widget::WheelMoved, this, &Controller::OnWheelMoved);
+        connect(pWidget, &Widget::KeyPressed, this, &Controller::OnKeyPressed);
+        connect(pWidget, &Widget::KeyReleased, this, &Controller::OnKeyReleased);
     }
     else
     {
-        mWidget = new Widget;
-        connect(mWidget, &Widget::Initialize, this, &Controller::Initialize);
-        connect(mWidget, &Widget::Render, this, &Controller::Render);
-        connect(mWidget, &Widget::Resize, this, &Controller::Resize);
-        connect(mWidget, &Widget::MousePressed, this, &Controller::OnMousePressed);
-        connect(mWidget, &Widget::MouseReleased, this, &Controller::OnMouseReleased);
-        connect(mWidget, &Widget::MouseMoved, this, &Controller::OnMouseMoved);
-        connect(mWidget, &Widget::WheelMoved, this, &Controller::OnWheelMoved);
-        connect(mWidget, &Widget::KeyPressed, this, &Controller::OnKeyPressed);
-        connect(mWidget, &Widget::KeyReleased, this, &Controller::OnKeyReleased);
+        CGE_EXIT_FAILURE("Controller: Unsupported rendering context!");
     }
 
+    mShaderManager = new ShaderManager(nullptr);
     mNodeManager = new NodeManager(nullptr);
     mCameraManager = new CameraManager(nullptr);
-    mShaderManager = new ShaderManager(nullptr);
     mRenderingManager = new RenderingManager(nullptr);
     mLightManager = new LightManager(nullptr);
 
@@ -63,31 +67,55 @@ Canavar::Engine::Controller::~Controller()
 {
     qDebug() << "Controller::~Controller: Current Thread:" << QThread::currentThread();
     qDebug() << "Controller::~Controller: Application closing...";
+
+    mRenderingContext->MakeCurrent();
+
+    for (const auto pManager : mManagers)
+    {
+        pManager->Shutdown();
+    }
+
+    for (const auto pReceiver : mEventReceivers)
+    {
+        pReceiver->Shutdown();
+    }
+
+    mRenderingContext->DoneCurrent();
 }
 
-void Canavar::Engine::Controller::Run()
+Canavar::Engine::NodeManager* Canavar::Engine::Controller::GetNodeManager()
 {
-    qDebug() << "Controller::Controller: Application starting...";
+    return mNodeManager;
+}
 
-    qInstallMessageHandler(Logger::QtMessageOutputCallback);
+Canavar::Engine::ShaderManager* Canavar::Engine::Controller::GetShaderManager()
+{
+    return mShaderManager;
+}
 
-    Q_INIT_RESOURCE(Engine);
-    Q_INIT_RESOURCE(EngineBigObjects);
+Canavar::Engine::CameraManager* Canavar::Engine::Controller::GetCameraManager()
+{
+    return mCameraManager;
+}
 
-    if (mContainerMode == ContainerMode::Window)
-    {
-        mWindow->setWidth(INITIAL_WIDTH);
-        mWindow->setHeight(INITIAL_HEIGHT);
-        mWindow->showMinimized();
-    }
+Canavar::Engine::LightManager* Canavar::Engine::Controller::GetLightManager()
+{
+    return mLightManager;
+}
+
+Canavar::Engine::RenderingManager* Canavar::Engine::Controller::GetRenderingManager()
+{
+    return mRenderingManager;
 }
 
 void Canavar::Engine::Controller::Initialize()
 {
-    if (mContainerMode == ContainerMode::Window)
-    {
-        mWindow->showMaximized();
-    }
+    qInstallMessageHandler(Logger::QtMessageOutputCallback);
+
+    qDebug() << "Controller::Controller: Application starting...";
+
+    Q_INIT_RESOURCE(Engine);
+    Q_INIT_RESOURCE(EngineBigObjects);
 
     for (const auto pManager : mManagers)
     {
@@ -110,14 +138,7 @@ void Canavar::Engine::Controller::Initialize()
 
 void Canavar::Engine::Controller::Render(float ifps)
 {
-    if (mContainerMode == ContainerMode::Window)
-    {
-        mDevicePixelRatio = mWindow->devicePixelRatio();
-    }
-    else
-    {
-        mDevicePixelRatio = mWidget->devicePixelRatio();
-    }
+    mDevicePixelRatio = mRenderingContext->GetDevicePixelRatio();
 
     for (const auto pManager : mManagers)
     {
@@ -187,26 +208,12 @@ void Canavar::Engine::Controller::RemoveEventReceiver(EventReceiver* pReceiver)
 
 void Canavar::Engine::Controller::Resize(int width, int height)
 {
-    if (mContainerMode == ContainerMode::Window)
-    {
-        mDevicePixelRatio = mWindow->devicePixelRatio();
-    }
-    else
-    {
-        mDevicePixelRatio = mWidget->devicePixelRatio();
-    }
+    mDevicePixelRatio = mRenderingContext->GetDevicePixelRatio();
 
     mWidth = width * mDevicePixelRatio;
     mHeight = height * mDevicePixelRatio;
 
-    if (mContainerMode == ContainerMode::Window)
-    {
-        mWindow->makeCurrent();
-    }
-    else
-    {
-        mWidget->makeCurrent();
-    }
+    mRenderingContext->MakeCurrent();
 
     mRenderingManager->Resize(mWidth, mHeight);
     mCameraManager->Resize(mWidth, mHeight);
@@ -215,15 +222,7 @@ void Canavar::Engine::Controller::Resize(int width, int height)
     {
         pReceiver->Resize(mWidth, mHeight);
     }
-
-    if (mContainerMode == ContainerMode::Window)
-    {
-        mWindow->doneCurrent();
-    }
-    else
-    {
-        mWidget->doneCurrent();
-    }
+    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)

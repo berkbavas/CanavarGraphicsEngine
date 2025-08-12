@@ -2,8 +2,8 @@
 
 #include "Canavar/Engine/Util/Logger.h"
 
-Canavar::Engine::LightManager::LightManager(QObject* parent)
-    : Manager(parent)
+Canavar::Engine::LightManager::LightManager(QObject* pParent)
+    : Manager(pParent)
 {}
 
 void Canavar::Engine::LightManager::Initialize() {}

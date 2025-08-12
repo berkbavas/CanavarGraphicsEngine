@@ -1,7 +1,7 @@
 #include "ShaderManager.h"
 
-Canavar::Engine::ShaderManager::ShaderManager(QObject* parent)
-    : Manager(parent)
+Canavar::Engine::ShaderManager::ShaderManager(QObject* pParent)
+    : Manager(pParent)
 {}
 
 void Canavar::Engine::ShaderManager::Initialize()
@@ -125,6 +125,16 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Composition, mCompositionShader));
     mShaders.emplace(std::pair(ShaderType::Aces, mAcesShader));
     mShaders.emplace(std::pair(ShaderType::MotionBlur, mMotionBlurShader));
+}
+
+void Canavar::Engine::ShaderManager::Shutdown()
+{
+    for (const auto& [type, pShader] : mShaders)
+    {
+        delete pShader;
+    }
+
+    mShaders.clear();
 }
 
 Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType shaderType)

@@ -10,9 +10,10 @@ namespace Canavar::Engine
     class ShaderManager : public Manager
     {
       public:
-        explicit ShaderManager(QObject* parent = nullptr);
+        explicit ShaderManager(QObject* pParent);
 
-        void Initialize();
+        void Initialize() override;
+        void Shutdown() override;
 
         Shader* GetShader(ShaderType shaderType);
 

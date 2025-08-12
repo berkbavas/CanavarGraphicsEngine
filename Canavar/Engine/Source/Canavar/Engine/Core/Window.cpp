@@ -4,16 +4,29 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-Canavar::Engine::Window::Window(QWindow *parent)
-    : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, parent)
+Canavar::Engine::Window::Window(QWindow *pParent)
+    : QOpenGLWindow(QOpenGLWindow::UpdateBehavior::NoPartialUpdate, pParent)
 {
-    connect(this, &QOpenGLWindow::frameSwapped, [this]() { update(); });
+    QWindow::connect(this, &QOpenGLWindow::frameSwapped, [this]() { update(); });
+}
+
+void Canavar::Engine::Window::MakeCurrent()
+{
+    makeCurrent();
+}
+
+void Canavar::Engine::Window::DoneCurrent()
+{
+    doneCurrent();
+}
+
+float Canavar::Engine::Window::GetDevicePixelRatio() const
+{
+    return devicePixelRatio();
 }
 
 void Canavar::Engine::Window::initializeGL()
 {
-    initializeOpenGLFunctions();
-
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
     mPreviousTime = mCurrentTime;
 

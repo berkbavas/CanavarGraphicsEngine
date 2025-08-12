@@ -1,27 +1,22 @@
 #pragma once
 
+#include "Canavar/Engine/Core/RenderingContext.h"
+
 #include <QInputEvent>
-#include <QOpenGLExtraFunctions>
 #include <QOpenGLWindow>
 
 namespace Canavar::Engine
 {
-    class Window : public QOpenGLWindow, public QOpenGLExtraFunctions
+    class Window : public QOpenGLWindow, public RenderingContext
     {
         Q_OBJECT
       public:
-        Window(QWindow* parent = nullptr);
+        explicit Window(QWindow *pParent = nullptr);
 
-      private:
-        void initializeGL() override;
-        void resizeGL(int width, int height) override;
-        void paintGL() override;
-        void keyPressEvent(QKeyEvent*) override;
-        void keyReleaseEvent(QKeyEvent*) override;
-        void mousePressEvent(QMouseEvent*) override;
-        void mouseReleaseEvent(QMouseEvent*) override;
-        void mouseMoveEvent(QMouseEvent*) override;
-        void wheelEvent(QWheelEvent*) override;
+        void MakeCurrent() override;
+        void DoneCurrent() override;
+
+        float GetDevicePixelRatio() const override;
 
       signals:
         // Core Events
@@ -30,12 +25,23 @@ namespace Canavar::Engine
         void Render(float ifps);
 
         // Input Events
-        void KeyPressed(QKeyEvent*);
-        void KeyReleased(QKeyEvent*);
-        void MousePressed(QMouseEvent*);
-        void MouseReleased(QMouseEvent*);
-        void MouseMoved(QMouseEvent*);
-        void WheelMoved(QWheelEvent*);
+        void KeyPressed(QKeyEvent *);
+        void KeyReleased(QKeyEvent *);
+        void MousePressed(QMouseEvent *);
+        void MouseReleased(QMouseEvent *);
+        void MouseMoved(QMouseEvent *);
+        void WheelMoved(QWheelEvent *);
+
+      private:
+        void initializeGL() override;
+        void resizeGL(int width, int height) override;
+        void paintGL() override;
+        void keyPressEvent(QKeyEvent *) override;
+        void keyReleaseEvent(QKeyEvent *) override;
+        void mousePressEvent(QMouseEvent *) override;
+        void mouseReleaseEvent(QMouseEvent *) override;
+        void mouseMoveEvent(QMouseEvent *) override;
+        void wheelEvent(QWheelEvent *) override;
 
       private:
         long long mPreviousTime;

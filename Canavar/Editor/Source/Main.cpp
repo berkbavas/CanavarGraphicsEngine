@@ -2,13 +2,11 @@
 
 #include <QApplication>
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     QApplication app(argc, argv);
 
-    Canavar::Editor::Editor editor;
-    editor.Run();
-
-    return app.exec();
+    Canavar::Editor::Editor *pEditor = new Canavar::Editor::Editor(nullptr);
+    pEditor->Run();
+    return  app.exec();
 }
