@@ -6,6 +6,12 @@ add_executable(Simulator ${SIMULATOR_SOURCES})
 
 target_include_directories(Simulator PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
-target_link_libraries(Simulator PUBLIC Qt6::Core Qt6::Widgets Qt6::OpenGL Engine)
+target_link_libraries(Simulator
+  PUBLIC
+    Qt6::Core
+    Qt6::Widgets
+    Qt6::OpenGL
+    Engine
+)
 
 configure_app_runtime(Simulator)
