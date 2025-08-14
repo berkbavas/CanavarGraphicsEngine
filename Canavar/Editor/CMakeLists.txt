@@ -4,10 +4,10 @@ file(GLOB_RECURSE EDITOR_SOURCES CONFIGURE_DEPENDS Source/*.cpp)
 
 add_executable(Editor ${EDITOR_SOURCES})
 
-target_include_directories(Editor PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Source")
+target_include_directories(Editor PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Source")
 
 target_link_libraries(Editor 
-  PUBLIC
+  PRIVATE
     Qt6::Core
     Qt6::Widgets
     Qt6::OpenGL
