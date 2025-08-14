@@ -10,7 +10,7 @@ namespace Canavar::Engine
     {
         float NodeId;
         float MeshId;
-        float PrimitiveId;
+        float PrimitiveIndex;
         float Success;
     };
 

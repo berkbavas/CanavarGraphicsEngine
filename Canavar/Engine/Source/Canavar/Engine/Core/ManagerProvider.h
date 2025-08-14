@@ -9,6 +9,7 @@ namespace Canavar::Engine
     class CameraManager;
     class RenderingManager;
     class LightManager;
+    class Painter;
 
     class ManagerProvider
     {
@@ -20,6 +21,7 @@ namespace Canavar::Engine
         virtual CameraManager* GetCameraManager() = 0;
         virtual RenderingManager* GetRenderingManager() = 0;
         virtual LightManager* GetLightManager() = 0;
+        virtual Painter* GetPainter() = 0;
     };
 
     using ManagerProviderPtr = std::shared_ptr<ManagerProvider>;

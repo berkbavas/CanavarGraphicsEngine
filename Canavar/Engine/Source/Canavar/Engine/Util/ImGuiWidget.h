@@ -4,6 +4,7 @@
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
+#include "Canavar/Engine/Manager/Painter.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Light/PointLight.h"
@@ -59,6 +60,7 @@ namespace Canavar::Engine
         void DrawCreateObjectWidget();
         void DrawCreateModelWidget();
         void DrawRenderSettings();
+        void DrawPainterSettings();
         void DrawNodeInfo();
         void DrawStats();
 
@@ -77,6 +79,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
         DEFINE_MEMBER_PTR(Engine::CameraManager, CameraManager);
         DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);
+        DEFINE_MEMBER_PTR(Engine::Painter, Painter);
 
         Engine::NodePtr mSelectedNode{ nullptr };
         Engine::MeshPtr mSelectedMesh{ nullptr };

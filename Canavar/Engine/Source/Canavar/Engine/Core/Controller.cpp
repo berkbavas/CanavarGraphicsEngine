@@ -9,12 +9,14 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
+#include "Canavar/Engine/Manager/Painter.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <imgui.h>
 
 #include <QThread>
 #include <QtImGui.h>
+
 
 Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, bool withImGui, QObject* pParent)
     : QObject(pParent)
@@ -68,21 +70,25 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     mCameraManager = new CameraManager(this);
     mRenderingManager = new RenderingManager(this);
     mLightManager = new LightManager(this);
+    mPainter = new Painter(this);
 
     if (mImGuiWidget)
     {
         mImGuiWidget->SetCameraManager(mCameraManager);
         mImGuiWidget->SetNodeManager(mNodeManager);
         mImGuiWidget->SetRenderingManager(mRenderingManager);
+        mImGuiWidget->SetPainter(mPainter);
         AddEventReceiver(mImGuiWidget);
     }
 
+    AddEventReceiver(mPainter);
     AddEventReceiver(mShaderManager);
     AddEventReceiver(mNodeManager);
     AddEventReceiver(mCameraManager);
     AddEventReceiver(mRenderingManager);
     AddEventReceiver(mLightManager);
 
+    mManagers.push_back(mPainter);
     mManagers.push_back(mShaderManager);
     mManagers.push_back(mNodeManager);
     mManagers.push_back(mCameraManager);
@@ -252,8 +258,6 @@ void Canavar::Engine::Controller::Resize(int width, int height)
     {
         pReceiver->Resize(mWidth, mHeight);
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
@@ -267,8 +271,6 @@ void Canavar::Engine::Controller::OnMousePressed(QMouseEvent* event)
             return;
         }
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
@@ -282,8 +284,6 @@ void Canavar::Engine::Controller::OnMouseReleased(QMouseEvent* event)
             return;
         }
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
@@ -297,8 +297,6 @@ void Canavar::Engine::Controller::OnMouseMoved(QMouseEvent* event)
             return;
         }
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
@@ -312,8 +310,6 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
             return;
         }
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 Canavar::Engine::NodeManager* Canavar::Engine::Controller::GetNodeManager()
@@ -339,4 +335,9 @@ Canavar::Engine::LightManager* Canavar::Engine::Controller::GetLightManager()
 Canavar::Engine::RenderingManager* Canavar::Engine::Controller::GetRenderingManager()
 {
     return mRenderingManager;
+}
+
+Canavar::Engine::Painter* Canavar::Engine::Controller::GetPainter()
+{
+    return mPainter;
 }

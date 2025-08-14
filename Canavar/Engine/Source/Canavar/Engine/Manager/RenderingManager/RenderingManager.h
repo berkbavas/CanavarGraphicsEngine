@@ -144,7 +144,6 @@ namespace Canavar::Engine
         float mIfps;
         float mTime{ 0.0f };
 
-
         // ACES
         DEFINE_MEMBER(bool, AcesEnabled, false);
 
@@ -167,6 +166,9 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, MotionBlurStrength, 0.15f);
         DEFINE_MEMBER(int, MotionBlurSamples, 20);
         DEFINE_MEMBER(float, MotionBlurDepthThreshold, 0.5f);
+
+        // Mesh Selection
+        DEFINE_MEMBER(bool, MeshSelectionEnabled, false);
 
         QQuaternion mPreviousRotation;
         QMatrix4x4 mPreviousViewMatrix;

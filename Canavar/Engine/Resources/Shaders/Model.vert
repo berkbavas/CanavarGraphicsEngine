@@ -5,6 +5,8 @@ layout(location = 1) in vec3 aNormal;
 layout(location = 2) in vec2 aTextureCoords;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
+layout(location = 5) in vec3 aColor;
+layout(location = 6) in uint aMask;
 
 uniform mat4 uModelMatrix;                  // Model matrix
 uniform mat3 uNormalMatrix;                 // Normal matrix
@@ -24,6 +26,8 @@ out float fsFlogZ;
 out vec4 fsLightSpacePosition; // Position in light space
 out float fsDepth;
 out vec2 fsFragVelocity;
+out vec3 fsColor;
+out flat uint fsMask;
 
 void main()
 {
@@ -31,6 +35,9 @@ void main()
     vec4 worldPos = uModelMatrix * vec4(fsLocalPosition, 1.0f);
     fsWorldPosition = worldPos.xyz;
     fsTextureCoords = aTextureCoords.xy;
+
+    fsColor = aColor;
+    fsMask = aMask;
 
     vec3 T = normalize(uNormalMatrix * aTangent);
     vec3 B = normalize(uNormalMatrix * aBitangent);

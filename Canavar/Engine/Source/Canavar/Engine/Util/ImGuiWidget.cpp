@@ -36,6 +36,7 @@ void Canavar::Engine::ImGuiWidget::DrawImGui(float ifps)
     DrawCreateObjectWidget();
     DrawCreateModelWidget();
     DrawRenderSettings();
+    DrawPainterSettings();
     DrawWorldPositionsWidget();
     DrawNodeInfo();
     DrawStats();
@@ -572,6 +573,15 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
         // ImGui::SliderFloat("Density", &mRenderingManager->GetDensity_NonConst(), 0.0f, 1.0f, "%.2f");
         // ImGui::SliderFloat("Decay", &mRenderingManager->GetDecay_NonConst(), 0.0f, 1.0f, "%.2f");
         // ImGui::SliderFloat("Weight", &mRenderingManager->GetWeight_NonConst(), 0.0f, 1.0f, "%.2f");
+    }
+}
+
+void Canavar::Engine::ImGuiWidget::DrawPainterSettings()
+{
+    if (ImGui::CollapsingHeader("Painter Settings"))
+    {
+        ImGui::Checkbox("Enabled##Painter", &mPainter->GetPainterEnabled_NonConst());
+        ImGui::ColorEdit3("Brush Color##Painter", (float *) &mPainter->GetBrushColor_NonConst());
     }
 }
 

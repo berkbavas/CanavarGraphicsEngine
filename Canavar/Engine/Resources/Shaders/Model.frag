@@ -83,6 +83,9 @@ uniform bool uHasTextureNormal;
 uniform int uNodeId;
 uniform int uMeshId;
 uniform int uSelectedMeshId;
+uniform int uLightSpaceMatrixId;
+
+uniform int uMeshSelectionEnabled;
 
 in vec3 fsLocalPosition;
 in vec3 fsWorldPosition;
@@ -94,6 +97,8 @@ in float fsFlogZ;
 in vec4 fsLightSpacePosition; // Position in light space
 in float fsDepth;
 in vec2 fsFragVelocity;
+in vec3 fsColor;
+in flat uint fsMask;
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutFragLocalPosition;
@@ -101,8 +106,10 @@ layout(location = 2) out vec4 OutFragWorldPosition;
 layout(location = 3) out vec4 OutNodeInfo;
 layout(location = 4) out vec4 OutFragVelocity;
 
-const float EPSILON = 0.00001f;
+const uint NO_MASK = 0;
+const uint PAINTED_MASK = 1;
 
+const float EPSILON = 0.00001f;
 const float PI = 3.14159265359;
 
 const vec3 RED = vec3(1.0f, 0.0f, 0.0f);
@@ -397,9 +404,17 @@ vec3 CalculateColor(float opacity)
         }
     }
 
-    if (uSelectedMeshId == uMeshId)
+    if (fsMask == PAINTED_MASK)
     {
-        color = mix(color, RED, 0.5f);
+        color = fsColor;
+    }
+
+    if (uMeshSelectionEnabled == 1)
+    {
+        if (uSelectedMeshId == uMeshId)
+        {
+            color = mix(color, RED, 0.5f);
+        }
     }
 
     return color;

@@ -35,22 +35,32 @@ void Canavar::Engine::Mesh::Initialize()
     glEnableVertexAttribArray(0);
 
     // Normals
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Normal));
     glEnableVertexAttribArray(1);
 
     //Texture Cooords
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, texture));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Texture));
     glEnableVertexAttribArray(2);
 
     // Tangent
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, tangent));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Tangent));
     glEnableVertexAttribArray(3);
 
     // Bitangent
-    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, bitangent));
+    glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Bitangent));
     glEnableVertexAttribArray(4);
 
+    // Color
+    glVertexAttribPointer(5, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Color));
+    glEnableVertexAttribArray(5);
+
+    // Mask
+    glVertexAttribIPointer(6, 1, GL_UNSIGNED_INT, sizeof(Vertex), (void *) offsetof(Vertex, Mask));
+    glEnableVertexAttribArray(6);
+
     glBindVertexArray(0);
+
+    mNumberOfVertices = mVertices.size();
 
     LOG_DEBUG("Mesh::Initialize: Initialization of '{}' is done.", mMeshName);
 }
@@ -147,6 +157,37 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix
     }
 }
 
+void Canavar::Engine::Mesh::UnpaintVertex(unsigned int Index)
+{
+    if (Index >= mNumberOfVertices)
+    {
+        LOG_FATAL("Mesh::UnpaintVertex: Index '{}' is out of bounds.", Index);
+        return;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    Vertex *pVertices = static_cast<Vertex *>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+    pVertices[Index].Mask = VERTEX_MASK_NO_MASK;
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void Canavar::Engine::Mesh::PaintVertex(unsigned int Index, const QVector3D &Color)
+{
+    if (Index >= mNumberOfVertices)
+    {
+        LOG_FATAL("Mesh::PaintVertex: Index '{}' is out of bounds.", Index);
+        return;
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, mVBO);
+    Vertex *pVertices = static_cast<Vertex *>(glMapBuffer(GL_ARRAY_BUFFER, GL_READ_WRITE));
+    pVertices[Index].Mask = VERTEX_MASK_PAINTED;
+    pVertices[Index].Color = Color;
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void Canavar::Engine::Mesh::AddVertex(const Vertex &vertex)
 {
     mVertices.emplace_back(vertex);
@@ -155,6 +196,19 @@ void Canavar::Engine::Mesh::AddVertex(const Vertex &vertex)
 void Canavar::Engine::Mesh::AddIndex(unsigned int index)
 {
     mIndices.push_back(index);
+}
+
+std::tuple<unsigned int, unsigned int, unsigned int> Canavar::Engine::Mesh::GetTriangleVertices(unsigned int PrimitiveIndex) const
+{
+    if (PrimitiveIndex * 3 + 2 < mIndices.size())
+    {
+        return std::make_tuple(mIndices[PrimitiveIndex * 3], mIndices[PrimitiveIndex * 3 + 1], mIndices[PrimitiveIndex * 3 + 2]);
+    }
+    else
+    {
+        LOG_FATAL("Mesh::GetTriangleVertices: PrimitiveIndex '{}' is out of bounds. Indices size: '{}'", PrimitiveIndex, mIndices.size());
+        return std::tuple<unsigned int, unsigned int, unsigned int>();
+    }
 }
 
 const std::string &Canavar::Engine::Mesh::GetUniqueMeshName()

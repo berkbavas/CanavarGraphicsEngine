@@ -139,32 +139,32 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
 
     for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
     {
-        vertex.position.setX(aiMesh->mVertices[i].x);
-        vertex.position.setY(aiMesh->mVertices[i].y);
-        vertex.position.setZ(aiMesh->mVertices[i].z);
+        vertex.Position.setX(aiMesh->mVertices[i].x);
+        vertex.Position.setY(aiMesh->mVertices[i].y);
+        vertex.Position.setZ(aiMesh->mVertices[i].z);
 
         if (aiMesh->HasNormals())
         {
-            vertex.normal.setX(aiMesh->mNormals[i].x);
-            vertex.normal.setY(aiMesh->mNormals[i].y);
-            vertex.normal.setZ(aiMesh->mNormals[i].z);
+            vertex.Normal.setX(aiMesh->mNormals[i].x);
+            vertex.Normal.setY(aiMesh->mNormals[i].y);
+            vertex.Normal.setZ(aiMesh->mNormals[i].z);
         }
 
         if (aiMesh->mTextureCoords[0])
         {
-            vertex.texture.setX(aiMesh->mTextureCoords[0][i].x);
-            vertex.texture.setY(aiMesh->mTextureCoords[0][i].y);
+            vertex.Texture.setX(aiMesh->mTextureCoords[0][i].x);
+            vertex.Texture.setY(aiMesh->mTextureCoords[0][i].y);
         }
 
         if (aiMesh->HasTangentsAndBitangents())
         {
-            vertex.tangent.setX(aiMesh->mTangents[i].x);
-            vertex.tangent.setY(aiMesh->mTangents[i].y);
-            vertex.tangent.setZ(aiMesh->mTangents[i].z);
+            vertex.Tangent.setX(aiMesh->mTangents[i].x);
+            vertex.Tangent.setY(aiMesh->mTangents[i].y);
+            vertex.Tangent.setZ(aiMesh->mTangents[i].z);
 
-            vertex.bitangent.setX(aiMesh->mBitangents[i].x);
-            vertex.bitangent.setY(aiMesh->mBitangents[i].y);
-            vertex.bitangent.setZ(aiMesh->mBitangents[i].z);
+            vertex.Bitangent.setX(aiMesh->mBitangents[i].x);
+            vertex.Bitangent.setY(aiMesh->mBitangents[i].y);
+            vertex.Bitangent.setZ(aiMesh->mBitangents[i].z);
         }
 
         pMesh->AddVertex(vertex);

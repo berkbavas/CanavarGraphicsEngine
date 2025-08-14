@@ -36,11 +36,11 @@ void Canavar::Engine::RenderingManager::Initialize()
         mFramebuffers[type] = nullptr;
     }
 
-    mQuad = new Quad;
-
     mBoundingBoxRenderer = new BoundingBoxRenderer;
     mTextRenderer = new TextRenderer;
     mShadowMappingRenderer = new ShadowMappingRenderer;
+
+    mQuad = new Quad;
 
     ResizeFramebuffers();
 }
@@ -514,6 +514,7 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camer
     pShader->Bind();
 
     pShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    pShader->SetUniformValue("uMeshSelectionEnabled", static_cast<int>(mMeshSelectionEnabled));
     pShader->SetUniformValue("uHaze.enabled", mHaze->GetEnabled());
     pShader->SetUniformValue("uHaze.color", mHaze->GetColor());
     pShader->SetUniformValue("uHaze.density", mHaze->GetDensity());

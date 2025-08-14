@@ -24,6 +24,7 @@ namespace Canavar::Engine
     class EventReceiver;
     class Window;
     class Widget;
+    class Painter;
 
     class Controller : public QObject, public ManagerProvider
     {
@@ -37,6 +38,7 @@ namespace Canavar::Engine
         CameraManager* GetCameraManager() override;
         LightManager* GetLightManager() override;
         RenderingManager* GetRenderingManager() override;
+        Painter* GetPainter() override;
 
         void AddEventReceiver(EventReceiver* pReceiver);
         void RemoveEventReceiver(EventReceiver* pReceiver);
@@ -60,11 +62,12 @@ namespace Canavar::Engine
       private:
         RenderingContext* mRenderingContext{ nullptr };
         ImGuiWidget* mImGuiWidget{ nullptr };
-        CameraManager* mCameraManager;
-        NodeManager* mNodeManager;
-        ShaderManager* mShaderManager;
-        RenderingManager* mRenderingManager;
-        LightManager* mLightManager;
+        CameraManager* mCameraManager{ nullptr };
+        NodeManager* mNodeManager{ nullptr };
+        ShaderManager* mShaderManager{ nullptr };
+        RenderingManager* mRenderingManager{ nullptr };
+        LightManager* mLightManager{ nullptr };
+        Painter* mPainter{ nullptr };
 
         QVector<Manager*> mManagers;
 

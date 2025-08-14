@@ -4,26 +4,18 @@
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Scene/Material.h"
+#include "Canavar/Engine/Node/Object/Scene/Vertex.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
 #include <vector>
 
-#include <QOpenGLExtraFunctions>
+#include <QOpenGLFunctions_4_5_Core>
 #include <QVector3D>
 
 namespace Canavar::Engine
 {
-    struct Vertex
-    {
-        QVector3D position;
-        QVector3D normal;
-        QVector2D texture;
-        QVector3D tangent;
-        QVector3D bitangent;
-    };
-
-    class Mesh : protected QOpenGLExtraFunctions
+    class Mesh : protected QOpenGLFunctions_4_5_Core
     {
         DISABLE_COPY(Mesh);
 
@@ -35,13 +27,17 @@ namespace Canavar::Engine
         void Destroy();
         void Render(Model *pModel, Shader *pShader, const QMatrix4x4 &Node4x4, RenderPass RenderPass);
 
+        void UnpaintVertex(unsigned int Index);
+        void PaintVertex(unsigned int Index, const QVector3D &Color);
+
         void AddVertex(const Vertex &vertex);
         void AddIndex(unsigned int index);
+
+        std::tuple<unsigned int, unsigned int, unsigned int> GetTriangleVertices(unsigned int PrimitiveIndex) const;
 
         const std::string &GetUniqueMeshName();
 
         bool HasTransparency(const Model *pModel) const;
-
       private:
         bool ShouldRender(const Model *pModel, RenderPass RenderPass) const;
 
@@ -57,6 +53,8 @@ namespace Canavar::Engine
         DEFINE_MEMBER(int, MeshId);
         DEFINE_MEMBER(AABB, AABB);
         DEFINE_MEMBER(float, Opacity, 1.0f);
+
+        DEFINE_MEMBER_CONST(unsigned int, NumberOfVertices, 0);
 
         std::string mUniqueMeshName;
     };
