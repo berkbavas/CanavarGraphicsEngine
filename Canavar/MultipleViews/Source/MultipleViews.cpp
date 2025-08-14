@@ -19,6 +19,9 @@ Canavar::MultipleViews::MultipleViews::MultipleViews(QObject *pParent)
         pWidget->setFocusPolicy(Qt::StrongFocus);
     }
 
+    connect(mControllers[ViewId::View0], &Engine::Controller::Initialized, this, &MultipleViews::PostInitialize0);
+    connect(mControllers[ViewId::View1], &Engine::Controller::Initialized, this, &MultipleViews::PostInitialize1);
+
     mContainerWindow->resize(800, 600);
 }
 
@@ -32,8 +35,12 @@ void Canavar::MultipleViews::MultipleViews::Run()
     mContainerWindow->showMaximized();
 }
 
-void Canavar::MultipleViews::MultipleViews::PostInitialize()
+void Canavar::MultipleViews::MultipleViews::PostInitialize0()
 {
-    mControllers[ViewId::View0]->GetNodeManager()->ImportNodes("Resources/Empty.json");
-    mControllers[ViewId::View1]->GetNodeManager()->ImportNodes("Resources/Empty.json");
+    mWidgets[ViewId::View0]->GetNodeManager()->ImportNodes("Resources/Empty.json");
+}
+
+void Canavar::MultipleViews::MultipleViews::PostInitialize1()
+{
+    mWidgets[ViewId::View1]->GetNodeManager()->ImportNodes("Resources/Empty.json");
 }

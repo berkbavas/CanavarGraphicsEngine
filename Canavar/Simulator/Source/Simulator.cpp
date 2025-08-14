@@ -8,13 +8,12 @@ Canavar::Simulator::Simulator::Simulator()
 {
     mWindow = new Canavar::Engine::Window(nullptr);
     mController = new Canavar::Engine::Controller(mWindow, true, this);
-
+    connect(mController, &Canavar::Engine::Controller::PostInitialized, this, &Simulator::PostInitialize);
+    connect(mController, &Canavar::Engine::Controller::Updated, this, &Simulator::Update);
+    connect(mController, &Canavar::Engine::Controller::DrawImGui, this, &Simulator::DrawImGui);
+    connect(mController, &Canavar::Engine::Controller::PostRendered, this, &Simulator::PostRender);
     mController->AddEventReceiver(this);
-
-    mNodeManager = mController->GetNodeManager();
-    mCameraManager = mController->GetCameraManager();
-
-    mAircraft = new Aircraft;
+    mAircraft = new Aircraft();
 }
 
 Canavar::Simulator::Simulator::~Simulator()
@@ -34,6 +33,9 @@ void Canavar::Simulator::Simulator::Run()
 
 void Canavar::Simulator::Simulator::PostInitialize()
 {
+    mNodeManager = mWindow->GetNodeManager();
+    mCameraManager = mWindow->GetCameraManager();
+
     mPersecutorCamera = std::make_shared<Canavar::Engine::PersecutorCamera>();
 
     mNodeManager->ImportNodes("Resources/f16.json");

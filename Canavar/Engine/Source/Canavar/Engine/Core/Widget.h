@@ -16,7 +16,6 @@ namespace Canavar::Engine
 
         void MakeCurrent() override;
         void DoneCurrent() override;
-
         float GetDevicePixelRatio() const override;
 
       signals:

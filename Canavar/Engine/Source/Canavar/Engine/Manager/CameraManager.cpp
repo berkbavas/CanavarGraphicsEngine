@@ -2,10 +2,6 @@
 
 #include "Canavar/Engine/Util/Logger.h"
 
-Canavar::Engine::CameraManager::CameraManager(QObject* pParent)
-    : Manager(pParent)
-{}
-
 void Canavar::Engine::CameraManager::Initialize()
 {
     LOG_DEBUG("CameraManager::Initialize: Initializing...");
@@ -60,9 +56,9 @@ void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr pCamera)
     mActiveCamera->Update(0);
 }
 
-Canavar::Engine::CameraPtr Canavar::Engine::CameraManager::GetActiveCamera() const
+Canavar::Engine::PerspectiveCamera* Canavar::Engine::CameraManager::GetActiveCamera() const
 {
-    return mActiveCamera;
+    return dynamic_cast<PerspectiveCamera*>(mActiveCamera.get());
 }
 
 bool Canavar::Engine::CameraManager::KeyPressed(QKeyEvent* event)

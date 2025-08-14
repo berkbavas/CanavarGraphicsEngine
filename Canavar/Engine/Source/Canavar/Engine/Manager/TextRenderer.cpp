@@ -10,7 +10,19 @@
 
 #include FT_FREETYPE_H
 
-Canavar::Engine::TextRenderer::~TextRenderer()
+void Canavar::Engine::TextRenderer::Initialize()
+{
+    mNodeManager = GetRenderingContext()->GetNodeManager();
+    auto *pShaderManager = GetRenderingContext()->GetShaderManager();
+    mText2DShader = pShaderManager->GetShader(ShaderType::Text2D);
+    mText3DShader = pShaderManager->GetShader(ShaderType::Text3D);
+
+    initializeOpenGLFunctions();
+    InitializeBuffers();
+    InitializeCharacters();
+}
+
+void Canavar::Engine::TextRenderer::Shutdown()
 {
     if (mVBO)
     {
@@ -42,16 +54,6 @@ Canavar::Engine::TextRenderer::~TextRenderer()
     }
 
     mCharacters.clear();
-}
-
-void Canavar::Engine::TextRenderer::Initialize()
-{
-    mText2DShader = mShaderManager->GetShader(ShaderType::Text2D);
-    mText3DShader = mShaderManager->GetShader(ShaderType::Text3D);
-
-    initializeOpenGLFunctions();
-    InitializeBuffers();
-    InitializeCharacters();
 }
 
 void Canavar::Engine::TextRenderer::InitializeCharacters()
@@ -136,11 +138,9 @@ void Canavar::Engine::TextRenderer::Resize(int w, int h)
     mProjectionMatrix.ortho(0.0f, static_cast<float>(w), 0.0f, static_cast<float>(h), -1.0f, 1.0f);
 }
 
-void Canavar::Engine::TextRenderer::Render(Camera *pActiveCamera)
+void Canavar::Engine::TextRenderer::InRender(PerspectiveCamera *pActiveCamera)
 {
-    mActiveCamera = pActiveCamera;
-
-    Render3DTexts();
+    Render3DTexts(pActiveCamera);
 
     glDisable(GL_DEPTH_TEST);
     Render2DTexts();
@@ -180,7 +180,7 @@ void Canavar::Engine::TextRenderer::Render2DTexts()
     glDisable(GL_BLEND);
 }
 
-void Canavar::Engine::TextRenderer::Render3DTexts()
+void Canavar::Engine::TextRenderer::Render3DTexts(PerspectiveCamera *pActiveCamera)
 {
     // Enable blending for text rendering
     glEnable(GL_BLEND);
@@ -188,7 +188,7 @@ void Canavar::Engine::TextRenderer::Render3DTexts()
 
     // Bind the text shader
     mText3DShader->Bind();
-    mText3DShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera *>(mActiveCamera)->GetZFar());
+    mText3DShader->SetUniformValue("uZFar", pActiveCamera->GetZFar());
 
     // Bind the vertex array
     glBindVertexArray(mVAO);
@@ -200,8 +200,8 @@ void Canavar::Engine::TextRenderer::Render3DTexts()
         if (const auto pText3D = std::dynamic_pointer_cast<Text3D>(pNode))
         {
             mText3DShader->SetUniformValue("uModelMatrix", pText3D->GetWorldTransformation());
-            mText3DShader->SetUniformValue("uMVP", mActiveCamera->GetViewProjectionMatrix() * pText3D->GetWorldTransformation());
-            mText3DShader->SetUniformValue("uNodeId",pText3D->GetNodeId());
+            mText3DShader->SetUniformValue("uMVP", pActiveCamera->GetViewProjectionMatrix() * pText3D->GetWorldTransformation());
+            mText3DShader->SetUniformValue("uNodeId", pText3D->GetNodeId());
             RenderText(mText3DShader, pText3D->GetText(), 0, 0, 1, pText3D->GetColor());
         }
     }

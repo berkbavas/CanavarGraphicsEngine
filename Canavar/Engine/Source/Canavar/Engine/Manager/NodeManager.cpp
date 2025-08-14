@@ -12,13 +12,10 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-Canavar::Engine::NodeManager::NodeManager(QObject* pParent)
-    : Manager(pParent)
-{}
 
 void Canavar::Engine::NodeManager::Initialize()
 {
-    mLightManager = mManagerProvider->GetLightManager();
+    mLightManager = GetRenderingContext()->GetLightManager();
 
     mScenes = ModelImporter::Import(MODELS_FOLDER, { "*.obj", "*.blend", "*.fbx", "*.glb", "*.gltf", "*.usdz" });
 
@@ -39,7 +36,7 @@ void Canavar::Engine::NodeManager::PostInitialize()
 
     mSky->Initialize();
 
-    mFreeCamera = mManagerProvider->GetCameraManager()->GetFreeCamera();
+    mFreeCamera = GetRenderingContext()->GetCameraManager()->GetFreeCamera();
 
     for (const auto& [name, pScene] : mScenes)
     {

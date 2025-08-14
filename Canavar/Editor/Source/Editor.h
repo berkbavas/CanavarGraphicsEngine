@@ -4,7 +4,7 @@
 
 namespace Canavar::Editor
 {
-    class Editor : public QObject, public Engine::EventReceiver
+    class Editor : public QObject
     {
         Q_OBJECT
       public:
@@ -12,10 +12,7 @@ namespace Canavar::Editor
         ~Editor();
 
         void Run();
-
-      public:
-        // Core Events
-        void PostInitialize() override;
+        void Initialize();
 
       private:
         Engine::Window *mWindow;

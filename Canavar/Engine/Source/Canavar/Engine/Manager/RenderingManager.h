@@ -4,7 +4,6 @@
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Core/Structs.h"
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingRenderer.h"
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
 #include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
@@ -19,6 +18,7 @@
 #include <QOpenGLFramebufferObjectFormat>
 #include <QOpenGLFunctions_4_5_Core>
 
+
 namespace Canavar::Engine
 {
     class ShaderManager;
@@ -27,6 +27,7 @@ namespace Canavar::Engine
     class LightManager;
     class BoundingBoxRenderer;
     class TextRenderer;
+    class ShadowMappingRenderer;
 
     enum Framebuffer
     {
@@ -42,35 +43,33 @@ namespace Canavar::Engine
     {
         Q_OBJECT
       public:
-        explicit RenderingManager(QObject *pParent);
+        using Manager::Manager;
 
         void Initialize() override;
         void PostInitialize() override;
         void Shutdown() override;
-
-        void Render(float ifps) override;
+        void Update(float ifps) override;
+        void Render(PerspectiveCamera *pActiveCamera) override;
         void Resize(int width, int height);
 
         QVector3D FetchFragmentLocalPositionFromScreen(int x, int y);
         QVector3D FetchFragmentWorldPositionFromScreen(int x, int y);
         NodeInfo FetchNodeInfoFromScreenCoordinates(int x, int y);
 
-        QOpenGLFramebufferObject *GetFramebuffer(Framebuffer framebuffer) const;
-
-        void RenderToFramebuffer(QOpenGLFramebufferObject *pFramebuffer, Camera *pCamera);
+        void RenderToFramebuffer(QOpenGLFramebufferObject *pFramebuffer, PerspectiveCamera *pCamera);
 
       signals:
-        void RenderLoop(float ifps);
+        void RenderLoop();
 
       private:
-        void RenderObjects(Camera *pCamera, float ifps);
+        void RenderObjects(PerspectiveCamera *pCamera);
         void RenderModel(Model *pModel, RenderPass RenderPass);
-        void RenderNozzleEffect(NozzleEffect *pEffect, Camera *pCamera, float ifps);
-        void RenderSky(Camera *pCamera);
-        void RenderTerrain(Terrain *pTerrain, Camera *pCamera);
+        void RenderNozzleEffect(NozzleEffect *pEffect, PerspectiveCamera *pCamera);
+        void RenderSky(PerspectiveCamera *pCamera);
+        void RenderTerrain(Terrain *pTerrain, PerspectiveCamera *pCamera);
 
-        void SetUniforms(Camera *pCamera);
-        void SetCommonUniforms(Shader *pShader, Camera *pCamera);
+        void SetUniforms(PerspectiveCamera *pCamera);
+        void SetCommonUniforms(Shader *pShader, PerspectiveCamera *pCamera);
         void SetDirectionalLights(Shader *pShader);
         void SetPointLights(Shader *pShader, Object *pObject);
 
@@ -89,11 +88,7 @@ namespace Canavar::Engine
         NodeManager *mNodeManager;
         CameraManager *mCameraManager;
         LightManager *mLightManager;
-
-        BoundingBoxRenderer *mBoundingBoxRenderer;
-        TextRenderer *mTextRenderer;
-
-        DEFINE_MEMBER_PTR_CONST(ShadowMappingRenderer, ShadowMappingRenderer);
+        ShadowMappingRenderer *mShadowMappingRenderer{ nullptr };
 
         PerspectiveCamera *mActiveCamera{ nullptr };
 
@@ -125,11 +120,6 @@ namespace Canavar::Engine
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
-
-        DEFINE_MEMBER(bool, DrawBoundingBoxes, false);
-        DEFINE_MEMBER(bool, ShadowsEnabled, false);
-        DEFINE_MEMBER(float, ShadowBias, 0.00005f);
-        DEFINE_MEMBER(int, ShadowSamples, 1);
 
         static constexpr int NUMBER_OF_FBO_ATTACHMENTS = 5;
         static constexpr GLuint FBO_ATTACHMENTS[] = //
@@ -174,5 +164,7 @@ namespace Canavar::Engine
         QMatrix4x4 mPreviousViewMatrix;
         QMatrix4x4 mPreviousProjectionMatrix;
         QMatrix4x4 mPreviousViewProjectionMatrix;
+
+        float mDevicePixelRatio{ 1.0f };
     };
 };

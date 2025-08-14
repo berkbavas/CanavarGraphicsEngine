@@ -33,7 +33,7 @@ namespace Canavar::Engine
         };
 
         void Update(Shader* pLightningStrikeShader, const QVector3D& start, const QVector3D& end, float ifps);
-        void Render(Camera* pCamera, Shader* pLineShader, float ifps);
+        void Render(Camera* pCamera, Shader* pLineShader);
 
         // OpenGL Stuff
         uint8_t mCurrentVertexBufferIndex{ 0 };

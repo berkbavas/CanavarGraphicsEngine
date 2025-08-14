@@ -7,7 +7,7 @@
 
 namespace Canavar::MultipleViews
 {
-    class MultipleViews : public QObject, public Engine::EventReceiver
+    class MultipleViews : public QObject
     {
         Q_OBJECT
       public:
@@ -15,10 +15,8 @@ namespace Canavar::MultipleViews
         ~MultipleViews();
 
         void Run();
-
-      public:
-        // Core Events
-        void PostInitialize() override;
+        void PostInitialize0();
+        void PostInitialize1();
 
       private:
         enum class ViewId

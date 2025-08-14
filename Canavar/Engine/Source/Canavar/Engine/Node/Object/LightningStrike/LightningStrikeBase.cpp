@@ -45,7 +45,7 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLigh
     for (const auto& point : terminationPoints)
     {
         Update(pLightningStrikeShader, GetWorldPosition(), point, ifps);
-        Render(pCamera, pLineShader, ifps);
+        Render(pCamera, pLineShader);
     }
 }
 
@@ -130,7 +130,7 @@ void Canavar::Engine::LightningStrikeBase::Update(Shader* pLightningStrikeShader
     }
 }
 
-void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLineShader, float ifps)
+void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLineShader)
 {
     pLineShader->Bind();
     pLineShader->SetUniformValue("uMVP", pCamera->GetViewProjectionMatrix());

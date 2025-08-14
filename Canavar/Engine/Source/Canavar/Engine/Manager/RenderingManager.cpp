@@ -1,16 +1,12 @@
 #include "RenderingManager.h"
 
+#include "Canavar/Engine/Core/RenderingContext.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager/BoundingBoxRenderer.h"
-#include "Canavar/Engine/Manager/RenderingManager/TextRenderer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
+#include "Canavar/Engine/Manager/ShadowMappingRenderer.h"
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
-
-Canavar::Engine::RenderingManager::RenderingManager(QObject* pParent)
-    : Manager(pParent)
-{}
 
 void Canavar::Engine::RenderingManager::Initialize()
 {
@@ -36,10 +32,6 @@ void Canavar::Engine::RenderingManager::Initialize()
         mFramebuffers[type] = nullptr;
     }
 
-    mBoundingBoxRenderer = new BoundingBoxRenderer;
-    mTextRenderer = new TextRenderer;
-    mShadowMappingRenderer = new ShadowMappingRenderer;
-
     mQuad = new Quad;
 
     ResizeFramebuffers();
@@ -47,29 +39,17 @@ void Canavar::Engine::RenderingManager::Initialize()
 
 void Canavar::Engine::RenderingManager::PostInitialize()
 {
-    mShaderManager = mManagerProvider->GetShaderManager();
-    mNodeManager = mManagerProvider->GetNodeManager();
-    mCameraManager = mManagerProvider->GetCameraManager();
-    mLightManager = mManagerProvider->GetLightManager();
-
-    mBoundingBoxRenderer->SetShaderManager(mShaderManager);
-    mBoundingBoxRenderer->SetNodeManager(mNodeManager);
-    mBoundingBoxRenderer->Initialize();
-
-    mTextRenderer->SetShaderManager(mShaderManager);
-    mTextRenderer->SetNodeManager(mNodeManager);
-    mTextRenderer->Initialize();
+    const auto pRenderingContext = GetRenderingContext();
+    mShaderManager = pRenderingContext->GetShaderManager();
+    mNodeManager = pRenderingContext->GetNodeManager();
+    mCameraManager = pRenderingContext->GetCameraManager();
+    mLightManager = pRenderingContext->GetLightManager();
+    mShadowMappingRenderer = pRenderingContext->GetShadowMappingRenderer();
 
     mSky = mNodeManager->GetSky();
     mSun = mNodeManager->GetSun();
     mHaze = mNodeManager->GetHaze();
     mTerrain = mNodeManager->GetTerrain();
-
-    mShadowMappingRenderer->SetShaderManager(mShaderManager);
-    mShadowMappingRenderer->SetNodeManager(mNodeManager);
-    mShadowMappingRenderer->SetCameraManager(mCameraManager);
-    mShadowMappingRenderer->SetSun(mSun);
-    mShadowMappingRenderer->Initialize();
 
     mModelShader = mShaderManager->GetShader(ShaderType::Model);
     mSkyShader = mShaderManager->GetShader(ShaderType::Sky);
@@ -89,33 +69,30 @@ void Canavar::Engine::RenderingManager::Shutdown()
 {
     DestroyFramebuffers();
 
-    delete mShadowMappingRenderer;
-    delete mTextRenderer;
-    delete mBoundingBoxRenderer;
     delete mQuad;
 }
 
-void Canavar::Engine::RenderingManager::Render(float ifps)
+void Canavar::Engine::RenderingManager::Update(float ifps)
 {
     mIfps = ifps;
     mTime += ifps;
+    mDevicePixelRatio = GetRenderingContext()->GetDevicePixelRatio();
+}
 
+void Canavar::Engine::RenderingManager::Render(PerspectiveCamera* pActiveCamera)
+{
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_POLYGON_OFFSET_FILL);
     glPolygonOffset(1.0f, 1.0f);
     glDisable(GL_BLEND);
 
-    mShadowsEnabled ? mShadowMappingRenderer->Render(ifps) : void(0);
-
-    mActiveCamera = dynamic_cast<PerspectiveCamera*>(mCameraManager->GetActiveCamera().get());
-
     mPreviousViewMatrix.setToIdentity();
     mPreviousViewMatrix.rotate(mPreviousRotation.conjugated());
-    mPreviousViewMatrix.translate(-mActiveCamera->GetWorldPosition());
+    mPreviousViewMatrix.translate(-pActiveCamera->GetWorldPosition());
     mPreviousViewProjectionMatrix = mPreviousProjectionMatrix * mPreviousViewMatrix;
 
-    RenderToFramebuffer(mFramebuffers[Multisample], mActiveCamera);
+    RenderToFramebuffer(mFramebuffers[Multisample], pActiveCamera);
 
     // ----------------------- BLIT 4X MULTISAMPLE FBO TO SINGLESAMPLE FBO -------------------
 
@@ -288,9 +265,11 @@ QVector2D Canavar::Engine::RenderingManager::CalculateSunScreenSpacePosition() c
     return QVector2D(sunClipSpaceCoords.x() * 0.5f + 0.5f, sunClipSpaceCoords.y() * 0.5f + 0.5f);
 }
 
-void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferObject* pFramebuffer, Camera* pCamera)
+void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferObject* pFramebuffer, PerspectiveCamera* pActiveCamera)
 {
     pFramebuffer->bind();
+
+    mActiveCamera = pActiveCamera;
 
     glViewport(0, 0, mWidth, mHeight);
     glClearColor(0, 0, 0, 0);
@@ -300,12 +279,9 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
 
     RenderSky(mActiveCamera);
     RenderTerrain(mTerrain.get(), mActiveCamera);
-    RenderObjects(mActiveCamera, mIfps);
+    RenderObjects(mActiveCamera);
 
-    mDrawBoundingBoxes ? mBoundingBoxRenderer->Render(mActiveCamera, mIfps) : void(0);
-    mTextRenderer->Render(mActiveCamera);
-
-    emit RenderLoop(mIfps);
+    emit RenderLoop();
 
     pFramebuffer->release();
 }
@@ -315,12 +291,10 @@ void Canavar::Engine::RenderingManager::Resize(int width, int height)
     mWidth = width;
     mHeight = height;
 
-    mTextRenderer->Resize(width, height);
-
     ResizeFramebuffers();
 }
 
-void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifps)
+void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera)
 {
     const auto& Nodes = mNodeManager->GetNodes();
 
@@ -346,11 +320,11 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
             }
             else if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pObject))
             {
-                RenderNozzleEffect(pEffect.get(), pCamera, ifps);
+                RenderNozzleEffect(pEffect.get(), pCamera);
             }
             else if (LightningStrikeBasePtr pLightning = std::dynamic_pointer_cast<LightningStrikeBase>(pObject))
             {
-                pLightning->Render(pCamera, mLightningStrikeShader, mLineShader, ifps);
+                pLightning->Render(pCamera, mLightningStrikeShader, mLineShader, mIfps);
             }
         }
     }
@@ -397,9 +371,9 @@ void Canavar::Engine::RenderingManager::RenderObjects(Camera* pCamera, float ifp
         mModelShader->SetUniformValue("uModel.shininess", pModel->GetShininess());
         mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
         mModelShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-        mModelShader->SetUniformValue("uShadow.enabled", mShadowsEnabled);
-        mModelShader->SetUniformValue("uShadow.bias", mShadowBias);
-        mModelShader->SetUniformValue("uShadow.samples", mShadowSamples);
+        mModelShader->SetUniformValue("uShadow.enabled", mShadowMappingRenderer->GetShadowsEnabled());
+        mModelShader->SetUniformValue("uShadow.bias", mShadowMappingRenderer->GetShadowBias());
+        mModelShader->SetUniformValue("uShadow.samples", mShadowMappingRenderer->GetShadowSamples());
         Element.pMesh->Render(pModel, mModelShader, Element.NodeMatrix, RenderPass::Transparent);
         mModelShader->Release();
     }
@@ -423,9 +397,9 @@ void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass Re
     mModelShader->SetUniformValue("uModel.shininess", pModel->GetShininess());
     mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
     mModelShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-    mModelShader->SetUniformValue("uShadow.enabled", mShadowsEnabled);
-    mModelShader->SetUniformValue("uShadow.bias", mShadowBias);
-    mModelShader->SetUniformValue("uShadow.samples", mShadowSamples);
+    mModelShader->SetUniformValue("uShadow.enabled", mShadowMappingRenderer->GetShadowsEnabled());
+    mModelShader->SetUniformValue("uShadow.bias", mShadowMappingRenderer->GetShadowBias());
+    mModelShader->SetUniformValue("uShadow.samples", mShadowMappingRenderer->GetShadowSamples());
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
@@ -437,22 +411,22 @@ void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass Re
     }
 }
 
-void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffect* pEffect, Camera* pCamera, float ifps)
+void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffect* pEffect, PerspectiveCamera* pCamera)
 {
     mNozzleEffectShader->Bind();
     mNozzleEffectShader->SetUniformValue("uMaxRadius", pEffect->GetMaxRadius());
     mNozzleEffectShader->SetUniformValue("uMVP", pCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
-    mNozzleEffectShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
-    pEffect->Render(ifps);
+    mNozzleEffectShader->SetUniformValue("uZFar", pCamera->GetZFar());
+    pEffect->Render(mIfps);
     mNozzleEffectShader->Release();
 }
 
-void Canavar::Engine::RenderingManager::RenderSky(Camera* pCamera)
+void Canavar::Engine::RenderingManager::RenderSky(PerspectiveCamera* pCamera)
 {
     mSky->Render(mSkyShader, mSun.get(), pCamera);
 }
 
-void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera* pCamera)
+void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, PerspectiveCamera* pCamera)
 {
     const auto& DirectonalLights = mLightManager->GetDirectionalLights();
     const auto NumberOfDirectonalLights = std::min(8, static_cast<int>(DirectonalLights.size()));
@@ -465,7 +439,7 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera*
     mTerrainShader->SetUniformValue("uViewProjectionMatrix", pCamera->GetViewProjectionMatrix());
     mTerrainShader->SetUniformValue("uPreviousViewProjectionMatrix", mPreviousViewProjectionMatrix);
     mTerrainShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-    mTerrainShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    mTerrainShader->SetUniformValue("uZFar", pCamera->GetZFar());
     mTerrainShader->SetUniformValue("uCameraPosition", pCamera->GetWorldPosition());
     mTerrainShader->SetUniformValue("uHaze.enabled", mHaze->GetEnabled());
     mTerrainShader->SetUniformValue("uHaze.color", mHaze->GetColor());
@@ -474,9 +448,9 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera*
     mTerrainShader->SetUniformValue("uNumberOfDirectionalLights", NumberOfDirectonalLights);
     mTerrainShader->SetUniformValue("uNumberOfPointLights", NumberOfPointLights);
     mTerrainShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-    mTerrainShader->SetUniformValue("uShadow.enabled", mShadowsEnabled);
-    mTerrainShader->SetUniformValue("uShadow.bias", mShadowBias);
-    mTerrainShader->SetUniformValue("uShadow.samples", mShadowSamples);
+    mTerrainShader->SetUniformValue("uShadow.enabled", mShadowMappingRenderer->GetShadowsEnabled());
+    mTerrainShader->SetUniformValue("uShadow.bias", mShadowMappingRenderer->GetShadowBias());
+    mTerrainShader->SetUniformValue("uShadow.samples", mShadowMappingRenderer->GetShadowSamples());
 
     for (int i = 0; i < NumberOfDirectonalLights; i++)
     {
@@ -503,17 +477,17 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Camera*
     mTerrain->Render(mTerrainShader, pCamera);
 }
 
-void Canavar::Engine::RenderingManager::SetUniforms(Camera* pCamera)
+void Canavar::Engine::RenderingManager::SetUniforms(PerspectiveCamera* pCamera)
 {
     SetCommonUniforms(mModelShader, pCamera);
     SetDirectionalLights(mModelShader);
 }
 
-void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camera* pCamera)
+void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, PerspectiveCamera* pCamera)
 {
     pShader->Bind();
 
-    pShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    pShader->SetUniformValue("uZFar", pCamera->GetZFar());
     pShader->SetUniformValue("uMeshSelectionEnabled", static_cast<int>(mMeshSelectionEnabled));
     pShader->SetUniformValue("uHaze.enabled", mHaze->GetEnabled());
     pShader->SetUniformValue("uHaze.color", mHaze->GetColor());
@@ -527,23 +501,23 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Camer
 
 void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
 {
-    const auto& lights = mLightManager->GetDirectionalLights();
-    const auto numberOfLights = std::min(8, static_cast<int>(lights.size()));
+    const auto& Lights = mLightManager->GetDirectionalLights();
+    const auto NumberOfLights = std::min(8, static_cast<int>(Lights.size()));
 
     pShader->Bind();
-    pShader->SetUniformValue("uNumberOfDirectionalLights", numberOfLights);
+    pShader->SetUniformValue("uNumberOfDirectionalLights", NumberOfLights);
 
-    for (int i = 0; i < numberOfLights; i++)
+    for (int i = 0; i < NumberOfLights; i++)
     {
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].direction", lights[i]->GetDirection());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].color", lights[i]->GetColor());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].ambient", lights[i]->GetAmbient());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].diffuse", lights[i]->GetDiffuse());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].specular", lights[i]->GetSpecular());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].direction", Lights[i]->GetDirection());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].color", Lights[i]->GetColor());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].ambient", Lights[i]->GetAmbient());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].diffuse", Lights[i]->GetDiffuse());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].specular", Lights[i]->GetSpecular());
 
         if (pShader == mModelShader)
         {
-            pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].radiance", lights[i]->GetRadiance());
+            pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].radiance", Lights[i]->GetRadiance());
         }
     }
 
@@ -552,22 +526,22 @@ void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
 
 void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, Object* pObject)
 {
-    const auto& lights = mLightManager->GetPointLightsAround(pObject->GetWorldPosition(), 100'000.0f);
-    const auto numberOfPointLights = std::min(8, static_cast<int>(lights.size()));
+    const auto& Lights = mLightManager->GetPointLightsAround(pObject->GetWorldPosition(), 100'000.0f);
+    const auto NumberOfLights = std::min(8, static_cast<int>(Lights.size()));
 
     pShader->Bind();
-    pShader->SetUniformValue("uNumberOfPointLights", numberOfPointLights);
+    pShader->SetUniformValue("uNumberOfPointLights", NumberOfLights);
 
-    for (int i = 0; i < numberOfPointLights; i++)
+    for (int i = 0; i < NumberOfLights; i++)
     {
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].color", lights[i]->GetColor());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].position", lights[i]->GetWorldPosition());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].ambient", lights[i]->GetAmbient());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].diffuse", lights[i]->GetDiffuse());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].specular", lights[i]->GetSpecular());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].constant", lights[i]->GetConstant());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].linear", lights[i]->GetLinear());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].quadratic", lights[i]->GetQuadratic());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].color", Lights[i]->GetColor());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].position", Lights[i]->GetWorldPosition());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].ambient", Lights[i]->GetAmbient());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].diffuse", Lights[i]->GetDiffuse());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].specular", Lights[i]->GetSpecular());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].constant", Lights[i]->GetConstant());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].linear", Lights[i]->GetLinear());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].quadratic", Lights[i]->GetQuadratic());
     }
 
     pShader->Release();
@@ -625,16 +599,4 @@ Canavar::Engine::NodeInfo Canavar::Engine::RenderingManager::FetchNodeInfoFromSc
     glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &info);
     mFramebuffers[Singlesample]->release();
     return info;
-}
-
-QOpenGLFramebufferObject* Canavar::Engine::RenderingManager::GetFramebuffer(Framebuffer framebufferType) const
-{
-    const auto it = mFramebuffers.find(framebufferType);
-
-    if (it != mFramebuffers.end())
-    {
-        return it->second;
-    }
-
-    return nullptr;
 }

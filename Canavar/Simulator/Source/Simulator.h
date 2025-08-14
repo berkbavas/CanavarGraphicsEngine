@@ -9,7 +9,7 @@
 #include <Canavar/Engine/Manager/CameraManager.h>
 #include <Canavar/Engine/Manager/LightManager.h>
 #include <Canavar/Engine/Manager/NodeManager.h>
-#include <Canavar/Engine/Manager/RenderingManager/RenderingManager.h>
+#include <Canavar/Engine/Manager/RenderingManager.h>
 #include <Canavar/Engine/Manager/ShaderManager.h>
 #include <Canavar/Engine/Node/Object/Camera/DummyCamera.h>
 #include <Canavar/Engine/Node/Object/Camera/FreeCamera.h>
@@ -31,10 +31,10 @@ namespace Canavar::Simulator
         void Run();
 
         // Core Events
-        void PostInitialize() override;
-        void Update(float ifps) override;
-        void PostRender(float ifps) override;
-        void DrawImGui(float ifps) override;  
+        void PostInitialize();
+        void Update(float ifps);
+        void PostRender(float ifps);
+        void DrawImGui(float ifps);  
 
         // Input Events
         // Returns true if the event is consumed so that it should not be dispatched others anymore.

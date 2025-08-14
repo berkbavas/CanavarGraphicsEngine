@@ -1,16 +1,12 @@
 #include "Painter.h"
 
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
-
-Canavar::Engine::Painter::Painter(QObject *pParent)
-    : Manager(pParent)
-{}
+#include "Canavar/Engine/Manager/RenderingManager.h"
 
 void Canavar::Engine::Painter::PostInitialize()
 {
-    mRendererManager = mManagerProvider->GetRenderingManager();
-    mNodeManager = mManagerProvider->GetNodeManager();
+    mRendererManager = GetRenderingContext()->GetRenderingManager();
+    mNodeManager = GetRenderingContext()->GetNodeManager();
 }
 
 void Canavar::Engine::Painter::Update(float)

@@ -11,9 +11,9 @@ namespace Canavar::Engine
     class LightManager : public Manager
     {
       public:
-        explicit LightManager(QObject *pParent);
+        using Manager::Manager;
 
-        QVector<PointLightPtr> GetPointLightsAround(QVector3D targetPosition, float radius);
+        QVector<PointLight *> GetPointLightsAround(QVector3D TargetPosition, float Radius);
 
         const QVector<PointLightPtr> &GetPointLights() const;
         const QVector<DirectionalLightPtr> &GetDirectionalLights() const;
@@ -27,5 +27,4 @@ namespace Canavar::Engine
 
         friend class NodeManager;
     };
-
 }

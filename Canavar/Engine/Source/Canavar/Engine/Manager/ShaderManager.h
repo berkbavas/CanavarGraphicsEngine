@@ -10,7 +10,7 @@ namespace Canavar::Engine
     class ShaderManager : public Manager
     {
       public:
-        explicit ShaderManager(QObject* pParent);
+        using Manager::Manager;
 
         void Initialize() override;
         void Shutdown() override;

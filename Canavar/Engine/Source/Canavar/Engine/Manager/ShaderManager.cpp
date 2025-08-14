@@ -1,9 +1,5 @@
 #include "ShaderManager.h"
 
-Canavar::Engine::ShaderManager::ShaderManager(QObject* pParent)
-    : Manager(pParent)
-{}
-
 void Canavar::Engine::ShaderManager::Initialize()
 {
     mModelShader = new Shader(ShaderType::Model, "Model Shader");

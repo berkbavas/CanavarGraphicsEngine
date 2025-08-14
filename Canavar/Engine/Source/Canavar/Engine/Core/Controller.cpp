@@ -4,19 +4,21 @@
 #include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Core/Widget.h"
 #include "Canavar/Engine/Core/Window.h"
+#include "Canavar/Engine/Manager/BoundingBoxRenderer.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
-#include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Manager/Painter.h"
+#include "Canavar/Engine/Manager/RenderingManager.h"
+#include "Canavar/Engine/Manager/ShaderManager.h"
+#include "Canavar/Engine/Manager/ShadowMappingRenderer.h"
+#include "Canavar/Engine/Manager/TextRenderer.h"
 #include "Canavar/Engine/Util/Logger.h"
 
 #include <imgui.h>
 
 #include <QThread>
 #include <QtImGui.h>
-
 
 Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, bool withImGui, QObject* pParent)
     : QObject(pParent)
@@ -30,7 +32,7 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     {
         if (withImGui)
         {
-            mImGuiWidget = new ImGuiWidget(this);
+            mImGuiWidget = new ImGuiWidget(mRenderingContext, this);
         }
 
         connect(mWindow, &Window::Initialize, this, &Controller::Initialize);
@@ -47,7 +49,7 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     {
         if (withImGui)
         {
-            mImGuiWidget = new ImGuiWidget(this);
+            mImGuiWidget = new ImGuiWidget(mRenderingContext, this);
         }
 
         connect(mWidget, &Widget::Initialize, this, &Controller::Initialize);
@@ -62,31 +64,28 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     }
     else
     {
-        CGE_EXIT_FAILURE("Controller: Unsupported rendering context!");
+        CGE_EXIT_FAILURE("Controller::Controller: Unsupported rendering context!");
     }
 
-    mShaderManager = new ShaderManager(this);
-    mNodeManager = new NodeManager(this);
-    mCameraManager = new CameraManager(this);
-    mRenderingManager = new RenderingManager(this);
-    mLightManager = new LightManager(this);
-    mPainter = new Painter(this);
+    mShaderManager = new ShaderManager(mRenderingContext, this);
+    mNodeManager = new NodeManager(mRenderingContext, this);
+    mCameraManager = new CameraManager(mRenderingContext, this);
+    mRenderingManager = new RenderingManager(mRenderingContext, this);
+    mLightManager = new LightManager(mRenderingContext, this);
+    mPainter = new Painter(mRenderingContext, this);
+    mTextRenderer = new TextRenderer(mRenderingContext, this);
+    mShadowMappingRenderer = new ShadowMappingRenderer(mRenderingContext, this);
+    mBoundingBoxRenderer = new BoundingBoxRenderer(mRenderingContext, this);
 
-    if (mImGuiWidget)
-    {
-        mImGuiWidget->SetCameraManager(mCameraManager);
-        mImGuiWidget->SetNodeManager(mNodeManager);
-        mImGuiWidget->SetRenderingManager(mRenderingManager);
-        mImGuiWidget->SetPainter(mPainter);
-        AddEventReceiver(mImGuiWidget);
-    }
-
-    AddEventReceiver(mPainter);
-    AddEventReceiver(mShaderManager);
-    AddEventReceiver(mNodeManager);
-    AddEventReceiver(mCameraManager);
-    AddEventReceiver(mRenderingManager);
-    AddEventReceiver(mLightManager);
+    mRenderingContext->mShaderManager = mShaderManager;
+    mRenderingContext->mNodeManager = mNodeManager;
+    mRenderingContext->mCameraManager = mCameraManager;
+    mRenderingContext->mRenderingManager = mRenderingManager;
+    mRenderingContext->mLightManager = mLightManager;
+    mRenderingContext->mPainter = mPainter;
+    mRenderingContext->mTextRenderer = mTextRenderer;
+    mRenderingContext->mShadowMappingRenderer = mShadowMappingRenderer;
+    mRenderingContext->mBoundingBoxRenderer = mBoundingBoxRenderer;
 
     mManagers.push_back(mPainter);
     mManagers.push_back(mShaderManager);
@@ -94,6 +93,9 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     mManagers.push_back(mCameraManager);
     mManagers.push_back(mRenderingManager);
     mManagers.push_back(mLightManager);
+    mManagers.push_back(mTextRenderer);
+    mManagers.push_back(mShadowMappingRenderer);
+    mManagers.push_back(mBoundingBoxRenderer);
 
     connect(mRenderingManager, &RenderingManager::RenderLoop, this, &Controller::OnRenderLoop, Qt::DirectConnection);
 }
@@ -105,12 +107,10 @@ Canavar::Engine::Controller::~Controller()
 
     mRenderingContext->MakeCurrent();
 
-    for (const auto pReceiver : mEventReceivers)
+    for (const auto pManager : mManagers)
     {
-        pReceiver->Shutdown();
+        pManager->Shutdown();
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::Initialize()
@@ -122,23 +122,35 @@ void Canavar::Engine::Controller::Initialize()
     Q_INIT_RESOURCE(Engine);
     Q_INIT_RESOURCE(EngineBigObjects);
 
+    if (mImGuiWidget)
+    {
+        AddEventReceiver(mImGuiWidget);
+    }
+
+    AddEventReceiver(mPainter);
+    AddEventReceiver(mShaderManager);
+    AddEventReceiver(mNodeManager);
+    AddEventReceiver(mCameraManager);
+    AddEventReceiver(mRenderingManager);
+    AddEventReceiver(mLightManager);
+    AddEventReceiver(mTextRenderer);
+    AddEventReceiver(mShadowMappingRenderer);
+    AddEventReceiver(mBoundingBoxRenderer);
+
     for (const auto pManager : mManagers)
     {
-        pManager->SetManagerProvider(this);
+        pManager->Initialize();
     }
 
-    for (const auto pReceiver : mEventReceivers)
+    for (const auto pManager : mManagers)
     {
-        pReceiver->Initialize();
-    }
-
-    for (const auto pReceiver : mEventReceivers)
-    {
-        pReceiver->PostInitialize();
+        pManager->PostInitialize();
     }
 
     if (mImGuiWidget)
     {
+        mImGuiWidget->PostInitialize();
+
         if (mWindow)
         {
             mRenderRef = QtImGui::initialize(mWindow, false);
@@ -152,56 +164,69 @@ void Canavar::Engine::Controller::Initialize()
             CGE_EXIT_FAILURE("Controller::Initialize: Unsupported rendering context for ImGui!");
         }
 
-        connect(mImGuiWidget, &ImGuiWidget::GoToObject, this, [=](Engine::ObjectPtr pObject) {
-            mCameraManager->SetActiveCamera(mCameraManager->GetFreeCamera());
-            mCameraManager->GetFreeCamera()->GoToObject(pObject);
-        });
+        connect(mImGuiWidget,
+                &ImGuiWidget::GoToObject,
+                this,
+                [=](Engine::ObjectPtr pObject) //
+                {
+                    mCameraManager->SetActiveCamera(mCameraManager->GetFreeCamera());
+                    mCameraManager->GetFreeCamera()->GoToObject(pObject);
+                });
     }
+
+    emit Initialized();
+    emit PostInitialized();
 }
 
 void Canavar::Engine::Controller::Render(float ifps)
 {
     mDevicePixelRatio = mRenderingContext->GetDevicePixelRatio();
 
+    mCameraManager->SetDevicePixelRatio(mDevicePixelRatio);
+
+    auto* pActiveCamera = mCameraManager->GetActiveCamera();
+
+    if (pActiveCamera == nullptr)
+    {
+        return;
+    }
+
     for (const auto pManager : mManagers)
     {
-        pManager->SetDevicePixelRatio(mDevicePixelRatio);
+        pManager->Update(ifps);
     }
 
-    for (const auto pReceiver : mEventReceivers)
+    emit Updated(ifps);
+
+    for (const auto pManager : mManagers)
     {
-        pReceiver->Update(ifps);
+        pManager->Render(pActiveCamera);
     }
 
-    for (const auto pReceiver : mEventReceivers)
+    for (const auto pManager : mManagers)
     {
-        pReceiver->Render(ifps);
+        pManager->PostRender(ifps);
     }
 
-    for (const auto pReceiver : mEventReceivers)
-    {
-        pReceiver->PostRender(ifps);
-    }
+    emit PostRendered(ifps);
 
     if (mImGuiWidget)
     {
         QtImGui::newFrame(mRenderRef);
-
-        for (const auto pReceiver : mEventReceivers)
-        {
-            pReceiver->DrawImGui(ifps);
-        }
-
+        mImGuiWidget->DrawImGui(ifps);
+        emit DrawImGui(ifps);
         ImGui::Render();
         QtImGui::render(mRenderRef);
     }
 }
 
-void Canavar::Engine::Controller::OnRenderLoop(float ifps)
+void Canavar::Engine::Controller::OnRenderLoop()
 {
-    for (const auto pReceiver : mEventReceivers)
+    auto* pActiveCamera = mCameraManager->GetActiveCamera();
+
+    for (const auto pManager : mManagers)
     {
-        pReceiver->InRender(ifps);
+        pManager->InRender(pActiveCamera);
     }
 }
 
@@ -216,8 +241,6 @@ void Canavar::Engine::Controller::OnKeyPressed(QKeyEvent* event)
             return;
         }
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
@@ -231,8 +254,6 @@ void Canavar::Engine::Controller::OnKeyReleased(QKeyEvent* event)
             return;
         }
     }
-
-    mRenderingContext->DoneCurrent();
 }
 
 void Canavar::Engine::Controller::AddEventReceiver(EventReceiver* pReceiver)
@@ -254,9 +275,9 @@ void Canavar::Engine::Controller::Resize(int width, int height)
 
     mRenderingContext->MakeCurrent();
 
-    for (const auto pReceiver : mEventReceivers)
+    for (const auto pManager : mManagers)
     {
-        pReceiver->Resize(mWidth, mHeight);
+        pManager->Resize(mWidth, mHeight);
     }
 }
 
@@ -310,34 +331,4 @@ void Canavar::Engine::Controller::OnWheelMoved(QWheelEvent* event)
             return;
         }
     }
-}
-
-Canavar::Engine::NodeManager* Canavar::Engine::Controller::GetNodeManager()
-{
-    return mNodeManager;
-}
-
-Canavar::Engine::ShaderManager* Canavar::Engine::Controller::GetShaderManager()
-{
-    return mShaderManager;
-}
-
-Canavar::Engine::CameraManager* Canavar::Engine::Controller::GetCameraManager()
-{
-    return mCameraManager;
-}
-
-Canavar::Engine::LightManager* Canavar::Engine::Controller::GetLightManager()
-{
-    return mLightManager;
-}
-
-Canavar::Engine::RenderingManager* Canavar::Engine::Controller::GetRenderingManager()
-{
-    return mRenderingManager;
-}
-
-Canavar::Engine::Painter* Canavar::Engine::Controller::GetPainter()
-{
-    return mPainter;
 }

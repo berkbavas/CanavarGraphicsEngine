@@ -9,13 +9,13 @@ namespace Canavar::Engine
     class CameraManager : public Manager
     {
       public:
-        explicit CameraManager(QObject *pParent);
+        using Manager::Manager;
 
         void Initialize() override;
-
         void Resize(int w, int h);
-        void SetDevicePixelRatio(float dpr);
         void Update(float ifps) override;
+
+        void SetDevicePixelRatio(float dpr);
 
         bool KeyPressed(QKeyEvent *) override;
         bool KeyReleased(QKeyEvent *) override;
@@ -25,7 +25,7 @@ namespace Canavar::Engine
         bool WheelMoved(QWheelEvent *) override;
 
         void SetActiveCamera(CameraPtr pCamera);
-        CameraPtr GetActiveCamera() const;
+        PerspectiveCamera* GetActiveCamera() const;
 
       private:
         CameraPtr mActiveCamera{ nullptr };

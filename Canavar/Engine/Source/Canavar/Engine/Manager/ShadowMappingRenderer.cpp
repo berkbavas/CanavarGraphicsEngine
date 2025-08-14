@@ -1,21 +1,29 @@
 #include "ShadowMappingRenderer.h"
 
-#include "Canavar/Engine/Manager/CameraManager.h"
+#include "Canavar/Engine/Core/ShadowMappingFramebuffer.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager/ShadowMapping/ShadowMappingFramebuffer.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
 #include "Canavar/Engine/Util/Math.h"
 
 void Canavar::Engine::ShadowMappingRenderer::Initialize()
 {
-    initializeOpenGLFunctions();
-
     mFramebuffer = new ShadowMappingFramebuffer(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
-    mShadowMappingShader = mShaderManager->GetShader(ShaderType::ShadowMapping);
 }
 
-void Canavar::Engine::ShadowMappingRenderer::Render(float ifps)
+void Canavar::Engine::ShadowMappingRenderer::PostInitialize()
 {
+    mNodeManager = GetRenderingContext()->GetNodeManager();
+    mShadowMappingShader = GetRenderingContext()->GetShaderManager()->GetShader(ShaderType::ShadowMapping);
+    mSun = mNodeManager->GetSun();
+}
+
+void Canavar::Engine::ShadowMappingRenderer::Render(PerspectiveCamera*)
+{
+    if (!mShadowsEnabled)
+    {
+        return;
+    }
+
     CalculateShadowViewProjectionMatrix();
     RenderForShadowMapping();
 }

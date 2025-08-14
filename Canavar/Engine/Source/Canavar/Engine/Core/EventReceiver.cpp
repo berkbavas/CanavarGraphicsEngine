@@ -1,23 +1,5 @@
 #include "EventReceiver.h"
 
-void Canavar::Engine::EventReceiver::Initialize() {}
-
-void Canavar::Engine::EventReceiver::PostInitialize() {}
-
-void Canavar::Engine::EventReceiver::Resize(int w, int h) {}
-
-void Canavar::Engine::EventReceiver::Update(float ifps) {}
-
-void Canavar::Engine::EventReceiver::Render(float ifps) {}
-
-void Canavar::Engine::EventReceiver::InRender(float ifps) {}
-
-void Canavar::Engine::EventReceiver::PostRender(float ifps) {}
-
-void Canavar::Engine::EventReceiver::DrawImGui(float ifps) {}
-
-void Canavar::Engine::EventReceiver::Shutdown() {}
-
 bool Canavar::Engine::EventReceiver::KeyPressed(QKeyEvent *)
 {
     return false;

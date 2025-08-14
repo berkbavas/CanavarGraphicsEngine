@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Core/Shader.h"
+#include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 
 #include <QOpenGLFunctions_4_5_Core>
@@ -19,21 +20,20 @@ namespace Canavar::Engine
         unsigned int Advance;   // Offset to advance to next glyph
     };
 
-    class TextRenderer : protected QOpenGLFunctions_4_5_Core
+    class TextRenderer : public Manager, protected QOpenGLFunctions_4_5_Core
     {
       public:
-        TextRenderer() = default;
-        ~TextRenderer();
+        using Manager::Manager;
 
-        void Initialize();
+        void Initialize() override;
+        void Shutdown() override;
 
-        void Render(Camera *pActiveCamera);
-
-        void Resize(int w, int h);
+        void InRender(PerspectiveCamera *pActiveCamera) override;
+        void Resize(int w, int h) override;
 
       private:
         void Render2DTexts();
-        void Render3DTexts();
+        void Render3DTexts(PerspectiveCamera *pActiveCamera);
 
         void RenderText(Shader *pShader, const QString &text, float x, float y, float scale, const QVector3D &color);
         void RenderCharacter(Shader *pShader, const Character &ch, float x, float y, float scale);
@@ -46,16 +46,13 @@ namespace Canavar::Engine
         Shader *mText2DShader{ nullptr };
         Shader *mText3DShader{ nullptr };
 
-        Camera *mActiveCamera{ nullptr };
-
         QMatrix4x4 mProjectionMatrix;
 
         // Vertex Array Object and Vertex Buffer Object for text rendering
         GLuint mVAO{ 0 };
         GLuint mVBO{ 0 };
 
-        DEFINE_MEMBER_PTR(NodeManager, NodeManager);
-        DEFINE_MEMBER_PTR(ShaderManager, ShaderManager);
+        NodeManager *mNodeManager;
 
         static constexpr const char *FONT_PATH = ":/Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf";
     };

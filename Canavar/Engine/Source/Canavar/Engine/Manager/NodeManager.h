@@ -23,7 +23,7 @@ namespace Canavar::Engine
     class NodeManager : public Manager
     {
       public:
-        explicit NodeManager(QObject *pParent);
+        using Manager::Manager;
 
         void Initialize() override;
         void PostInitialize() override;

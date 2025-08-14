@@ -1,5 +1,12 @@
 #include "ImGuiWidget.h"
 
+#include "Canavar/Engine/Core/RenderingContext.h"
+#include "Canavar/Engine/Manager/BoundingBoxRenderer.h"
+#include "Canavar/Engine/Manager/CameraManager.h"
+#include "Canavar/Engine/Manager/NodeManager.h"
+#include "Canavar/Engine/Manager/Painter.h"
+#include "Canavar/Engine/Manager/RenderingManager.h"
+#include "Canavar/Engine/Manager/ShadowMappingRenderer.h"
 #include "Canavar/Engine/Node/NodeFactory.h"
 #include "Canavar/Engine/Node/Object/DummyObject/DummyObject.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
@@ -14,12 +21,20 @@
 #include <QFileDialog>
 #include <QtImGui.h>
 
-Canavar::Engine::ImGuiWidget::ImGuiWidget(QObject *pParent)
+Canavar::Engine::ImGuiWidget::ImGuiWidget(RenderingContext *pRenderingContext, QObject *pParent)
     : QObject(pParent)
+    , mRenderingContext(pRenderingContext)
 {}
 
 void Canavar::Engine::ImGuiWidget::PostInitialize()
 {
+    mNodeManager = mRenderingContext->GetNodeManager();
+    mCameraManager = mRenderingContext->GetCameraManager();
+    mRenderingManager = mRenderingContext->GetRenderingManager();
+    mPainter = mRenderingContext->GetPainter();
+    mShadowMappingRenderer = mRenderingContext->GetShadowMappingRenderer();
+    mBoundingBoxRenderer = mRenderingContext->GetBoundingBoxRenderer();
+
     mSky = mNodeManager->GetSky();
     mHaze = mNodeManager->GetHaze();
     mSun = mNodeManager->GetSun();
@@ -530,26 +545,25 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
 {
     if (ImGui::CollapsingHeader("Render Settings"))
     {
-        const auto pShadowMappingRenderer = mRenderingManager->GetShadowMappingRenderer();
-        ImGui::Checkbox("Draw Bounding Boxes", &mRenderingManager->GetDrawBoundingBoxes_NonConst());
+        ImGui::Checkbox("Draw Bounding Boxes", &mBoundingBoxRenderer->GetDrawBoundingBoxes_NonConst());
 
-        ImGui::Checkbox("Shadows Enabled", &mRenderingManager->GetShadowsEnabled_NonConst());
-        ImGui::Checkbox("Use Orthographic Projection", &pShadowMappingRenderer->GetUseOrthographicProjection_NonConst());
-        ImGui::SliderFloat("Shadow Bias", &mRenderingManager->GetShadowBias_NonConst(), 0.00001f, 0.001f, "%.5f");
-        ImGui::SliderInt("Shadow Samples", &mRenderingManager->GetShadowSamples_NonConst(), 1, 6);
+        ImGui::Checkbox("Shadows Enabled", &mShadowMappingRenderer->GetShadowsEnabled_NonConst());
+        ImGui::Checkbox("Use Orthographic Projection", &mShadowMappingRenderer->GetUseOrthographicProjection_NonConst());
+        ImGui::SliderFloat("Shadow Bias", &mShadowMappingRenderer->GetShadowBias_NonConst(), 0.00001f, 0.001f, "%.5f");
+        ImGui::SliderInt("Shadow Samples", &mShadowMappingRenderer->GetShadowSamples_NonConst(), 1, 6);
 
-        if (pShadowMappingRenderer->GetUseOrthographicProjection())
+        if (mShadowMappingRenderer->GetUseOrthographicProjection())
         {
-            ImGui::SliderFloat("Shadow Orthographic Projection Size", &pShadowMappingRenderer->GetOrthographicSize_NonConst(), 10, 1000);
+            ImGui::SliderFloat("Shadow Orthographic Projection Size", &mShadowMappingRenderer->GetOrthographicSize_NonConst(), 10, 1000);
         }
         else
         {
-            ImGui::SliderFloat("Shadow Perspective Projection FOV", &pShadowMappingRenderer->GetFov_NonConst(), 5, 90);
-            ImGui::SliderFloat("Shadow Perspective Projection Z-Near", &pShadowMappingRenderer->GetZNear_NonConst(), 1, 20);
-            ImGui::SliderFloat("Shadow Perspective Projection Z-Far", &pShadowMappingRenderer->GetZFar_NonConst(), 20, 1000);
+            ImGui::SliderFloat("Shadow Perspective Projection FOV", &mShadowMappingRenderer->GetFov_NonConst(), 5, 90);
+            ImGui::SliderFloat("Shadow Perspective Projection Z-Near", &mShadowMappingRenderer->GetZNear_NonConst(), 1, 20);
+            ImGui::SliderFloat("Shadow Perspective Projection Z-Far", &mShadowMappingRenderer->GetZFar_NonConst(), 20, 1000);
         }
 
-        ImGui::SliderFloat("Sun Distance", &pShadowMappingRenderer->GetSunDistance_NonConst(), 1, 1000);
+        ImGui::SliderFloat("Sun Distance", &mShadowMappingRenderer->GetSunDistance_NonConst(), 1, 1000);
 
         ImGui::Text("Motion Blur");
         ImGui::Checkbox("Motion Blur Enabled", &mRenderingManager->GetMotionBlurEnabled_NonConst());
@@ -739,11 +753,11 @@ void Canavar::Engine::ImGuiWidget::DrawWorldPositionsWidget()
 
 QVector3D Canavar::Engine::ImGuiWidget::GetWorldPositionForCreatedObject() const
 {
-    Engine::CameraPtr pActiveCamera = mCameraManager->GetActiveCamera();
-    QVector3D cameraPosition = pActiveCamera->GetWorldPosition();
-    QVector3D viewDirection = pActiveCamera->GetViewDirection();
+    Engine::Camera* pActiveCamera = mCameraManager->GetActiveCamera();
+    QVector3D CamPos = pActiveCamera->GetWorldPosition();
+    QVector3D ViewDir = pActiveCamera->GetViewDirection();
 
-    return cameraPosition + 10 * viewDirection;
+    return CamPos + 10 * ViewDir;
 }
 
 std::optional<std::string> Canavar::Engine::ImGuiWidget::InputText(const std::string &label, const std::string &text)

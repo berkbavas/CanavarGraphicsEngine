@@ -3,8 +3,8 @@
 #include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
-#include "Canavar/Engine/Manager/RenderingManager/RenderingManager.h"
 #include "Canavar/Engine/Manager/Painter.h"
+#include "Canavar/Engine/Manager/RenderingManager.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Light/PointLight.h"
@@ -16,16 +16,17 @@
 
 namespace Canavar::Engine
 {
+    class RenderingContext;
+
     class ImGuiWidget : public QObject, public EventReceiver
     {
         Q_OBJECT
       public:
-        explicit ImGuiWidget(QObject *pParent);
+        explicit ImGuiWidget(RenderingContext *pRenderingContext, QObject *pParent);
 
-        void PostInitialize() override;
-        void DrawImGui(float ifps) override;
+        void PostInitialize();
+        void DrawImGui(float ifps);
 
-        // EventReceiver overrides
         bool KeyPressed(QKeyEvent *) override;
         bool KeyReleased(QKeyEvent *) override;
         bool MousePressed(QMouseEvent *) override;
@@ -47,15 +48,15 @@ namespace Canavar::Engine
         void DrawHaze();
         void DrawTerrain();
 
-        void DrawObject(Engine::ObjectPtr pObject);
-        void DrawModel(Engine::ModelPtr pModel);
-        void DrawText2D(Engine::Text2DPtr pText);
-        void DrawText3D(Engine::Text3DPtr pText);
-        void DrawCamera(Engine::PerspectiveCameraPtr pCamera);
-        void DrawDirectionalLight(Engine::DirectionalLightPtr pLight);
-        void DrawPointLight(Engine::PointLightPtr pLight);
-        void DrawNozzleEffect(Engine::NozzleEffectPtr pEffect);
-        void DrawLightningStrike(Engine::LightningStrikeBasePtr pLightning);
+        void DrawObject(ObjectPtr pObject);
+        void DrawModel(ModelPtr pModel);
+        void DrawText2D(Text2DPtr pText);
+        void DrawText3D(Text3DPtr pText);
+        void DrawCamera(PerspectiveCameraPtr pCamera);
+        void DrawDirectionalLight(DirectionalLightPtr pLight);
+        void DrawPointLight(PointLightPtr pLight);
+        void DrawNozzleEffect(NozzleEffectPtr pEffect);
+        void DrawLightningStrike(LightningStrikeBasePtr pLightning);
 
         void DrawCreateObjectWidget();
         void DrawCreateModelWidget();
@@ -76,22 +77,25 @@ namespace Canavar::Engine
         void SetSelectedMesh(NodePtr pNode, uint32_t MeshId);
         void ProcessMouseAction(int x, int y);
 
-        DEFINE_MEMBER_PTR(Engine::NodeManager, NodeManager);
-        DEFINE_MEMBER_PTR(Engine::CameraManager, CameraManager);
-        DEFINE_MEMBER_PTR(Engine::RenderingManager, RenderingManager);
-        DEFINE_MEMBER_PTR(Engine::Painter, Painter);
+        RenderingContext *mRenderingContext{ nullptr };
+        NodeManager *mNodeManager{ nullptr };
+        CameraManager *mCameraManager{ nullptr };
+        RenderingManager *mRenderingManager{ nullptr };
+        Painter *mPainter{ nullptr };
+        ShadowMappingRenderer *mShadowMappingRenderer{ nullptr };
+        BoundingBoxRenderer *mBoundingBoxRenderer{ nullptr };
 
-        Engine::NodePtr mSelectedNode{ nullptr };
-        Engine::MeshPtr mSelectedMesh{ nullptr };
+        NodePtr mSelectedNode{ nullptr };
+        MeshPtr mSelectedMesh{ nullptr };
 
-        Engine::DirectionalLightPtr mSun;
-        Engine::SkyPtr mSky;
-        Engine::HazePtr mHaze;
-        Engine::TerrainPtr mTerrain;
+        DirectionalLightPtr mSun;
+        SkyPtr mSky;
+        HazePtr mHaze;
+        TerrainPtr mTerrain;
 
         QVector3D mFragmentLocalPosition;
         QVector3D mFragmentWorldPosition;
-        Engine::NodeInfo mNodeInfo;
+        NodeInfo mNodeInfo;
 
         QVector<QVector3D> mSavedWorldPositions;
         int mSelectedWorldPositionIndex{ -1 };

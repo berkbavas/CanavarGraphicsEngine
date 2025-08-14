@@ -2,25 +2,21 @@
 
 #include "Canavar/Engine/Util/Logger.h"
 
-Canavar::Engine::LightManager::LightManager(QObject* pParent)
-    : Manager(pParent)
-{}
-
-QVector<Canavar::Engine::PointLightPtr> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D targetPosition, float radius)
+QVector<Canavar::Engine::PointLight*> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D TargetPosition, float Radius)
 {
-    QVector<PointLightPtr> result;
+    QVector<PointLight*> Result;
 
     for (const auto& pLight : mPointLights)
     {
-        float distance = pLight->GetWorldPosition().distanceToPoint(targetPosition);
+        float Distance = pLight->GetWorldPosition().distanceToPoint(TargetPosition);
 
-        if (distance <= radius)
+        if (Distance <= Radius)
         {
-            result.push_back(pLight);
+            Result.push_back(pLight.get());
         }
     }
 
-    return result;
+    return Result;
 }
 
 void Canavar::Engine::LightManager::AddLight(LightPtr pLight)

@@ -1,25 +1,34 @@
 #include "BoundingBoxRenderer.h"
 
+#include "Canavar/Engine/Core/RenderingContext.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/ShaderManager.h"
 
-void Canavar::Engine::BoundingBoxRenderer::Initialize()
+void Canavar::Engine::BoundingBoxRenderer::PostInitialize()
 {
+    const auto* pRenderingContext = GetRenderingContext();
+
+    mNodeManager = pRenderingContext->GetNodeManager();
+    mLineShader = pRenderingContext->GetShaderManager()->GetShader(ShaderType::Line);
     mCubeStrip = new CubeStrip;
-    mLineShader = mShaderManager->GetShader(ShaderType::Line);
 }
 
-void Canavar::Engine::BoundingBoxRenderer::Render(Camera* pCamera, float ifps)
+void Canavar::Engine::BoundingBoxRenderer::InRender(PerspectiveCamera* pCamera)
 {
+    if (!mDrawBoundingBoxes)
+    {
+        return;
+    }
+
     const auto& VP = pCamera->GetViewProjectionMatrix();
-    const auto& objects = mNodeManager->GetObjects();
+    const auto& Objects = mNodeManager->GetObjects();
 
     mLineShader->Bind();
-    mLineShader->SetUniformValue("uColor", LINE_COLOR);
-    mLineShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    mLineShader->SetUniformValue("uColor", mLineColor);
+    mLineShader->SetUniformValue("uZFar", pCamera->GetZFar());
 
-    for (const auto& pObject : objects)
+    for (const auto& pObject : Objects)
     {
         if (pObject->GetVisible() == false)
         {

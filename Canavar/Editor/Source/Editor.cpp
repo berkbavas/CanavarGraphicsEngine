@@ -8,7 +8,7 @@ Canavar::Editor::Editor::Editor(QObject *pParent)
 {
     mWindow = new Canavar::Engine::Window(nullptr);
     mController = new Canavar::Engine::Controller(mWindow, true, this);
-    mController->AddEventReceiver(this);
+    connect(mController, &Canavar::Engine::Controller::Initialized, this, &Editor::Initialize);
 }
 
 Canavar::Editor::Editor::~Editor()
@@ -21,8 +21,8 @@ void Canavar::Editor::Editor::Run()
     mWindow->showMinimized();
 }
 
-void Canavar::Editor::Editor::PostInitialize()
+void Canavar::Editor::Editor::Initialize()
 {
     mWindow->showMaximized();
-    mController->GetNodeManager()->ImportNodes("Resources/Empty.json");
+    mWindow->GetNodeManager()->ImportNodes("Resources/Empty.json");
 }

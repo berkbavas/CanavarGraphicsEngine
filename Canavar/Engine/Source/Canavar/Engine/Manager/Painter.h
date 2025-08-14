@@ -15,7 +15,7 @@ namespace Canavar::Engine
     class Painter : public Manager
     {
       public:
-        explicit Painter(QObject *pParent);
+        using Manager::Manager;
 
         void PostInitialize() override;
 
