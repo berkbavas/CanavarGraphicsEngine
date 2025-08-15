@@ -18,7 +18,6 @@
 #include <QOpenGLFramebufferObjectFormat>
 #include <QOpenGLFunctions_4_5_Core>
 
-
 namespace Canavar::Engine
 {
     class ShaderManager;
@@ -33,7 +32,6 @@ namespace Canavar::Engine
     {
         Multisample,
         Singlesample,
-        MotionBlur,
         Aces,
         Cinematic,
         Temp
@@ -80,7 +78,6 @@ namespace Canavar::Engine
 
         void ApplyAcesPass();
         void ApplyCinematicPass();
-        void ApplyMotionBlurPass();
 
         void DestroyFramebuffers();
 
@@ -101,11 +98,7 @@ namespace Canavar::Engine
         Shader *mLineShader{ nullptr };
         Shader *mTerrainShader{ nullptr };
         Shader *mCinematicShader{ nullptr };
-        Shader *mBrightPassShader{ nullptr };
-        Shader *mGodRaysShader{ nullptr };
-        Shader *mCompositionShader{ nullptr };
         Shader *mAcesShader{ nullptr };
-        Shader *mMotionBlurShader{ nullptr };
 
         SkyPtr mSky;
         DirectionalLightPtr mSun;
@@ -116,7 +109,7 @@ namespace Canavar::Engine
 
         std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
-        static constexpr std::array<Framebuffer, 6> FBO_TYPES = { Multisample, Singlesample, MotionBlur, Aces, Cinematic, Temp };
+        static constexpr std::array<Framebuffer, 5> FBO_TYPES = { Multisample, Singlesample, Aces, Cinematic, Temp };
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
@@ -128,7 +121,6 @@ namespace Canavar::Engine
                 GL_COLOR_ATTACHMENT1, // Fragment local position
                 GL_COLOR_ATTACHMENT2, // Fragment world position
                 GL_COLOR_ATTACHMENT3, // Node info
-                GL_COLOR_ATTACHMENT4, // Fragment velocity and depth
             };
 
         float mIfps;
@@ -136,34 +128,16 @@ namespace Canavar::Engine
 
         // ACES
         DEFINE_MEMBER(bool, AcesEnabled, false);
+        DEFINE_MEMBER(float, Exposure, 0.3f);
 
-        // Cinematic Look
+        // Cinematic
         DEFINE_MEMBER(bool, CinematicEnabled, true);
         DEFINE_MEMBER(float, VignetteRadius, 0.95f);
         DEFINE_MEMBER(float, VignetteSoftness, 0.5f);
         DEFINE_MEMBER(float, GrainStrength, 0.00f);
 
-        // God Rays
-        DEFINE_MEMBER(float, BrightnessThreshold, 0.5f);
-        DEFINE_MEMBER(int, NumberOfSamples, 100);
-        DEFINE_MEMBER(float, Density, 0.1f);
-        DEFINE_MEMBER(float, Decay, 0.95f);
-        DEFINE_MEMBER(float, Weight, 0.1f);
-        DEFINE_MEMBER(float, Exposure, 0.3f);
-
-        // Motion Blur
-        DEFINE_MEMBER(bool, MotionBlurEnabled, false);
-        DEFINE_MEMBER(float, MotionBlurStrength, 0.15f);
-        DEFINE_MEMBER(int, MotionBlurSamples, 20);
-        DEFINE_MEMBER(float, MotionBlurDepthThreshold, 0.5f);
-
         // Mesh Selection
         DEFINE_MEMBER(bool, MeshSelectionEnabled, false);
-
-        QQuaternion mPreviousRotation;
-        QMatrix4x4 mPreviousViewMatrix;
-        QMatrix4x4 mPreviousProjectionMatrix;
-        QMatrix4x4 mPreviousViewProjectionMatrix;
 
         float mDevicePixelRatio{ 1.0f };
     };

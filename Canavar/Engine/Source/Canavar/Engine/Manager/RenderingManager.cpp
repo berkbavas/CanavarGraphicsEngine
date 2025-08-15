@@ -18,8 +18,6 @@ void Canavar::Engine::RenderingManager::Initialize()
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormats[Singlesample].setSamples(0);
     mFramebufferFormats[Singlesample].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-    mFramebufferFormats[MotionBlur].setSamples(0);
-    mFramebufferFormats[MotionBlur].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
     mFramebufferFormats[Aces].setSamples(0);
     mFramebufferFormats[Aces].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
     mFramebufferFormats[Cinematic].setSamples(0);
@@ -58,11 +56,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mLightningStrikeShader = mShaderManager->GetShader(ShaderType::LightningStrike);
     mLineShader = mShaderManager->GetShader(ShaderType::Line);
     mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
-    mBrightPassShader = mShaderManager->GetShader(ShaderType::BrightPass);
-    mGodRaysShader = mShaderManager->GetShader(ShaderType::GodRays);
-    mCompositionShader = mShaderManager->GetShader(ShaderType::Composition);
     mAcesShader = mShaderManager->GetShader(ShaderType::Aces);
-    mMotionBlurShader = mShaderManager->GetShader(ShaderType::MotionBlur);
 }
 
 void Canavar::Engine::RenderingManager::Shutdown()
@@ -87,11 +81,6 @@ void Canavar::Engine::RenderingManager::Render(PerspectiveCamera* pActiveCamera)
     glPolygonOffset(1.0f, 1.0f);
     glDisable(GL_BLEND);
 
-    mPreviousViewMatrix.setToIdentity();
-    mPreviousViewMatrix.rotate(mPreviousRotation.conjugated());
-    mPreviousViewMatrix.translate(-pActiveCamera->GetWorldPosition());
-    mPreviousViewProjectionMatrix = mPreviousProjectionMatrix * mPreviousViewMatrix;
-
     RenderToFramebuffer(mFramebuffers[Multisample], pActiveCamera);
 
     // ----------------------- BLIT 4X MULTISAMPLE FBO TO SINGLESAMPLE FBO -------------------
@@ -110,84 +99,25 @@ void Canavar::Engine::RenderingManager::Render(PerspectiveCamera* pActiveCamera)
     }
 
     DoPostProcessing();
-
-    mPreviousRotation = mActiveCamera->GetWorldRotation();
-    mPreviousProjectionMatrix = mActiveCamera->GetProjectionMatrix();
 }
 
 void Canavar::Engine::RenderingManager::DoPostProcessing()
 {
-    // Bright Pass
-    // {
-    //     mFramebuffers[Pong]->bind();
-    //     glViewport(0, 0, mWidth, mHeight);
-    //     glClearColor(0, 0, 0, 0);
-    //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //     mBrightPassShader->Bind();
-    //     mBrightPassShader->SetUniformValue("uThreshold", mBrightnessThreshold);
-    //     mBrightPassShader->SetSampler("uSceneTexture", 0, mFramebuffers[Singlesample]->textures().at(0));
-    //     mQuad->Render();
-    //     mBrightPassShader->Release();
-    //     mFramebuffers[Pong]->release();
-    // }
-
-    // // God Rays
-    // {
-    //     mFramebuffers[Ping]->bind();
-    //     glViewport(0, 0, mWidth, mHeight);
-    //     glClearColor(0, 0, 0, 0);
-    //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //     mGodRaysShader->Bind();
-    //     mGodRaysShader->SetSampler("uBrightTexture", 0, mFramebuffers[Pong]->texture());
-    //     mGodRaysShader->SetSampler("uDepthTexture", 1, mFramebuffers[Singlesample]->textures().at(4));
-    //     mGodRaysShader->SetUniformValue("uScreenSpaceLightPosition", CalculateSunScreenSpacePosition());
-    //     mGodRaysShader->SetUniformValue("uInverseProjection", mActiveCamera->GetProjectionMatrix().inverted());
-    //     mGodRaysShader->SetUniformValue("uNumSamples", mNumberOfSamples);
-    //     mGodRaysShader->SetUniformValue("uDensity", mDensity);
-    //     mGodRaysShader->SetUniformValue("uDecay", mDecay);
-    //     mGodRaysShader->SetUniformValue("uWeight", mWeight);
-    //     mGodRaysShader->SetUniformValue("uExposure", mExposure);
-    //     mQuad->Render();
-    //     mGodRaysShader->Release();
-    //     mFramebuffers[Ping]->release();
-    // }
-
-    // // Composition Pass
-    // {
-    //     mFramebuffers[Pong]->bind();
-    //     glViewport(0, 0, mWidth, mHeight);
-    //     glClearColor(0, 0, 0, 0);
-    //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    //     mCompositionShader->Bind();
-    //     mCompositionShader->SetSampler("uSceneTexture", 0, mFramebuffers[Singlesample]->textures().at(0));
-    //     mCompositionShader->SetSampler("uRaysTexture", 1, mFramebuffers[Ping]->texture());
-    //     mQuad->Render();
-    //     mCompositionShader->Release();
-    //     mFramebuffers[Pong]->release();
-    // }
-
     QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Singlesample], GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
-    if (mMotionBlurEnabled)
-    {
-        ApplyMotionBlurPass();
-    }
-
-    if (mAcesEnabled)
-    {
-        ApplyAcesPass();
-    }
-
-    if (mCinematicEnabled)
-    {
-        ApplyCinematicPass();
-    }
+    ApplyAcesPass();
+    ApplyCinematicPass();
 
     QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Temp], GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 void Canavar::Engine::RenderingManager::ApplyAcesPass()
 {
+    if (!mAcesEnabled)
+    {
+        return;
+    }
+
     mFramebuffers[Aces]->bind();
     glViewport(0, 0, mWidth, mHeight);
     glClearColor(0, 0, 0, 0);
@@ -204,6 +134,11 @@ void Canavar::Engine::RenderingManager::ApplyAcesPass()
 
 void Canavar::Engine::RenderingManager::ApplyCinematicPass()
 {
+    if (!mCinematicEnabled)
+    {
+        return;
+    }
+
     mFramebuffers[Cinematic]->bind();
     glViewport(0, 0, mWidth, mHeight);
     glClearColor(0, 0, 0, 0);
@@ -220,27 +155,6 @@ void Canavar::Engine::RenderingManager::ApplyCinematicPass()
     mFramebuffers[Cinematic]->release();
 
     QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Cinematic], GL_COLOR_BUFFER_BIT, GL_NEAREST);
-}
-
-void Canavar::Engine::RenderingManager::ApplyMotionBlurPass()
-{
-    mFramebuffers[MotionBlur]->bind();
-    glViewport(0, 0, mWidth, mHeight);
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    mMotionBlurShader->Bind();
-    mMotionBlurShader->SetSampler("uSceneTexture", 9, mFramebuffers[Temp]->texture());
-    mMotionBlurShader->SetSampler("uVelocityTexture", 10, mFramebuffers[Singlesample]->textures().at(4));
-    mMotionBlurShader->SetUniformValue("uStrength", mMotionBlurStrength);
-    mMotionBlurShader->SetUniformValue("uNumberOfSamples", mMotionBlurSamples);
-    mMotionBlurShader->SetUniformValue("uZNear", mActiveCamera->GetZNear());
-    mMotionBlurShader->SetUniformValue("uZFar", mActiveCamera->GetZFar());
-    mMotionBlurShader->SetUniformValue("uDepthThreshold", mMotionBlurDepthThreshold);
-    mQuad->Render();
-    mMotionBlurShader->Release();
-    mFramebuffers[MotionBlur]->release();
-
-    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[MotionBlur], GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 void Canavar::Engine::RenderingManager::DestroyFramebuffers()
@@ -437,7 +351,6 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Perspec
     mTerrainShader->Bind();
 
     mTerrainShader->SetUniformValue("uViewProjectionMatrix", pCamera->GetViewProjectionMatrix());
-    mTerrainShader->SetUniformValue("uPreviousViewProjectionMatrix", mPreviousViewProjectionMatrix);
     mTerrainShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
     mTerrainShader->SetUniformValue("uZFar", pCamera->GetZFar());
     mTerrainShader->SetUniformValue("uCameraPosition", pCamera->GetWorldPosition());
@@ -495,7 +408,6 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Persp
     pShader->SetUniformValue("uHaze.gradient", mHaze->GetGradient());
     pShader->SetUniformValue("uCameraPosition", pCamera->GetWorldPosition());
     pShader->SetUniformValue("uViewProjectionMatrix", pCamera->GetViewProjectionMatrix());
-    pShader->SetUniformValue("uPreviousViewProjectionMatrix", mPreviousViewProjectionMatrix);
     pShader->Release();
 }
 
@@ -565,7 +477,7 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         mFramebuffers[type]->release();
     }
 
-    for (const auto type : { MotionBlur, Aces, Cinematic, Temp })
+    for (const auto type : { Aces, Cinematic, Temp })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
     }

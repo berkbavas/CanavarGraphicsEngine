@@ -565,12 +565,6 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
 
         ImGui::SliderFloat("Sun Distance", &mShadowMappingRenderer->GetSunDistance_NonConst(), 1, 1000);
 
-        ImGui::Text("Motion Blur");
-        ImGui::Checkbox("Motion Blur Enabled", &mRenderingManager->GetMotionBlurEnabled_NonConst());
-        ImGui::SliderInt("Motion Blur Samples", &mRenderingManager->GetMotionBlurSamples_NonConst(), 2, 40);
-        ImGui::SliderFloat("Motion Blur Strength", &mRenderingManager->GetMotionBlurStrength_NonConst(), 0.0f, 10.0f, "%.2f");
-        ImGui::SliderFloat("Motion Blur Depth Threshold", &mRenderingManager->GetMotionBlurDepthThreshold_NonConst(), 0.0f, 1.0f, "%.2f");
-
         ImGui::Text("ACES");
         ImGui::Checkbox("ACES Enabled", &mRenderingManager->GetAcesEnabled_NonConst());
         ImGui::SliderFloat("Exposure", &mRenderingManager->GetExposure_NonConst(), 0.0f, 1.0f, "%.2f");
@@ -580,13 +574,6 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
         ImGui::SliderFloat("Vignette Radius", &mRenderingManager->GetVignetteRadius_NonConst(), 0.0f, 1.0f, "%.2f");
         ImGui::SliderFloat("Vignette Softness", &mRenderingManager->GetVignetteSoftness_NonConst(), 0.0f, 1.0f, "%.2f");
         ImGui::SliderFloat("Grain Strength", &mRenderingManager->GetGrainStrength_NonConst(), 0.0f, 1.0f, "%.2f");
-
-        // God Rays
-        // ImGui::Text("God Rays");
-        // ImGui::SliderInt("Number of Samples", &mRenderingManager->GetNumberOfSamples_NonConst(), 1, 200);
-        // ImGui::SliderFloat("Density", &mRenderingManager->GetDensity_NonConst(), 0.0f, 1.0f, "%.2f");
-        // ImGui::SliderFloat("Decay", &mRenderingManager->GetDecay_NonConst(), 0.0f, 1.0f, "%.2f");
-        // ImGui::SliderFloat("Weight", &mRenderingManager->GetWeight_NonConst(), 0.0f, 1.0f, "%.2f");
     }
 }
 

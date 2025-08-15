@@ -95,8 +95,6 @@ in mat3 fsTBN;
 flat in int fsVertexId;
 in float fsFlogZ;
 in vec4 fsLightSpacePosition; // Position in light space
-in float fsDepth;
-in vec2 fsFragVelocity;
 in vec3 fsColor;
 in flat uint fsMask;
 
@@ -104,7 +102,6 @@ layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutFragLocalPosition;
 layout(location = 2) out vec4 OutFragWorldPosition;
 layout(location = 3) out vec4 OutNodeInfo;
-layout(location = 4) out vec4 OutFragVelocity;
 
 const uint NO_MASK = 0;
 const uint PAINTED_MASK = 1;
@@ -520,6 +517,4 @@ void main()
     OutNodeInfo = vec4(float(uNodeId), float(uMeshId), float(gl_PrimitiveID), 1.0f);
 
     gl_FragDepth = log2(fsFlogZ) / log2(uZFar + 1.0);
-
-    OutFragVelocity = vec4(fsFragVelocity, fsDepth, 1.0f);
 }

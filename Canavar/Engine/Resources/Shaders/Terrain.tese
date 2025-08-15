@@ -35,7 +35,6 @@ out vec3 fsBitangent;
 out mat3 fsTangentMatrix;
 out float fsLogZ;
 out vec4 fsLightSpacePosition;
-out float fsDepth;
 
 vec3 mod289(vec3 x)
 {
@@ -198,8 +197,6 @@ void main()
     fsLightSpacePosition = uLightViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
 
     gl_Position = uViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
-    float ndc = gl_Position.z / gl_Position.w;
-    fsDepth = ndc * 0.5f + 0.5f;
 
     float coef = 2.0f / log2(uZFar + 1.0f);
     gl_Position.z = log2(max(1e-6, 1.0f + gl_Position.w)) * coef - 1.0f;

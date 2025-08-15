@@ -72,13 +72,11 @@ in vec3 fsBitangent;
 in mat3 fsTangentMatrix;
 in float fsLogZ;
 in vec4 fsLightSpacePosition;
-in float fsDepth;
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutFragLocalPosition;
 layout(location = 2) out vec4 OutFragWorldPosition;
 layout(location = 3) out vec4 OutFragNodeInfo;
-layout(location = 4) out vec4 OutFragVelocity;
 
 uniform vec3 uCameraPosition;
 uniform float uZFar;
@@ -100,9 +98,6 @@ uniform DirectionalLight uDirectionalLights[8]; // First element is the Sun
 uniform int uNumberOfDirectionalLights;
 
 uniform int uNodeId;
-
-uniform mat4 uViewProjectionMatrix;         // View-Projection matrix
-uniform mat4 uPreviousViewProjectionMatrix; // Previous frame's View-Projection matrix
 
 /**
  * Functions
@@ -385,9 +380,4 @@ void main()
     OutFragNodeInfo = vec4(uNodeId, 0, 0, 1);
     OutFragColor = vec4(result, 1.0);
     gl_FragDepth = log2(fsLogZ) / log2(uZFar + 1.0);
-
-    vec4 curr = uViewProjectionMatrix * OutFragWorldPosition;
-    vec4 prev = uPreviousViewProjectionMatrix * OutFragWorldPosition;
-    vec2 fragVelocity = curr.xy / curr.w - prev.xy / prev.w;
-    OutFragVelocity = vec4(fragVelocity, fsDepth, 1.0f);
 }
