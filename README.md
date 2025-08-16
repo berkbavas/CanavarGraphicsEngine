@@ -74,10 +74,10 @@ Canavar Graphics Engine is a basic graphics engine written in **C++** using the 
 
 The **Engine** module is the core of the Canavar Graphics Engine, providing all essential systems for 3D rendering, scene management, and extensibility. It is written in modern C++ and leverages **Qt 6** for windowing, math, and event handling, and **OpenGL 4.5** for graphics.
 
-### Features
+### Features of Engine Module
 
 - Scene graph and node hierarchy
-- Support for multiple 3D model formats (via [assimp](../../External/assimp/))
+- Support for multiple 3D model formats (via [assimp](https://github.com/assimp/assimp))
 - Physically Based Rendering (PBR) and Phong shading
 - Procedural terrain generation
 - Atmospheric sky and haze effects
@@ -112,6 +112,45 @@ To use the Engine module in your application:
 2. Instantiate a `Controller` with the rendering context.
 3. Use the managers (NodeManager, RenderingManager, etc.) to set up your scene.
 4. Implement your own nodes or extend existing ones for custom behavior.
+
+Example:
+
+```cpp
+#include <Canavar/Engine/Core/Window.h>
+#include <Canavar/Engine/Core/Controller.h>
+#include <Canavar/Engine/Manager/NodeManager.h>
+
+void MyClass::Run()
+{
+   // Create a rendering context
+   mWindow = new Canavar::Engine::Window(this);
+
+   // Initialize the controller with rendering context
+   mController = new Canavar::Engine::Controller(mWindow, true, this); 
+
+   // Setup connections
+   connect(mController, &Canavar::Engine::Controller::Initialized, this, &MyClass::Initialize);
+   connect(mController, &Canavar::Engine::Controller::Updated, this, &MyClass::Update);
+   connect(mController, &Canavar::Engine::Controller::PostRendered, this, &MyClass::PostRender);
+
+   mWindow->showMaximized();
+}
+
+void MyClass::Initialize()
+{
+    mWindow->GetNodeManager()->ImportNodes("/path/to/your/scene.json");
+}
+
+void MyClass::Update(float ifps)
+{
+    // Update code here
+}
+
+void MyClass::PostRender(float ifps)
+{
+    // Post-render code here
+}
+```
 
 ## Acknowledgements
 
