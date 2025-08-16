@@ -1,32 +1,34 @@
 # Canavar Graphics Engine
 
-Canavar Graphics Engine is a basic graphics engine written in **C++** using the **OpenGL API** and **Qt 6**. It leverages Qt 6 for window and event management, and utilizes Qt's math module for all 3D math operations. The engine is designed to be modular and extensible, supporting a variety of modern rendering features and tools for 3D graphics applications.
+Canavar Graphics Engine is a basic graphics engine written in **C++** using the **OpenGL API** and **Qt 6**.
+It leverages Qt 6 for window and event management, and utilizes Qt's math module for all 3D math operations.
+The engine is designed to be modular and extensible, supporting a variety of modern rendering features and tools for 3D graphics applications.
 
 ## Features
 
-- [x] Supports loading several 3D model formats (powered by [assimp](External/assimp/))
+- [x] Supports loading several 3D model formats (powered by [assimp](https://github.com/assimp/assimp))
 - [x] Parent-child node hierarchy
 - [x] Procedural terrain generation
 - [x] Sky with atmospheric scattering
 - [x] Haze effects
 - [x] Point lights
 - [x] Directional lights
-- [ ] Spot lights (planned)
+- [ ] Spot lights
 - [x] Free camera and persecutor camera modes
 - [x] Transformation of individual meshes within models
 - [x] Lightning Strike Generator
 - [x] Nozzle Effect
 - [x] Shadow Mapping
-- [ ] Point Shadows (planned)
-- [ ] Particle generator (planned)
-- [ ] Volumetric clouds (planned)
-- [ ] Water rendering (planned)
+- [ ] Point Shadows
+- [ ] Particle generator
+- [ ] Volumetric clouds
+- [ ] Water rendering
 - [x] Vertex Painting
 - [x] Editor with ImGui integration
 - [x] Physically Based Rendering (PBR)
-- [ ] WGS84 ellipsoid support (planned)
-- [ ] Terrain generation using DTED and satellite images (planned)
-- [ ] Post processing effects (planned)
+- [ ] WGS84 ellipsoid support
+- [ ] Terrain generation using DTED and satellite images
+- [ ] Post processing effects
 
 ## Videos
 
@@ -40,39 +42,43 @@ Canavar Graphics Engine is a basic graphics engine written in **C++** using the 
 
 ## Build Instructions
 
-1. Install **CMake 3.25.1**.
-2. Install **Visual Studio 2022** and the **MSVC C++ Compiler**.
-3. Install **Qt 6.7.3 MSVC2022 64bit** kit.
-4. Clone the repository:
+1. Install **CMake 3.25.1** or newer.
+2. Install **Visual Studio 2022** and the **MSVC 2022 C++ Compiler**.
+3. Install **Qt 6.x.y MSVC2022 64bit** kit.
+4. Set the environment variable `Qt6_DIR` to the path of your Qt installation (e.g., `C:/Qt/6.x.y/msvc2019_64/lib/cmake/Qt6`).
+5. Clone the repository:
 
    ```sh
    git clone https://github.com/berkbavas/CanavarGraphicsEngine.git
    ```
 
-5. Create a build directory:
+6. Create a build directory:
 
    ```sh
    mkdir Build
    ```
 
-6. Navigate into the build directory:
+7. Navigate into the build directory:
 
    ```sh
    cd Build
    ```
 
-7. Run CMake to configure the project:
+8. Run CMake to configure the project:
 
    ```sh
    cmake ..
    ```
 
-8. Open the generated solution file (`Canavar.sln`) with **Visual Studio 2022**.
-9. Build and run the project using the **Release** configuration.
+9. Open the generated solution file (`Canavar.sln`) with **Visual Studio 2022**.
+10. Edit `MODELS_FOLDER` variable in `Source/Canavar/Engine/Core/Constants.h` to point to your models directory. Currently, I support only the GLTF format.
+11. Set **Editor** as the startup project.
+12. Build and run the project using the **Release** configuration.
 
 ## Canavar Engine Module
 
-The **Engine** module is the core of the Canavar Graphics Engine, providing all essential systems for 3D rendering, scene management, and extensibility. It is written in modern C++ and leverages **Qt 6** for windowing, math, and event handling, and **OpenGL 4.5** for graphics.
+The **Engine** module is the core of the Canavar Graphics Engine, providing all essential systems for 3D rendering, scene management, and extensibility.
+It is written in C++ and leverages **Qt 6** for windowing, math, and event handling, and **OpenGL 4.5** for graphics.
 
 ### Features of Engine Module
 
