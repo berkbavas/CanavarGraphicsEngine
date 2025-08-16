@@ -45,7 +45,7 @@ The engine is designed to be modular and extensible, supporting a variety of mod
 1. Install **CMake 3.25.1** or newer.
 2. Install **Visual Studio 2022** and the **MSVC 2022 C++ Compiler**.
 3. Install **Qt 6.x.y MSVC2022 64bit** kit.
-4. Set the environment variable `Qt6_DIR` to the path of your Qt installation (e.g., `C:/Qt/6.x.y/msvc2019_64/lib/cmake/Qt6`).
+4. Set the environment variable `Qt6_DIR` to the path of your Qt installation (e.g., `C:/Qt/6.x.y/msvc2022_64/lib/cmake/Qt6`).
 5. Clone the repository:
 
    ```sh
