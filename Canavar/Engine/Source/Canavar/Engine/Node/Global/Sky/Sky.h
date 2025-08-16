@@ -34,7 +34,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, ScaleHeightR, 8.0e3f);
         DEFINE_MEMBER(float, ScaleHeightM, 1.2e3f);
         DEFINE_MEMBER(float, MieG, 0.8f);
-        DEFINE_MEMBER(float, HorizonOffset, 0.05f);
+        DEFINE_MEMBER(float, HorizonOffset, 0.15f);
         DEFINE_MEMBER(bool, Enabled, true);
     };
 
