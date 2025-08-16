@@ -16,7 +16,10 @@ namespace Canavar::Engine
         QMatrix4x4 GetRotationMatrix() const override;
         QMatrix4x4 GetViewMatrix() const override;
         QVector3D GetViewDirection() const override;
-      
+
+        float yMax() const { return std::tan(0.5f * mVerticalFov); }
+        float xMax() const { return yMax() * GetAspectRatio(); }
+
         float GetHorizontalFov() const;
         float GetAspectRatio() const;
 

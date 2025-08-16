@@ -6,6 +6,7 @@
 #include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Node/Global/Haze/Haze.h"
 #include "Canavar/Engine/Node/Global/Sky/Sky.h"
+#include "Canavar/Engine/Node/Global/Sun/Sun.h"
 #include "Canavar/Engine/Node/Global/Terrain/Terrain.h"
 #include "Canavar/Engine/Node/Object/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
@@ -99,9 +100,10 @@ namespace Canavar::Engine
         Shader *mTerrainShader{ nullptr };
         Shader *mCinematicShader{ nullptr };
         Shader *mAcesShader{ nullptr };
+        Shader *mCloudsShader{ nullptr };
 
         SkyPtr mSky;
-        DirectionalLightPtr mSun;
+        SunPtr mSun;
         TerrainPtr mTerrain;
         HazePtr mHaze;
 
@@ -121,6 +123,7 @@ namespace Canavar::Engine
                 GL_COLOR_ATTACHMENT1, // Fragment local position
                 GL_COLOR_ATTACHMENT2, // Fragment world position
                 GL_COLOR_ATTACHMENT3, // Node info
+                GL_COLOR_ATTACHMENT4  // Depth
             };
 
         float mIfps;

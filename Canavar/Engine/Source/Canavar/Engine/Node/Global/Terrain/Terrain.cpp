@@ -131,28 +131,28 @@ void Canavar::Engine::Terrain::SetUpTextures()
 {
     mAlbedoTexture = Load2DArray(
         {
-            ":/Resources/Terrain/beach/albedo.jpg",
-            ":/Resources/Terrain/grass/albedo.jpg",
-            ":/Resources/Terrain/rock/albedo.jpg",
-            ":/Resources/Terrain/snow/albedo.jpg",
+            ":/Resources/Terrain/Beach/Albedo.jpg",
+            ":/Resources/Terrain/Grass/Albedo.jpg",
+            ":/Resources/Terrain/Rock/Albedo.jpg",
+            ":/Resources/Terrain/Snow/Albedo.jpg",
         },
         5);
 
     mNormalTexture = Load2DArray(
         {
-            ":/Resources/Terrain/beach/normal.jpg",
-            ":/Resources/Terrain/grass/normal.jpg",
-            ":/Resources/Terrain/rock/normal.jpg",
-            ":/Resources/Terrain/snow/normal.jpg",
+            ":/Resources/Terrain/Beach/Normal.jpg",
+            ":/Resources/Terrain/Grass/Normal.jpg",
+            ":/Resources/Terrain/Rock/Normal.jpg",
+            ":/Resources/Terrain/Snow/Normal.jpg",
         },
         5);
 
     mDisplacementTexture = Load2DArray(
         {
-            ":/Resources/Terrain/beach/displacement.jpg",
-            ":/Resources/Terrain/grass/displacement.jpg",
-            ":/Resources/Terrain/rock/displacement.jpg",
-            ":/Resources/Terrain/snow/displacement.jpg",
+            ":/Resources/Terrain/Beach/Displacement.jpg",
+            ":/Resources/Terrain/Grass/Displacement.jpg",
+            ":/Resources/Terrain/Rock/Displacement.jpg",
+            ":/Resources/Terrain/Snow/Displacement.jpg",
         },
         5);
 }

@@ -72,11 +72,13 @@ in vec3 fsBitangent;
 in mat3 fsTangentMatrix;
 in float fsLogZ;
 in vec4 fsLightSpacePosition;
+in float fsDepth;
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutFragLocalPosition;
 layout(location = 2) out vec4 OutFragWorldPosition;
 layout(location = 3) out vec4 OutFragNodeInfo;
+layout(location = 4) out vec4 OutFragDepth;
 
 uniform vec3 uCameraPosition;
 uniform float uZFar;
@@ -378,6 +380,7 @@ void main()
     OutFragWorldPosition = vec4(fsWorldPosition, 1.0f);
 
     OutFragNodeInfo = vec4(uNodeId, 0, 0, 1);
-    OutFragColor = vec4(result, 1.0);
+    OutFragColor = vec4(result, 1.0f);
+    OutFragDepth = vec4(fsDepth, fsDepth, fsDepth, 1.0f);
     gl_FragDepth = log2(fsLogZ) / log2(uZFar + 1.0);
 }

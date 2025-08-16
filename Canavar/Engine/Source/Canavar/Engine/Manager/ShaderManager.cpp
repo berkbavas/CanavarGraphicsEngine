@@ -78,30 +78,10 @@ void Canavar::Engine::ShaderManager::Initialize()
     mCinematicShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Cinematic.frag");
     mCinematicShader->Initialize();
 
-    mBrightPassShader = new Shader(ShaderType::BrightPass, "Bright Pass Shader");
-    mBrightPassShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-    mBrightPassShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/BrightPass.frag");
-    mBrightPassShader->Initialize();
-
-    mGodRaysShader = new Shader(ShaderType::GodRays, "God Rays Shader");
-    mGodRaysShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-    mGodRaysShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/GodRays.frag");
-    mGodRaysShader->Initialize();
-
-    mCompositionShader = new Shader(ShaderType::Composition, "Composition Shader");
-    mCompositionShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-    mCompositionShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Composition.frag");
-    mCompositionShader->Initialize();
-
     mAcesShader = new Shader(ShaderType::Aces, "ACES Shader");
     mAcesShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
     mAcesShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Aces.frag");
     mAcesShader->Initialize();
-
-    mMotionBlurShader = new Shader(ShaderType::MotionBlur, "Motion Blur Shader");
-    mMotionBlurShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
-    mMotionBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/MotionBlur.frag");
-    mMotionBlurShader->Initialize();
 
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
@@ -116,11 +96,7 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Text2D, mText2DShader));
     mShaders.emplace(std::pair(ShaderType::Text3D, mText3DShader));
     mShaders.emplace(std::pair(ShaderType::Cinematic, mCinematicShader));
-    mShaders.emplace(std::pair(ShaderType::BrightPass, mBrightPassShader));
-    mShaders.emplace(std::pair(ShaderType::GodRays, mGodRaysShader));
-    mShaders.emplace(std::pair(ShaderType::Composition, mCompositionShader));
     mShaders.emplace(std::pair(ShaderType::Aces, mAcesShader));
-    mShaders.emplace(std::pair(ShaderType::MotionBlur, mMotionBlurShader));
 }
 
 void Canavar::Engine::ShaderManager::Shutdown()

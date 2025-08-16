@@ -18,11 +18,7 @@ namespace Canavar::Engine
         Text2D,
         Text3D,
         Cinematic,
-        BrightPass,
-        GodRays,
-        Composition,
         Aces,
-        MotionBlur
     };
 
     enum class ViewDirection

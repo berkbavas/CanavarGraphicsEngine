@@ -32,10 +32,6 @@ namespace Canavar::Engine
         Shader* mText2DShader{ nullptr };
         Shader* mText3DShader{ nullptr };
         Shader* mCinematicShader{ nullptr };
-        Shader* mBrightPassShader{ nullptr };
-        Shader* mGodRaysShader{ nullptr };
-        Shader* mCompositionShader{ nullptr };
         Shader* mAcesShader{ nullptr };
-        Shader* mMotionBlurShader{ nullptr };
     };
 }
