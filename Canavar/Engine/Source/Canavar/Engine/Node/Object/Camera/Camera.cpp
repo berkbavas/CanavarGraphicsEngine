@@ -1,14 +1,5 @@
 #include "Camera.h"
 
-float Canavar::Engine::Camera::CalculateSkyYOffset(float horizonDistance)
-{
-    mTransformCacheForSkyYOffset.setToIdentity();
-    mTransformCacheForSkyYOffset.setColumn(3, QVector4D(0, GetPosition().y(), 0, 1));
-    QVector4D ndc = (GetProjectionMatrix() * mTransformCacheForSkyYOffset) * QVector4D(0, 0, horizonDistance, 1);
-
-    return ndc.y() / ndc.w();
-}
-
 QVector2D Canavar::Engine::Camera::Project3DTo2D(const QVector3D &pos3D)
 {
     const auto &VP = GetViewProjectionMatrix();

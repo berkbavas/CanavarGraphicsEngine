@@ -19,8 +19,6 @@ namespace Canavar::Engine
 
         QVector2D Project3DTo2D(const QVector3D &pos3D);
 
-        float CalculateSkyYOffset(float horizonDistance);
-
         virtual QMatrix4x4 GetProjectionMatrix() const = 0;
         virtual QMatrix4x4 GetViewProjectionMatrix() const = 0;
         virtual QMatrix4x4 GetRotationMatrix() const = 0;
@@ -36,8 +34,6 @@ namespace Canavar::Engine
         int mHeight{ INITIAL_HEIGHT };
 
       private:
-        QMatrix4x4 mTransformCacheForSkyYOffset;
-
         DEFINE_MEMBER(float, DevicePixelRatio, 1.0f);
     };
 

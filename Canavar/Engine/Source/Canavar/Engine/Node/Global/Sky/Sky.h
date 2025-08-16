@@ -23,29 +23,18 @@ namespace Canavar::Engine
 
         void Render(Shader* pShader, DirectionalLight* pSun, Camera* pCamera);
 
-        void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
-
       private:
-        static QVector3D Pow(const QVector3D& a, const QVector3D& b);
-        static QVector3D Exp(const QVector3D& a);
-        static QVector3D Div(float t, const QVector3D& a);
-        static double EvaluateSpline(const double* spline, size_t stride, double value);
-        static double Evaluate(const double* dataset, size_t stride, float turbidity, float albedo, float sunTheta);
-        static QVector3D HosekWilkie(float cos_theta, float gamma, float cos_gamma, const QVector3D& A, const QVector3D& B, const QVector3D& C, const QVector3D& D, const QVector3D& E, const QVector3D& F, const QVector3D& G, const QVector3D& H, const QVector3D& I);
-
         Quad* mQuad;
 
-        // Sky Mathematical Model
-        QVector3D A, B, C, D, E, F, G, H, I;
-        QVector3D Z;
-
-        double* mRGB[3];
-        double* mRGBRad[3];
-
-        DEFINE_MEMBER(float, Albedo, 0.1f);
-        DEFINE_MEMBER(float, Turbidity, 4.0f);
-        DEFINE_MEMBER(float, NormalizedSunY, 1.15f);
+        DEFINE_MEMBER(float, SunIntensity, 22.0f);
+        DEFINE_MEMBER(float, PlanetRadius, 6371e3f);
+        DEFINE_MEMBER(float, AtmosphereRadius, 6471e3f);
+        DEFINE_MEMBER(QVector3D, BetaRayleigh, QVector3D(5.5e-6, 13.0e-6, 22.4e-6));
+        DEFINE_MEMBER(float, BetaMie, 21e-6f);
+        DEFINE_MEMBER(float, ScaleHeightR, 8.0e3f);
+        DEFINE_MEMBER(float, ScaleHeightM, 1.2e3f);
+        DEFINE_MEMBER(float, MieG, 0.8f);
+        DEFINE_MEMBER(float, HorizonOffset, 0.05f);
         DEFINE_MEMBER(bool, Enabled, true);
     };
 

@@ -1,16 +1,25 @@
-#version 450 core
+#version 330 core
+layout(location = 0) in vec2 aPos; // Use verts: (-1,-1), (3,-1), (-1,3)
 
-layout(location = 0) in vec2 aPosition;
 
-uniform mat4 uIVP; // Inverse view-projection matrix
-uniform float uSkyYOffset;
+uniform mat4 uInvProjectionMatrix; // inverse projection
+uniform mat4 uInvViewMatrix;       // inverse view
+uniform float uHorizonOffset;
 
-layout(location = 0) out vec3 fsDirection;
+
+out vec3 vViewDir;
 
 void main()
 {
-    vec4 clipPos = vec4(aPosition.xy + vec2(0, -uSkyYOffset), -1.0f, 1.0f);
-    vec4 viewPos = uIVP * clipPos;
-    fsDirection = normalize(viewPos.xyz);
-    gl_Position = vec4(aPosition, -1.0f, 1.0f);
+    gl_Position = vec4(aPos , 0.0, 1.0);
+
+    // clip -> eye -> world, build world-space view ray direction
+    vec4 clip = vec4(aPos, 0.0, 1.0);
+    clip.y += uHorizonOffset;
+    vec4 eye = uInvProjectionMatrix * clip;
+    eye.z = -1.0; // forward
+    eye.w = 0.0;  // vector
+    vec4 world = uInvViewMatrix * eye;
+
+    vViewDir = normalize(world.xyz);
 }

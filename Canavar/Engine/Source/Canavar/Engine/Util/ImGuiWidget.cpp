@@ -269,9 +269,6 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
 
 void Canavar::Engine::ImGuiWidget::DrawSky()
 {
-    ImGui::SliderFloat("Albedo##Sky", &mSky->GetAlbedo_NonConst(), 0.0f, 1.0f, "%.3f");
-    ImGui::SliderFloat("Turbidity##Sky", &mSky->GetTurbidity_NonConst(), 0.0f, 10.0f, "%.3f");
-    ImGui::SliderFloat("Normalized Sun Y##Sun", &mSky->GetNormalizedSunY_NonConst(), 0.0f, 10.0f, "%.3f");
     ImGui::Checkbox("Enabled", &mSky->GetEnabled_NonConst());
 }
 
