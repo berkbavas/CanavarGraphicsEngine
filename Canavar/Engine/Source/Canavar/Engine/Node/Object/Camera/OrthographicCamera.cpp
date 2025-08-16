@@ -2,34 +2,34 @@
 
 bool Canavar::Engine::OrthographicCamera::MousePressed(QMouseEvent* event)
 {
-    mMouse.x = event->position().x();
-    mMouse.y = event->position().y();
-    mMouse.dx = 0;
-    mMouse.dy = 0;
-    mMouse.button = event->button();
+    mMouse.X = event->position().x();
+    mMouse.Y = event->position().y();
+    mMouse.DX = 0;
+    mMouse.DY = 0;
+    mMouse.Button = event->button();
     return true;
 }
 
 bool Canavar::Engine::OrthographicCamera::MouseReleased(QMouseEvent*)
 {
-    mMouse.button = Qt::NoButton;
+    mMouse.Button = Qt::NoButton;
     return true;
 }
 
 bool Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* event)
 {
-    if (mMouse.button == mActionReceiveButton)
+    if (mMouse.Button == mActionReceiveButton)
     {
-        mMouse.dx += mMouse.x - event->pos().x();
-        mMouse.dy += mMouse.y - event->pos().y();
+        mMouse.DX += mMouse.X - event->pos().x();
+        mMouse.DY += mMouse.Y - event->pos().y();
 
-        mMouse.x = event->pos().x();
-        mMouse.y = event->pos().y();
+        mMouse.X = event->pos().x();
+        mMouse.Y = event->pos().y();
 
-        mLeft += mDevicePixelRatio * mZoom * mMouse.dx;
-        mTop += mDevicePixelRatio * mZoom * mMouse.dy;
-        mMouse.dx = 0;
-        mMouse.dy = 0;
+        mLeft += mDevicePixelRatio * mZoom * mMouse.DX;
+        mTop += mDevicePixelRatio * mZoom * mMouse.DY;
+        mMouse.DX = 0;
+        mMouse.DY = 0;
         return true;
     }
 

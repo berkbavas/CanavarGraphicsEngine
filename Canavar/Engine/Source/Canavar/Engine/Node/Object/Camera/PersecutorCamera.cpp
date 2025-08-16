@@ -19,11 +19,11 @@ bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
         return false;
     }
 
-    mMouse.x = event->position().x();
-    mMouse.y = event->position().y();
-    mMouse.z = event->position().x();
-    mMouse.w = event->position().y();
-    mMouse.button = event->button();
+    mMouse.X = event->position().x();
+    mMouse.Y = event->position().y();
+    mMouse.Z = event->position().x();
+    mMouse.W = event->position().y();
+    mMouse.Button = event->button();
 
     return true;
 }
@@ -35,9 +35,9 @@ bool Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
         return false;
     }
 
-    if (mMouse.button == event->button())
+    if (mMouse.Button == event->button())
     {
-        mMouse.button = Qt::NoButton;
+        mMouse.Button = Qt::NoButton;
     }
 
     return false;
@@ -53,23 +53,23 @@ bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
     float x = event->position().x();
     float y = event->position().y();
 
-    if (mMouse.button == Qt::MiddleButton)
+    if (mMouse.Button == Qt::MiddleButton)
     {
-        mMouse.dx += mMouse.x - x;
-        mMouse.dy += mMouse.y - y;
+        mMouse.DX += mMouse.X - x;
+        mMouse.DY += mMouse.Y - y;
 
-        mMouse.x = x;
-        mMouse.y = y;
+        mMouse.X = x;
+        mMouse.Y = y;
 
         return true;
     }
-    else if (mMouse.button == Qt::RightButton)
+    else if (mMouse.Button == Qt::RightButton)
     {
-        mMouse.dz += mMouse.z - x;
-        mMouse.dw += mMouse.w - y;
+        mMouse.DZ += mMouse.Z - x;
+        mMouse.DW += mMouse.W - y;
 
-        mMouse.z = x;
-        mMouse.w = y;
+        mMouse.Z = x;
+        mMouse.W = y;
 
         return true;
     }
@@ -137,12 +137,12 @@ void Canavar::Engine::PersecutorCamera::HandleZoom(float ifps)
 
 void Canavar::Engine::PersecutorCamera::HandleRotation(float ifps)
 {
-    float StepX = mAngularSpeedSmoothness * mMouse.dx;
-    float StepY = mAngularSpeedSmoothness * mMouse.dy;
+    float StepX = mAngularSpeedSmoothness * mMouse.DX;
+    float StepY = mAngularSpeedSmoothness * mMouse.DY;
 
     // Consume
-    mMouse.dx -= StepX;
-    mMouse.dy -= StepY;
+    mMouse.DX -= StepX;
+    mMouse.DY -= StepY;
 
     if (StepX != 0 || StepY != 0)
     {
@@ -155,12 +155,12 @@ void Canavar::Engine::PersecutorCamera::HandleRotation(float ifps)
 
 void Canavar::Engine::PersecutorCamera::HandleTranslation(float ifps)
 {
-    float StepZ = mLinearSpeedSmoothness * mMouse.dz;
-    float StepW = mLinearSpeedSmoothness * mMouse.dw;
+    float StepZ = mLinearSpeedSmoothness * mMouse.DZ;
+    float StepW = mLinearSpeedSmoothness * mMouse.DW;
 
     // Consume
-    mMouse.dz -= StepZ;
-    mMouse.dw -= StepW;
+    mMouse.DZ -= StepZ;
+    mMouse.DW -= StepW;
 
     if (StepZ != 0 || StepW != 0)
     {

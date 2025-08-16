@@ -25,16 +25,16 @@ void Canavar::Engine::FreeCamera::Update(float ifps)
         return;
     }
 
-    float dx = mAngularSpeedSmoothness * mMouse.dx;
-    float dy = mAngularSpeedSmoothness * mMouse.dy;
+    float dx = mAngularSpeedSmoothness * mMouse.DX;
+    float dy = mAngularSpeedSmoothness * mMouse.DY;
 
     // Rotation
     if (mUpdateRotation)
     {
         RotateGlobal(QVector3D(0, 1, 0), mAngularSpeed * dx * ifps);
         RotateLocal(QVector3D(1, 0, 0), mAngularSpeed * dy * ifps);
-        mMouse.dx -= dx;
-        mMouse.dy -= dy;
+        mMouse.DX -= dx;
+        mMouse.DY -= dy;
     }
 
     // Translation
@@ -106,18 +106,18 @@ bool Canavar::Engine::FreeCamera::KeyReleased(QKeyEvent* event)
 
 bool Canavar::Engine::FreeCamera::MousePressed(QMouseEvent* event)
 {
-    mMouse.x = event->position().x();
-    mMouse.y = event->position().y();
-    mMouse.button = event->button();
+    mMouse.X = event->position().x();
+    mMouse.Y = event->position().y();
+    mMouse.Button = event->button();
 
-    return mMouse.button == mActionReceiveButton;
+    return mMouse.Button == mActionReceiveButton;
 }
 
 bool Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* event)
 {
-    if (mMouse.button == event->button())
+    if (mMouse.Button == event->button())
     {
-        mMouse.button = Qt::NoButton;
+        mMouse.Button = Qt::NoButton;
     }
 
     return false;
@@ -125,13 +125,13 @@ bool Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* event)
 
 bool Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
 {
-    if (mMouse.button == mActionReceiveButton)
+    if (mMouse.Button == mActionReceiveButton)
     {
-        mMouse.dx += mMouse.x - event->position().x();
-        mMouse.dy += mMouse.y - event->position().y();
+        mMouse.DX += mMouse.X - event->position().x();
+        mMouse.DY += mMouse.Y - event->position().y();
 
-        mMouse.x = event->position().x();
-        mMouse.y = event->position().y();
+        mMouse.X = event->position().x();
+        mMouse.Y = event->position().y();
         mUpdateRotation = true;
         return true;
     }

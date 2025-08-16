@@ -11,14 +11,14 @@ namespace Canavar::Engine
     {
       public:
         AABB() = default;
-        AABB(const QVector3D& min, const QVector3D& max);
+        AABB(const QVector3D& Min, const QVector3D& Max);
 
         const QVector3D& GetCenter() const { return mCenter; }
         const QMatrix4x4& GetTransformation() const { return mTransformation; }
         const QVector3D& GetMin() const { return mMin; }
         const QVector3D& GetMax() const { return mMax; }
 
-        AABB Transform(const QMatrix4x4& transformation) const;
+        AABB Transform(const QMatrix4x4& Transformation) const;
 
       private:
         QMatrix4x4 mTransformation;

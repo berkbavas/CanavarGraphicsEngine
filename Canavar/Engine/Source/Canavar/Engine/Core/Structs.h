@@ -24,30 +24,30 @@ namespace Canavar::Engine
 
     struct Mouse
     {
-        float x;
-        float y;
-        float z;
-        float w;
-        float dx;
-        float dy;
-        float dz;
-        float dw;
+        float X;
+        float Y;
+        float Z;
+        float W;
+        float DX;
+        float DY;
+        float DZ;
+        float DW;
 
-        Qt::MouseButton button;
+        Qt::MouseButton Button;
 
         Mouse() { Reset(); }
 
         void Reset()
         {
-            x = 0;
-            y = 0;
-            z = 0;
-            w = 0;
-            dx = 0;
-            dy = 0;
-            dz = 0;
-            dw = 0;
-            button = Qt::NoButton;
+            X = 0;
+            Y = 0;
+            Z = 0;
+            W = 0;
+            DX = 0;
+            DY = 0;
+            DZ = 0;
+            DW = 0;
+            Button = Qt::NoButton;
         }
     };
 }

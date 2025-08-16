@@ -1,15 +1,15 @@
 #include "AABB.h"
 
-Canavar::Engine::AABB::AABB(const QVector3D& min, const QVector3D& max)
-    : mMin(min)
-    , mMax(max)
+Canavar::Engine::AABB::AABB(const QVector3D& Min, const QVector3D& Max)
+    : mMin(Min)
+    , mMax(Max)
 {
     mCenter = (mMin + mMax) / 2.0f;
     mTransformation.translate(mCenter);
     mTransformation.scale(mMax.x() - mMin.x(), mMax.y() - mMin.y(), mMax.z() - mMin.z());
 }
 
-Canavar::Engine::AABB Canavar::Engine::AABB::Transform(const QMatrix4x4& transformation) const
+Canavar::Engine::AABB Canavar::Engine::AABB::Transform(const QMatrix4x4& Transformation) const
 {
     QVector<QVector3D> vertices;
     vertices << mMin;
@@ -24,7 +24,9 @@ Canavar::Engine::AABB Canavar::Engine::AABB::Transform(const QMatrix4x4& transfo
     vertices << QVector3D(mMax.x(), mMax.y(), mMin.z());
 
     for (int i = 0; i < vertices.size(); ++i)
-        vertices[i] = (transformation * QVector4D(vertices[i], 1)).toVector3D();
+    {
+        vertices[i] = (Transformation * QVector4D(vertices[i], 1)).toVector3D();
+    }
 
     float inf = std::numeric_limits<float>::infinity();
     QVector3D min(inf, inf, inf);

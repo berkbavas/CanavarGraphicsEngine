@@ -33,7 +33,7 @@ namespace Canavar::Engine
     {
         Q_OBJECT
       public:
-        explicit Controller(RenderingContext* pRenderingContext, bool withImGui, QObject* pParent = nullptr);
+        explicit Controller(RenderingContext* pRenderingContext, bool WithImGui, QObject* pParent = nullptr);
         ~Controller();
 
         void AddEventReceiver(EventReceiver* pReceiver);

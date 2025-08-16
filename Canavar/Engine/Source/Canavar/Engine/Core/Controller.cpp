@@ -20,7 +20,7 @@
 #include <QThread>
 #include <QtImGui.h>
 
-Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, bool withImGui, QObject* pParent)
+Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, bool WithImGui, QObject* pParent)
     : QObject(pParent)
     , mRenderingContext(pRenderingContext)
 {
@@ -28,13 +28,13 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     mWindow = dynamic_cast<Window*>(mRenderingContext);
     mWidget = dynamic_cast<Widget*>(mRenderingContext);
 
+    if (WithImGui)
+    {
+        mImGuiWidget = new ImGuiWidget(mRenderingContext, this);
+    }
+
     if (mWindow)
     {
-        if (withImGui)
-        {
-            mImGuiWidget = new ImGuiWidget(mRenderingContext, this);
-        }
-
         connect(mWindow, &Window::Initialize, this, &Controller::Initialize);
         connect(mWindow, &Window::Render, this, &Controller::Render);
         connect(mWindow, &Window::Resize, this, &Controller::Resize);
@@ -47,11 +47,6 @@ Canavar::Engine::Controller::Controller(RenderingContext* pRenderingContext, boo
     }
     else if (mWidget)
     {
-        if (withImGui)
-        {
-            mImGuiWidget = new ImGuiWidget(mRenderingContext, this);
-        }
-
         connect(mWidget, &Widget::Initialize, this, &Controller::Initialize);
         connect(mWidget, &Widget::Render, this, &Controller::Render);
         connect(mWidget, &Widget::Resize, this, &Controller::Resize);
