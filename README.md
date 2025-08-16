@@ -4,29 +4,29 @@ Canavar Graphics Engine is a basic graphics engine written in **C++** using the 
 
 ## Features
 
-- ✅ Supports loading several 3D model formats (powered by [assimp](External/assimp/))
-- ✅ Parent-child node hierarchy
-- ✅ Procedural terrain generation
-- ✅ Sky with atmospheric scattering
-- ✅ Haze effects
-- ✅ Point lights
-- ✅ Directional lights
-- ⬜ Spot lights (planned)
-- ✅ Free camera and persecutor camera modes
-- ✅ Transformation of individual meshes within models
-- ✅ Lightning Strike Generator
-- ✅ Nozzle Effect
-- ✅ Shadow Mapping
-- ⬜ Point Shadows (planned)
-- ⬜ Particle generator (planned)
-- ⬜ Volumetric clouds (planned)
-- ⬜ Water rendering (planned)
-- ✅ Vertex Painting
-- ✅ Editor with ImGui integration
-- ✅ Physically Based Rendering (PBR)
-- ⬜ WGS84 ellipsoid support (planned)
-- ⬜ Terrain generation using DTED and satellite images (planned)
-- ⬜ Post processing effects (planned)
+- [x] Supports loading several 3D model formats (powered by [assimp](External/assimp/))
+- [x] Parent-child node hierarchy
+- [x] Procedural terrain generation
+- [x] Sky with atmospheric scattering
+- [x] Haze effects
+- [x] Point lights
+- [x] Directional lights
+- [ ] Spot lights (planned)
+- [x] Free camera and persecutor camera modes
+- [x] Transformation of individual meshes within models
+- [x] Lightning Strike Generator
+- [x] Nozzle Effect
+- [x] Shadow Mapping
+- [ ] Point Shadows (planned)
+- [ ] Particle generator (planned)
+- [ ] Volumetric clouds (planned)
+- [ ] Water rendering (planned)
+- [x] Vertex Painting
+- [x] Editor with ImGui integration
+- [x] Physically Based Rendering (PBR)
+- [ ] WGS84 ellipsoid support (planned)
+- [ ] Terrain generation using DTED and satellite images (planned)
+- [ ] Post processing effects (planned)
 
 ## Videos
 
@@ -99,11 +99,10 @@ The **Engine** module is the core of the Canavar Graphics Engine, providing all 
 
 - [Qt 6](https://www.qt.io/)
 - [OpenGL 4.5](https://www.khronos.org/opengl/)
-- [assimp](../../External/assimp/)
-- [freetype](../../External/freetype/)
-- [JSBSim](../../External/JSBSim/)
-- [qtimgui](../../External/qtimgui/)
-
+- [assimp](https://github.com/assimp/assimp)
+- [freetype](https://freetype.org/)
+- [JSBSim](https://github.com/JSBSim-Team/jsbsim)
+- [qtimgui](https://github.com/seanchas116/qtimgui)
 
 ### Usage
 
