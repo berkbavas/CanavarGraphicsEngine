@@ -16,20 +16,6 @@
 #include <QDir>
 #include <QtMath>
 
-Canavar::Simulator::Aircraft::~Aircraft()
-{
-    if (mExecutor)
-    {
-        delete mExecutor;
-        mExecutor = nullptr;
-    }
-
-    if (mConverter)
-    {
-        delete mConverter;
-        mConverter = nullptr;
-    }
-}
 
 bool Canavar::Simulator::Aircraft::Initialize()
 {
@@ -37,7 +23,7 @@ bool Canavar::Simulator::Aircraft::Initialize()
 
     QDir::setCurrent(RESOURCE_PATH);
 
-    mExecutor = new JSBSim::FGFDMExec;
+    mExecutor = std::make_shared<JSBSim::FGFDMExec>();
     mExecutor->SetDebugLevel(0);
     mExecutor->DisableOutput();
 
@@ -70,7 +56,7 @@ bool Canavar::Simulator::Aircraft::Initialize()
     mRefLongitude = mExecutor->GetIC()->GetLongitudeDegIC();
     mRefAltitude = mExecutor->GetIC()->GetAltitudeASLFtIC() * FEET_TO_METER; // Convert feet to meters;
 
-    mConverter = new Converter(mRefLatitude, mRefLongitude, 0.0); // Reference altitude is set to 0.0
+    mConverter = std::make_unique<Converter>(mRefLatitude, mRefLongitude, 0.0); // Reference altitude is set to 0.0
 
     // Restore the current path
     QDir::setCurrent(CurrentPath);
@@ -306,7 +292,7 @@ void Canavar::Simulator::Aircraft::ProcessAutoPilotIfEnabled()
 {
     if (mAutoPilotEnabled && mPressedKeys.isEmpty())
     {
-        mElevator = GetAutoPilotCommand(Command::Elevator, 1.0).toDouble();
+        mElevator = GetAutoPilotCommand(Command::Elevator, 2.0).toDouble();
         mAileron = GetAutoPilotCommand(Command::Aileron, 0.0).toDouble();
     }
 }

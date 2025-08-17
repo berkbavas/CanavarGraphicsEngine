@@ -1,9 +1,0 @@
-libdir=C:/Users/berkb/Desktop/assimp/lib
-includedir=C:/Users/berkb/Desktop/assimp/include
-
-Name: Assimp
-Description: Import various well-known 3D model formats in an uniform manner.
-Version: 5.4.3
-Libs: -L${libdir} -lassimp
-Libs.private:  
-Cflags: -I${includedir}

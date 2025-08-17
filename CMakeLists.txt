@@ -22,7 +22,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets)
 set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/External")
 
 set(QT_IMGUI_DIR    "${EXTERNAL_DIR}/qtimgui")
-set(ASSIMP_DIR      "${EXTERNAL_DIR}/assimp")
+set(ASSIMP_DIR      "${EXTERNAL_DIR}/Assimp")
 set(JSBSIM_DIR      "${EXTERNAL_DIR}/JSBSim")
 set(FREETYPE_DIR    "${EXTERNAL_DIR}/freetype")
 
@@ -32,6 +32,7 @@ target_include_directories(EngineVendor INTERFACE
     "${QT_IMGUI_DIR}/include"
     "${ASSIMP_DIR}/include"
     "${JSBSIM_DIR}/include"
+    "${JSBSIM_DIR}/include/JSBSim"
     "${FREETYPE_DIR}/include/freetype2"
 )
 
@@ -43,14 +44,16 @@ target_link_directories(EngineVendor INTERFACE
 )
 
 target_link_libraries(EngineVendor INTERFACE
-    imgui
-    qt_imgui_widgets
-    assimp-vc143-mt
-    zlibstatic
-    JSBSim
-    ws2_32
-    freetype
+  debug imguid              optimized imgui
+  debug qt_imgui_widgetsd   optimized qt_imgui_widgets
+  debug assimp-vc143-mtd    optimized assimp-vc143-mt
+  debug zlibstaticd         optimized zlibstatic
+  debug JSBSimd             optimized JSBSim
+  debug freetyped           optimized freetyped
+  debug ws2_32              optimized ws2_32
 )
+
+target_compile_definitions(EngineVendor INTERFACE JSBSIM_STATIC_LINK)
 
 function(configure_app_runtime TARGET_NAME)
   # Copy Assimp DLLs if present

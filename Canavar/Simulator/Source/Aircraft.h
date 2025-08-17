@@ -30,8 +30,6 @@ namespace Canavar::Simulator
       public:
         Aircraft() = default;
 
-        ~Aircraft();
-
         bool Initialize();
         void DrawGui();
         void OnKeyPressed(QKeyEvent* pEvent);
@@ -49,14 +47,15 @@ namespace Canavar::Simulator
 
         QVariant GetAutoPilotCommand(Command command, QVariant value);
 
-        JSBSim::FGFDMExec* mExecutor{ nullptr };
-        JSBSim::FGFCS* mCommander{ nullptr };
-        JSBSim::FGPropagate* mPropagate{ nullptr };
-        JSBSim::FGPropulsion* mPropulsion{ nullptr };
-        JSBSim::FGAuxiliary* mAuxiliary{ nullptr };
+        std::shared_ptr<JSBSim::FGFDMExec> mExecutor{ nullptr };
+        std::shared_ptr<JSBSim::FGFCS> mCommander{ nullptr };
+        std::shared_ptr<JSBSim::FGPropagate> mPropagate{ nullptr };
+        std::shared_ptr<JSBSim::FGPropulsion> mPropulsion{ nullptr };
+        std::shared_ptr<JSBSim::FGAuxiliary> mAuxiliary{ nullptr };
+
+        std::unique_ptr<Converter> mConverter{ nullptr };
 
         PrimaryFlightData mPfd;
-        Converter* mConverter{ nullptr };
 
         QSet<Qt::Key> mPressedKeys;
 

@@ -44,7 +44,6 @@ INCLUDES
 #include <string>
 #include <list>
 #include <memory>
-#include <type_traits>
 #include "simgear/props/props.hxx"
 #if !PROPS_STANDALONE
 # include "simgear/math/SGMath.hxx"
@@ -55,72 +54,6 @@ INCLUDES
 /*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FORWARD DECLARATIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
-
-template<typename T> T getValue(const SGPropertyNode* node)
-{
-  static_assert(std::is_enum_v<T>, "PropertyTraits specialization for enum types only");
-  return static_cast<T>(node->getIntValue());
-}
-
-template <class C, class T>
-class SGRawValueMethodsEnum : public SGRawValue<int>
-{
-public:
-  typedef T(C::* getter_t)() const;
-  typedef void (C::* setter_t)(T);
-  SGRawValueMethodsEnum(C& obj,
-    getter_t getter = 0, setter_t setter = 0)
-    : _obj(obj), _getter(getter), _setter(setter) {
-  }
-  virtual ~SGRawValueMethodsEnum() {}
-  virtual int getValue() const {
-    if (_getter) { return (int)(_obj.*_getter)(); }
-    else { return SGRawValue<int>::DefaultValue(); }
-  }
-  virtual bool setValue(int value) {
-      return this->setValue((T)value);
-  }
-  bool setValue(T value) {
-    if (_setter) { (_obj.*_setter)(value); return true; }
-    else return false;
-  }
-  virtual SGRaw* clone() const {
-    return new SGRawValueMethodsEnum(_obj, _getter, _setter);
-  }
-private:
-  C& _obj;
-  getter_t _getter;
-  setter_t _setter;
-};
-
-template <class C, class T, class U>
-class SGRawValueMethodsIndexedEnum : public SGRawValue<T>
-{
-public:
-  typedef T(C::* getter_t)(U) const;
-  typedef void (C::* setter_t)(U, T);
-  SGRawValueMethodsIndexedEnum(C& obj, U index,
-    getter_t getter = 0, setter_t setter = 0)
-    : _obj(obj), _index(index), _getter(getter), _setter(setter) {
-  }
-  virtual ~SGRawValueMethodsIndexedEnum() {}
-  virtual T getValue() const {
-    if (_getter) { return (_obj.*_getter)(_index); }
-    else { return SGRawValue<T>::DefaultValue(); }
-  }
-  virtual bool setValue(T value) {
-    if (_setter) { (_obj.*_setter)(_index, value); return true; }
-    else return false;
-  }
-  virtual SGRaw* clone() const {
-    return new SGRawValueMethodsIndexedEnum(_obj, _index, _getter, _setter);
-  }
-private:
-  C& _obj;
-  U _index;
-  getter_t _getter;
-  setter_t _setter;
-};
 
 namespace JSBSim {
 
@@ -336,29 +269,7 @@ class JSBSIM_API FGPropertyManager
      * @param setter The object's setter method, or 0 if the value is
      *        unmodifiable.
      */
-    template <class T, class V>
-    typename std::enable_if<std::is_enum_v<V>, void>::type
-    Tie (const std::string &name, T * obj, V (T::*getter)() const,
-         void (T::*setter)(V) = nullptr)
-    {
-      SGPropertyNode* property = root->getNode(name.c_str(), true);
-      if (!property) {
-        std::cerr << "Could not get or create property " << name << std::endl;
-        return;
-      }
-
-      if (!property->tie(SGRawValueMethodsEnum<T,V>(*obj, getter, setter), false))
-        std::cerr << "Failed to tie property " << name << " to object methods"
-                  << std::endl;
-      else {
-        tied_properties.push_back(PropertyState(property, obj));
-        if (!setter) property->setAttribute(SGPropertyNode::WRITE, false);
-        if (!getter) property->setAttribute(SGPropertyNode::READ, false);
-        if (FGJSBBase::debug_lvl & 0x20) std::cout << name << std::endl;
-      }
-    }
-    template <class T, class V>
-    typename std::enable_if<!std::is_enum_v<V>, void>::type
+    template <class T, class V> void
     Tie (const std::string &name, T * obj, V (T::*getter)() const,
          void (T::*setter)(V) = nullptr)
     {
@@ -416,44 +327,6 @@ class JSBSIM_API FGPropertyManager
         if (FGJSBBase::debug_lvl & 0x20) std::cout << name << std::endl;
       }
    }
-
-    /**
-     * Tie a property to a pair of indexed object methods.
-     *
-     * Every time the property value is queried, the getter (if any) will
-     * be invoked with the index provided; every time the property value
-     * is modified, the setter (if any) will be invoked with the index
-     * provided.  The getter can be 0 to make the property unreadable, and
-     * the setter can be 0 to make the property unmodifiable.
-     *
-     * @param name The property name to tie (full path).
-     * @param obj The object whose methods should be invoked.
-     * @param index The enum argument to pass to the getter and
-     *        setter methods.
-     * @param getter The getter method, or 0 if the value is unreadable.
-     * @param setter The setter method, or 0 if the value is unmodifiable.
-     */
-    template <class T, class V, class U> void
-      Tie(const std::string& name, T* obj, U index, V(T::* getter)(U) const,
-        void (T::* setter)(U, V) = nullptr)
-    {
-      static_assert(std::is_enum_v<U>, "Specialization for enum types only");
-      SGPropertyNode* property = root->getNode(name.c_str(), true);
-      if (!property) {
-        std::cerr << "Could not get or create property " << name << std::endl;
-        return;
-      }
-      if (!property->tie(SGRawValueMethodsIndexedEnum<T, V, U>(*obj, index, getter, setter),
-        false))
-        std::cerr << "Failed to tie property " << name
-        << " to indexed object methods" << std::endl;
-      else {
-        tied_properties.push_back(PropertyState(property, obj));
-        if (!setter) property->setAttribute(SGPropertyNode::WRITE, false);
-        if (!getter) property->setAttribute(SGPropertyNode::READ, false);
-        if (FGJSBBase::debug_lvl & 0x20) std::cout << name << std::endl;
-      }
-    }
 
   private:
     struct PropertyState {

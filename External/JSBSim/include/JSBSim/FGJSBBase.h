@@ -60,7 +60,7 @@ namespace JSBSim {
 
 class JSBSIM_API BaseException : public std::runtime_error {
   public:
-    using std::runtime_error::runtime_error;
+    BaseException(const std::string& msg) : std::runtime_error(msg) {}
 };
 
 /**
