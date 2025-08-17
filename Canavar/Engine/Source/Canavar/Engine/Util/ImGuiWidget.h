@@ -39,6 +39,7 @@ namespace Canavar::Engine
         void GoToObject(Engine::Object *pObject);
 
       private:
+        void ApplyStyle();
         void DrawMenuBar();
 
         void DrawNodeTreeViewWidget();
@@ -65,7 +66,6 @@ namespace Canavar::Engine
         void DrawPainterSettings();
         void DrawNodeInfo();
         void DrawStats();
-
         void DrawWorldPositionsWidget();
 
         QVector3D GetWorldPositionForCreatedObject() const;

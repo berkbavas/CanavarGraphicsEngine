@@ -43,6 +43,8 @@ void Canavar::Engine::ImGuiWidget::PostInitialize()
 
 void Canavar::Engine::ImGuiWidget::DrawImGui(float ifps)
 {
+    ApplyStyle();
+
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_MenuBar);
 
@@ -82,6 +84,14 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
 
         ImGui::EndDisabled();
     }
+}
+
+void Canavar::Engine::ImGuiWidget::ApplyStyle()
+{
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.WindowRounding = 5.0f;
+    style.FrameRounding = 3.0f;
+    style.GrabRounding = 3.0f;
 }
 
 void Canavar::Engine::ImGuiWidget::DrawMenuBar()
