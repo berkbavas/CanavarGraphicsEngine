@@ -25,6 +25,8 @@ set(ASSIMP_DIR    "${EXTERNAL_DIR}/Assimp")
 set(JSBSIM_DIR    "${EXTERNAL_DIR}/JSBSim")
 set(FREETYPE_DIR  "${EXTERNAL_DIR}/freetype")
 
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+
 add_library(EngineVendor INTERFACE)
 
 target_include_directories(EngineVendor INTERFACE
@@ -81,6 +83,11 @@ function(configure_app_runtime TARGET_NAME)
       --dir "$<TARGET_FILE_DIR:${TARGET_NAME}>"
       "$<TARGET_FILE_DIR:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
   )
+
+  set_target_properties(${TARGET_NAME} PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  )
+
 endfunction()
 
 add_subdirectory(Canavar/Engine)
