@@ -19,28 +19,27 @@ set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets)
 
-set(EXTERNAL_DIR "${CMAKE_SOURCE_DIR}/External")
-
-set(QT_IMGUI_DIR    "${EXTERNAL_DIR}/qtimgui")
-set(ASSIMP_DIR      "${EXTERNAL_DIR}/Assimp")
-set(JSBSIM_DIR      "${EXTERNAL_DIR}/JSBSim")
-set(FREETYPE_DIR    "${EXTERNAL_DIR}/freetype")
+set(EXTERNAL_DIR  "${CMAKE_SOURCE_DIR}/External")
+set(QT_IMGUI_DIR  "${EXTERNAL_DIR}/qtimgui")
+set(ASSIMP_DIR    "${EXTERNAL_DIR}/Assimp")
+set(JSBSIM_DIR    "${EXTERNAL_DIR}/JSBSim")
+set(FREETYPE_DIR  "${EXTERNAL_DIR}/freetype")
 
 add_library(EngineVendor INTERFACE)
 
 target_include_directories(EngineVendor INTERFACE
-    "${QT_IMGUI_DIR}/include"
-    "${ASSIMP_DIR}/include"
-    "${JSBSIM_DIR}/include"
-    "${JSBSIM_DIR}/include/JSBSim"
-    "${FREETYPE_DIR}/include/freetype2"
+  "${QT_IMGUI_DIR}/include"
+  "${ASSIMP_DIR}/include"
+  "${JSBSIM_DIR}/include"
+  "${JSBSIM_DIR}/include/JSBSim"
+  "${FREETYPE_DIR}/include/freetype2"
 )
 
 target_link_directories(EngineVendor INTERFACE
-    "${QT_IMGUI_DIR}/lib"
-    "${ASSIMP_DIR}/lib"
-    "${JSBSIM_DIR}/lib"
-    "${FREETYPE_DIR}/lib"
+  "${QT_IMGUI_DIR}/lib"
+  "${ASSIMP_DIR}/lib"
+  "${JSBSIM_DIR}/lib"
+  "${FREETYPE_DIR}/lib"
 )
 
 target_link_libraries(EngineVendor INTERFACE
@@ -49,7 +48,7 @@ target_link_libraries(EngineVendor INTERFACE
   debug assimp-vc143-mtd    optimized assimp-vc143-mt
   debug zlibstaticd         optimized zlibstatic
   debug JSBSimd             optimized JSBSim
-  debug freetyped           optimized freetyped
+  debug freetyped           optimized freetype
   debug ws2_32              optimized ws2_32
 )
 
@@ -59,22 +58,28 @@ function(configure_app_runtime TARGET_NAME)
   # Copy Assimp DLLs if present
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${ASSIMP_DIR}/bin"
-            "$<TARGET_FILE_DIR:${TARGET_NAME}>"
-  ) 
+      "${ASSIMP_DIR}/bin"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  )
+
+  # Remove Resources folder first
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E rm -rf
-    "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
-  ) 
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
+  )
+
+  # Copy Resources folder then
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/Resources/"
-    "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
-  ) 
+      "${CMAKE_CURRENT_SOURCE_DIR}/Resources/"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
+  )
+
+  # Run windeployqt
   add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND Qt6::windeployqt
-            --dir "$<TARGET_FILE_DIR:${TARGET_NAME}>"
-            "$<TARGET_FILE_DIR:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+      --dir "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
   )
 endfunction()
 
