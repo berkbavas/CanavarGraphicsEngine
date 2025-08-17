@@ -45,6 +45,7 @@ void Canavar::Engine::ImGuiWidget::DrawImGui(float ifps)
 {
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_MenuBar);
+
     DrawMenuBar();
     DrawNodeTreeViewWidget();
     DrawNodeParametersWidget();
@@ -262,7 +263,7 @@ void Canavar::Engine::ImGuiWidget::DrawTerrain()
     ImGui::Checkbox("Enabled", &mTerrain->GetEnabled_NonConst());
 }
 
-void Canavar::Engine::ImGuiWidget::DrawObject(Engine::Object* pObject)
+void Canavar::Engine::ImGuiWidget::DrawObject(Engine::Object *pObject)
 {
     const auto pParent = pObject->GetParent<Engine::Node>();
     const auto &Objects = mNodeManager->GetObjects();
@@ -405,7 +406,7 @@ void Canavar::Engine::ImGuiWidget::DrawModel(Engine::Model *pModel)
     }
 }
 
-void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2D* pText)
+void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2D *pText)
 {
     if (const auto newText = InputText("Text##DrawText2D", pText->GetText().toStdString()))
     {
@@ -416,7 +417,7 @@ void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2D* pText)
     ImGui::ColorEdit3("Color##Text2D", &pText->GetColor_NonConst()[0]);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3D* pText)
+void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3D *pText)
 {
     if (const auto newText = InputText("Text##DrawText3D", pText->GetText().toStdString()))
     {
@@ -426,7 +427,7 @@ void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3D* pText)
     ImGui::ColorEdit3("Color##Text3D", &pText->GetColor_NonConst()[0]);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCamera* pCamera)
+void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCamera *pCamera)
 {
     ImGui::Text("Perspective Camera Parameters");
 
@@ -435,7 +436,7 @@ void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCamera* pCamera
     ImGui::InputFloat("Z-Near", &pCamera->GetZNear_NonConst(), 0, 0, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight* pLight)
+void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight *pLight)
 {
     ImGui::Text("Directional Light Parameters");
 
@@ -452,7 +453,7 @@ void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight
     pLight->SetDirectionFromThetaPhi(theta, phi);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLight* pLight)
+void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLight *pLight)
 {
     ImGui::Text("Point Light Parameters");
 
@@ -465,7 +466,7 @@ void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLight* pLight)
     ImGui::ColorEdit3("Color##PointLight", (float *) &pLight->GetColor_NonConst());
 }
 
-void Canavar::Engine::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffect* pNozzleEffect)
+void Canavar::Engine::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffect *pNozzleEffect)
 {
     ImGui::Text("Nozzle Effect Parameters");
 
@@ -477,7 +478,7 @@ void Canavar::Engine::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffect* pNozzl
     ImGui::SliderInt("# of Particles##NozzleEffect", &pNozzleEffect->GetNumberOfParticles_NonConst(), 0, 100'000);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawLightningStrike(Engine::LightningStrikeBase* pLightningStrike)
+void Canavar::Engine::ImGuiWidget::DrawLightningStrike(Engine::LightningStrikeBase *pLightningStrike)
 {
     ImGui::Text("Lightning Strike Generator");
 
@@ -778,7 +779,7 @@ bool Canavar::Engine::ImGuiWidget::WheelMoved(QWheelEvent *)
     return ImGui::GetIO().WantCaptureMouse;
 }
 
-void Canavar::Engine::ImGuiWidget::RemoveNode(Node* pNode)
+void Canavar::Engine::ImGuiWidget::RemoveNode(Node *pNode)
 {
     if (pNode == nullptr)
     {
