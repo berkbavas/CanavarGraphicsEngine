@@ -100,7 +100,6 @@ It is written in C++ and leverages **Qt 6** for windowing, math, and event handl
 - [OpenGL 4.5](https://www.khronos.org/opengl/)
 - [assimp](https://github.com/assimp/assimp)
 - [freetype](https://freetype.org/)
-- [JSBSim](https://github.com/JSBSim-Team/jsbsim)
 - [qtimgui](https://github.com/seanchas116/qtimgui)
 
 ### Usage
