@@ -86,19 +86,6 @@ The engine is designed to be modular and extensible, supporting a variety of mod
 The **Engine** module is the core of the Canavar Graphics Engine, providing all essential systems for 3D rendering, scene management, and extensibility.
 It is written in C++ and leverages **Qt 6** for windowing, math, and event handling, and **OpenGL 4.5** for graphics.
 
-### Features of Engine Module
-
-- Scene graph and node hierarchy
-- Support for multiple 3D model formats (via [assimp](https://github.com/assimp/assimp))
-- Physically Based Rendering (PBR) and Phong shading
-- Procedural terrain generation
-- Atmospheric sky and haze effects
-- Point and directional lights
-- Shadow mapping
-- Vertex painting
-- ImGui-based editor integration
-- Extensible node and effect system
-
 ### Directory Structure
 
 - `Source/Canavar/Engine/Core/` — Core engine classes (window, rendering context, controller)
