@@ -16,7 +16,6 @@
 #include <QDir>
 #include <QtMath>
 
-
 bool Canavar::Simulator::Aircraft::Initialize()
 {
     QString CurrentPath = QDir::currentPath();

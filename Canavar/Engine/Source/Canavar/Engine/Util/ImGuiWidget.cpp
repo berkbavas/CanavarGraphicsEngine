@@ -43,8 +43,6 @@ void Canavar::Engine::ImGuiWidget::PostInitialize()
 
 void Canavar::Engine::ImGuiWidget::DrawImGui(float ifps)
 {
-    ApplyStyle();
-
     ImGui::SetNextWindowSize(ImVec2(420, 820), ImGuiCond_FirstUseEver);
     ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_MenuBar);
 
