@@ -9,10 +9,8 @@ namespace Canavar::Engine
     class LightningStrikeAttractor : public Object
     {
       public:
-        LightningStrikeAttractor();
-
-        const char* GetNodeTypeName() const override { return "LightningStrikeAttractor"; }
+        CANAVAR_NODE(LightningStrikeAttractor);
     };
 
     using LightningStrikeAttractorPtr = std::shared_ptr<LightningStrikeAttractor>;
-} 
+}

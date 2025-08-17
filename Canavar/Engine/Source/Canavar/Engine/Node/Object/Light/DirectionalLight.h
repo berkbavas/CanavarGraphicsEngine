@@ -7,9 +7,7 @@ namespace Canavar::Engine
     class DirectionalLight : public Light
     {
       public:
-        DirectionalLight();
-
-        const char *GetNodeTypeName() const override { return "DirectionalLight"; }
+        CANAVAR_NODE(DirectionalLight);
 
         float GetTheta() const;
         float GetPhi() const;

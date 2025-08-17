@@ -11,6 +11,7 @@ namespace Canavar::Engine
         Sun();
 
         const char *GetNodeTypeName() const override { return "Sun"; }
+        void Accept(NodeVisitor& visitor) override;
     };
 
     using SunPtr = std::shared_ptr<Sun>;

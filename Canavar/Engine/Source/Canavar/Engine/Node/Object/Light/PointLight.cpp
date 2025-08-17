@@ -1,10 +1,5 @@
 #include "PointLight.h"
 
-Canavar::Engine::PointLight::PointLight()
-{
-    SetNodeName("Point Light");
-}
-
 void Canavar::Engine::PointLight::ToJson(QJsonObject &object)
 {
     Light::ToJson(object);
@@ -14,7 +9,7 @@ void Canavar::Engine::PointLight::ToJson(QJsonObject &object)
     object.insert("quadratic", mQuadratic);
 }
 
-void Canavar::Engine::PointLight::FromJson(const QJsonObject &object, const  QSet<NodePtr> &nodes)
+void Canavar::Engine::PointLight::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
 {
     Light::FromJson(object, nodes);
 

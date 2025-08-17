@@ -5,15 +5,12 @@
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Util/Macros.h"
 
-
 namespace Canavar::Engine
 {
     class OrthographicCamera : public Camera
     {
       public:
-        OrthographicCamera() = default;
-
-        const char* GetNodeTypeName() const override { return "OrthographicCamera"; }
+        CANAVAR_NODE(OrthographicCamera);
 
         bool MousePressed(QMouseEvent* event) override;
         bool MouseReleased(QMouseEvent* event) override;

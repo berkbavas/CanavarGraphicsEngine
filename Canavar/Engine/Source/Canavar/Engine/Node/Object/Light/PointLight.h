@@ -7,9 +7,7 @@ namespace Canavar::Engine
     class PointLight : public Light
     {
       public:
-        PointLight();
-
-        const char *GetNodeTypeName() const override { return "PointLight"; }
+        CANAVAR_NODE(PointLight);
 
         void ToJson(QJsonObject &object) override;
         void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;

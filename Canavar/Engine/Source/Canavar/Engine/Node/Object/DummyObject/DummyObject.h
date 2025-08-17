@@ -7,9 +7,7 @@ namespace Canavar::Engine
     class DummyObject : public Object
     {
       public:
-        DummyObject();
-
-        const char* GetNodeTypeName() const override { return "DummyObject"; }
+        CANAVAR_NODE(DummyObject);
     };
 
     using DummyObjectPtr = std::shared_ptr<DummyObject>;

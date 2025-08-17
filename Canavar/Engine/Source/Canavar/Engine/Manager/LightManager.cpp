@@ -21,7 +21,7 @@ QVector<Canavar::Engine::PointLight*> Canavar::Engine::LightManager::GetPointLig
 
 void Canavar::Engine::LightManager::AddLight(LightPtr pLight)
 {
-    LOG_DEBUG("LightManager::AddLight: I will add this light to my list: {}", PRINT_ADDRESS(pLight.get()));
+    LOG_DEBUG("LightManager::AddLight: I will add this light to my list: {}", static_cast<void*>(pLight.get()));
 
     if (DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<DirectionalLight>(pLight))
     {
@@ -37,7 +37,7 @@ void Canavar::Engine::LightManager::AddLight(LightPtr pLight)
 
 void Canavar::Engine::LightManager::RemoveLight(LightPtr pLight)
 {
-    LOG_DEBUG("LightManager::RemoveLight: I will remove this light from my list: {}", PRINT_ADDRESS(pLight.get()));
+    LOG_DEBUG("LightManager::RemoveLight: I will remove this light from my list: {}", static_cast<void*>(pLight.get()));
 
     if (DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<DirectionalLight>(pLight))
     {

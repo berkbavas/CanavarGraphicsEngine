@@ -9,9 +9,9 @@ namespace Canavar::Engine
     class Model : public Object
     {
       public:
-        Model(const std::string& sceneName);
+        CANAVAR_NODE(Model);
 
-        const char* GetNodeTypeName() const override { return "Model"; }
+        Model(const std::string& sceneName);
 
         QMatrix4x4 GetMeshTransformation(const std::string& meshName) const;
         void SetMeshTransformation(const std::string& meshName, const QMatrix4x4& transformation);

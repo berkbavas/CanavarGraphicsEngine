@@ -7,9 +7,7 @@ namespace Canavar::Engine
     class Text3D : public Object
     {
       public:
-        Text3D();
-
-        const char* GetNodeTypeName() const override { return "Text3D"; }
+        CANAVAR_NODE(Text3D);
 
         void ToJson(QJsonObject& object) override;
         void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;

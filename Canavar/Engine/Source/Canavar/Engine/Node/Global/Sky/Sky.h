@@ -16,8 +16,7 @@ namespace Canavar::Engine
     class Sky : public Global, protected QOpenGLExtraFunctions
     {
       public:
-        Sky();
-        const char* GetNodeTypeName() const override { return "Sky"; }
+        CANAVAR_NODE(Sky);
 
         void Initialize();
 

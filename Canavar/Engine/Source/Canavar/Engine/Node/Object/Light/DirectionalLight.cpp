@@ -2,11 +2,6 @@
 
 #include <cmath>
 
-Canavar::Engine::DirectionalLight::DirectionalLight()
-{
-    SetNodeName("Directional Light");
-}
-
 float Canavar::Engine::DirectionalLight::GetTheta() const
 {
     const auto z = mDirection.z();

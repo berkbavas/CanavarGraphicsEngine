@@ -5,6 +5,7 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/Painter.h"
 #include "Canavar/Engine/Manager/RenderingManager.h"
+#include "Canavar/Engine/Node/NodeVisitor.h"
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Light/PointLight.h"
@@ -18,7 +19,7 @@ namespace Canavar::Engine
 {
     class RenderingContext;
 
-    class ImGuiWidget : public QObject, public EventReceiver
+    class ImGuiWidget : public QObject, public EventReceiver, private NodeVisitor
     {
         Q_OBJECT
       public:
@@ -35,7 +36,7 @@ namespace Canavar::Engine
         bool WheelMoved(QWheelEvent *) override;
 
       signals:
-        void GoToObject(Engine::ObjectPtr pObject);
+        void GoToObject(Engine::Object* pObject);
 
       private:
         void DrawMenuBar();
@@ -48,15 +49,15 @@ namespace Canavar::Engine
         void DrawHaze();
         void DrawTerrain();
 
-        void DrawObject(ObjectPtr pObject);
-        void DrawModel(ModelPtr pModel);
-        void DrawText2D(Text2DPtr pText);
-        void DrawText3D(Text3DPtr pText);
-        void DrawCamera(PerspectiveCameraPtr pCamera);
-        void DrawDirectionalLight(DirectionalLightPtr pLight);
-        void DrawPointLight(PointLightPtr pLight);
-        void DrawNozzleEffect(NozzleEffectPtr pEffect);
-        void DrawLightningStrike(LightningStrikeBasePtr pLightning);
+        void DrawObject(Object* pObject);
+        void DrawModel(Model* pModel);
+        void DrawText2D(Text2D* pText);
+        void DrawText3D(Text3D* pText);
+        void DrawCamera(PerspectiveCamera* pCamera);
+        void DrawDirectionalLight(DirectionalLight* pLight);
+        void DrawPointLight(PointLight* pLight);
+        void DrawNozzleEffect(NozzleEffect* pEffect);
+        void DrawLightningStrike(LightningStrikeBase* pLightning);
 
         void DrawCreateObjectWidget();
         void DrawCreateModelWidget();
@@ -71,11 +72,24 @@ namespace Canavar::Engine
 
         std::optional<std::string> InputText(const std::string &label, const std::string &text);
 
-        void RemoveNode(NodePtr pNode);
-
+        void RemoveNode(Node* pNode);
         void SetSelectedNode(NodePtr pNode);
         void SetSelectedMesh(NodePtr pNode, uint32_t MeshId);
         void ProcessMouseAction(int x, int y);
+
+        void Visit(Sun &) override { DrawSun(); }
+        void Visit(Sky &) override { DrawSky(); }
+        void Visit(Haze &) override { DrawHaze(); }
+        void Visit(Terrain &) override { DrawTerrain(); }
+        void Visit(Text2D &text2D) override { DrawText2D(&text2D); }
+        void Visit(Object &object) override { DrawObject(&object); }
+        void Visit(Model &model) override { DrawModel(&model); }
+        void Visit(Text3D &text3D) override { DrawText3D(&text3D); }
+        void Visit(PerspectiveCamera &camera) override { DrawCamera(&camera); }
+        void Visit(DirectionalLight &light) override { DrawDirectionalLight(&light); }
+        void Visit(PointLight &light) override { DrawPointLight(&light); }
+        void Visit(NozzleEffect &effect) override { DrawNozzleEffect(&effect); }
+        void Visit(LightningStrikeBase &strike) override { DrawLightningStrike(&strike); }
 
         RenderingContext *mRenderingContext{ nullptr };
         NodeManager *mNodeManager{ nullptr };

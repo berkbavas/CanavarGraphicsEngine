@@ -12,7 +12,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-
 void Canavar::Engine::NodeManager::Initialize()
 {
     mLightManager = GetRenderingContext()->GetLightManager();
@@ -56,7 +55,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
         return;
     }
 
-    LOG_DEBUG("NodeManager::AddNode: > I will try to add this Node to my list. Node is '{}' at {}", pNode->GetNodeName(), PRINT_ADDRESS(pNode.get()));
+    LOG_DEBUG("NodeManager::AddNode:                    > I will try to add this Node to my list. Node is '{}' at {}", pNode->GetNodeName(), static_cast<void*>(pNode.get()));
 
     if (mNodes.contains(pNode))
     {
@@ -81,7 +80,7 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
 
         if (const auto pParent = pObject->GetParent<Node>())
         {
-            LOG_DEBUG("NodeManager::AddNode: This Object has a parent. Let's see if its parent added to my list. Parent is '{}' at {}", pParent->GetNodeName(), PRINT_ADDRESS(pParent.get()));
+            LOG_DEBUG("NodeManager::AddNode: This Object has a parent. Let's see if its parent added to my list. Parent is '{}' at {}", pParent->GetNodeName(), static_cast<void*>(pParent.get()));
 
             if (mNodes.contains(pParent) == false)
             {
@@ -105,13 +104,13 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
 
             if (mNodes.contains(pChild) == false)
             {
-                LOG_DEBUG("NodeManager::AddNode: Object has a child which is not added to my list. Child is '{}' at {}", pChild->GetNodeName(), PRINT_ADDRESS(pChild.get()));
+                LOG_DEBUG("NodeManager::AddNode: Object has a child which is not added to my list. Child is '{}' at {}", pChild->GetNodeName(), static_cast<void*>(pChild.get()));
                 LOG_DEBUG("NodeManager::AddNode: I am calling AddNode on this child. This is a recursive call.");
                 AddNode(pChild);
             }
             else
             {
-                LOG_DEBUG("NodeManager::AddNode: This child is on my list: '{}' at {}", pChild->GetNodeName(), PRINT_ADDRESS(pChild.get()));
+                LOG_DEBUG("NodeManager::AddNode: This child is on my list: '{}' at {}", pChild->GetNodeName(), static_cast<void*>(pChild.get()));
             }
         }
 
@@ -122,12 +121,17 @@ void Canavar::Engine::NodeManager::AddNode(NodePtr pNode)
         }
     }
 
-    LOG_DEBUG("NodeManager::AddNode: < I have added this Node: '{}' at {}", pNode->GetNodeName(), PRINT_ADDRESS(pNode.get()));
+    LOG_DEBUG("NodeManager::AddNode:                    < I have added this Node: '{}' at {}", pNode->GetNodeName(), static_cast<void*>(pNode.get()));
+}
+
+void Canavar::Engine::NodeManager::RemoveNode(Node* pNode)
+{
+    RemoveNode(pNode->shared_from_this());
 }
 
 void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
 {
-    LOG_DEBUG("NodeManager::RemoveNode: > I will remove this Node: '{}' at {}", pNode->GetNodeName(), PRINT_ADDRESS(pNode.get()));
+    LOG_DEBUG("NodeManager::RemoveNode: > I will remove this Node: '{}' at {}", pNode->GetNodeName(), static_cast<void*>(pNode.get()));
 
     int count = mNodes.removeAll(pNode);
 
@@ -155,7 +159,7 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
         {
             if (const auto pChild = *it)
             {
-                LOG_DEBUG("NodeManager::RemoveNode: Removing this Object's child: '{}' at {}. This is a recursive call.", pChild->GetNodeName(), PRINT_ADDRESS(pChild.get()));
+                LOG_DEBUG("NodeManager::RemoveNode: Removing this Object's child: '{}' at {}. This is a recursive call.", pChild->GetNodeName(), static_cast<void*>(pChild.get()));
                 RemoveNode(pChild);
             }
         }
@@ -176,11 +180,16 @@ void Canavar::Engine::NodeManager::RemoveNode(NodePtr pNode)
     LOG_DEBUG("NodeManager::RemoveNode: < Node is removed.");
 }
 
-Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const std::string& sceneName) const
+bool Canavar::Engine::NodeManager::HasScene(const std::string& SceneName) const
+{
+    return mScenes.find(SceneName) != mScenes.end();
+}
+
+Canavar::Engine::ScenePtr Canavar::Engine::NodeManager::GetScene(const std::string& SceneName) const
 {
     ScenePtr pResult = nullptr;
 
-    if (const auto it = mScenes.find(sceneName); it != mScenes.end())
+    if (const auto it = mScenes.find(SceneName); it != mScenes.end())
     {
         pResult = it->second;
     }

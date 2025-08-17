@@ -1,5 +1,7 @@
 #include "Terrain.h"
 
+#include "Canavar/Engine/Node/NodeVisitor.h"
+
 Canavar::Engine::Terrain::Terrain()
 {
     initializeOpenGLFunctions();
@@ -229,6 +231,11 @@ void Canavar::Engine::Terrain::TranslateTiles(const QVector2D &translation)
 
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, mTilePositions.size() * sizeof(QVector2D), mTilePositions.constData());
+}
+
+void Canavar::Engine::Terrain::Accept(NodeVisitor &visitor)
+{
+    visitor.Visit(*this);
 }
 
 void Canavar::Engine::Terrain::Render(Shader *pShader, Camera *pCamera)

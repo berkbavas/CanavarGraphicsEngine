@@ -7,9 +7,7 @@ namespace Canavar::Engine
     class DummyCamera : public PerspectiveCamera
     {
       public:
-        DummyCamera();
-
-        const char *GetNodeTypeName() const override { return "DummyCamera"; }
+        CANAVAR_NODE(DummyCamera);
     };
 
     using DummyCameraPtr = std::shared_ptr<DummyCamera>;

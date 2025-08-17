@@ -9,13 +9,11 @@ namespace Canavar::Engine
 {
     class LightningStrikeGenerator : public LightningStrikeBase
     {
-        const char* GetNodeTypeName() const override { return "LightningStrikeGenerator"; }
+      public:
+        CANAVAR_NODE(LightningStrikeGenerator);
 
         void ToJson(QJsonObject& object) override;
         void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
-
-      public:
-        LightningStrikeGenerator();
 
         QVector<QVector3D> GetWorldPositionsOfTerminationPoints() override;
         void AddAttractor(LightningStrikeAttractorPtr pAttractor);

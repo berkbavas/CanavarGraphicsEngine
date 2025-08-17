@@ -8,11 +8,6 @@
 #include <QVector3D>
 #include <QtMath>
 
-Canavar::Engine::Sky::Sky()
-{
-    SetNodeName("Sky");
-}
-
 void Canavar::Engine::Sky::Initialize()
 {
     initializeOpenGLFunctions();

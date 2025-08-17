@@ -10,9 +10,7 @@ namespace Canavar::Engine
     class Text2D : public Node
     {
       public:
-        Text2D();
-
-        const char *GetNodeTypeName() const override { return "Text2D"; }
+        CANAVAR_NODE(Text2D);
 
         void ToJson(QJsonObject &object) override;
         void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;

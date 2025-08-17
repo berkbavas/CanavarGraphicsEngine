@@ -1,10 +1,5 @@
 #include "Haze.h"
 
-Canavar::Engine::Haze::Haze()
-{
-    SetNodeName("Haze");
-}
-
 void Canavar::Engine::Haze::ToJson(QJsonObject &object)
 {
     Global::ToJson(object);

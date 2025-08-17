@@ -1,5 +1,6 @@
 #include "Node.h"
 
+#include "Canavar/Engine/Node/NodeVisitor.h"
 #include "Canavar/Engine/Node/Object/Object.h"
 #include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/Util.h"
@@ -41,7 +42,7 @@ void Canavar::Engine::Node::RemoveParent()
 
 void Canavar::Engine::Node::SetParent(NodeWeakPtr pNewParent)
 {
-    LOG_DEBUG("Object::SetParent: > Setting a parent to Object at {}", PRINT_ADDRESS(this));
+    LOG_DEBUG("Object::SetParent: > Setting a parent to Object at {}", static_cast<void*>(this));
 
     const auto pCurrentParentLocked = mParent.lock();
     const auto pNewParentLocked = pNewParent.lock();
@@ -128,6 +129,12 @@ void Canavar::Engine::Node::AddChild(NodePtr pNode)
 void Canavar::Engine::Node::RemoveChild(NodePtr pNode)
 {
     mChildren.remove(pNode);
+    pNode->SetParent(std::weak_ptr<Node>());
+}
+
+void Canavar::Engine::Node::RemoveChild(Node *pNode)
+{
+    mChildren.remove(pNode->shared_from_this());
     pNode->SetParent(std::weak_ptr<Node>());
 }
 

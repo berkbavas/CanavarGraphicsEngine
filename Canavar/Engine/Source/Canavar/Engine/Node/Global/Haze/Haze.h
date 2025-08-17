@@ -12,9 +12,7 @@ namespace Canavar::Engine
     class Haze : public Global
     {
       public:
-        Haze();
-        
-        const char* GetNodeTypeName() const override { return "Haze"; }
+        CANAVAR_NODE(Haze);
 
         void ToJson(QJsonObject& object) override;
         void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;

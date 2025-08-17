@@ -18,10 +18,11 @@ namespace Canavar::Engine
       public:
         Terrain();
 
+        const char* GetNodeTypeName() const override { return "Terrain"; }
+        void Accept(NodeVisitor& visitor) override;
+
         void ToJson(QJsonObject& object) override;
         void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
-
-        const char* GetNodeTypeName() const override { return "Terrain"; }
 
         void Render(Shader* pShader, Camera* pCamera);
 

@@ -12,6 +12,7 @@ namespace Canavar::Engine
         PersecutorCamera();
 
         const char *GetNodeTypeName() const override { return "PersecutorCamera"; }
+        void Accept(NodeVisitor &visitor) override;
 
         bool MousePressed(QMouseEvent *) override;
         bool MouseReleased(QMouseEvent *) override;

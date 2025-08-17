@@ -75,3 +75,17 @@
 #define DISABLE_COPY(CLASS_NAME) \
     CLASS_NAME(const CLASS_NAME&) = delete; \
     CLASS_NAME& operator=(const CLASS_NAME&) = delete
+
+#define CANAVAR_NODE(CLASS_NAME) \
+    CLASS_NAME() \
+    { \
+        SetNodeName(#CLASS_NAME); \
+    } \
+    inline const char* GetNodeTypeName() const override \
+    { \
+        return #CLASS_NAME; \
+    } \
+    inline void Accept(NodeVisitor& visitor) override \
+    { \
+        visitor.Visit(*this); \
+    }

@@ -1,6 +1,7 @@
 #include "FreeCamera.h"
 
 #include "Canavar/Engine/Util/Logger.h"
+#include "Canavar/Engine/Node/NodeVisitor.h"
 
 #include <QApplication>
 #include <QKeyEvent>
@@ -15,6 +16,11 @@ Canavar::Engine::FreeCamera::FreeCamera()
     mAnimator = std::make_shared<FreeCameraSlerpAnimator>(this);
 
     connect(mAnimator.get(), &FreeCameraAnimator::AnimationFinished, this, [this]() { Reset(); });
+}
+
+void Canavar::Engine::FreeCamera::Accept(NodeVisitor& visitor)
+{
+    visitor.Visit(*this);
 }
 
 void Canavar::Engine::FreeCamera::Update(float ifps)
@@ -139,7 +145,7 @@ bool Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
     return false;
 }
 
-void Canavar::Engine::FreeCamera::GoToObject(ObjectPtr pNode)
+void Canavar::Engine::FreeCamera::GoToObject(Object* pNode)
 {
     mAnimator->AnimateTo(pNode->GetWorldPosition());
 }

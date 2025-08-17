@@ -1,13 +1,9 @@
 #include "NozzleEffect.h"
 
 #include "Canavar/Engine/Core/Shader.h"
+#include "Canavar/Engine/Node/NodeVisitor.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
 #include "Canavar/Engine/Util/Util.h"
-
-Canavar::Engine::NozzleEffect::NozzleEffect()
-{
-    SetNodeName("Nozzle Effect");
-}
 
 void Canavar::Engine::NozzleEffect::Initialize()
 {

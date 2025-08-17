@@ -11,9 +11,7 @@ namespace Canavar::Engine
     class NozzleEffect : public Object, protected QOpenGLFunctions_4_5_Core
     {
       public:
-        NozzleEffect();
-
-        const char* GetNodeTypeName() const override { return "NozzleEffect"; }
+        CANAVAR_NODE(NozzleEffect);
 
         void Render(float ifps);
 

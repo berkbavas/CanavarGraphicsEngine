@@ -37,7 +37,7 @@ void Canavar::Engine::CameraManager::Update(float ifps)
 
 void Canavar::Engine::CameraManager::SetActiveCamera(CameraPtr pCamera)
 {
-    LOG_DEBUG("CameraManager::SetActiveCamera: mActiveCamera: {}, pCamera: {}", PRINT_ADDRESS(mActiveCamera.get()), PRINT_ADDRESS(pCamera.get()));
+    LOG_DEBUG("CameraManager::SetActiveCamera: mActiveCamera: {}, pCamera: {}", static_cast<void*>(mActiveCamera.get()), static_cast<void*>(pCamera.get()));
     CGE_ASSERT(pCamera != nullptr);
 
     if (mActiveCamera == pCamera)

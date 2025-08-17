@@ -2,11 +2,6 @@
 
 #include <QJsonArray>
 
-Canavar::Engine::LightningStrikeGenerator::LightningStrikeGenerator()
-{
-    SetNodeName("Lightning Strike Generator");
-}
-
 QVector<QVector3D> Canavar::Engine::LightningStrikeGenerator::GetWorldPositionsOfTerminationPoints()
 {
     QVector<QVector3D> Result;

@@ -162,7 +162,7 @@ void Canavar::Engine::Controller::Initialize()
         connect(mImGuiWidget,
                 &ImGuiWidget::GoToObject,
                 this,
-                [=](Engine::ObjectPtr pObject) //
+                [=](Engine::Object* pObject) //
                 {
                     mCameraManager->SetActiveCamera(mCameraManager->GetFreeCamera());
                     mCameraManager->GetFreeCamera()->GoToObject(pObject);

@@ -30,8 +30,10 @@ namespace Canavar::Engine
 
         void AddNode(NodePtr pNode);
         void RemoveNode(NodePtr pNode);
+        void RemoveNode(Node* pNode);
 
-        ScenePtr GetScene(const std::string &sceneName) const;
+        bool HasScene(const std::string &SceneName) const;
+        ScenePtr GetScene(const std::string &SceneName) const;
         ScenePtr GetScene(ModelPtr pModel) const;
         ScenePtr GetScene(Model *pModel) const;
 
@@ -57,11 +59,11 @@ namespace Canavar::Engine
         }
 
         template<typename T>
-        std::shared_ptr<T> FindNodeByName(const QString &name)
+        std::shared_ptr<T> FindNodeByName(const QString &Name)
         {
             for (const auto &pNode : mNodes)
             {
-                if (pNode->GetNodeName() == name)
+                if (pNode->GetNodeName() == Name)
                 {
                     return std::dynamic_pointer_cast<T>(pNode);
                 }

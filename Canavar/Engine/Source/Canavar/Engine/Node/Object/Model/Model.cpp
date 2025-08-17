@@ -1,5 +1,7 @@
 #include "Model.h"
 
+#include "Canavar/Engine/Node/NodeVisitor.h"
+
 #include <QJsonArray>
 
 Canavar::Engine::Model::Model(const std::string& sceneName)

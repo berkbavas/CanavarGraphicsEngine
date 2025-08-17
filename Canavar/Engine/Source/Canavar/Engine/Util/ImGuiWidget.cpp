@@ -74,58 +74,9 @@ void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
             }
         }
 
-        if (mSelectedNode == mSun)
+        if (mSelectedNode)
         {
-            DrawSun();
-        }
-        else if (mSelectedNode == mSky)
-        {
-            DrawSky();
-        }
-        else if (mSelectedNode == mHaze)
-        {
-            DrawHaze();
-        }
-        else if (mSelectedNode == mTerrain)
-        {
-            DrawTerrain();
-        }
-        else if (Engine::Text2DPtr pText2D = std::dynamic_pointer_cast<Engine::Text2D>(mSelectedNode))
-        {
-            DrawText2D(pText2D);
-        }
-        else if (Engine::ObjectPtr pObject = std::dynamic_pointer_cast<Engine::Object>(mSelectedNode))
-        {
-            DrawObject(pObject);
-
-            if (Engine::ModelPtr pModel = std::dynamic_pointer_cast<Engine::Model>(mSelectedNode))
-            {
-                DrawModel(pModel);
-            }
-            else if (Engine::Text3DPtr pText3D = std::dynamic_pointer_cast<Engine::Text3D>(mSelectedNode))
-            {
-                DrawText3D(pText3D);
-            }
-            else if (Engine::PerspectiveCameraPtr pPerspectiveCamera = std::dynamic_pointer_cast<Engine::PerspectiveCamera>(mSelectedNode))
-            {
-                DrawCamera(pPerspectiveCamera);
-            }
-            else if (Engine::DirectionalLightPtr pDirectionalLight = std::dynamic_pointer_cast<Engine::DirectionalLight>(mSelectedNode))
-            {
-                DrawDirectionalLight(pDirectionalLight);
-            }
-            else if (Engine::PointLightPtr pPointLight = std::dynamic_pointer_cast<Engine::PointLight>(mSelectedNode))
-            {
-                DrawPointLight(pPointLight);
-            }
-            else if (Engine::NozzleEffectPtr pNozzleEffect = std::dynamic_pointer_cast<Engine::NozzleEffect>(mSelectedNode))
-            {
-                DrawNozzleEffect(pNozzleEffect);
-            }
-            else if (Engine::LightningStrikeBasePtr pLightingStrike = std::dynamic_pointer_cast<Engine::LightningStrikeBase>(mSelectedNode))
-            {
-                DrawLightningStrike(pLightingStrike);
-            }
+            mSelectedNode->Accept(*this);
         }
 
         ImGui::EndDisabled();
@@ -311,7 +262,7 @@ void Canavar::Engine::ImGuiWidget::DrawTerrain()
     ImGui::Checkbox("Enabled", &mTerrain->GetEnabled_NonConst());
 }
 
-void Canavar::Engine::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
+void Canavar::Engine::ImGuiWidget::DrawObject(Engine::Object* pObject)
 {
     const auto pParent = pObject->GetParent<Engine::Node>();
     const auto &Objects = mNodeManager->GetObjects();
@@ -320,7 +271,7 @@ void Canavar::Engine::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
     {
         for (const auto &pParentCandidate : Objects)
         {
-            if (pParentCandidate == pObject)
+            if (pParentCandidate.get() == pObject)
             {
                 continue;
             }
@@ -384,7 +335,7 @@ void Canavar::Engine::ImGuiWidget::DrawObject(Engine::ObjectPtr pObject)
     }
 }
 
-void Canavar::Engine::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
+void Canavar::Engine::ImGuiWidget::DrawModel(Engine::Model *pModel)
 {
     ImGui::Text("Model Parameters");
 
@@ -454,7 +405,7 @@ void Canavar::Engine::ImGuiWidget::DrawModel(Engine::ModelPtr pModel)
     }
 }
 
-void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2DPtr pText)
+void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2D* pText)
 {
     if (const auto newText = InputText("Text##DrawText2D", pText->GetText().toStdString()))
     {
@@ -465,7 +416,7 @@ void Canavar::Engine::ImGuiWidget::DrawText2D(Engine::Text2DPtr pText)
     ImGui::ColorEdit3("Color##Text2D", &pText->GetColor_NonConst()[0]);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3DPtr pText)
+void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3D* pText)
 {
     if (const auto newText = InputText("Text##DrawText3D", pText->GetText().toStdString()))
     {
@@ -475,7 +426,7 @@ void Canavar::Engine::ImGuiWidget::DrawText3D(Engine::Text3DPtr pText)
     ImGui::ColorEdit3("Color##Text3D", &pText->GetColor_NonConst()[0]);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCameraPtr pCamera)
+void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCamera* pCamera)
 {
     ImGui::Text("Perspective Camera Parameters");
 
@@ -484,7 +435,7 @@ void Canavar::Engine::ImGuiWidget::DrawCamera(Engine::PerspectiveCameraPtr pCame
     ImGui::InputFloat("Z-Near", &pCamera->GetZNear_NonConst(), 0, 0, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLightPtr pLight)
+void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight* pLight)
 {
     ImGui::Text("Directional Light Parameters");
 
@@ -501,7 +452,7 @@ void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight
     pLight->SetDirectionFromThetaPhi(theta, phi);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLightPtr pLight)
+void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLight* pLight)
 {
     ImGui::Text("Point Light Parameters");
 
@@ -514,7 +465,7 @@ void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLightPtr pLight)
     ImGui::ColorEdit3("Color##PointLight", (float *) &pLight->GetColor_NonConst());
 }
 
-void Canavar::Engine::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffectPtr pNozzleEffect)
+void Canavar::Engine::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffect* pNozzleEffect)
 {
     ImGui::Text("Nozzle Effect Parameters");
 
@@ -526,7 +477,7 @@ void Canavar::Engine::ImGuiWidget::DrawNozzleEffect(Engine::NozzleEffectPtr pNoz
     ImGui::SliderInt("# of Particles##NozzleEffect", &pNozzleEffect->GetNumberOfParticles_NonConst(), 0, 100'000);
 }
 
-void Canavar::Engine::ImGuiWidget::DrawLightningStrike(Engine::LightningStrikeBasePtr pLightningStrike)
+void Canavar::Engine::ImGuiWidget::DrawLightningStrike(Engine::LightningStrikeBase* pLightningStrike)
 {
     ImGui::Text("Lightning Strike Generator");
 
@@ -689,10 +640,17 @@ void Canavar::Engine::ImGuiWidget::DrawCreateModelWidget()
 
         if (ImGui::Button("Create##DrawCreateModelWidget"))
         {
-            Engine::ModelPtr pModel = std::make_shared<Engine::Model>(mSelectedSceneName);
-            pModel->SetWorldPosition(GetWorldPositionForCreatedObject());
-            mNodeManager->AddNode(pModel);
-            SetSelectedNode(pModel);
+            if (mNodeManager->HasScene(mSelectedSceneName))
+            {
+                Engine::ModelPtr pModel = std::make_shared<Engine::Model>(mSelectedSceneName);
+                pModel->SetWorldPosition(GetWorldPositionForCreatedObject());
+                mNodeManager->AddNode(pModel);
+                SetSelectedNode(pModel);
+            }
+            else
+            {
+                LOG_DEBUG("ImGuiWidget::DrawCreateModelWidget: Scene '{}' does not exist.", mSelectedSceneName.c_str());
+            }
         }
     }
 }
@@ -737,7 +695,7 @@ void Canavar::Engine::ImGuiWidget::DrawWorldPositionsWidget()
 
 QVector3D Canavar::Engine::ImGuiWidget::GetWorldPositionForCreatedObject() const
 {
-    Engine::Camera* pActiveCamera = mCameraManager->GetActiveCamera();
+    Engine::Camera *pActiveCamera = mCameraManager->GetActiveCamera();
     QVector3D CamPos = pActiveCamera->GetWorldPosition();
     QVector3D ViewDir = pActiveCamera->GetViewDirection();
 
@@ -762,7 +720,7 @@ bool Canavar::Engine::ImGuiWidget::KeyPressed(QKeyEvent *pEvent)
 {
     if (pEvent->key() == Qt::Key_Delete)
     {
-        RemoveNode(mSelectedNode);
+        RemoveNode(mSelectedNode.get());
     }
 
     return ImGui::GetIO().WantCaptureKeyboard;
@@ -820,7 +778,7 @@ bool Canavar::Engine::ImGuiWidget::WheelMoved(QWheelEvent *)
     return ImGui::GetIO().WantCaptureMouse;
 }
 
-void Canavar::Engine::ImGuiWidget::RemoveNode(NodePtr pNode)
+void Canavar::Engine::ImGuiWidget::RemoveNode(Node* pNode)
 {
     if (pNode == nullptr)
     {
@@ -829,7 +787,7 @@ void Canavar::Engine::ImGuiWidget::RemoveNode(NodePtr pNode)
 
     mNodeManager->RemoveNode(pNode);
 
-    if (pNode == mSelectedNode)
+    if (pNode == mSelectedNode.get())
     {
         mSelectedNode = nullptr;
     }
@@ -859,17 +817,23 @@ void Canavar::Engine::ImGuiWidget::SetSelectedMesh(NodePtr pNode, uint32_t MeshI
 {
     if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pNode))
     {
-        const auto pScene = mNodeManager->GetScene(pModel->GetSceneName());
-        const auto &Meshes = pScene->GetMeshes();
-
-        for (const auto &pMesh : Meshes)
+        if (const auto pScene = mNodeManager->GetScene(pModel->GetSceneName()))
         {
-            if (pMesh->GetMeshId() == MeshId)
+            const auto &Meshes = pScene->GetMeshes();
+
+            for (const auto &pMesh : Meshes)
             {
-                mSelectedMesh = pMesh;
-                pModel->SetSelectedMeshId(pMesh->GetMeshId());
-                return;
+                if (pMesh->GetMeshId() == MeshId)
+                {
+                    mSelectedMesh = pMesh;
+                    pModel->SetSelectedMeshId(pMesh->GetMeshId());
+                    return;
+                }
             }
+        }
+        else
+        {
+            LOG_WARN("ImGuiWidget::SetSelectedMesh: pScene is nullptr!");
         }
 
         pModel->SetSelectedMeshId(-1);

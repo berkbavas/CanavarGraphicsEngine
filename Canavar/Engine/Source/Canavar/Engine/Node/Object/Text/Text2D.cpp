@@ -1,10 +1,5 @@
 #include "Text2D.h"
 
-Canavar::Engine::Text2D::Text2D()
-{
-    SetNodeName("Text2D");
-}
-
 void Canavar::Engine::Text2D::ToJson(QJsonObject &object)
 {
     Node::ToJson(object);

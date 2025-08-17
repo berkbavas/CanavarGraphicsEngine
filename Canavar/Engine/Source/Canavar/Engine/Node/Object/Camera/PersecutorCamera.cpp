@@ -1,5 +1,6 @@
 #include "PersecutorCamera.h"
 
+#include "Canavar/Engine/Node/NodeVisitor.h"
 #include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/Math.h"
 
@@ -10,6 +11,11 @@ Canavar::Engine::PersecutorCamera::PersecutorCamera()
     mAnimator = std::make_shared<PersecutorCameraNonlinearAnimator>();
 
     connect(mAnimator.get(), &PersecutorCameraAnimator::Updated, this, &PersecutorCamera::OnAnimationAnglesUpdated);
+}
+
+void Canavar::Engine::PersecutorCamera::Accept(NodeVisitor& visitor)
+{
+    visitor.Visit(*this);
 }
 
 bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
@@ -188,7 +194,7 @@ Canavar::Engine::ObjectPtr Canavar::Engine::PersecutorCamera::GetTarget() const
 
 void Canavar::Engine::PersecutorCamera::SetTarget(ObjectPtr pNewTarget)
 {
-    LOG_DEBUG("PersecutorCamera::SetTarget: mTarget: {}, pNewTarget: {}", PRINT_ADDRESS(mTarget.get()), PRINT_ADDRESS(pNewTarget.get()));
+    LOG_DEBUG("PersecutorCamera::SetTarget: mTarget: {}, pNewTarget: {}", static_cast<void*>(mTarget.get()), static_cast<void*>(pNewTarget.get()));
 
     if (pNewTarget == nullptr)
     {

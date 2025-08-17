@@ -1,9 +1,6 @@
 #include "Text3D.h"
 
-Canavar::Engine::Text3D::Text3D()
-{
-    SetNodeName("Text3D");
-}
+#include "Canavar/Engine/Node/NodeVisitor.h"
 
 void Canavar::Engine::Text3D::ToJson(QJsonObject &object)
 {

@@ -16,6 +16,7 @@ namespace Canavar::Engine
         FreeCamera();
 
         const char *GetNodeTypeName() const override { return "FreeCamera"; }
+        void Accept(NodeVisitor& visitor) override;
 
         void Update(float ifps) override;
         void Reset() override;
@@ -26,7 +27,7 @@ namespace Canavar::Engine
         bool MouseReleased(QMouseEvent *) override;
         bool MouseMoved(QMouseEvent *) override;
 
-        void GoToObject(ObjectPtr pNode);
+        void GoToObject(Object* pNode);
 
         void ToJson(QJsonObject &object) override;
         void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;

@@ -99,8 +99,6 @@ namespace Canavar::Engine
         std::exit(EXIT_FAILURE); \
     } while (false)
 
-#define PRINT_ADDRESS(PTR) std::format("{:#010x}", reinterpret_cast<intptr_t>(PTR))
-
 #define CGE_FILE_NAME (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 
 #define CGE_LINE_NUMBER __LINE__
