@@ -36,7 +36,7 @@ The engine is designed to be modular and extensible, supporting a variety of mod
 
 [Demo 2](https://github.com/user-attachments/assets/fee40d6c-3c14-4415-be26-53a90adbbdbd)
 
-[Demo 3](https://github.com/user-attachments/assets/47b32320-09f8-4714-8abe-e2b995a69e95)
+[Demo 3](https://github.com/user-attachments/assets/dd48ee1e-c6e5-4ea7-96df-57794a7cfdb1)
 
 ## Build Instructions
 
