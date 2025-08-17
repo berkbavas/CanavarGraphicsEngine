@@ -82,4 +82,5 @@ void Canavar::Engine::ShadowMappingRenderer::RenderForShadowMapping()
     }
 
     mShadowMappingShader->Release();
+    mFramebuffer->Release();
 }

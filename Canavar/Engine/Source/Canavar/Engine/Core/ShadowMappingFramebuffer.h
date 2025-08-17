@@ -16,6 +16,7 @@ namespace Canavar::Engine
         ~ShadowMappingFramebuffer();
 
         void Bind();
+        void Release();
         GLuint GetDepthMap() const;
 
       private:

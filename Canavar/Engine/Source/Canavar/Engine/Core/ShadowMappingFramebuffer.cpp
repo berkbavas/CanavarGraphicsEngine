@@ -55,6 +55,11 @@ void Canavar::Engine::ShadowMappingFramebuffer::Bind()
     }
 }
 
+void Canavar::Engine::ShadowMappingFramebuffer::Release()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 GLuint Canavar::Engine::ShadowMappingFramebuffer::GetDepthMap() const
 {
     return mDepthMap;
