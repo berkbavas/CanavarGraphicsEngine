@@ -6,7 +6,7 @@ The engine is designed to be modular and extensible, supporting a variety of mod
 
 ## Features
 
-- [x] Supports loading several 3D model formats (powered by [assimp](https://github.com/assimp/assimp))
+- [x] Supports loading GLTF 3D model format (powered by [assimp](https://github.com/assimp/assimp))
 - [x] Parent-child node hierarchy
 - [x] Procedural terrain generation
 - [x] Sky with atmospheric scattering
