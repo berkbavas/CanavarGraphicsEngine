@@ -109,6 +109,7 @@ float InverseLerp(float a, float b, float x)
 {
     return (x - a) / (b - a);
 }
+
 float InverseLerpClamped(float a, float b, float x)
 {
     return clamp(InverseLerp(a, b, x), 0, 1);
@@ -124,29 +125,29 @@ float[4] GetTextureWeightsByDisplacement(vec3[4] t, float[4] a)
 {
     const float depth = 0.1f;
 
-    float disp[t.length];
-    for (int i = 0; i < t.length; i++)
+    float disp[4];
+    for (int i = 0; i < 4; i++)
     {
         disp[i] = texture(uDisplacement, t[i]).r * uTextureDisplacementWeights[i];
     }
 
     float ma = 0;
-    for (int i = 0; i < t.length; i++)
+    for (int i = 0; i < 4; i++)
     {
         ma = max(ma, disp[i] + a[i]);
     }
     ma -= depth;
 
     float total_w = 0;
-    float[t.length] w;
-    for (int i = 0; i < t.length; i++)
+    float[4] w;
+    for (int i = 0; i < 4; i++)
     {
         w[i] = max(disp[i] + a[i] - ma, 0);
         total_w += w[i];
     }
 
     // normalize
-    for (int i = 0; i < t.length; i++)
+    for (int i = 0; i < 4; i++)
     {
         w[i] /= total_w;
     }
