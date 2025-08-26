@@ -33,5 +33,6 @@ namespace Canavar::Engine
         Shader* mText3DShader{ nullptr };
         Shader* mCinematicShader{ nullptr };
         Shader* mAcesShader{ nullptr };
+        Shader* mScreenShader{ nullptr };
     };
 }

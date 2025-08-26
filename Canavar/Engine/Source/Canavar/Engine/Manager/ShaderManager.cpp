@@ -83,6 +83,11 @@ void Canavar::Engine::ShaderManager::Initialize()
     mAcesShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Aces.frag");
     mAcesShader->Initialize();
 
+    mScreenShader = new Shader(ShaderType::Screen, "Screen Shader");
+    mScreenShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mScreenShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Screen.frag");
+    mScreenShader->Initialize();
+
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
@@ -97,6 +102,7 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Text3D, mText3DShader));
     mShaders.emplace(std::pair(ShaderType::Cinematic, mCinematicShader));
     mShaders.emplace(std::pair(ShaderType::Aces, mAcesShader));
+    mShaders.emplace(std::pair(ShaderType::Screen, mScreenShader));
 }
 
 void Canavar::Engine::ShaderManager::Shutdown()

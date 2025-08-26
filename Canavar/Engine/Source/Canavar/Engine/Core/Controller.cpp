@@ -263,10 +263,8 @@ void Canavar::Engine::Controller::RemoveEventReceiver(EventReceiver* pReceiver)
 
 void Canavar::Engine::Controller::Resize(int width, int height)
 {
-    mDevicePixelRatio = mRenderingContext->GetDevicePixelRatio();
-
-    mWidth = width * mDevicePixelRatio;
-    mHeight = height * mDevicePixelRatio;
+    mWidth = width;
+    mHeight = height;
 
     mRenderingContext->MakeCurrent();
 

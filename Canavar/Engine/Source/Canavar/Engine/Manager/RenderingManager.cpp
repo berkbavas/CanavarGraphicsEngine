@@ -57,6 +57,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mLineShader = mShaderManager->GetShader(ShaderType::Line);
     mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
     mAcesShader = mShaderManager->GetShader(ShaderType::Aces);
+    mScreenShader = mShaderManager->GetShader(ShaderType::Screen);
 }
 
 void Canavar::Engine::RenderingManager::Shutdown()
@@ -108,7 +109,14 @@ void Canavar::Engine::RenderingManager::DoPostProcessing()
     ApplyAcesPass();
     ApplyCinematicPass();
 
-    QOpenGLFramebufferObject::blitFramebuffer(nullptr, mFramebuffers[Temp], GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    QOpenGLFramebufferObject::bindDefault();
+    glViewport(0, 0, mWidth * mDevicePixelRatio, mHeight * mDevicePixelRatio);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    mScreenShader->Bind();
+    mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Temp]->textures().at(0));
+    mQuad->Render();
+    mScreenShader->Release();
 }
 
 void Canavar::Engine::RenderingManager::ApplyAcesPass()
@@ -185,7 +193,7 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
 
     mActiveCamera = pActiveCamera;
 
-    glViewport(0, 0, mWidth, mHeight);
+    glViewport(0, 0, pFramebuffer->width(), pFramebuffer->height());
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -488,7 +496,7 @@ QVector3D Canavar::Engine::RenderingManager::FetchFragmentLocalPositionFromScree
     QVector3D position;
     mFramebuffers[Singlesample]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT1);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &position);
     mFramebuffers[Singlesample]->release();
     return position;
 }
@@ -498,7 +506,7 @@ QVector3D Canavar::Engine::RenderingManager::FetchFragmentWorldPositionFromScree
     QVector3D position;
     mFramebuffers[Singlesample]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT2);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &position);
     mFramebuffers[Singlesample]->release();
     return position;
 }
@@ -508,7 +516,7 @@ Canavar::Engine::NodeInfo Canavar::Engine::RenderingManager::FetchNodeInfoFromSc
     NodeInfo info;
     mFramebuffers[Singlesample]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT3);
-    glReadPixels(mDevicePixelRatio * x, mFramebuffers[Singlesample]->height() - mDevicePixelRatio * y, 1, 1, GL_RGBA, GL_FLOAT, &info);
+    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &info);
     mFramebuffers[Singlesample]->release();
     return info;
 }

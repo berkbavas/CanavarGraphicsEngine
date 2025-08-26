@@ -32,6 +32,7 @@
         <file>Resources/Shaders/Text3D.frag</file>
         <file>Resources/Shaders/Cinematic.frag</file>
         <file>Resources/Shaders/Aces.frag</file>
+        <file>Resources/Shaders/Screen.frag</file>
 
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>

@@ -19,6 +19,7 @@ namespace Canavar::Engine
         Text3D,
         Cinematic,
         Aces,
+        Screen,
     };
 
     enum class ViewDirection

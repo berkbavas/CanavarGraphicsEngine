@@ -101,6 +101,7 @@ namespace Canavar::Engine
         Shader *mCinematicShader{ nullptr };
         Shader *mAcesShader{ nullptr };
         Shader *mCloudsShader{ nullptr };
+        Shader *mScreenShader{ nullptr };
 
         SkyPtr mSky;
         SunPtr mSun;
