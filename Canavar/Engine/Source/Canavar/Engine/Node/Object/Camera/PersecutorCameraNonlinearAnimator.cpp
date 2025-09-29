@@ -34,12 +34,12 @@ bool Canavar::Engine::PersecutorCameraNonlinearAnimator::IsAnimating() const
     return mAnimating;
 }
 
-void Canavar::Engine::PersecutorCameraNonlinearAnimator::Animate(float currentYaw, float currentPitch, float targetYaw, float targetPitch)
+void Canavar::Engine::PersecutorCameraNonlinearAnimator::Animate(float CurrentYaw, float CurrentPitch, float TargetYaw, float TargetPitch)
 {
-    mCurrentYaw = currentYaw;
-    mCurrentPitch = currentPitch;
-    mTargetYaw = targetYaw;
-    mTargetPitch = targetPitch;
+    mCurrentYaw = CurrentYaw;
+    mCurrentPitch = CurrentPitch;
+    mTargetYaw = TargetYaw;
+    mTargetPitch = TargetPitch;
     mAnimating = true;
 }
 
@@ -48,22 +48,22 @@ void Canavar::Engine::PersecutorCameraNonlinearAnimator::Stop()
     mAnimating = false;
 }
 
-void Canavar::Engine::PersecutorCameraNonlinearAnimator::SetSpeed(float speed)
+void Canavar::Engine::PersecutorCameraNonlinearAnimator::SetSpeed(float Speed)
 {
-    mSpeed = speed;
+    mSpeed = Speed;
 }
 
-float Canavar::Engine::PersecutorCameraNonlinearAnimator::ClampAngle(float angle)
+float Canavar::Engine::PersecutorCameraNonlinearAnimator::ClampAngle(float Angle)
 {
-    if (angle < -180)
+    if (Angle < -180)
     {
-        angle += 360;
+        Angle += 360;
     }
 
-    if (angle > 180)
+    if (Angle > 180)
     {
-        angle -= 360;
+        Angle -= 360;
     }
 
-    return angle;
+    return Angle;
 }

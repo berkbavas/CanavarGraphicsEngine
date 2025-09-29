@@ -25,13 +25,13 @@ namespace Canavar::Engine
 
       public:
         virtual const char* GetNodeTypeName() const = 0;
-        virtual void Accept(NodeVisitor& visitor) = 0;
+        virtual void Accept(NodeVisitor& Visitor) = 0;
 
         const std::string& GetUniqueNodeName();
         const std::string& GetNodeIdString();
 
-        virtual void ToJson(QJsonObject& jsonObject);
-        virtual void FromJson(const QJsonObject& jsonObject, const QSet<NodePtr>& nodes);
+        virtual void ToJson(QJsonObject& JsonObject);
+        virtual void FromJson(const QJsonObject& JsonObject, const QSet<NodePtr>& Nodes);
 
         template<class T>
         std::shared_ptr<T> GetParent() const

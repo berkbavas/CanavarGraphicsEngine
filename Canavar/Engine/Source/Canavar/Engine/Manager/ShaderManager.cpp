@@ -107,7 +107,7 @@ void Canavar::Engine::ShaderManager::Initialize()
 
 void Canavar::Engine::ShaderManager::Shutdown()
 {
-    for (const auto& [type, pShader] : mShaders)
+    for (const auto& [Type, pShader] : mShaders)
     {
         delete pShader;
     }
@@ -115,11 +115,11 @@ void Canavar::Engine::ShaderManager::Shutdown()
     mShaders.clear();
 }
 
-Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType shaderType)
+Canavar::Engine::Shader* Canavar::Engine::ShaderManager::GetShader(ShaderType ShaderType)
 {
-    for (const auto [type, pShader] : mShaders)
+    for (const auto [Type, pShader] : mShaders)
     {
-        if (type == shaderType)
+        if (Type == ShaderType)
         {
             return pShader;
         }

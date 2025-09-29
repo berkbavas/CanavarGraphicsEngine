@@ -32,4 +32,10 @@ namespace Canavar::Engine
         Right
     };
 
+    enum class RenderPass
+    {
+        Opaque,
+        Transparent,
+    };
+
 }

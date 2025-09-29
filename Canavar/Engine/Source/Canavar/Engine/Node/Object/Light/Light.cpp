@@ -1,34 +1,34 @@
 #include "Light.h"
 
-void Canavar::Engine::Light::ToJson(QJsonObject &object)
+void Canavar::Engine::Light::ToJson(QJsonObject &Object)
 {
-    Object::ToJson(object);
+    Object::ToJson(Object);
 
-    QJsonObject color;
-    color.insert("r", mColor.x());
-    color.insert("g", mColor.y());
-    color.insert("b", mColor.z());
-    object.insert("color", color);
+    QJsonObject Color;
+    Color.insert("r", mColor.x());
+    Color.insert("g", mColor.y());
+    Color.insert("b", mColor.z());
+    Object.insert("color", Color);
 
-    object.insert("ambient", mAmbient);
-    object.insert("diffuse", mDiffuse);
-    object.insert("specular", mSpecular);
-    object.insert("enabled", mEnabled);
+    Object.insert("ambient", mAmbient);
+    Object.insert("diffuse", mDiffuse);
+    Object.insert("specular", mSpecular);
+    Object.insert("enabled", mEnabled);
 }
 
-void Canavar::Engine::Light::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::Light::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    Object::FromJson(object, nodes);
+    Object::FromJson(Object, Nodes);
 
-    float r = object["color"]["r"].toDouble();
-    float g = object["color"]["g"].toDouble();
-    float b = object["color"]["b"].toDouble();
+    float r = Object["color"]["r"].toDouble();
+    float g = Object["color"]["g"].toDouble();
+    float b = Object["color"]["b"].toDouble();
 
     mColor = QVector3D(r, g, b);
 
-    mAmbient = object["ambient"].toDouble(1.0f);
-    mDiffuse = object["diffuse"].toDouble(1.0f);
-    mSpecular = object["specular"].toDouble(1.0f);
+    mAmbient = Object["ambient"].toDouble(1.0f);
+    mDiffuse = Object["diffuse"].toDouble(1.0f);
+    mSpecular = Object["specular"].toDouble(1.0f);
 
-    mEnabled = object["enabled"].toBool(true);
+    mEnabled = Object["enabled"].toBool(true);
 }

@@ -23,8 +23,8 @@ namespace Canavar::Engine
         float GetHorizontalFov() const;
         float GetAspectRatio() const;
 
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
+        void ToJson(QJsonObject &Object) override;
+        void FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes) override;
 
       private:
         DEFINE_MEMBER(float, ZNear, 0.1f);

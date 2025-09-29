@@ -19,43 +19,43 @@ Canavar::Engine::Material::~Material()
     }
 }
 
-bool Canavar::Engine::Material::LoadTextureFromPath(TextureType type, const QString &path, int components)
+bool Canavar::Engine::Material::LoadTextureFromPath(TextureType Type, const QString &Path, int Components)
 {
-    LOG_DEBUG("Material::LoadTextureFromPath: Loading texture from path: {}", path.toStdString());
-    return LoadTextureFromImage(type, QImage(path), components);
+    LOG_DEBUG("Material::LoadTextureFromPath: Loading texture from path: {}", Path.toStdString());
+    return LoadTextureFromImage(Type, QImage(Path), Components);
 }
 
-bool Canavar::Engine::Material::LoadTextureFromImage(TextureType type, const QImage &image, int components)
+bool Canavar::Engine::Material::LoadTextureFromImage(TextureType Type, const QImage &Image, int Components)
 {
-    if (image.isNull())
+    if (Image.isNull())
     {
         LOG_WARN("Material::LoadTextureFromImage: Image is null. Returning false.");
         return false;
     }
 
-    QImage converted;
-    GLint internalFormat;
+    QImage Converted;
+    GLint InternalFormat;
 
-    if (components == 1)
+    if (Components == 1)
     {
-        converted = image.convertToFormat(QImage::Format_Grayscale8);
-        internalFormat = GL_RED;
+        Converted = Image.convertToFormat(QImage::Format_Grayscale8);
+        InternalFormat = GL_RED;
     }
-    else if (components == 4)
+    else if (Components == 4)
     {
-        converted = image.convertToFormat(QImage::Format_RGBA8888);
-        internalFormat = GL_RGBA;
+        Converted = Image.convertToFormat(QImage::Format_RGBA8888);
+        InternalFormat = GL_RGBA;
     }
     else
     {
-        CGE_EXIT_FAILURE("Material::LoadTexture: Unsupported component size: {}", components);
+        CGE_EXIT_FAILURE("Material::LoadTexture: Unsupported component size: {}", Components);
     }
 
-    GLuint id;
-    glGenTextures(1, &id);
+    GLuint Id;
+    glGenTextures(1, &Id);
 
-    glBindTexture(GL_TEXTURE_2D, id);
-    glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, converted.width(), converted.height(), 0, internalFormat, GL_UNSIGNED_BYTE, converted.constBits());
+    glBindTexture(GL_TEXTURE_2D, Id);
+    glTexImage2D(GL_TEXTURE_2D, 0, InternalFormat, Converted.width(), Converted.height(), 0, InternalFormat, GL_UNSIGNED_BYTE, Converted.constBits());
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -65,14 +65,14 @@ bool Canavar::Engine::Material::LoadTextureFromImage(TextureType type, const QIm
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    mTextures.insert(type, id);
+    mTextures.insert(Type, Id);
 
     return true;
 }
 
-GLuint Canavar::Engine::Material::GetTexture(TextureType type)
+GLuint Canavar::Engine::Material::GetTexture(TextureType Type) const
 {
-    return mTextures.value(type, 0);
+    return mTextures.value(Type, 0);
 }
 
 bool Canavar::Engine::Material::HasTextureBaseColor() const

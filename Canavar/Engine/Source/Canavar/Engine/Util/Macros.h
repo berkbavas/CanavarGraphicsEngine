@@ -77,6 +77,7 @@
     CLASS_NAME& operator=(const CLASS_NAME&) = delete
 
 #define CANAVAR_NODE(CLASS_NAME) \
+    public: \
     CLASS_NAME() \
     { \
         SetNodeName(#CLASS_NAME); \

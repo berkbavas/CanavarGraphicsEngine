@@ -12,7 +12,7 @@ void Canavar::Engine::Sky::Initialize()
 {
     initializeOpenGLFunctions();
 
-    mQuad = new Quad;
+    mQuadData = std::make_shared<QuadData>();
 }
 
 void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camera* pCamera)
@@ -37,7 +37,7 @@ void Canavar::Engine::Sky::Render(Shader* pShader, DirectionalLight* pSun, Camer
     pShader->SetUniformValue("uScaleHeightR", mScaleHeightR);
     pShader->SetUniformValue("uScaleHeightM", mScaleHeightM);
     pShader->SetUniformValue("uMieG", mMieG);
-    mQuad->Render();
+    mQuadData->Render();
     pShader->Release();
     glEnable(GL_DEPTH_TEST);
 }

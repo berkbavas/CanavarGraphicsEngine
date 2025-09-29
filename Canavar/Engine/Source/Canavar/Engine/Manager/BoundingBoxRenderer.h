@@ -3,7 +3,7 @@
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Node/Object/Camera/Camera.h"
-#include "Canavar/Engine/Primitive/CubeStrip.h"
+#include "Canavar/Engine/Primitive/CubeStripData.h"
 
 #include <QVector4D>
 
@@ -22,7 +22,7 @@ namespace Canavar::Engine
         void InRender(PerspectiveCamera* pActiveCamera) override;
 
       private:
-        CubeStrip* mCubeStrip;
+        CubeStripDataPtr mCubeStripData{ nullptr };
         Shader* mLineShader;
         NodeManager* mNodeManager;
 

@@ -100,23 +100,23 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         {
             if (ImGui::MenuItem("Import"))
             {
-                QString path = QFileDialog::getOpenFileName(nullptr, "Import nodes", "", "*.json");
+                QString Path = QFileDialog::getOpenFileName(nullptr, "Import nodes", "", "*.json");
 
-                if (path.isNull() == false)
+                if (Path.isNull() == false)
                 {
-                    qDebug() << "ImGuiWidget::DrawMenuBar: Path is" << path;
-                    mNodeManager->ImportNodes(path);
+                    qDebug() << "ImGuiWidget::DrawMenuBar: Path is" << Path;
+                    mNodeManager->ImportNodes(Path);
                 }
             }
 
             if (ImGui::MenuItem("Export"))
             {
-                QString path = QFileDialog::getSaveFileName(nullptr, "Export nodes", "", "*.json");
+                QString Path = QFileDialog::getSaveFileName(nullptr, "Export nodes", "", "*.json");
 
-                if (path.isNull() == false)
+                if (Path.isNull() == false)
                 {
-                    qDebug() << "ImGuiWidget::DrawMenuBar: Path is" << path;
-                    mNodeManager->ExportNodes(path);
+                    qDebug() << "ImGuiWidget::DrawMenuBar: Path is" << Path;
+                    mNodeManager->ExportNodes(Path);
                 }
             }
 

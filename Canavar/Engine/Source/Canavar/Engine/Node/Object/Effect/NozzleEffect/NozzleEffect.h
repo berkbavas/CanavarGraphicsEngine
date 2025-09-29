@@ -15,8 +15,8 @@ namespace Canavar::Engine
 
         void Render(float ifps);
 
-        void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
+        void ToJson(QJsonObject& Object) override;
+        void FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes) override;
 
       private:
         void Initialize();
@@ -25,9 +25,9 @@ namespace Canavar::Engine
 #pragma pack(push, 1)
         struct Particle
         {
-            QVector3D position;
-            QVector3D velocity;
-            float life;
+            QVector3D Position;
+            QVector3D Velocity;
+            float Life;
         };
 #pragma pack(pop)
 

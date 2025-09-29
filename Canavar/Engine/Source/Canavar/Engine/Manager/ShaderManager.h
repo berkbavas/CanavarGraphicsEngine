@@ -15,7 +15,7 @@ namespace Canavar::Engine
         void Initialize() override;
         void Shutdown() override;
 
-        Shader* GetShader(ShaderType shaderType);
+        Shader* GetShader(ShaderType ShaderType);
 
       private:
         std::map<ShaderType, Shader*> mShaders;

@@ -4,8 +4,8 @@ layout(triangles) in;
 
 struct Plane
 {
-    vec3 point;
-    vec3 normal;
+    vec3 Point;
+    vec3 Normal;
 };
 
 uniform Plane uPlane;
@@ -20,14 +20,14 @@ layout(line_strip, max_vertices = 3) out;
 // neccessarily normalized) plane normal, and d is a scalar. Any way the plane is given -
 // DistFromPlane should just let the input vector into the plane equation.
 
-const float planeD = -dot(uPlane.normal, uPlane.point);
+const float PlaneD = -dot(uPlane.Normal, uPlane.Point);
 
 float DistFromPlane(vec3 P)
 {
-    return dot(uPlane.normal, P) + planeD;
+    return dot(uPlane.Normal, P) + PlaneD;
 }
 
-bool GetSegmentPlaneIntersection(vec3 P1, vec3 P2, out vec3 outP)
+bool GetSegmentPlaneIntersection(vec3 P1, vec3 P2, out vec3 OutP)
 {
     float d1 = DistFromPlane(P1);
     float d2 = DistFromPlane(P2);
@@ -36,38 +36,33 @@ bool GetSegmentPlaneIntersection(vec3 P1, vec3 P2, out vec3 outP)
         return false;
 
     float t = d1 / (d1 - d2); // 'time' of intersection point on the segment
-    outP = P1 + t * (P2 - P1);
+    OutP = P1 + t * (P2 - P1);
 
     return true;
 }
 
 void main()
 {
-    vec3 triA = gl_in[0].gl_Position.xyz;
-    vec3 triB = gl_in[1].gl_Position.xyz;
-    vec3 triC = gl_in[2].gl_Position.xyz;
-
-    int NumberOfIntersections = 0;
+    vec3 TriangleA = gl_in[0].gl_Position.xyz;
+    vec3 TriangleB = gl_in[1].gl_Position.xyz;
+    vec3 TriangleC = gl_in[2].gl_Position.xyz;
 
     vec3 IntersectionPoint;
 
-    if (GetSegmentPlaneIntersection(triA, triB, IntersectionPoint))
+    if (GetSegmentPlaneIntersection(TriangleA, TriangleB, IntersectionPoint))
     {
-        NumberOfIntersections++;
         gl_Position = uVP * vec4(IntersectionPoint, 1.0f);
         EmitVertex();
     }
 
-    if (GetSegmentPlaneIntersection(triB, triC, IntersectionPoint))
+    if (GetSegmentPlaneIntersection(TriangleB, TriangleC, IntersectionPoint))
     {
-        NumberOfIntersections++;
         gl_Position = uVP * vec4(IntersectionPoint, 1.0f);
         EmitVertex();
     }
 
-    if (GetSegmentPlaneIntersection(triC, triA, IntersectionPoint))
+    if (GetSegmentPlaneIntersection(TriangleC, TriangleA, IntersectionPoint))
     {
-        NumberOfIntersections++;
         gl_Position = uVP * vec4(IntersectionPoint, 1.0f);
         EmitVertex();
     }

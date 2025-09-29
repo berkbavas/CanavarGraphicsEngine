@@ -49,7 +49,7 @@ namespace Canavar::Engine
         void Shutdown() override;
         void Update(float ifps) override;
         void Render(PerspectiveCamera *pActiveCamera) override;
-        void Resize(int width, int height);
+        void Resize(int Width, int Height);
 
         QVector3D FetchFragmentLocalPositionFromScreen(int x, int y);
         QVector3D FetchFragmentWorldPositionFromScreen(int x, int y);
@@ -108,7 +108,7 @@ namespace Canavar::Engine
         TerrainPtr mTerrain;
         HazePtr mHaze;
 
-        Quad *mQuad;
+        QuadDataPtr mQuadData{ nullptr };
 
         std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;

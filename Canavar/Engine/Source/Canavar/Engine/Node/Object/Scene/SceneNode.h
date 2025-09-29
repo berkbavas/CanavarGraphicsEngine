@@ -20,7 +20,7 @@ namespace Canavar::Engine
       public:
         SceneNode() = default;
 
-        void Render(Model *pModel, Shader *pShader, RenderPass renderPass, const QMatrix4x4 &ParentTransformation = QMatrix4x4());
+        void Render(Model *pModel, Shader *pShader, RenderPass RenderPass, const QMatrix4x4 &ParentTransformation = QMatrix4x4());
 
         void AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List, const QMatrix4x4 &ParentTransformation = QMatrix4x4());
 

@@ -15,13 +15,13 @@ namespace Canavar::Engine
         virtual ~PersecutorCameraAnimator() = default;
 
       signals:
-        void Updated(float yaw, float pitch);
+        void Updated(float Yaw, float Pitch);
         void AnimationFinished();
 
       public:
         virtual void Update(float ifps) = 0;
         virtual bool IsAnimating() const = 0;
-        virtual void Animate(float currentYaw, float currentPitch, float targetYaw, float targetPitch) = 0;
+        virtual void Animate(float CurrentYaw, float CurrentPitch, float TargetYaw, float TargetPitch) = 0;
         virtual void Stop() = 0;
     };
 

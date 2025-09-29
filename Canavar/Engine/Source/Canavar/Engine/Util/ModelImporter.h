@@ -16,17 +16,17 @@ namespace Canavar::Engine
       public:
         ModelImporter() = delete;
 
-        static std::map<std::string, ScenePtr> Import(const QString& directory, const QStringList& formats);
+        static std::map<std::string, ScenePtr> Import(const QString& Directory, const QStringList& Formats);
 
-        static ScenePtr Import(const QString& sceneName, const QString& fullpath);
+        static ScenePtr Import(const QString& SceneName, const QString& Fullpath);
 
-        static QOpenGLTexture* CreateTexture(const QString& path);
+        static QOpenGLTexture* CreateTexture(const QString& Path);
 
       private:
         static SceneNodePtr ProcessNode(ScenePtr pScene, aiNode* aiNode);
         static MeshPtr ProcessMesh(aiMesh* aiMesh);
-        static MaterialPtr ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& directory);
-        static bool ProcessTexture(const aiScene* pScene, MaterialPtr material, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory, int components);
+        static MaterialPtr ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& Directory);
+        static bool ProcessTexture(const aiScene* pScene, MaterialPtr material, aiMaterial* aiMaterial, aiTextureType aiType, TextureType Type, const QString& Directory, int Components);
         static void CalculateAABB(ScenePtr pScene);
 
         static QMatrix4x4 ToQMatrix4x4(const aiMatrix4x4& aiMatrix);

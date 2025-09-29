@@ -11,47 +11,47 @@ Canavar::Engine::AABB::AABB(const QVector3D& Min, const QVector3D& Max)
 
 Canavar::Engine::AABB Canavar::Engine::AABB::Transform(const QMatrix4x4& Transformation) const
 {
-    QVector<QVector3D> vertices;
-    vertices << mMin;
+    QVector<QVector3D> Vertices;
+    Vertices << mMin;
 
-    vertices << QVector3D(mMax.x(), mMin.y(), mMin.z());
-    vertices << QVector3D(mMin.x(), mMax.y(), mMin.z());
-    vertices << QVector3D(mMin.x(), mMin.y(), mMax.z());
+    Vertices << QVector3D(mMax.x(), mMin.y(), mMin.z());
+    Vertices << QVector3D(mMin.x(), mMax.y(), mMin.z());
+    Vertices << QVector3D(mMin.x(), mMin.y(), mMax.z());
 
-    vertices << mMax;
-    vertices << QVector3D(mMin.x(), mMax.y(), mMax.z());
-    vertices << QVector3D(mMax.x(), mMin.y(), mMax.z());
-    vertices << QVector3D(mMax.x(), mMax.y(), mMin.z());
+    Vertices << mMax;
+    Vertices << QVector3D(mMin.x(), mMax.y(), mMax.z());
+    Vertices << QVector3D(mMax.x(), mMin.y(), mMax.z());
+    Vertices << QVector3D(mMax.x(), mMax.y(), mMin.z());
 
-    for (int i = 0; i < vertices.size(); ++i)
+    for (int i = 0; i < Vertices.size(); ++i)
     {
-        vertices[i] = (Transformation * QVector4D(vertices[i], 1)).toVector3D();
+        Vertices[i] = (Transformation * QVector4D(Vertices[i], 1)).toVector3D();
     }
 
-    float inf = std::numeric_limits<float>::infinity();
-    QVector3D min(inf, inf, inf);
-    QVector3D max(-inf, -inf, -inf);
+    float Inf = std::numeric_limits<float>::infinity();
+    QVector3D Min(Inf, Inf, Inf);
+    QVector3D Max(-Inf, -Inf, -Inf);
 
-    for (int i = 0; i < vertices.size(); ++i)
+    for (int i = 0; i < Vertices.size(); ++i)
     {
-        if (min[0] > vertices[i].x())
-            min[0] = vertices[i].x();
+        if (Min[0] > Vertices[i].x())
+            Min[0] = Vertices[i].x();
 
-        if (min[1] > vertices[i].y())
-            min[1] = vertices[i].y();
+        if (Min[1] > Vertices[i].y())
+            Min[1] = Vertices[i].y();
 
-        if (min[2] > vertices[i].z())
-            min[2] = vertices[i].z();
+        if (Min[2] > Vertices[i].z())
+            Min[2] = Vertices[i].z();
 
-        if (max[0] < vertices[i].x())
-            max[0] = vertices[i].x();
+        if (Max[0] < Vertices[i].x())
+            Max[0] = Vertices[i].x();
 
-        if (max[1] < vertices[i].y())
-            max[1] = vertices[i].y();
+        if (Max[1] < Vertices[i].y())
+            Max[1] = Vertices[i].y();
 
-        if (max[2] < vertices[i].z())
-            max[2] = vertices[i].z();
+        if (Max[2] < Vertices[i].z())
+            Max[2] = Vertices[i].z();
     }
 
-    return AABB(min, max);
+    return AABB(Min, Max);
 }

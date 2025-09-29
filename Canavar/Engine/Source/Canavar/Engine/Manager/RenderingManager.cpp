@@ -30,7 +30,7 @@ void Canavar::Engine::RenderingManager::Initialize()
         mFramebuffers[type] = nullptr;
     }
 
-    mQuad = new Quad;
+    mQuadData = std::make_shared<QuadData>();
 
     ResizeFramebuffers();
 }
@@ -63,8 +63,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
 void Canavar::Engine::RenderingManager::Shutdown()
 {
     DestroyFramebuffers();
-
-    delete mQuad;
+    mQuadData.reset();
 }
 
 void Canavar::Engine::RenderingManager::Update(float ifps)
@@ -115,7 +114,7 @@ void Canavar::Engine::RenderingManager::DoPostProcessing()
 
     mScreenShader->Bind();
     mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Temp]->textures().at(0));
-    mQuad->Render();
+    mQuadData->Render();
     mScreenShader->Release();
 }
 
@@ -133,7 +132,7 @@ void Canavar::Engine::RenderingManager::ApplyAcesPass()
     mAcesShader->Bind();
     mAcesShader->SetSampler("uSceneTexture", 0, mFramebuffers[Temp]->texture());
     mAcesShader->SetUniformValue("uExposure", mExposure);
-    mQuad->Render();
+    mQuadData->Render();
     mAcesShader->Release();
     mFramebuffers[Aces]->release();
 
@@ -158,7 +157,7 @@ void Canavar::Engine::RenderingManager::ApplyCinematicPass()
     mCinematicShader->SetUniformValue("uResolution", QVector2D(mWidth, mHeight));
     mCinematicShader->SetUniformValue("uVignetteRadius", mVignetteRadius);
     mCinematicShader->SetUniformValue("uVignetteSoftness", mVignetteSoftness);
-    mQuad->Render();
+    mQuadData->Render();
     mCinematicShader->Release();
     mFramebuffers[Cinematic]->release();
 
@@ -283,19 +282,19 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
         const auto pModel = Element.pModel;
 
         mModelShader->Bind();
-        mModelShader->SetUniformValue("uModel.color", pModel->GetColor());
-        mModelShader->SetUniformValue("uModel.transparencyColor", pModel->GetTransparencyColor());
-        mModelShader->SetUniformValue("uModel.shadingMode", pModel->GetShadingMode());
-        mModelShader->SetUniformValue("uModel.useModelColor", pModel->GetUseModelColor());
-        mModelShader->SetUniformValue("uModel.ambient", pModel->GetAmbient());
-        mModelShader->SetUniformValue("uModel.diffuse", pModel->GetDiffuse());
-        mModelShader->SetUniformValue("uModel.specular", pModel->GetSpecular());
-        mModelShader->SetUniformValue("uModel.shininess", pModel->GetShininess());
+        mModelShader->SetUniformValue("uModel.Color", pModel->GetColor());
+        mModelShader->SetUniformValue("uModel.TransparencyColor", pModel->GetTransparencyColor());
+        mModelShader->SetUniformValue("uModel.ShadingMode", pModel->GetShadingMode());
+        mModelShader->SetUniformValue("uModel.UseModelColor", pModel->GetUseModelColor());
+        mModelShader->SetUniformValue("uModel.Ambient", pModel->GetAmbient());
+        mModelShader->SetUniformValue("uModel.Diffuse", pModel->GetDiffuse());
+        mModelShader->SetUniformValue("uModel.Specular", pModel->GetSpecular());
+        mModelShader->SetUniformValue("uModel.Shininess", pModel->GetShininess());
         mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-        mModelShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-        mModelShader->SetUniformValue("uShadow.enabled", mShadowMappingRenderer->GetShadowsEnabled());
-        mModelShader->SetUniformValue("uShadow.bias", mShadowMappingRenderer->GetShadowBias());
-        mModelShader->SetUniformValue("uShadow.samples", mShadowMappingRenderer->GetShadowSamples());
+        mModelShader->SetSampler("uShadow.Map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+        mModelShader->SetUniformValue("uShadow.Enabled", mShadowMappingRenderer->GetShadowsEnabled());
+        mModelShader->SetUniformValue("uShadow.Bias", mShadowMappingRenderer->GetShadowBias());
+        mModelShader->SetUniformValue("uShadow.Samples", mShadowMappingRenderer->GetShadowSamples());
         Element.pMesh->Render(pModel, mModelShader, Element.NodeMatrix, RenderPass::Transparent);
         mModelShader->Release();
     }
@@ -309,19 +308,19 @@ void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass Re
 
     mModelShader->Bind();
     mModelShader->SetUniformValue("uSelectedMeshId", pModel->GetSelectedMeshId());
-    mModelShader->SetUniformValue("uModel.color", pModel->GetColor());
-    mModelShader->SetUniformValue("uModel.transparencyColor", pModel->GetTransparencyColor());
-    mModelShader->SetUniformValue("uModel.shadingMode", pModel->GetShadingMode());
-    mModelShader->SetUniformValue("uModel.useModelColor", pModel->GetUseModelColor());
-    mModelShader->SetUniformValue("uModel.ambient", pModel->GetAmbient());
-    mModelShader->SetUniformValue("uModel.diffuse", pModel->GetDiffuse());
-    mModelShader->SetUniformValue("uModel.specular", pModel->GetSpecular());
-    mModelShader->SetUniformValue("uModel.shininess", pModel->GetShininess());
+    mModelShader->SetUniformValue("uModel.Color", pModel->GetColor());
+    mModelShader->SetUniformValue("uModel.TransparencyColor", pModel->GetTransparencyColor());
+    mModelShader->SetUniformValue("uModel.ShadingMode", pModel->GetShadingMode());
+    mModelShader->SetUniformValue("uModel.UseModelColor", pModel->GetUseModelColor());
+    mModelShader->SetUniformValue("uModel.Ambient", pModel->GetAmbient());
+    mModelShader->SetUniformValue("uModel.Diffuse", pModel->GetDiffuse());
+    mModelShader->SetUniformValue("uModel.Specular", pModel->GetSpecular());
+    mModelShader->SetUniformValue("uModel.Shininess", pModel->GetShininess());
     mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-    mModelShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-    mModelShader->SetUniformValue("uShadow.enabled", mShadowMappingRenderer->GetShadowsEnabled());
-    mModelShader->SetUniformValue("uShadow.bias", mShadowMappingRenderer->GetShadowBias());
-    mModelShader->SetUniformValue("uShadow.samples", mShadowMappingRenderer->GetShadowSamples());
+    mModelShader->SetSampler("uShadow.Map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+    mModelShader->SetUniformValue("uShadow.Enabled", mShadowMappingRenderer->GetShadowsEnabled());
+    mModelShader->SetUniformValue("uShadow.Bias", mShadowMappingRenderer->GetShadowBias());
+    mModelShader->SetUniformValue("uShadow.Samples", mShadowMappingRenderer->GetShadowSamples());
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
@@ -338,7 +337,7 @@ void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffect* pEffect
     mNozzleEffectShader->Bind();
     mNozzleEffectShader->SetUniformValue("uMaxRadius", pEffect->GetMaxRadius());
     mNozzleEffectShader->SetUniformValue("uMVP", pCamera->GetViewProjectionMatrix() * pEffect->GetWorldTransformation());
-    mNozzleEffectShader->SetUniformValue("uZFar", pCamera->GetZFar());
+    mNozzleEffectShader->SetUniformValue("uFarPlane", pCamera->GetZFar());
     pEffect->Render(mIfps);
     mNozzleEffectShader->Release();
 }
@@ -360,38 +359,38 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Perspec
 
     mTerrainShader->SetUniformValue("uViewProjectionMatrix", pCamera->GetViewProjectionMatrix());
     mTerrainShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-    mTerrainShader->SetUniformValue("uZFar", pCamera->GetZFar());
+    mTerrainShader->SetUniformValue("uFarPlane", pCamera->GetZFar());
     mTerrainShader->SetUniformValue("uCameraPosition", pCamera->GetWorldPosition());
-    mTerrainShader->SetUniformValue("uHaze.enabled", mHaze->GetEnabled());
-    mTerrainShader->SetUniformValue("uHaze.color", mHaze->GetColor());
-    mTerrainShader->SetUniformValue("uHaze.density", mHaze->GetDensity());
-    mTerrainShader->SetUniformValue("uHaze.gradient", mHaze->GetGradient());
+    mTerrainShader->SetUniformValue("uHaze.Enabled", mHaze->GetEnabled());
+    mTerrainShader->SetUniformValue("uHaze.Color", mHaze->GetColor());
+    mTerrainShader->SetUniformValue("uHaze.Density", mHaze->GetDensity());
+    mTerrainShader->SetUniformValue("uHaze.Gradient", mHaze->GetGradient());
     mTerrainShader->SetUniformValue("uNumberOfDirectionalLights", NumberOfDirectonalLights);
     mTerrainShader->SetUniformValue("uNumberOfPointLights", NumberOfPointLights);
-    mTerrainShader->SetSampler("uShadow.map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-    mTerrainShader->SetUniformValue("uShadow.enabled", mShadowMappingRenderer->GetShadowsEnabled());
-    mTerrainShader->SetUniformValue("uShadow.bias", mShadowMappingRenderer->GetShadowBias());
-    mTerrainShader->SetUniformValue("uShadow.samples", mShadowMappingRenderer->GetShadowSamples());
+    mTerrainShader->SetSampler("uShadow.Map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+    mTerrainShader->SetUniformValue("uShadow.Enabled", mShadowMappingRenderer->GetShadowsEnabled());
+    mTerrainShader->SetUniformValue("uShadow.Bias", mShadowMappingRenderer->GetShadowBias());
+    mTerrainShader->SetUniformValue("uShadow.Samples", mShadowMappingRenderer->GetShadowSamples());
 
     for (int i = 0; i < NumberOfDirectonalLights; i++)
     {
-        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].direction", DirectonalLights[i]->GetDirection());
-        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].color", DirectonalLights[i]->GetColor());
-        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].ambient", DirectonalLights[i]->GetAmbient());
-        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].diffuse", DirectonalLights[i]->GetDiffuse());
-        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].specular", DirectonalLights[i]->GetSpecular());
+        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Direction", DirectonalLights[i]->GetDirection());
+        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Color", DirectonalLights[i]->GetColor());
+        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Ambient", DirectonalLights[i]->GetAmbient());
+        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Diffuse", DirectonalLights[i]->GetDiffuse());
+        mTerrainShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Specular", DirectonalLights[i]->GetSpecular());
     }
 
     for (int i = 0; i < NumberOfPointLights; i++)
     {
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].color", PointLights[i]->GetColor());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].position", PointLights[i]->GetWorldPosition());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].ambient", PointLights[i]->GetAmbient());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].diffuse", PointLights[i]->GetDiffuse());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].specular", PointLights[i]->GetSpecular());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].constant", PointLights[i]->GetConstant());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].linear", PointLights[i]->GetLinear());
-        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].quadratic", PointLights[i]->GetQuadratic());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Color", PointLights[i]->GetColor());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Position", PointLights[i]->GetWorldPosition());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Ambient", PointLights[i]->GetAmbient());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Diffuse", PointLights[i]->GetDiffuse());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Specular", PointLights[i]->GetSpecular());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Constant", PointLights[i]->GetConstant());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Linear", PointLights[i]->GetLinear());
+        mTerrainShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Quadratic", PointLights[i]->GetQuadratic());
     }
 
     mTerrainShader->Release();
@@ -408,12 +407,12 @@ void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, Persp
 {
     pShader->Bind();
 
-    pShader->SetUniformValue("uZFar", pCamera->GetZFar());
+    pShader->SetUniformValue("uFarPlane", pCamera->GetZFar());
     pShader->SetUniformValue("uMeshSelectionEnabled", static_cast<int>(mMeshSelectionEnabled));
-    pShader->SetUniformValue("uHaze.enabled", mHaze->GetEnabled());
-    pShader->SetUniformValue("uHaze.color", mHaze->GetColor());
-    pShader->SetUniformValue("uHaze.density", mHaze->GetDensity());
-    pShader->SetUniformValue("uHaze.gradient", mHaze->GetGradient());
+    pShader->SetUniformValue("uHaze.Enabled", mHaze->GetEnabled());
+    pShader->SetUniformValue("uHaze.Color", mHaze->GetColor());
+    pShader->SetUniformValue("uHaze.Density", mHaze->GetDensity());
+    pShader->SetUniformValue("uHaze.Gradient", mHaze->GetGradient());
     pShader->SetUniformValue("uCameraPosition", pCamera->GetWorldPosition());
     pShader->SetUniformValue("uViewProjectionMatrix", pCamera->GetViewProjectionMatrix());
     pShader->Release();
@@ -429,15 +428,15 @@ void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
 
     for (int i = 0; i < NumberOfLights; i++)
     {
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].direction", Lights[i]->GetDirection());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].color", Lights[i]->GetColor());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].ambient", Lights[i]->GetAmbient());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].diffuse", Lights[i]->GetDiffuse());
-        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].specular", Lights[i]->GetSpecular());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Direction", Lights[i]->GetDirection());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Color", Lights[i]->GetColor());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Ambient", Lights[i]->GetAmbient());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Diffuse", Lights[i]->GetDiffuse());
+        pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Specular", Lights[i]->GetSpecular());
 
         if (pShader == mModelShader)
         {
-            pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].radiance", Lights[i]->GetRadiance());
+            pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Radiance", Lights[i]->GetRadiance());
         }
     }
 
@@ -454,14 +453,14 @@ void Canavar::Engine::RenderingManager::SetPointLights(Shader* pShader, Object* 
 
     for (int i = 0; i < NumberOfLights; i++)
     {
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].color", Lights[i]->GetColor());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].position", Lights[i]->GetWorldPosition());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].ambient", Lights[i]->GetAmbient());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].diffuse", Lights[i]->GetDiffuse());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].specular", Lights[i]->GetSpecular());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].constant", Lights[i]->GetConstant());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].linear", Lights[i]->GetLinear());
-        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].quadratic", Lights[i]->GetQuadratic());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Color", Lights[i]->GetColor());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Position", Lights[i]->GetWorldPosition());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Ambient", Lights[i]->GetAmbient());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Diffuse", Lights[i]->GetDiffuse());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Specular", Lights[i]->GetSpecular());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Constant", Lights[i]->GetConstant());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Linear", Lights[i]->GetLinear());
+        pShader->SetUniformValue("uPointLights[" + QString::number(i) + "].Quadratic", Lights[i]->GetQuadratic());
     }
 
     pShader->Release();

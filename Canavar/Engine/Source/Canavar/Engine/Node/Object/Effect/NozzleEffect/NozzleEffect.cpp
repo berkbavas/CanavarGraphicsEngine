@@ -18,13 +18,13 @@ void Canavar::Engine::NozzleEffect::Initialize()
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, mParticles.size() * sizeof(Particle), mParticles.data(), GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, position));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, Position));
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, velocity));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, Velocity));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, life));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (void *) offsetof(Particle, Life));
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
@@ -52,17 +52,17 @@ void Canavar::Engine::NozzleEffect::Update(float ifps)
 
     for (int i = 0; i < mNumberOfParticles; ++i)
     {
-        pParticles[i].life += ifps;
+        pParticles[i].Life += ifps;
 
-        if (pParticles[i].life > mMaxLife)
+        if (pParticles[i].Life > mMaxLife)
         {
             pParticles[i] = GenerateParticle();
         }
         else
         {
-            float x = pParticles[i].position.x();
-            float y = pParticles[i].position.y();
-            float z = pParticles[i].position.z();
+            float x = pParticles[i].Position.x();
+            float y = pParticles[i].Position.y();
+            float z = pParticles[i].Position.z();
             float radius = std::sqrt(x * x + y * y);
 
             float bound = -z * mMaxRadius / mMaxLength + mMaxRadius;
@@ -73,7 +73,7 @@ void Canavar::Engine::NozzleEffect::Update(float ifps)
             }
         }
 
-        pParticles[i].position += ifps * pParticles[i].velocity;
+        pParticles[i].Position += ifps * pParticles[i].Velocity;
     }
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -93,30 +93,30 @@ Canavar::Engine::NozzleEffect::Particle Canavar::Engine::NozzleEffect::GenerateP
     float theta = Util::GenerateRandom(2.0f * M_PI);
     float r = Util::GenerateRandom(mMaxRadius);
 
-    Particle particle;
-    particle.position = QVector3D(r * std::cos(theta), r * std::sin(theta), 0);
-    particle.life = Util::GenerateRandom(mMaxLife);
-    particle.velocity = Util::GenerateRandomVector(0, 0, mMaxSpeed);
+    Particle Particle;
+    Particle.Position = QVector3D(r * std::cos(theta), r * std::sin(theta), 0);
+    Particle.Life = Util::GenerateRandom(mMaxLife);
+    Particle.Velocity = Util::GenerateRandomVector(0, 0, mMaxSpeed);
 
-    return particle;
+    return Particle;
 }
 
-void Canavar::Engine::NozzleEffect::ToJson(QJsonObject &object)
+void Canavar::Engine::NozzleEffect::ToJson(QJsonObject &Object)
 {
-    Object::ToJson(object);
+    Object::ToJson(Object);
 
-    object.insert("max_radius", mMaxRadius);
-    object.insert("max_life", mMaxLife);
-    object.insert("max_length", mMaxLength);
-    object.insert("max_speed", mMaxSpeed);
+    Object.insert("max_radius", mMaxRadius);
+    Object.insert("max_life", mMaxLife);
+    Object.insert("max_length", mMaxLength);
+    Object.insert("max_speed", mMaxSpeed);
 }
 
-void Canavar::Engine::NozzleEffect::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::NozzleEffect::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    Object::FromJson(object, nodes);
+    Object::FromJson(Object, Nodes);
 
-    mMaxRadius = object["max_radius"].toDouble(1.0f);
-    mMaxLife = object["max_life"].toDouble(2.0f);
-    mMaxLength = object["max_length"].toDouble(10.0f);
-    mMaxSpeed = object["max_speed"].toDouble(5.0f);
+    mMaxRadius = Object["max_radius"].toDouble(1.0f);
+    mMaxLife = Object["max_life"].toDouble(2.0f);
+    mMaxLength = Object["max_length"].toDouble(10.0f);
+    mMaxSpeed = Object["max_speed"].toDouble(5.0f);
 }

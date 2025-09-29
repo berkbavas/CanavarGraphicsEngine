@@ -1,8 +1,8 @@
 #include "ShadowMappingFramebuffer.h"
 
-Canavar::Engine::ShadowMappingFramebuffer::ShadowMappingFramebuffer(int width, int height)
-    : mWidth(width)
-    , mHeight(height)
+Canavar::Engine::ShadowMappingFramebuffer::ShadowMappingFramebuffer(int Width, int Height)
+    : mWidth(Width)
+    , mHeight(Height)
 {
     initializeOpenGLFunctions();
     glGenFramebuffers(1, &mFBO);

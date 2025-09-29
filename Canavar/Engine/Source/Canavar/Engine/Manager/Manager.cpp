@@ -9,7 +9,7 @@ void Canavar::Engine::Manager::Initialize() {}
 
 void Canavar::Engine::Manager::PostInitialize() {}
 
-void Canavar::Engine::Manager::Resize(int w, int h) {}
+void Canavar::Engine::Manager::Resize(int Width, int Height) {}
 
 void Canavar::Engine::Manager::Update(float ifps) {}
 

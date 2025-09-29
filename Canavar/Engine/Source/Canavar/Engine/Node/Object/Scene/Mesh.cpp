@@ -135,9 +135,9 @@ void Canavar::Engine::Mesh::Render(Model *pModel, Shader *pShader, const QMatrix
         pShader->SetUniformValue("uNodeId", pModel->GetNodeId());
         pShader->SetUniformValue("uMeshId", mMeshId);
 
-        pShader->SetUniformValue("uModel.metallic", pModel->GetMetallic());
-        pShader->SetUniformValue("uModel.roughness", pModel->GetRoughness());
-        pShader->SetUniformValue("uModel.ambientOcclusion", pModel->GetAmbientOcclusion());
+        pShader->SetUniformValue("uModel.Metallic", pModel->GetMetallic());
+        pShader->SetUniformValue("uModel.Roughness", pModel->GetRoughness());
+        pShader->SetUniformValue("uModel.AmbientOcclusion", pModel->GetAmbientOcclusion());
 
         pShader->SetUniformValue("uHasTextureBaseColor", mMaterial->HasTextureBaseColor());
         pShader->SetUniformValue("uHasTextureMetallic", mMaterial->HasTextureMetallic());
@@ -188,14 +188,14 @@ void Canavar::Engine::Mesh::PaintVertex(unsigned int Index, const QVector3D &Col
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Canavar::Engine::Mesh::AddVertex(const Vertex &vertex)
+void Canavar::Engine::Mesh::AddVertex(const Vertex &Vertex)
 {
-    mVertices.emplace_back(vertex);
+    mVertices.emplace_back(Vertex);
 }
 
-void Canavar::Engine::Mesh::AddIndex(unsigned int index)
+void Canavar::Engine::Mesh::AddIndex(unsigned int Index)
 {
-    mIndices.push_back(index);
+    mIndices.push_back(Index);
 }
 
 std::tuple<unsigned int, unsigned int, unsigned int> Canavar::Engine::Mesh::GetTriangleVertices(unsigned int PrimitiveIndex) const

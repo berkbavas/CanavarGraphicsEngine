@@ -12,7 +12,7 @@ namespace Canavar::Engine
         PersecutorCamera();
 
         const char *GetNodeTypeName() const override { return "PersecutorCamera"; }
-        void Accept(NodeVisitor &visitor) override;
+        void Accept(NodeVisitor &Visitor) override;
 
         bool MousePressed(QMouseEvent *) override;
         bool MouseReleased(QMouseEvent *) override;
@@ -24,16 +24,16 @@ namespace Canavar::Engine
         ObjectPtr GetTarget() const;
         void SetTarget(ObjectPtr pNewTarget);
 
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
+        void ToJson(QJsonObject &Object) override;
+        void FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes) override;
 
-        void AnimateTo(float yaw, float pitch);
-        void AnimateTo(ViewDirection viewDirection);
+        void AnimateTo(float Yaw, float Pitch);
+        void AnimateTo(ViewDirection ViewDirection);
 
         bool IsAnimating() const;
 
       private:
-        void OnAnimationAnglesUpdated(float yaw, float pitch);
+        void OnAnimationAnglesUpdated(float Yaw, float Pitch);
         void ClampAngles();
         bool ShouldIgnoreEvents() const;
         void HandleZoom(float ifps);

@@ -17,7 +17,7 @@ namespace Canavar::Engine
         int GetWidth() const;
         int GetHeight() const;
 
-        QVector2D Project3DTo2D(const QVector3D &pos3D);
+        QVector2D Project3DTo2D(const QVector3D &Pos3D);
 
         virtual QMatrix4x4 GetProjectionMatrix() const = 0;
         virtual QMatrix4x4 GetViewProjectionMatrix() const = 0;

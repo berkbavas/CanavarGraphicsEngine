@@ -5,17 +5,17 @@
 #include <QFile>
 #include <QUuid>
 
-QByteArray Canavar::Engine::Util::GetBytes(const QString& path)
+QByteArray Canavar::Engine::Util::GetBytes(const QString& Path)
 {
-    QFile file(path);
+    QFile File(Path);
 
-    if (file.open(QFile::ReadOnly))
+    if (File.open(QFile::ReadOnly))
     {
-        return file.readAll();
+        return File.readAll();
     }
     else
     {
-        LOG_WARN("Util::GetBytes: '{}' could not be opened.", path.toStdString());
+        LOG_WARN("Util::GetBytes: '{}' could not be opened.", Path.toStdString());
         return QByteArray();
     }
 }
@@ -25,9 +25,9 @@ QVector3D Canavar::Engine::Util::GenerateRandomVector(float x, float y, float z)
     return QVector3D(GenerateRandom(x), GenerateRandom(y), GenerateRandom(z));
 }
 
-float Canavar::Engine::Util::GenerateRandom(float bound)
+float Canavar::Engine::Util::GenerateRandom(float Bound)
 {
-    return mGenerator.bounded(bound);
+    return mGenerator.bounded(Bound);
 }
 
 QString Canavar::Engine::Util::GenerateUuid()
@@ -35,76 +35,76 @@ QString Canavar::Engine::Util::GenerateUuid()
     return QUuid::createUuid().toString(QUuid::StringFormat::WithoutBraces);
 }
 
-bool Canavar::Engine::Util::WriteTextToFile(const QString& path, const QByteArray& content)
+bool Canavar::Engine::Util::WriteTextToFile(const QString& Path, const QByteArray& Content)
 {
-    QFile file(path);
+    QFile File(Path);
 
-    if (file.open(QIODevice::WriteOnly))
+    if (File.open(QIODevice::WriteOnly))
     {
-        QTextStream stream(&file);
-        stream.setEncoding(QStringConverter::Utf8);
-        stream << content;
-        stream.flush();
-        file.close();
+        QTextStream Stream(&File);
+        Stream.setEncoding(QStringConverter::Utf8);
+        Stream << Content;
+        Stream.flush();
+        File.close();
         return true;
     }
     else
     {
-        LOG_FATAL("Util::WriteTextToFile: Could not write to file: {}", path.toStdString());
+        LOG_FATAL("Util::WriteTextToFile: Could not write to file: {}", Path.toStdString());
         return false;
     }
 }
 
-bool Canavar::Engine::Util::WriteDataToFile(const QString& path, const QByteArray& content)
+bool Canavar::Engine::Util::WriteDataToFile(const QString& Path, const QByteArray& Content)
 {
-    QFile file(path);
-    if (file.open(QIODevice::WriteOnly))
+    QFile File(Path);
+    if (File.open(QIODevice::WriteOnly))
     {
-        QDataStream stream(&file);
-        stream << content;
-        file.close();
+        QDataStream Stream(&File);
+        Stream << Content;
+        File.close();
         return true;
     }
     else
     {
-        LOG_FATAL("Util::WriteDataToFile: Could not write to file: {}", path.toStdString());
+        LOG_FATAL("Util::WriteDataToFile: Could not write to file: {}", Path.toStdString());
         return false;
     }
 }
 
-QByteArray Canavar::Engine::Util::ReadDataFromFile(const QString& path)
+QByteArray Canavar::Engine::Util::ReadDataFromFile(const QString& Path)
 {
-    QFile file(path);
-    if (file.open(QIODevice::ReadOnly))
+    QFile File(Path);
+    if (File.open(QIODevice::ReadOnly))
     {
-        QByteArray arr;
-        QDataStream stream(&file);
-        stream >> arr;
-        file.close();
-        return arr;
+        QByteArray Array;
+        QDataStream Stream(&File);
+        Stream >> Array;
+        File.close();
+        return Array;
     }
     else
     {
-        LOG_FATAL("Util::ReadDataFromFile: Could not read from file: {}", path.toStdString());
+        LOG_FATAL("Util::ReadDataFromFile: Could not read from file: {}", Path.toStdString());
         return QByteArray();
     }
 }
 
-QJsonDocument Canavar::Engine::Util::ReadJson(const QString& path)
+QJsonDocument Canavar::Engine::Util::ReadJson(const QString& Path)
 {
-    QJsonDocument document;
+    QJsonDocument Document;
 
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
+    QFile File(Path);
+    if (!File.open(QIODevice::ReadOnly))
     {
-        LOG_FATAL("Util::ReadJson: Error occured while reading the file: {}", path.toStdString());
+        LOG_FATAL("Util::ReadJson: Error occured while reading the file: {}", Path.toStdString());
         return QJsonDocument();
     }
 
-    document = QJsonDocument::fromJson(file.readAll());
-    file.close();
+    Document = QJsonDocument::fromJson(File.readAll());
+    File.close();
 
-    return document;
+    return Document;
 }
 
 QRandomGenerator Canavar::Engine::Util::mGenerator = QRandomGenerator::securelySeeded();

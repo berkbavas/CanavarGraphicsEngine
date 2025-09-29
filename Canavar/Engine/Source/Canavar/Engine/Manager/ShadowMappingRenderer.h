@@ -32,9 +32,7 @@ namespace Canavar::Engine
         void CalculateShadowViewProjectionMatrix();
 
         NodeManager *mNodeManager{ nullptr };
-
         ShadowMappingFramebuffer *mFramebuffer{ nullptr };
-
         Shader *mShadowMappingShader{ nullptr };
 
         QMatrix4x4 mLightProjectionMatrix;

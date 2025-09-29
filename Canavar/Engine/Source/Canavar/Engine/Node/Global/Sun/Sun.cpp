@@ -10,7 +10,7 @@ Canavar::Engine::Sun::Sun()
     SetDirection(QVector3D(1, -1, 0).normalized());
 }
 
-void Canavar::Engine::Sun::Accept(NodeVisitor &visitor)
+void Canavar::Engine::Sun::Accept(NodeVisitor &Visitor)
 {
-    visitor.Visit(*this);
+    Visitor.Visit(*this);
 }

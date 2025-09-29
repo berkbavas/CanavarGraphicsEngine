@@ -7,16 +7,16 @@ layout(triangles, equal_spacing, ccw) in;
 uniform mat4 uViewProjectionMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uLightViewProjectionMatrix; // Light view-projection matrix
-uniform float uZFar;
+uniform float uFarPlane;
 
 // Noise
 struct Noise
 {
-    int octaves;
-    float amplitude;
-    float frequency;
-    float persistence;
-    float lacunarity;
+    int Octaves;
+    float Amplitude;
+    float Frequency;
+    float Persistence;
+    float Lacunarity;
 };
 
 uniform Noise uNoise;
@@ -142,43 +142,43 @@ vec3 Interpolate3D(vec3 v0, vec3 v1, vec3 v2)
     return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
 }
 
-float TerrainHeight(vec2 pos)
+float TerrainHeight(vec2 Position)
 {
-    float noiseValue = 0;
-    float frequency = uNoise.frequency;
-    float amplitude = uNoise.amplitude;
+    float NoiseValue = 0;
+    float Frequency = uNoise.Frequency;
+    float Amplitude = uNoise.Amplitude;
 
-    for (int i = 0; i < uNoise.octaves; i++)
+    for (int i = 0; i < uNoise.Octaves; i++)
     {
         float n = 0;
 
         if (i == 0)
         {
-            n = pow(voronoi2d(pos * frequency / 200.0), 2);
+            n = pow(voronoi2d(Position * Frequency / 200.0), 2);
         }
         else if (i == 1)
         {
-            n = snoise(pos * frequency / 400.0) / 1.5;
+            n = snoise(Position * Frequency / 400.0) / 1.5;
         }
         else
         {
-            n = snoise(pos * frequency / 800.0 + vec2(1231, 721)) / 2;
+            n = snoise(Position * Frequency / 800.0 + vec2(1231, 721)) / 2;
         }
 
-        noiseValue += n * amplitude;
-        amplitude *= uNoise.persistence;
-        frequency *= uNoise.lacunarity;
+        NoiseValue += n * Amplitude;
+        Amplitude *= uNoise.Persistence;
+        Frequency *= uNoise.Lacunarity;
     }
 
-    return noiseValue;
+    return NoiseValue;
 }
 
-vec3 ComputeNormal(vec3 worldPos)
+vec3 ComputeNormal(vec3 WorldPos)
 {
     vec2 eps = vec2(0.1, 0.0);
-    return normalize(vec3(TerrainHeight(worldPos.xz - eps.xy) - TerrainHeight(worldPos.xz + eps.xy), //
+    return normalize(vec3(TerrainHeight(WorldPos.xz - eps.xy) - TerrainHeight(WorldPos.xz + eps.xy), //
                           2 * eps.x,
-                          TerrainHeight(worldPos.xz - eps.yx) - TerrainHeight(worldPos.xz + eps.yx)));
+                          TerrainHeight(WorldPos.xz - eps.yx) - TerrainHeight(WorldPos.xz + eps.yx)));
 }
 
 void main()
@@ -201,7 +201,7 @@ void main()
     float ndc = gl_Position.z / gl_Position.w;
     fsDepth = ndc * 0.5f + 0.5f; // Convert to [0, 1] range
 
-    float coef = 2.0f / log2(uZFar + 1.0f);
+    float coef = 2.0f / log2(uFarPlane + 1.0f);
     gl_Position.z = log2(max(1e-6, 1.0f + gl_Position.w)) * coef - 1.0f;
     fsLogZ = 1.0f + gl_Position.w;
 }

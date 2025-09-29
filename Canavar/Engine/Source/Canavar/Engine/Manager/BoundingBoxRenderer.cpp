@@ -11,7 +11,7 @@ void Canavar::Engine::BoundingBoxRenderer::PostInitialize()
 
     mNodeManager = pRenderingContext->GetNodeManager();
     mLineShader = pRenderingContext->GetShaderManager()->GetShader(ShaderType::Line);
-    mCubeStrip = new CubeStrip;
+    mCubeStripData = std::make_shared<CubeStripData>();
 }
 
 void Canavar::Engine::BoundingBoxRenderer::InRender(PerspectiveCamera* pCamera)
@@ -26,7 +26,7 @@ void Canavar::Engine::BoundingBoxRenderer::InRender(PerspectiveCamera* pCamera)
 
     mLineShader->Bind();
     mLineShader->SetUniformValue("uColor", mLineColor);
-    mLineShader->SetUniformValue("uZFar", pCamera->GetZFar());
+    mLineShader->SetUniformValue("uFarPlane", pCamera->GetZFar());
 
     for (const auto& pObject : Objects)
     {
@@ -40,7 +40,7 @@ void Canavar::Engine::BoundingBoxRenderer::InRender(PerspectiveCamera* pCamera)
             if (const auto pScene = mNodeManager->GetScene(pModel))
             {
                 mLineShader->SetUniformValue("uMVP", VP * pModel->GetWorldTransformation() * pScene->GetAABB().GetTransformation());
-                mCubeStrip->Render();
+                mCubeStripData->Render();
             }
             else
             {
@@ -50,7 +50,7 @@ void Canavar::Engine::BoundingBoxRenderer::InRender(PerspectiveCamera* pCamera)
         else
         {
             mLineShader->SetUniformValue("uMVP", VP * pObject->GetWorldTransformation() * pObject->GetAABB().GetTransformation());
-            mCubeStrip->Render();
+            mCubeStripData->Render();
         }
     }
 

@@ -15,8 +15,8 @@ namespace Canavar::Engine
         LightningStrikeBase();
         ~LightningStrikeBase();
 
-        void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
+        void ToJson(QJsonObject& Object) override;
+        void FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes) override;
 
       public:
         void Initialize();
@@ -32,7 +32,7 @@ namespace Canavar::Engine
             float forkLevel{ 0 };
         };
 
-        void Update(Shader* pLightningStrikeShader, const QVector3D& start, const QVector3D& end, float ifps);
+        void Update(Shader* pLightningStrikeShader, const QVector3D& Start, const QVector3D& End, float ifps);
         void Render(Camera* pCamera, Shader* pLineShader);
 
         // OpenGL Stuff

@@ -21,7 +21,7 @@ namespace Canavar::Engine
       signals:
         // Core Events
         void Initialize();
-        void Resize(int w, int h);
+        void Resize(int Width, int Height);
         void Render(float ifps);
 
         // Input Events
@@ -34,7 +34,7 @@ namespace Canavar::Engine
 
       private:
         void initializeGL() override;
-        void resizeGL(int width, int height) override;
+        void resizeGL(int Width, int Height) override;
         void paintGL() override;
         void keyPressEvent(QKeyEvent *) override;
         void keyReleaseEvent(QKeyEvent *) override;
@@ -43,7 +43,7 @@ namespace Canavar::Engine
         void mouseMoveEvent(QMouseEvent *) override;
         void wheelEvent(QWheelEvent *) override;
 
-        bool eventFilter(QObject *obj, QEvent *event) override;
+        bool eventFilter(QObject *pReceiver, QEvent *pEvent) override;
 
       private:
         long long mPreviousTime;

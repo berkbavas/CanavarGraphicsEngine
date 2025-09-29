@@ -70,7 +70,7 @@ namespace Canavar::Engine
 
         QVector3D GetWorldPositionForCreatedObject() const;
 
-        std::optional<std::string> InputText(const std::string &label, const std::string &text);
+        std::optional<std::string> InputText(const std::string &Label, const std::string &Text);
 
         void RemoveNode(Node *pNode);
         void SetSelectedNode(NodePtr pNode);
@@ -81,49 +81,49 @@ namespace Canavar::Engine
         void Visit(Sky &) override { DrawSky(); }
         void Visit(Haze &) override { DrawHaze(); }
         void Visit(Terrain &) override { DrawTerrain(); }
-        void Visit(Text2D &text2D) override { DrawText2D(&text2D); }
-        void Visit(Object &object) override { DrawObject(&object); }
+        void Visit(Text2D &Text2D) override { DrawText2D(&Text2D); }
+        void Visit(Object &Object) override { DrawObject(&Object); }
 
-        void Visit(Model &model) override
+        void Visit(Model &Model) override
         {
-            DrawObject(&model);
-            DrawModel(&model);
+            DrawObject(&Model);
+            DrawModel(&Model);
         }
 
-        void Visit(Text3D &text3D) override
+        void Visit(Text3D &Text3D) override
         {
-            DrawObject(&text3D);
-            DrawText3D(&text3D);
+            DrawObject(&Text3D);
+            DrawText3D(&Text3D);
         }
 
-        void Visit(PerspectiveCamera &camera) override
+        void Visit(PerspectiveCamera &Camera) override
         {
-            DrawObject(&camera);
-            DrawCamera(&camera);
+            DrawObject(&Camera);
+            DrawCamera(&Camera);
         }
 
-        void Visit(DirectionalLight &light) override
+        void Visit(DirectionalLight &Light) override
         {
-            DrawObject(&light);
-            DrawDirectionalLight(&light);
+            DrawObject(&Light);
+            DrawDirectionalLight(&Light);
         }
 
-        void Visit(PointLight &light) override
+        void Visit(PointLight &Light) override
         {
-            DrawObject(&light);
-            DrawPointLight(&light);
+            DrawObject(&Light);
+            DrawPointLight(&Light);
         }
 
-        void Visit(NozzleEffect &effect) override
+        void Visit(NozzleEffect &Effect) override
         {
-            DrawObject(&effect);
-            DrawNozzleEffect(&effect);
+            DrawObject(&Effect);
+            DrawNozzleEffect(&Effect);
         }
-        
-        void Visit(LightningStrikeBase &strike) override
+
+        void Visit(LightningStrikeBase &LightningStrikeBase) override
         {
-            DrawObject(&strike);
-            DrawLightningStrike(&strike);
+            DrawObject(&LightningStrikeBase);
+            DrawLightningStrike(&LightningStrikeBase);
         }
 
         RenderingContext *mRenderingContext{ nullptr };

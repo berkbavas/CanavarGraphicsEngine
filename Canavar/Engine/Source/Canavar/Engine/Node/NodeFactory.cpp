@@ -9,7 +9,7 @@
 #include "Canavar/Engine/Node/Object/LightningStrike/LightningStrikeGenerator.h"
 #include "Canavar/Engine/Node/Object/Text/Text2D.h"
 #include "Canavar/Engine/Node/Object/Text/Text3D.h"
-
+#include "Canavar/Engine/Primitive/PrimitiveMesh.h"
 
 #define RETURN_NODE(TYPE) \
     if (type == #TYPE) \
@@ -28,6 +28,13 @@ Canavar::Engine::NodePtr Canavar::Engine::NodeFactory::CreateNode(const std::str
     RETURN_NODE(LightningStrikeGenerator);
     RETURN_NODE(Text2D);
     RETURN_NODE(Text3D);
+    RETURN_NODE(Plane);
+    RETURN_NODE(Quad);
+    RETURN_NODE(Cube);
+    RETURN_NODE(Sphere);
+    RETURN_NODE(Circle);
+    RETURN_NODE(Line);
+    RETURN_NODE(Torus);
 
     return nullptr;
 }
@@ -38,11 +45,18 @@ const QVector<std::string> &Canavar::Engine::NodeFactory::GetNodeNames()
 }
 
 QVector<std::string> Canavar::Engine::NodeFactory::mNodeNames = { "DummyCamera",
-                                                              "DummyObject",
-                                                              "NozzleEffect",
-                                                              "DirectionalLight",
-                                                              "PointLight",
-                                                              "LightningStrikeAttractor", //
-                                                              "LightningStrikeGenerator",
-                                                              "Text2D",
-                                                              "Text3D" };
+                                                                  "DummyObject",
+                                                                  "NozzleEffect",
+                                                                  "DirectionalLight",
+                                                                  "PointLight",
+                                                                  "LightningStrikeAttractor", //
+                                                                  "LightningStrikeGenerator", //
+                                                                  "Text2D",
+                                                                  "Text3D",
+                                                                  "Plane",
+                                                                  "Quad",
+                                                                  "Cube",
+                                                                  "Sphere",
+                                                                  "Circle",
+                                                                  "Line",
+                                                                  "Torus" };

@@ -13,12 +13,12 @@ namespace Canavar::Engine
 
         void Update(float ifps) override;
         bool IsAnimating() const override;
-        void Animate(float currentYaw, float currentPitch, float targetYaw, float targetPitch) override;
+        void Animate(float CurrentYaw, float CurrentPitch, float TargetYaw, float TargetPitch) override;
         void Stop() override;
-        void SetSpeed(float speed);
+        void SetSpeed(float Speed);
 
       private:
-        float ClampAngle(float angle);
+        float ClampAngle(float Angle);
 
         float mCurrentYaw{ 0.0f };
         float mCurrentPitch{ 0.0f };

@@ -72,8 +72,8 @@ namespace Canavar::Engine
             return nullptr;
         }
 
-        void ExportNodes(const QString &path);
-        void ImportNodes(const QString &path);
+        void ExportNodes(const QString &Path);
+        void ImportNodes(const QString &Path);
 
         void RemoveAllNodes();
 

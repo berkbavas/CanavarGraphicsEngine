@@ -30,8 +30,8 @@ namespace Canavar::Engine
         void UnpaintVertex(unsigned int Index);
         void PaintVertex(unsigned int Index, const QVector3D &Color);
 
-        void AddVertex(const Vertex &vertex);
-        void AddIndex(unsigned int index);
+        void AddVertex(const Vertex &Vertex);
+        void AddIndex(unsigned int Index);
 
         std::tuple<unsigned int, unsigned int, unsigned int> GetTriangleVertices(unsigned int PrimitiveIndex) const;
 

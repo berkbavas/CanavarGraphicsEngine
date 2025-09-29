@@ -2,55 +2,55 @@
 
 struct Model
 {
-    vec3 color;
-    vec3 transparencyColor;
-    float ambient;
-    float diffuse;
-    float specular;
-    float shininess;
-    float metallic;
-    float roughness;
-    float ambientOcclusion;
-    bool useModelColor;
-    int shadingMode;
+    vec3 Color;
+    vec3 TransparencyColor;
+    float Ambient;
+    float Diffuse;
+    float Specular;
+    float Shininess;
+    float Metallic;
+    float Roughness;
+    float AmbientOcclusion;
+    bool UseModelColor;
+    int ShadingMode;
 };
 
 struct DirectionalLight
 {
-    vec3 color;
-    vec3 direction;
-    float ambient;
-    float diffuse;
-    float specular;
-    float radiance;
+    vec3 Color;
+    vec3 Direction;
+    float Ambient;
+    float Diffuse;
+    float Specular;
+    float Radiance;
 };
 
 struct PointLight
 {
-    vec3 color;
-    vec3 position;
-    float ambient;
-    float diffuse;
-    float specular;
-    float constant;
-    float linear;
-    float quadratic;
+    vec3 Color;
+    vec3 Position;
+    float Ambient;
+    float Diffuse;
+    float Specular;
+    float Constant;
+    float Linear;
+    float Quadratic;
 };
 
 struct Haze
 {
-    vec3 color;
-    float density;
-    float gradient;
-    bool enabled;
+    vec3 Color;
+    float Density;
+    float Gradient;
+    bool Enabled;
 };
 
 struct Shadow
 {
-    sampler2D map;
-    bool enabled;
-    float bias;
-    int samples;
+    sampler2D Map;
+    bool Enabled;
+    float Bias;
+    int Samples;
 };
 
 uniform Haze uHaze;
@@ -64,7 +64,7 @@ uniform DirectionalLight uDirectionalLights[8];
 uniform int uNumberOfDirectionalLights;
 
 uniform vec3 uCameraPosition;
-uniform float uZFar;
+uniform float uFarPlane;
 
 uniform float uMeshOpacity;
 
@@ -121,393 +121,393 @@ vec3 FresnelSchlick(float cosTheta, vec3 F0)
     return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-float DistributionGGX(vec3 N, vec3 H, float roughness)
+float DistributionGGX(vec3 N, vec3 H, float Roughness)
 {
-    float a = roughness * roughness;
-    float a2 = a * a;
+    float A = Roughness * Roughness;
+    float A2 = A * A;
     float NdotH = max(dot(N, H), 0.0);
     float NdotH2 = NdotH * NdotH;
 
-    float denom = (NdotH2 * (a2 - 1.0) + 1.0);
-    denom = PI * denom * denom;
+    float Denom = (NdotH2 * (A2 - 1.0) + 1.0);
+    Denom = PI * Denom * Denom;
 
-    return a2 / denom;
+    return A2 / Denom;
 }
 
-float GeometrySchlickGGX(float NdotV, float roughness)
+float GeometrySchlickGGX(float NdotV, float Roughness)
 {
-    float r = roughness + 1.0;
+    float r = Roughness + 1.0;
     float k = (r * r) / 8.0;
 
     return NdotV / (NdotV * (1.0 - k) + k);
 }
 
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float Roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    float ggx1 = GeometrySchlickGGX(NdotV, roughness);
-    float ggx2 = GeometrySchlickGGX(NdotL, roughness);
+    float ggx1 = GeometrySchlickGGX(NdotV, Roughness);
+    float ggx2 = GeometrySchlickGGX(NdotL, Roughness);
     return ggx1 * ggx2;
 }
 
-vec3 ProcessDirectionalLights(vec3 color, vec3 normal, vec3 Lo, float shadowFactor)
+vec3 ProcessDirectionalLights(vec3 Color, vec3 Normal, vec3 Lo, float ShadowFactor)
 {
-    vec3 result = vec3(0.0f);
+    vec3 Result = vec3(0.0f);
 
     for (int i = 0; i < uNumberOfDirectionalLights; i++)
     {
-        DirectionalLight light = uDirectionalLights[i];
+        DirectionalLight Light = uDirectionalLights[i];
 
         // Ambient
-        float ambient = uModel.ambient * light.ambient;
+        float Ambient = uModel.Ambient * Light.Ambient;
 
         // Diffuse
-        vec3 ld = -light.direction;
-        float df = dot(normal, ld);
-        float diffuse = max(df, 0.0f) * uModel.diffuse * light.diffuse;
+        vec3 Ld = -Light.Direction;
+        float Df = dot(Normal, Ld);
+        float Diffuse = max(Df, 0.0f) * uModel.Diffuse * Light.Diffuse;
 
         // Specular
-        vec3 hd = normalize(ld + Lo);
-        float sf = max(dot(normal, hd), 0.0);
-        float specular = pow(sf, uModel.shininess) * uModel.specular * light.specular;
-        float lightFactor = (ambient * (1.0f - 0.5 * shadowFactor) + diffuse * (1.0f - shadowFactor) + specular * (1.0f - shadowFactor));
-        result += lightFactor * color * light.color;
+        vec3 Hd = normalize(Ld + Lo);
+        float Sf = max(dot(Normal, Hd), 0.0);
+        float Specular = pow(Sf, uModel.Shininess) * uModel.Specular * Light.Specular;
+        float LightFactor = (Ambient * (1.0f - 0.5 * ShadowFactor) + Diffuse * (1.0f - ShadowFactor) + Specular * (1.0f - ShadowFactor));
+        Result += LightFactor * Color * Light.Color;
     }
 
-    return result;
+    return Result;
 }
 
-vec3 ProcessPointLights(vec3 color, vec3 normal, vec3 Lo, vec3 fragWorldPos, float shadowFactor)
+vec3 ProcessPointLights(vec3 Color, vec3 Normal, vec3 Lo, vec3 FragWorldPos, float ShadowFactor)
 {
-    vec3 result = vec3(0);
+    vec3 Result = vec3(0);
 
     for (int i = 0; i < uNumberOfPointLights; i++)
     {
-        PointLight light = uPointLights[i];
+        PointLight Light = uPointLights[i];
 
         // Ambient
-        float ambient = uModel.ambient * light.ambient;
+        float Ambient = uModel.Ambient * Light.Ambient;
 
         // Diffuse
-        vec3 ld = normalize(light.position - fragWorldPos);
-        float df = dot(normal, ld);
-        float diffuse = max(df, 0.0f) * uModel.diffuse * light.diffuse;
+        vec3 Ld = normalize(Light.Position - FragWorldPos);
+        float Df = dot(Normal, Ld);
+        float Diffuse = max(Df, 0.0f) * uModel.Diffuse * Light.Diffuse;
 
         // Specular
-        vec3 hd = normalize(ld + Lo);
-        float sf = max(dot(normal, hd), 0.0);
-        float specular = pow(sf, uModel.shininess) * uModel.specular * light.specular;
+        vec3 Hd = normalize(Ld + Lo);
+        float Sf = max(dot(Normal, Hd), 0.0);
+        float Specular = pow(Sf, uModel.Shininess) * uModel.Specular * Light.Specular;
 
         // Attenuation
-        float distance = length(light.position - fragWorldPos);
-        float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-        float lightFactor = (ambient * (1.0f - 0.5 * shadowFactor) + diffuse * (1.0f - shadowFactor) + specular * (1.0f - shadowFactor));
-        result += lightFactor * color * light.color * attenuation;
+        float Distance = length(Light.Position - FragWorldPos);
+        float Attenuation = 1.0f / (Light.Constant + Light.Linear * Distance + Light.Quadratic * (Distance * Distance));
+        float LightFactor = (Ambient * (1.0f - 0.5 * ShadowFactor) + Diffuse * (1.0f - ShadowFactor) + Specular * (1.0f - ShadowFactor));
+        Result += LightFactor * Color * Light.Color * Attenuation;
     }
 
-    return result;
+    return Result;
 }
 
-vec3 ProcessHaze(float distance, vec3 fragWorldPos, vec3 subjectColor)
+vec3 ProcessHaze(float Distance, vec3 FragWorldPos, vec3 SubjectColor)
 {
-    vec3 result = subjectColor;
+    vec3 Result = SubjectColor;
 
-    if (uHaze.enabled)
+    if (uHaze.Enabled)
     {
-        float factor = exp(-pow(distance * 0.00005f * uHaze.density, uHaze.gradient));
-        factor = clamp(factor, 0.0f, 1.0f);
-        result = mix(uHaze.color * clamp(-uDirectionalLights[0].direction.y, 0.0f, 1.0f), subjectColor, factor);
+        float Factor = exp(-pow(Distance * 0.00005f * uHaze.Density, uHaze.Gradient));
+        Factor = clamp(Factor, 0.0f, 1.0f);
+        Result = mix(uHaze.Color * clamp(-uDirectionalLights[0].Direction.y, 0.0f, 1.0f), SubjectColor, Factor);
     }
 
-    return result;
+    return Result;
 }
 
-vec3 ProcessDirectionalLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 Lo, float shadowFactor)
+vec3 ProcessDirectionalLightsPbr(vec3 Albedo, float Metallic, float Roughness, float AmbientOcclusion, vec3 N /* Normal */, vec3 Lo, float ShadowFactor)
 {
-    vec3 F0 = mix(vec3(0.04f), albedo, metallic);
+    vec3 F0 = mix(vec3(0.04f), Albedo, Metallic);
 
-    vec3 result = vec3(0.0);
+    vec3 Result = vec3(0.0);
 
     for (int i = 0; i < uNumberOfDirectionalLights; ++i)
     {
-        DirectionalLight light = uDirectionalLights[i];
+        DirectionalLight Light = uDirectionalLights[i];
 
-        vec3 Li = -light.direction;
+        vec3 Li = -Light.Direction;
         vec3 H = normalize(Lo + Li);
-        vec3 radiance = light.color * light.radiance;
+        vec3 Radiance = Light.Color * Light.Radiance;
 
         // Cook-Torrance BRDF
-        float NDF = DistributionGGX(N, H, roughness);
-        float G = GeometrySmith(N, Lo, Li, roughness);
+        float NDF = DistributionGGX(N, H, Roughness);
+        float G = GeometrySmith(N, Lo, Li, Roughness);
         vec3 F = FresnelSchlick(max(dot(H, Lo), 0.0f), F0);
 
-        vec3 nominator = NDF * G * F;
-        float denominator = 4.0 * max(dot(N, Lo), 0.0f) * max(dot(N, Li), 0.0f) + 0.001f;
-        vec3 specular = nominator / denominator;
+        vec3 Nominator = NDF * G * F;
+        float Denominator = 4.0 * max(dot(N, Lo), 0.0f) * max(dot(N, Li), 0.0f) + 0.001f;
+        vec3 Specular = Nominator / Denominator;
 
         vec3 kS = F;
         vec3 kD = vec3(1.0f) - kS;
-        kD *= 1.0f - metallic;
+        kD *= 1.0f - Metallic;
 
         float NdotL = max(dot(N, Li), 0.0f);
-        result += (kD * albedo / PI + specular) * radiance * NdotL;
+        Result += (kD * Albedo / PI + Specular) * Radiance * NdotL;
     }
 
     // Ambient (no IBL, just constant AO term)
-    vec3 ambient = vec3(0.03f) * albedo * ambientOcclusion;
-    vec3 color = ambient * (1 - 0.5 * shadowFactor) + result * (1 - shadowFactor);
+    vec3 Ambient = vec3(0.03f) * Albedo * AmbientOcclusion;
+    vec3 Color = Ambient * (1 - 0.5 * ShadowFactor) + Result * (1 - ShadowFactor);
 
-    return color;
+    return Color;
 }
 
-vec3 ProcessPointLightsPbr(vec3 albedo, float metallic, float roughness, float ambientOcclusion, vec3 N /* Normal */, vec3 Lo, vec3 fragWorldPos, float shadowFactor)
+vec3 ProcessPointLightsPbr(vec3 Albedo, float Metallic, float Roughness, float AmbientOcclusion, vec3 N /* Normal */, vec3 Lo, vec3 FragWorldPos, float ShadowFactor)
 {
-    vec3 F0 = mix(vec3(0.04f), albedo, metallic);
+    vec3 F0 = mix(vec3(0.04f), Albedo, Metallic);
 
-    vec3 result = vec3(0.0);
+    vec3 Result = vec3(0.0);
 
     for (int i = 0; i < uNumberOfPointLights; ++i)
     {
-        PointLight light = uPointLights[i];
+        PointLight Light = uPointLights[i];
 
-        vec3 Li = normalize(light.position - fragWorldPos);
+        vec3 Li = normalize(Light.Position - FragWorldPos);
         vec3 H = normalize(Lo + Li);
-        float distance = length(light.position - fragWorldPos);
-        float attenuation = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-        vec3 radiance = light.color * attenuation;
+        float Distance = length(Light.Position - FragWorldPos);
+        float Attenuation = 1.0f / (Light.Constant + Light.Linear * Distance + Light.Quadratic * (Distance * Distance));
+        vec3 Radiance = Light.Color * Attenuation;
 
         // Cook-Torrance BRDF
-        float NDF = DistributionGGX(N, H, roughness);
-        float G = GeometrySmith(N, Lo, Li, roughness);
+        float NDF = DistributionGGX(N, H, Roughness);
+        float G = GeometrySmith(N, Lo, Li, Roughness);
         vec3 F = FresnelSchlick(max(dot(H, Lo), 0.0f), F0);
 
-        vec3 nominator = NDF * G * F;
-        float denominator = 4.0 * max(dot(N, Lo), 0.0f) * max(dot(N, Li), 0.0f) + 0.001f;
-        vec3 specular = nominator / denominator;
+        vec3 Nominator = NDF * G * F;
+        float Denominator = 4.0 * max(dot(N, Lo), 0.0f) * max(dot(N, Li), 0.0f) + 0.001f;
+        vec3 Specular = Nominator / Denominator;
 
         vec3 kS = F;
         vec3 kD = vec3(1.0f) - kS;
-        kD *= 1.0f - metallic;
+        kD *= 1.0f - Metallic;
 
         float NdotL = max(dot(N, Li), 0.0f);
-        result += (kD * albedo / PI + specular) * radiance * NdotL;
+        Result += (kD * Albedo / PI + Specular) * Radiance * NdotL;
     }
 
     // Ambient (no IBL, just constant AO term)
-    vec3 ambient = vec3(0.03f) * albedo * ambientOcclusion;
-    vec3 color = ambient * (1 - 0.5 * shadowFactor) + result * (1 - shadowFactor);
+    vec3 Ambient = vec3(0.03f) * Albedo * AmbientOcclusion;
+    vec3 Color = Ambient * (1 - 0.5 * ShadowFactor) + Result * (1 - ShadowFactor);
 
-    return color;
+    return Color;
 }
 
 float CalculateMetallic()
 {
-    float metallic;
+    float Metallic;
 
     if (uHasTextureMetallic)
     {
-        metallic = texture(uTextureMetallic, fsTextureCoords).r;
+        Metallic = texture(uTextureMetallic, fsTextureCoords).r;
     }
     else
     {
-        metallic = uModel.metallic;
+        Metallic = uModel.Metallic;
     }
 
-    return metallic;
+    return Metallic;
 }
 
 float CalculateRoughness()
 {
-    float roughness;
+    float Roughness;
 
     if (uHasTextureRoughness)
     {
-        roughness = texture(uTextureRoughness, fsTextureCoords).r;
+        Roughness = texture(uTextureRoughness, fsTextureCoords).r;
     }
     else
     {
-        roughness = uModel.roughness;
+        Roughness = uModel.Roughness;
     }
 
-    return roughness;
+    return Roughness;
 }
 
 float CalculateAmbientOcclusion()
 {
-    float ao;
+    float AmbientOcclusion;
 
     if (uHasTextureAmbientOcclusion)
     {
-        ao = texture(uTextureAmbientOcclusion, fsTextureCoords).r;
+        AmbientOcclusion = texture(uTextureAmbientOcclusion, fsTextureCoords).r;
     }
     else
     {
-        ao = uModel.ambientOcclusion;
+        AmbientOcclusion = uModel.AmbientOcclusion;
     }
 
-    return ao;
+    return AmbientOcclusion;
 }
 
 vec3 CalculateNormal()
 {
-    vec3 normal;
+    vec3 Normal;
 
     if (uHasTextureNormal)
     {
-        normal = texture(uTextureNormal, fsTextureCoords).xyz;
-        normal = 2.0 * normal - 1.0;
-        normal = normalize(fsTBN * normal);
+        Normal = texture(uTextureNormal, fsTextureCoords).xyz;
+        Normal = 2.0 * Normal - 1.0;
+        Normal = normalize(fsTBN * Normal);
     }
     else
     {
-        normal = fsNormal;
+        Normal = fsNormal;
     }
 
-    return normal;
+    return Normal;
 }
 
-vec3 CalculateColor(float opacity)
+vec3 CalculateColor(float Opacity)
 {
-    vec3 color;
+    vec3 Color;
 
-    if (uModel.useModelColor)
+    if (uModel.UseModelColor)
     {
-        if (opacity < 1.0f)
+        if (Opacity < 1.0f)
         {
-            color = uModel.transparencyColor;
+            Color = uModel.TransparencyColor;
         }
         else
         {
-            color = uModel.color;
+            Color = uModel.Color;
         }
     }
     else
     {
         if (uHasTextureBaseColor)
         {
-            color = texture(uTextureBaseColor, fsTextureCoords).rgb;
+            Color = texture(uTextureBaseColor, fsTextureCoords).rgb;
         }
         else
         {
-            if (opacity < 1.0f)
+            if (Opacity < 1.0f)
             {
-                color = uModel.transparencyColor;
+                Color = uModel.TransparencyColor;
             }
             else
             {
-                color = uModel.color;
+                Color = uModel.Color;
             }
         }
     }
 
     if (fsMask == PAINTED_MASK)
     {
-        color = fsColor;
+        Color = fsColor;
     }
 
     if (uMeshSelectionEnabled == 1)
     {
         if (uSelectedMeshId == uMeshId)
         {
-            color = mix(color, RED, 0.5f);
+            Color = mix(Color, RED, 0.5f);
         }
     }
 
-    return color;
+    return Color;
 }
 
 // Reference: https://learnopengl.com/code_viewer_gh.php?code=src/5.advanced_lighting/3.1.3.shadow_mapping/3.1.3.shadow_mapping.fs
 float CalculateShadow()
 {
-    float result = 0.0f;
+    float Result = 0.0f;
 
-    if (uShadow.enabled)
+    if (uShadow.Enabled)
     {
         // perform perspective divide
-        vec3 projCoords = fsLightSpacePosition.xyz / fsLightSpacePosition.w;
+        vec3 ProjCoords = fsLightSpacePosition.xyz / fsLightSpacePosition.w;
 
         // transform to [0,1] range
-        projCoords = projCoords * 0.5 + 0.5;
+        ProjCoords = ProjCoords * 0.5 + 0.5;
 
         // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
-        float closestDepth = texture(uShadow.map, projCoords.xy).r;
+        float ClosestDepth = texture(uShadow.Map, ProjCoords.xy).r;
 
         // get depth of current fragment from light's perspective
-        float currentDepth = projCoords.z;
+        float CurrentDepth = ProjCoords.z;
 
-        vec2 texelSize = 1.0 / textureSize(uShadow.map, 0);
+        vec2 TexelSize = 1.0 / textureSize(uShadow.Map, 0);
 
-        int samples = uShadow.samples;
+        int Samples = uShadow.Samples;
 
-        for (int x = -samples; x <= samples; ++x)
+        for (int x = -Samples; x <= Samples; ++x)
         {
-            for (int y = -samples; y <= samples; ++y)
+            for (int y = -Samples; y <= Samples; ++y)
             {
-                float pcfDepth = texture(uShadow.map, projCoords.xy + vec2(x, y) * texelSize).r;
-                result += currentDepth - uShadow.bias > pcfDepth ? 1.0 : 0.0;
+                float PcfDepth = texture(uShadow.Map, ProjCoords.xy + vec2(x, y) * TexelSize).r;
+                Result += CurrentDepth - uShadow.Bias > PcfDepth ? 1.0 : 0.0;
             }
         }
 
-        result /= pow(2 * samples + 1, 2);
+        Result /= pow(2 * Samples + 1, 2);
 
         // keep the shadow at 0.0 when outside the far_plane region of the light's frustum.
-        if (projCoords.z > 1.0)
+        if (ProjCoords.z > 1.0)
         {
-            result = 0.0;
+            Result = 0.0;
         }
     }
 
-    return result;
+    return Result;
 }
 
 float CalculateOpacity()
 {
-    float opacity;
+    float Opacity;
 
     if (uHasTextureBaseColor)
     {
-        opacity = texture(uTextureBaseColor, fsTextureCoords).a;
+        Opacity = texture(uTextureBaseColor, fsTextureCoords).a;
     }
     else
     {
-        opacity = uMeshOpacity;
+        Opacity = uMeshOpacity;
     }
 
-    return opacity;
+    return Opacity;
 }
 
 void main()
 {
-    float shadowFactor = CalculateShadow();
-    float opacity = CalculateOpacity();
-    vec3 normal = CalculateNormal();
-    vec3 color = CalculateColor(opacity);
+    float ShadowFactor = CalculateShadow();
+    float Opacity = CalculateOpacity();
+    vec3 Normal = CalculateNormal();
+    vec3 Color = CalculateColor(Opacity);
     vec3 Lo = normalize(uCameraPosition - fsWorldPosition);
     float distance = length(uCameraPosition - fsWorldPosition);
 
     // Process
-    vec3 result = vec3(0.0f);
+    vec3 Result = vec3(0.0f);
 
-    if (uModel.shadingMode == PBR_SHADING)
+    if (uModel.ShadingMode == PBR_SHADING)
     {
-        float metallic = CalculateMetallic();
-        float roughness = CalculateRoughness();
-        float ambientOcclusion = CalculateAmbientOcclusion();
+        float Metallic = CalculateMetallic();
+        float Roughness = CalculateRoughness();
+        float AmbientOcclusion = CalculateAmbientOcclusion();
 
-        result += ProcessDirectionalLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, shadowFactor);
-        result += ProcessPointLightsPbr(color, metallic, roughness, ambientOcclusion, normal, Lo, fsWorldPosition, shadowFactor);
+        Result += ProcessDirectionalLightsPbr(Color, Metallic, Roughness, AmbientOcclusion, Normal, Lo, ShadowFactor);
+        Result += ProcessPointLightsPbr(Color, Metallic, Roughness, AmbientOcclusion, Normal, Lo, fsWorldPosition, ShadowFactor);
     }
-    else if (uModel.shadingMode == PHONG_SHADING)
+    else if (uModel.ShadingMode == PHONG_SHADING)
     {
-        result += ProcessDirectionalLights(color, normal, Lo, shadowFactor);
-        result += ProcessPointLights(color, normal, Lo, fsWorldPosition, shadowFactor);
+        Result += ProcessDirectionalLights(Color, Normal, Lo, ShadowFactor);
+        Result += ProcessPointLights(Color, Normal, Lo, fsWorldPosition, ShadowFactor);
     }
 
     // Final
-    result = ProcessHaze(distance, fsWorldPosition, result);
+    Result = ProcessHaze(distance, fsWorldPosition, Result);
 
-    OutFragColor = vec4(result, opacity);
+    OutFragColor = vec4(Result, Opacity);
 
     // Fragment position
     OutFragLocalPosition = vec4(fsLocalPosition, 1.0f);
@@ -516,5 +516,5 @@ void main()
     // Node Info
     OutNodeInfo = vec4(float(uNodeId), float(uMeshId), float(gl_PrimitiveID), 1.0f);
 
-    gl_FragDepth = log2(fsFlogZ) / log2(uZFar + 1.0);
+    gl_FragDepth = log2(fsFlogZ) / log2(uFarPlane + 1.0);
 }

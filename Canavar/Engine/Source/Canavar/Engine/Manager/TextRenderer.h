@@ -29,14 +29,14 @@ namespace Canavar::Engine
         void Shutdown() override;
 
         void InRender(PerspectiveCamera *pActiveCamera) override;
-        void Resize(int w, int h) override;
+        void Resize(int Width, int Height) override;
 
       private:
         void Render2DTexts();
         void Render3DTexts(PerspectiveCamera *pActiveCamera);
 
-        void RenderText(Shader *pShader, const QString &text, float x, float y, float scale, const QVector3D &color);
-        void RenderCharacter(Shader *pShader, const Character &ch, float x, float y, float scale);
+        void RenderText(Shader *pShader, const QString &Text, float x, float y, float Scale, const QVector3D &Color);
+        void RenderCharacter(Shader *pShader, const Character &Char, float x, float y, float Scale);
 
         void InitializeCharacters();
         void InitializeBuffers();

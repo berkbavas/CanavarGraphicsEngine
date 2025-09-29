@@ -19,17 +19,17 @@ float rand(vec2 co)
 
 void main()
 {
-    vec3 color = texture(uSceneTexture, fsTextureCoords).rgb;
+    vec3 Color = texture(uSceneTexture, fsTextureCoords).rgb;
 
     // --- Film grain ---
-    float grain = rand(fsTextureCoords * uResolution) * uGrainStrength;
-    color += grain;
+    float Grain = rand(fsTextureCoords * uResolution) * uGrainStrength;
+    Color += Grain;
 
     // --- Vignette ---
-    vec2 centered = fsTextureCoords - vec2(0.5f, 0.5f);
-    float dist = length(centered);
-    float vignette = smoothstep(uVignetteRadius, uVignetteRadius - uVignetteSoftness, dist);
-    color *= vignette;
+    vec2 Centered = fsTextureCoords - vec2(0.5f, 0.5f);
+    float Dist = length(Centered);
+    float Vignette = smoothstep(uVignetteRadius, uVignetteRadius - uVignetteSoftness, Dist);
+    Color *= Vignette;
 
-    OutFragColor = vec4(color, 1.0f);
+    OutFragColor = vec4(Color, 1.0f);
 }

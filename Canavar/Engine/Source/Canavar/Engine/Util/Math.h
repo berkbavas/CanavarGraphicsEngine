@@ -11,29 +11,29 @@ namespace Canavar::Engine
       public:
         Math() = delete;
 
-        static void GetEulerDegrees(const QQuaternion& rotation, float& yaw, float& pitch, float& roll);
-        static QQuaternion ConstructFromEulerDegrees(float yaw, float pitch, float roll);
+        static void GetEulerDegrees(const QQuaternion& Rotation, float& Yaw, float& Pitch, float& Roll);
+        static QQuaternion ConstructFromEulerDegrees(float Yaw, float Pitch, float Roll);
 
-        static float AngleBetween(const QVector3D& v1, const QVector3D& v2, const QVector3D& left);
-        static float AngleBetween(const QVector3D& v1, const QVector3D& v2);
+        static float AngleBetween(const QVector3D& V1, const QVector3D& V2, const QVector3D& Left);
+        static float AngleBetween(const QVector3D& V1, const QVector3D& V2);
 
-        static QQuaternion RotationBetweenVectors(const QVector3D& from, const QVector3D& to);
+        static QQuaternion RotationBetweenVectors(const QVector3D& From, const QVector3D& To);
 
         template<typename T>
-        static void AddIfLess(T& value, T bound, T increment)
+        static void AddIfLess(T& Value, T Bound, T Increment)
         {
-            if (value < bound)
+            if (Value < Bound)
             {
-                value += increment;
+                Value += Increment;
             }
         }
 
         template<typename T>
-        static void AddIfGreater(T& value, T bound, T increment)
+        static void AddIfGreater(T& Value, T Bound, T Increment)
         {
-            if (value > bound)
+            if (Value > Bound)
             {
-                value += increment;
+                Value += Increment;
             }
         }
     };

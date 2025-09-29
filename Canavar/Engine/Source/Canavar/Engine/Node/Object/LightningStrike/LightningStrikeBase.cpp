@@ -49,12 +49,12 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLigh
     }
 }
 
-void Canavar::Engine::LightningStrikeBase::Update(Shader* pLightningStrikeShader, const QVector3D& start, const QVector3D& end, float ifps)
+void Canavar::Engine::LightningStrikeBase::Update(Shader* pLightningStrikeShader, const QVector3D& Start, const QVector3D& End, float ifps)
 {
-    mEndPoints[0].position = start;
+    mEndPoints[0].position = Start;
     mEndPoints[0].forkLevel = 0.0f;
 
-    mEndPoints[1].position = end;
+    mEndPoints[1].position = End;
     mEndPoints[1].forkLevel = 0.0f;
 
     mCurrentVertexBufferIndex = 0;
@@ -135,7 +135,7 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLine
     pLineShader->Bind();
     pLineShader->SetUniformValue("uMVP", pCamera->GetViewProjectionMatrix());
     pLineShader->SetUniformValue("uColor", mColor);
-    pLineShader->SetUniformValue("uZFar", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
+    pLineShader->SetUniformValue("uFarPlane", dynamic_cast<PerspectiveCamera*>(pCamera)->GetZFar());
 
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffers[mCurrentTransformFeedbackBufferIndex]);
 
@@ -153,26 +153,26 @@ void Canavar::Engine::LightningStrikeBase::Render(Camera* pCamera, Shader* pLine
     pLineShader->Release();
 }
 
-void Canavar::Engine::LightningStrikeBase::ToJson(QJsonObject& object)
+void Canavar::Engine::LightningStrikeBase::ToJson(QJsonObject& Object)
 {
-    Object::ToJson(object);
+    Object::ToJson(Object);
 
-    object.insert("base_value", mBaseValue);
-    object.insert("decay", mDecay);
-    object.insert("jitter_displacement_multiplier", mJitterDisplacementMultiplier);
-    object.insert("fork_length_multiplier", mForkLengthMultiplier);
-    object.insert("subdivision_level", mSubdivisionLevel);
-    object.insert("freee", mFreeze);
+    Object.insert("base_value", mBaseValue);
+    Object.insert("decay", mDecay);
+    Object.insert("jitter_displacement_multiplier", mJitterDisplacementMultiplier);
+    Object.insert("fork_length_multiplier", mForkLengthMultiplier);
+    Object.insert("subdivision_level", mSubdivisionLevel);
+    Object.insert("freee", mFreeze);
 }
 
-void Canavar::Engine::LightningStrikeBase::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
+void Canavar::Engine::LightningStrikeBase::FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes)
 {
-    Object::FromJson(object, nodes);
+    Object::FromJson(Object, Nodes);
 
-    mBaseValue = object["base_value"].toDouble(1.0f);
-    mDecay = object["decay"].toDouble(1.0f);
-    mJitterDisplacementMultiplier = object["jitter_displacement_multiplier"].toDouble(1.0f);
-    mForkLengthMultiplier = object["fork_length_multiplier"].toDouble(2.0f);
-    mSubdivisionLevel = object["subdivision_level"].toInt(7);
-    mFreeze = object["freeze"].toBool(false);
+    mBaseValue = Object["base_value"].toDouble(1.0f);
+    mDecay = Object["decay"].toDouble(1.0f);
+    mJitterDisplacementMultiplier = Object["jitter_displacement_multiplier"].toDouble(1.0f);
+    mForkLengthMultiplier = Object["fork_length_multiplier"].toDouble(2.0f);
+    mSubdivisionLevel = Object["subdivision_level"].toInt(7);
+    mFreeze = Object["freeze"].toBool(false);
 }

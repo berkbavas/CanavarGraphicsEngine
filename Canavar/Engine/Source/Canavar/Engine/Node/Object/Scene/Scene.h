@@ -24,8 +24,8 @@ namespace Canavar::Engine
         void AddMesh(MeshPtr pMesh);
         void AddMaterial(MaterialPtr pMaterial);
 
-        MeshPtr GetMesh(int index);
-        MaterialPtr GetMaterial(int index);
+        MeshPtr GetMesh(int Index);
+        MaterialPtr GetMaterial(int Index);
 
         const QVector<MeshPtr> &GetMeshes() const { return mMeshes; }
         const QVector<MaterialPtr> &GetMaterials() const { return mMaterials; }

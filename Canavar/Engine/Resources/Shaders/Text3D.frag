@@ -8,7 +8,7 @@ in float fsFlogZ;
 uniform sampler2D uTextTexture;
 uniform vec3 uTextColor;
 uniform float uNodeId;
-uniform float uZFar;
+uniform float uFarPlane;
 
 layout(location = 0) out vec4 OutFragColor;
 layout(location = 1) out vec4 OutLocalPosition;
@@ -22,6 +22,6 @@ void main()
     OutWorldPosition = vec4(fsWorldPosition, 1.0f);
     OutNodeInfo = vec4(uNodeId, 0.0f, float(gl_PrimitiveID), 1.0f);
 
-    gl_FragDepth = log2(fsFlogZ) / log2(uZFar + 1.0);
+    gl_FragDepth = log2(fsFlogZ) / log2(uFarPlane + 1.0);
 
 }

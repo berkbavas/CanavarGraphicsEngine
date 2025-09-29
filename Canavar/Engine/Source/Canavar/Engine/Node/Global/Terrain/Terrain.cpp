@@ -11,40 +11,40 @@ Canavar::Engine::Terrain::Terrain()
     SetUpTextures();
 }
 
-void Canavar::Engine::Terrain::ToJson(QJsonObject &object)
+void Canavar::Engine::Terrain::ToJson(QJsonObject &Object)
 {
-    Global::ToJson(object);
+    Global::ToJson(Object);
 
-    object["octaves"] = mOctaves;
-    object["amplitude"] = mAmplitude;
-    object["frequency"] = mFrequency;
-    object["persistence"] = mPersistence;
-    object["lacunarity"] = mLacunarity;
-    object["tessellation_multiplier"] = mTessellationMultiplier;
+    Object["octaves"] = mOctaves;
+    Object["amplitude"] = mAmplitude;
+    Object["frequency"] = mFrequency;
+    Object["persistence"] = mPersistence;
+    Object["lacunarity"] = mLacunarity;
+    Object["tessellation_multiplier"] = mTessellationMultiplier;
 
-    object["ambient"] = mAmbient;
-    object["diffuse"] = mDiffuse;
-    object["specular"] = mSpecular;
-    object["shininess"] = mShininess;
-    object["enabled"] = mEnabled;
+    Object["ambient"] = mAmbient;
+    Object["diffuse"] = mDiffuse;
+    Object["specular"] = mSpecular;
+    Object["shininess"] = mShininess;
+    Object["enabled"] = mEnabled;
 }
 
-void Canavar::Engine::Terrain::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::Terrain::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    Global::FromJson(object, nodes);
+    Global::FromJson(Object, Nodes);
 
-    mOctaves = object["octaves"].toInt(7);
-    mAmplitude = object["amplitude"].toDouble(1055.0f);
-    mFrequency = object["frequency"].toDouble(0.110f);
-    mPersistence = object["persistence"].toDouble(0.063f);
-    mLacunarity = object["lacunarity"].toDouble(8.150f);
-    mTessellationMultiplier = object["tessellation_multiplier"].toDouble(8);
+    mOctaves = Object["octaves"].toInt(7);
+    mAmplitude = Object["amplitude"].toDouble(1055.0f);
+    mFrequency = Object["frequency"].toDouble(0.110f);
+    mPersistence = Object["persistence"].toDouble(0.063f);
+    mLacunarity = Object["lacunarity"].toDouble(8.150f);
+    mTessellationMultiplier = Object["tessellation_multiplier"].toDouble(8);
 
-    mAmbient = object["ambient"].toDouble(0.25f);
-    mDiffuse = object["diffuse"].toDouble(0.75f);
-    mSpecular = object["specular"].toDouble(0.25f);
-    mShininess = object["shininess"].toDouble(8.0f);
-    mEnabled = object["enabled"].toBool(true);
+    mAmbient = Object["ambient"].toDouble(0.25f);
+    mDiffuse = Object["diffuse"].toDouble(0.75f);
+    mSpecular = Object["specular"].toDouble(0.25f);
+    mShininess = Object["shininess"].toDouble(8.0f);
+    mEnabled = Object["enabled"].toBool(true);
 }
 
 void Canavar::Engine::Terrain::Generate()
@@ -164,32 +164,32 @@ void Canavar::Engine::Terrain::CleanUp()
     // TODO: Implement CleanUp method to release OpenGL resources
 }
 
-GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &filepaths, int miplevels)
+GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &Filepaths, int Miplevels)
 {
-    std::array<int, 4> widths;
-    std::array<int, 4> heights;
-    std::array<QImage, 4> images;
+    std::array<int, 4> Widths;
+    std::array<int, 4> Heights;
+    std::array<QImage, 4> Images;
 
-    for (int i = 0; i < filepaths.size(); i++)
+    for (int i = 0; i < Filepaths.size(); i++)
     {
-        auto filepath = filepaths[i];
+        auto Filepath = Filepaths[i];
 
-        QImage image(QString::fromStdString(filepath));
-        if (image.isNull())
+        QImage Image(QString::fromStdString(Filepath));
+        if (Image.isNull())
         {
-            CGE_EXIT_FAILURE("Terrain::Load2DArray: Failed to load image from '{}'", filepath);
+            CGE_EXIT_FAILURE("Terrain::Load2DArray: Failed to load image from '{}'", Filepath);
         }
         // Ensure the image is in RGBA format
         // Convert to RGBA8888 format for OpenGL compatibility
         // This is necessary because OpenGL expects images in RGBA format (4 byte per pixel)
-        images[i] = image.convertToFormat(QImage::Format_RGBA8888);
+        Images[i] = Image.convertToFormat(QImage::Format_RGBA8888);
 
-        int width = image.width();
-        int height = image.height();
-        const uint8_t *data = image.constBits();
+        int width = Image.width();
+        int height = Image.height();
+        const uint8_t *data = Image.constBits();
 
-        widths[i] = width;
-        heights[i] = height;
+        Widths[i] = width;
+        Heights[i] = height;
     }
 
     GLuint gl_id;
@@ -200,13 +200,13 @@ GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &f
     glTextureParameteri(gl_id, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTextureParameteri(gl_id, GL_TEXTURE_MAX_ANISOTROPY, 16);
 
-    glTextureStorage3D(gl_id, miplevels, GL_RGBA8, widths[0], heights[0], filepaths.size());
+    glTextureStorage3D(gl_id, Miplevels, GL_RGBA8, Widths[0], Heights[0], Filepaths.size());
 
-    for (int i = 0; i < filepaths.size(); i++)
+    for (int i = 0; i < Filepaths.size(); i++)
     {
-        auto w = widths[i];
-        auto h = heights[i];
-        glTextureSubImage3D(gl_id, 0, 0, 0, i, w, h, 1, GL_RGBA, GL_UNSIGNED_BYTE, images[i].constBits());
+        auto w = Widths[i];
+        auto h = Heights[i];
+        glTextureSubImage3D(gl_id, 0, 0, 0, i, w, h, 1, GL_RGBA, GL_UNSIGNED_BYTE, Images[i].constBits());
     }
 
     glGenerateTextureMipmap(gl_id);
@@ -214,28 +214,28 @@ GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &f
     return gl_id;
 }
 
-QVector2D Canavar::Engine::Terrain::WhichTile(const QVector3D &subject) const
+QVector2D Canavar::Engine::Terrain::WhichTile(const QVector3D &Subject) const
 {
-    int i = int(subject.x()) / mWidth;
-    int j = int(subject.z()) / mWidth;
+    int i = int(Subject.x()) / mWidth;
+    int j = int(Subject.z()) / mWidth;
 
     return QVector2D(i * mWidth, j * mWidth);
 }
 
-void Canavar::Engine::Terrain::TranslateTiles(const QVector2D &translation)
+void Canavar::Engine::Terrain::TranslateTiles(const QVector2D &Translation)
 {
     for (int i = 0; i < mTilePositions.size(); ++i)
     {
-        mTilePositions[i] += translation;
+        mTilePositions[i] += Translation;
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, mPBO);
     glBufferSubData(GL_ARRAY_BUFFER, 0, mTilePositions.size() * sizeof(QVector2D), mTilePositions.constData());
 }
 
-void Canavar::Engine::Terrain::Accept(NodeVisitor &visitor)
+void Canavar::Engine::Terrain::Accept(NodeVisitor &Visitor)
 {
-    visitor.Visit(*this);
+    Visitor.Visit(*this);
 }
 
 void Canavar::Engine::Terrain::Render(Shader *pShader, Camera *pCamera)
@@ -245,14 +245,14 @@ void Canavar::Engine::Terrain::Render(Shader *pShader, Camera *pCamera)
         return;
     }
 
-    QVector2D currentTilePosition = WhichTile(pCamera->GetWorldPosition());
+    QVector2D CurrentTilePosition = WhichTile(pCamera->GetWorldPosition());
 
-    if (currentTilePosition != mPreviousTilePosition)
+    if (CurrentTilePosition != mPreviousTilePosition)
     {
-        TranslateTiles(currentTilePosition - mPreviousTilePosition);
-        mPreviousTilePosition = currentTilePosition;
+        TranslateTiles(CurrentTilePosition - mPreviousTilePosition);
+        mPreviousTilePosition = CurrentTilePosition;
 
-        qDebug() << "Terrain::Render:" << "currentTilePosition:" << currentTilePosition;
+        qDebug() << "Terrain::Render:" << "CurrentTilePosition:" << CurrentTilePosition;
     }
 
     pShader->Bind();
@@ -265,16 +265,16 @@ void Canavar::Engine::Terrain::Render(Shader *pShader, Camera *pCamera)
     pShader->SetUniformValue("uTessellationMultiplier", mTessellationMultiplier);
     pShader->SetUniformValue("uWidth", mWidth);
 
-    pShader->SetUniformValue("uNoise.octaves", mOctaves);
-    pShader->SetUniformValue("uNoise.amplitude", mAmplitude);
-    pShader->SetUniformValue("uNoise.frequency", mFrequency);
-    pShader->SetUniformValue("uNoise.persistence", mPersistence);
-    pShader->SetUniformValue("uNoise.lacunarity", mLacunarity);
+    pShader->SetUniformValue("uNoise.Octaves", mOctaves);
+    pShader->SetUniformValue("uNoise.Amplitude", mAmplitude);
+    pShader->SetUniformValue("uNoise.Frequency", mFrequency);
+    pShader->SetUniformValue("uNoise.Persistence", mPersistence);
+    pShader->SetUniformValue("uNoise.Lacunarity", mLacunarity);
 
-    pShader->SetUniformValue("uTerrain.ambient", mAmbient);
-    pShader->SetUniformValue("uTerrain.diffuse", mDiffuse);
-    pShader->SetUniformValue("uTerrain.specular", mSpecular);
-    pShader->SetUniformValue("uTerrain.shininess", mShininess);
+    pShader->SetUniformValue("uTerrain.Ambient", mAmbient);
+    pShader->SetUniformValue("uTerrain.Diffuse", mDiffuse);
+    pShader->SetUniformValue("uTerrain.Specular", mSpecular);
+    pShader->SetUniformValue("uTerrain.Shininess", mShininess);
 
     pShader->SetUniformValueArray("uTextureStartHeights", mTextureStartHeights.data(), mTextureStartHeights.size(), 1);
     pShader->SetUniformValueArray("uTextureBlends", mTextureBlends.data(), mTextureBlends.size(), 1);

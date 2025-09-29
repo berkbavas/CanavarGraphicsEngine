@@ -11,19 +11,19 @@ namespace Canavar::Engine
       public:
         CANAVAR_NODE(Model);
 
-        Model(const std::string& sceneName);
+        Model(const std::string& SceneName);
 
-        QMatrix4x4 GetMeshTransformation(const std::string& meshName) const;
-        void SetMeshTransformation(const std::string& meshName, const QMatrix4x4& transformation);
+        QMatrix4x4 GetMeshTransformation(const std::string& MeshName) const;
+        void SetMeshTransformation(const std::string& MeshName, const QMatrix4x4& Transformation);
 
-        bool GetMeshVisibility(const std::string& meshName) const;
-        void SetMeshVisibility(const std::string& meshName, bool visible);
+        bool GetMeshVisibility(const std::string& MeshName) const;
+        void SetMeshVisibility(const std::string& MeshName, bool Visible);
 
-        float GetMeshOpacity(const std::string& meshName, float defaultOpacity = 1.0f) const;
-        void SetMeshOpacity(const std::string& meshName, float opacity);
+        float GetMeshOpacity(const std::string& MeshName, float DefaultOpacity = 1.0f) const;
+        void SetMeshOpacity(const std::string& MeshName, float Opacity);
 
-        void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
+        void ToJson(QJsonObject& Object) override;
+        void FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes) override;
 
       private:
         DEFINE_MEMBER(QVector3D, Color, QVector3D(1.0f, 1.0f, 1.0f));

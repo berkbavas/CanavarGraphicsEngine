@@ -18,66 +18,65 @@ namespace Canavar::Engine
         using Callback = std::function<void(QOpenGLContext*, QOpenGLShaderProgram*)>;
 
       public:
-        Shader(ShaderType type, const QString& name);
+        Shader(ShaderType Type, const QString& Name);
 
         void Initialize();
         bool Bind();
         void Release();
-        void SetCallbackBeforeLinking(const Callback& callback);
+        void SetCallbackBeforeLinking(const Callback& Callback);
 
-        void AddPath(QOpenGLShader::ShaderTypeBit type, const QString& path);
+        void AddPath(QOpenGLShader::ShaderTypeBit Type, const QString& Path);
 
         QString GetName() const;
         ShaderType GetShaderType() const;
 
-        static QString GetShaderTypeString(QOpenGLShader::ShaderTypeBit type);
+        static QString GetShaderTypeString(QOpenGLShader::ShaderTypeBit Type);
 
         template<typename T>
-        void SetUniformValue(const QString& name, T value)
+        void SetUniformValue(const QString& Name, T Value)
         {
-            const auto location = mProgram->uniformLocation(name);
+            const auto Location = mProgram->uniformLocation(Name);
 
-            if (0 <= location)
+            if (0 <= Location)
             {
-                mProgram->setUniformValue(location, value);
+                mProgram->setUniformValue(Location, Value);
             }
             else
             {
-                LOG_FATAL("Shader::SetUniformValue: [{}] Uniform location '{}' could not be found.", mName.toStdString(), name.toStdString());
+                LOG_FATAL("Shader::SetUniformValue[{}]: Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
             }
         }
 
         template<typename T>
-        void SetUniformValueArray(const QString& name, const QVector<T>& values)
+        void SetUniformValueArray(const QString& Name, const QVector<T>& Values)
         {
-            const auto location = mProgram->uniformLocation(name);
+            const auto Location = mProgram->uniformLocation(Name);
 
-            if (0 <= location)
+            if (0 <= Location)
             {
-                mProgram->setUniformValueArray(location, values.constData(), values.size());
+                mProgram->setUniformValueArray(Location, Values.constData(), Values.size());
             }
             else
             {
-                LOG_FATAL("Shader::SetUniformValue: Uniform location '{}' could not be found.", name.toStdString());
+                LOG_FATAL("Shader::SetUniformValueArray[{}]: Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
             }
         }
 
-
-        void SetUniformValueArray(const QString& name, const GLfloat *values, int count, int tupleSize)
+        void SetUniformValueArray(const QString& Name, const GLfloat* Values, int Count, int TupleSize)
         {
-            const auto location = mProgram->uniformLocation(name);
+            const auto Location = mProgram->uniformLocation(Name);
 
-            if (0 <= location)
+            if (0 <= Location)
             {
-                mProgram->setUniformValueArray(location, values, count, tupleSize);
+                mProgram->setUniformValueArray(Location, Values, Count, TupleSize);
             }
             else
             {
-                LOG_FATAL("Shader::SetUniformValue: Uniform location '{}' could not be found.", name.toStdString());
+                LOG_FATAL("Shader::SetUniformValueArray[{}]: Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
             }
         }
 
-        void SetSampler(const QString& name, GLuint unit, GLuint textureId, GLuint target = GL_TEXTURE_2D);
+        void SetSampler(const QString& Name, GLuint Unit, GLuint TextureId, GLuint Target = GL_TEXTURE_2D);
 
       private:
         Callback mCallback{ nullptr };

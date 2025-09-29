@@ -26,11 +26,4 @@ namespace Canavar::Engine
     inline constexpr QVector3D DOWN_DIR{ 0, -1, 0 };
     inline constexpr QVector3D FORWARD_DIR{ 0, 0, 1 };
     inline constexpr QVector3D BACKWARD_DIR{ 0, 0, -1 };
-    
-
-    enum class RenderPass
-    {
-        Opaque,
-        Transparent
-    };
 }

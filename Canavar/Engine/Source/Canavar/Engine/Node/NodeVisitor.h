@@ -7,18 +7,18 @@ namespace Canavar::Engine
     class NodeVisitor
     {
       public:
-        virtual void Visit(class Sun& sun) = 0;
-        virtual void Visit(class Sky& sky) = 0;
-        virtual void Visit(class Haze& haze) = 0;
-        virtual void Visit(class Terrain& terrain) = 0;
-        virtual void Visit(class Text2D& text2D) = 0;
-        virtual void Visit(class Object& object) = 0;
-        virtual void Visit(class Model& model) = 0;
-        virtual void Visit(class Text3D& text3D) = 0;
-        virtual void Visit(class PerspectiveCamera& camera) = 0;
-        virtual void Visit(class DirectionalLight& light) = 0;
-        virtual void Visit(class PointLight& light) = 0;
-        virtual void Visit(class NozzleEffect& effect) = 0;
-        virtual void Visit(class LightningStrikeBase& strike) = 0;
+        virtual void Visit(class Sun& Sun) = 0;
+        virtual void Visit(class Sky& Sky) = 0;
+        virtual void Visit(class Haze& Haze) = 0;
+        virtual void Visit(class Terrain& Terrain) = 0;
+        virtual void Visit(class Text2D& Text2D) = 0;
+        virtual void Visit(class Object& Object) = 0;
+        virtual void Visit(class Model& Model) = 0;
+        virtual void Visit(class Text3D& Text3D) = 0;
+        virtual void Visit(class PerspectiveCamera& Camera) = 0;
+        virtual void Visit(class DirectionalLight& Light) = 0;
+        virtual void Visit(class PointLight& Light) = 0;
+        virtual void Visit(class NozzleEffect& Effect) = 0;
+        virtual void Visit(class LightningStrikeBase& LightningStrikeBase) = 0;
     };
 }

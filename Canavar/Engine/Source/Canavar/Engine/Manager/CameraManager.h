@@ -12,10 +12,10 @@ namespace Canavar::Engine
         using Manager::Manager;
 
         void Initialize() override;
-        void Resize(int w, int h);
+        void Resize(int Width, int Height) override;
         void Update(float ifps) override;
 
-        void SetDevicePixelRatio(float dpr);
+        void SetDevicePixelRatio(float Ratio);
 
         bool KeyPressed(QKeyEvent *) override;
         bool KeyReleased(QKeyEvent *) override;

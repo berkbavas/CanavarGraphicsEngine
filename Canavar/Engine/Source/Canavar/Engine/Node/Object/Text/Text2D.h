@@ -12,8 +12,8 @@ namespace Canavar::Engine
       public:
         CANAVAR_NODE(Text2D);
 
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
+        void ToJson(QJsonObject &Object) override;
+        void FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes) override;
 
         DEFINE_MEMBER(QVector3D, Color, QVector3D(1.0f, 1.0f, 1.0f));
         DEFINE_MEMBER(QVector2D, Position, QVector2D(0.0f, 0.0f));

@@ -18,9 +18,9 @@ Canavar::Engine::FreeCamera::FreeCamera()
     connect(mAnimator.get(), &FreeCameraAnimator::AnimationFinished, this, [this]() { Reset(); });
 }
 
-void Canavar::Engine::FreeCamera::Accept(NodeVisitor& visitor)
+void Canavar::Engine::FreeCamera::Accept(NodeVisitor& Visitor)
 {
-    visitor.Visit(*this);
+    Visitor.Visit(*this);
 }
 
 void Canavar::Engine::FreeCamera::Update(float ifps)
@@ -97,31 +97,31 @@ void Canavar::Engine::FreeCamera::Reset()
     mMouse.Reset();
 }
 
-bool Canavar::Engine::FreeCamera::KeyPressed(QKeyEvent* event)
+bool Canavar::Engine::FreeCamera::KeyPressed(QKeyEvent* pEvent)
 {
-    mPressedKeys.insert((Qt::Key) event->key(), true);
+    mPressedKeys.insert((Qt::Key) pEvent->key(), true);
     mUpdatePosition = true;
     return true;
 }
 
-bool Canavar::Engine::FreeCamera::KeyReleased(QKeyEvent* event)
+bool Canavar::Engine::FreeCamera::KeyReleased(QKeyEvent* pEvent)
 {
-    mPressedKeys.insert((Qt::Key) event->key(), false);
+    mPressedKeys.insert((Qt::Key) pEvent->key(), false);
     return false;
 }
 
-bool Canavar::Engine::FreeCamera::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::FreeCamera::MousePressed(QMouseEvent* pEvent)
 {
-    mMouse.X = event->position().x();
-    mMouse.Y = event->position().y();
-    mMouse.Button = event->button();
+    mMouse.X = pEvent->position().x();
+    mMouse.Y = pEvent->position().y();
+    mMouse.Button = pEvent->button();
 
     return mMouse.Button == mActionReceiveButton;
 }
 
-bool Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* event)
+bool Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* pEvent)
 {
-    if (mMouse.Button == event->button())
+    if (mMouse.Button == pEvent->button())
     {
         mMouse.Button = Qt::NoButton;
     }
@@ -129,15 +129,15 @@ bool Canavar::Engine::FreeCamera::MouseReleased(QMouseEvent* event)
     return false;
 }
 
-bool Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::FreeCamera::MouseMoved(QMouseEvent* pEvent)
 {
     if (mMouse.Button == mActionReceiveButton)
     {
-        mMouse.DX += mMouse.X - event->position().x();
-        mMouse.DY += mMouse.Y - event->position().y();
+        mMouse.DX += mMouse.X - pEvent->position().x();
+        mMouse.DY += mMouse.Y - pEvent->position().y();
 
-        mMouse.X = event->position().x();
-        mMouse.Y = event->position().y();
+        mMouse.X = pEvent->position().x();
+        mMouse.Y = pEvent->position().y();
         mUpdateRotation = true;
         return true;
     }
@@ -150,22 +150,22 @@ void Canavar::Engine::FreeCamera::GoToObject(Object* pNode)
     mAnimator->AnimateTo(pNode->GetWorldPosition());
 }
 
-void Canavar::Engine::FreeCamera::ToJson(QJsonObject& object)
+void Canavar::Engine::FreeCamera::ToJson(QJsonObject& Object)
 {
-    PerspectiveCamera::ToJson(object);
+    PerspectiveCamera::ToJson(Object);
 
-    object.insert("angular_speed", mAngularSpeed);
-    object.insert("linear_speed", mLinearSpeed);
-    object.insert("action_receive_button", mActionReceiveButton);
+    Object.insert("angular_speed", mAngularSpeed);
+    Object.insert("linear_speed", mLinearSpeed);
+    Object.insert("action_receive_button", mActionReceiveButton);
 }
 
-void Canavar::Engine::FreeCamera::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
+void Canavar::Engine::FreeCamera::FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes)
 {
-    PerspectiveCamera::FromJson(object, nodes);
+    PerspectiveCamera::FromJson(Object, Nodes);
 
-    mAngularSpeed = object["angular_speed"].toDouble(25.0f);
-    mLinearSpeed = object["linear_speed"].toDouble(5.0f);
-    mActionReceiveButton = (Qt::MouseButton) object["action_receive_button"].toInt(Qt::MiddleButton);
+    mAngularSpeed = Object["angular_speed"].toDouble(25.0f);
+    mLinearSpeed = Object["linear_speed"].toDouble(5.0f);
+    mActionReceiveButton = (Qt::MouseButton) Object["action_receive_button"].toInt(Qt::MiddleButton);
 }
 
 const QMap<Qt::Key, QVector3D> Canavar::Engine::FreeCamera::KEY_BINDINGS = //

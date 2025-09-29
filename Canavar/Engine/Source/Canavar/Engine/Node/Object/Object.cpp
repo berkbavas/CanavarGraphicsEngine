@@ -3,67 +3,67 @@
 #include "Canavar/Engine/Util/Logger.h"
 #include "Canavar/Engine/Util/Math.h"
 
-void Canavar::Engine::Object::SetRotation(const QQuaternion& newRotation)
+void Canavar::Engine::Object::SetRotation(const QQuaternion& NewRotation)
 {
-    mRotation = newRotation;
+    mRotation = NewRotation;
     UpdateTransformation();
 }
 
-void Canavar::Engine::Object::SetPosition(const QVector3D& newPosition)
+void Canavar::Engine::Object::SetPosition(const QVector3D& NewPosition)
 {
-    mPosition = newPosition;
+    mPosition = NewPosition;
     UpdateTransformation();
 }
 
-void Canavar::Engine::Object::SetScale(const QVector3D& newScale)
+void Canavar::Engine::Object::SetScale(const QVector3D& NewScale)
 {
-    mScale = newScale;
+    mScale = NewScale;
     UpdateTransformation();
 }
 
-void Canavar::Engine::Object::ToJson(QJsonObject& object)
+void Canavar::Engine::Object::ToJson(QJsonObject& Object)
 {
-    Node::ToJson(object);
+    Node::ToJson(Object);
 
-    QJsonObject rotation;
-    rotation.insert("x", mRotation.x());
-    rotation.insert("y", mRotation.y());
-    rotation.insert("z", mRotation.z());
-    rotation.insert("w", mRotation.scalar());
-    object.insert("rotation", rotation);
+    QJsonObject Rotation;
+    Rotation.insert("x", mRotation.x());
+    Rotation.insert("y", mRotation.y());
+    Rotation.insert("z", mRotation.z());
+    Rotation.insert("w", mRotation.scalar());
+    Object.insert("rotation", Rotation);
 
-    QJsonObject position;
-    position.insert("x", mPosition.x());
-    position.insert("y", mPosition.y());
-    position.insert("z", mPosition.z());
-    object.insert("position", position);
+    QJsonObject Position;
+    Position.insert("x", mPosition.x());
+    Position.insert("y", mPosition.y());
+    Position.insert("z", mPosition.z());
+    Object.insert("position", Position);
 
-    QJsonObject scale;
-    scale.insert("x", mScale.x());
-    scale.insert("y", mScale.y());
-    scale.insert("z", mScale.z());
-    object.insert("scale", scale);
+    QJsonObject Scale;
+    Scale.insert("x", mScale.x());
+    Scale.insert("y", mScale.y());
+    Scale.insert("z", mScale.z());
+    Object.insert("scale", Scale);
 
     if (const auto pParent = GetParent<Node>())
     {
-        object.insert("parent_uuid", QString::fromStdString(pParent->GetUuid()));
+        Object.insert("parent_uuid", QString::fromStdString(pParent->GetUuid()));
     }
 
-    object.insert("visible", mVisible);
-    object.insert("selectable", mSelectable);
+    Object.insert("visible", mVisible);
+    Object.insert("selectable", mSelectable);
 }
 
-void Canavar::Engine::Object::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
+void Canavar::Engine::Object::FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes)
 {
-    Node::FromJson(object, nodes);
+    Node::FromJson(Object, Nodes);
 
-    QString parent_uuid = object["parent_uuid"].toString();
+    QString ParentUuid = Object["parent_uuid"].toString();
 
-    if (!parent_uuid.isNull() && !parent_uuid.isEmpty())
+    if (!ParentUuid.isNull() && !ParentUuid.isEmpty())
     {
-        for (const auto pNode : nodes)
+        for (const auto pNode : Nodes)
         {
-            if (parent_uuid == pNode->GetUuid())
+            if (ParentUuid == pNode->GetUuid())
             {
                 SetParent(pNode);
             }
@@ -72,34 +72,34 @@ void Canavar::Engine::Object::FromJson(const QJsonObject& object, const QSet<Nod
 
     // Rotation
     {
-        float x = object["rotation"]["x"].toDouble();
-        float y = object["rotation"]["y"].toDouble();
-        float z = object["rotation"]["z"].toDouble();
-        float w = object["rotation"]["w"].toDouble(1.0f);
+        float x = Object["rotation"]["x"].toDouble();
+        float y = Object["rotation"]["y"].toDouble();
+        float z = Object["rotation"]["z"].toDouble();
+        float w = Object["rotation"]["w"].toDouble(1.0f);
 
         SetRotation(QQuaternion(w, x, y, z));
     }
 
     // Position
     {
-        float x = object["position"]["x"].toDouble();
-        float y = object["position"]["y"].toDouble();
-        float z = object["position"]["z"].toDouble();
+        float x = Object["position"]["x"].toDouble();
+        float y = Object["position"]["y"].toDouble();
+        float z = Object["position"]["z"].toDouble();
 
         SetPosition(QVector3D(x, y, z));
     }
 
     // Scale
     {
-        float x = object["scale"]["x"].toDouble(1.0f);
-        float y = object["scale"]["y"].toDouble(1.0f);
-        float z = object["scale"]["z"].toDouble(1.0f);
+        float x = Object["scale"]["x"].toDouble(1.0f);
+        float y = Object["scale"]["y"].toDouble(1.0f);
+        float z = Object["scale"]["z"].toDouble(1.0f);
 
         SetScale(QVector3D(x, y, z));
     }
 
-    mVisible = object["visible"].toBool(true);
-    mSelectable = object["selectable"].toBool(true);
+    mVisible = Object["visible"].toBool(true);
+    mSelectable = Object["selectable"].toBool(true);
 
     UpdateTransformation();
     Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll);
@@ -200,19 +200,19 @@ void Canavar::Engine::Object::SetScale(float uniformScale)
     SetScale(uniformScale, uniformScale, uniformScale);
 }
 
-void Canavar::Engine::Object::RotateGlobal(const QVector3D& axis, float angle)
+void Canavar::Engine::Object::RotateGlobal(const QVector3D& Axis, float Angle)
 {
-    SetWorldRotation(QQuaternion::fromAxisAndAngle(axis, angle) * GetWorldRotation());
+    SetWorldRotation(QQuaternion::fromAxisAndAngle(Axis, Angle) * GetWorldRotation());
 }
 
-void Canavar::Engine::Object::RotateLocal(const QVector3D& axis, float angle)
+void Canavar::Engine::Object::RotateLocal(const QVector3D& Axis, float Angle)
 {
-    SetWorldRotation(GetWorldRotation() * QQuaternion::fromAxisAndAngle(axis, angle));
+    SetWorldRotation(GetWorldRotation() * QQuaternion::fromAxisAndAngle(Axis, Angle));
 }
 
-void Canavar::Engine::Object::Translate(const QVector3D& delta)
+void Canavar::Engine::Object::Translate(const QVector3D& Delta)
 {
-    SetWorldPosition(GetWorldPosition() + delta);
+    SetWorldPosition(GetWorldPosition() + Delta);
 }
 
 void Canavar::Engine::Object::UpdateTransformation()
@@ -241,20 +241,20 @@ float& Canavar::Engine::Object::GetRoll()
     return mRoll;
 }
 
-void Canavar::Engine::Object::SetYaw(float yaw)
+void Canavar::Engine::Object::SetYaw(float Yaw)
 {
-    mYaw = yaw;
+    mYaw = Yaw;
     SetRotation(Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll));
 }
 
-void Canavar::Engine::Object::SetPitch(float pitch)
+void Canavar::Engine::Object::SetPitch(float Pitch)
 {
-    mPitch = pitch;
+    mPitch = Pitch;
     SetRotation(Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll));
 }
 
-void Canavar::Engine::Object::SetRoll(float roll)
+void Canavar::Engine::Object::SetRoll(float Roll)
 {
-    mRoll = roll;
+    mRoll = Roll;
     SetRotation(Canavar::Engine::Math::ConstructFromEulerDegrees(mYaw, mPitch, mRoll));
 }

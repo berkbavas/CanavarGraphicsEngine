@@ -13,7 +13,7 @@ uniform mat3 uNormalMatrix;                 // Normal matrix
 uniform mat4 uViewProjectionMatrix;         // View-Projection matrix
 uniform mat4 uLightViewProjectionMatrix;    // Light View-Projection matrix
 
-uniform float uZFar;
+uniform float uFarPlane;
 
 out vec3 fsLocalPosition;
 out vec3 fsWorldPosition;
@@ -29,8 +29,8 @@ out flat uint fsMask;
 void main()
 {
     fsLocalPosition = aPosition;
-    vec4 worldPos = uModelMatrix * vec4(fsLocalPosition, 1.0f);
-    fsWorldPosition = worldPos.xyz;
+    vec4 WorldPos = uModelMatrix * vec4(fsLocalPosition, 1.0f);
+    fsWorldPosition = WorldPos.xyz;
     fsTextureCoords = aTextureCoords.xy;
 
     fsColor = aColor;
@@ -42,11 +42,11 @@ void main()
     fsTBN = mat3(T, B, N);
     fsNormal = N;
     fsVertexId = gl_VertexID;
-    fsLightSpacePosition = uLightViewProjectionMatrix * worldPos;
+    fsLightSpacePosition = uLightViewProjectionMatrix * WorldPos;
 
-    gl_Position = uViewProjectionMatrix * worldPos;
+    gl_Position = uViewProjectionMatrix * WorldPos;
 
-    float coef = 2.0 / log2(uZFar + 1.0);
-    gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * coef - 1.0;
+    float Coef = 2.0 / log2(uFarPlane + 1.0);
+    gl_Position.z = log2(max(1e-6, 1.0 + gl_Position.w)) * Coef - 1.0;
     fsFlogZ = 1.0 + gl_Position.w;
 }

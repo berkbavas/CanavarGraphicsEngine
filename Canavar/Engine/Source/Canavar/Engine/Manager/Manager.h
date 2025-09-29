@@ -19,7 +19,7 @@ namespace Canavar::Engine
         // These methods can be overridden by derived classes to implement specific functionality.
         virtual void Initialize();
         virtual void PostInitialize();
-        virtual void Resize(int w, int h);
+        virtual void Resize(int Width, int Height);
         virtual void Update(float ifps);
         virtual void Render(PerspectiveCamera *pActiveCamera);
         virtual void InRender(PerspectiveCamera *pActiveCamera);

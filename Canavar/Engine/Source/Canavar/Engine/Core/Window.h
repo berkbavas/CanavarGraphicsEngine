@@ -20,7 +20,7 @@ namespace Canavar::Engine
       signals:
         // Core Events
         void Initialize();
-        void Resize(int w, int h);
+        void Resize(int Width, int Height);
         void Render(float ifps);
 
         // Input Events
@@ -33,7 +33,7 @@ namespace Canavar::Engine
 
       private:
         void initializeGL() override;
-        void resizeGL(int width, int height) override;
+        void resizeGL(int Width, int Height) override;
         void paintGL() override;
         void keyPressEvent(QKeyEvent *) override;
         void keyReleaseEvent(QKeyEvent *) override;

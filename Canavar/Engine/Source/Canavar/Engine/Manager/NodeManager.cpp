@@ -237,25 +237,25 @@ Canavar::Engine::MeshPtr Canavar::Engine::NodeManager::GetMeshById(ModelPtr pMod
     return nullptr;
 }
 
-void Canavar::Engine::NodeManager::ExportNodes(const QString& path)
+void Canavar::Engine::NodeManager::ExportNodes(const QString& Path)
 {
-    QJsonDocument document;
-    QJsonObject root;
-    QJsonArray array;
+    QJsonDocument Doc;
+    QJsonObject Root;
+    QJsonArray Array;
 
     for (const auto& pNode : mNodes)
     {
         QJsonObject object;
         pNode->ToJson(object);
-        array.append(object);
+        Array.append(object);
     }
 
-    root.insert("nodes", array);
-    document.setObject(root);
+    Root.insert("nodes", Array);
+    Doc.setObject(Root);
 
-    const auto content = document.toJson(QJsonDocument::Indented);
+    const auto Content = Doc.toJson(QJsonDocument::Indented);
 
-    if (Util::WriteTextToFile(path, content))
+    if (Util::WriteTextToFile(Path, Content))
     {
         LOG_INFO("NodeManager::ExportNodes: Nodes are successfully exported.");
     }
@@ -265,9 +265,9 @@ void Canavar::Engine::NodeManager::ExportNodes(const QString& path)
     }
 }
 
-void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
+void Canavar::Engine::NodeManager::ImportNodes(const QString& Path)
 {
-    QJsonDocument Document = Util::ReadJson(path);
+    QJsonDocument Document = Util::ReadJson(Path);
     QJsonObject Root = Document.object();
     QJsonArray Array = Root["nodes"].toArray();
 
@@ -335,9 +335,9 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         }
     }
 
-    for (const auto element : Array)
+    for (const auto Element : Array)
     {
-        QJsonObject Object = element.toObject();
+        QJsonObject Object = Element.toObject();
         QString NodeTypeName = Object["node_type_name"].toString();
         QString Uuid = Object["uuid"].toString();
 
@@ -350,9 +350,9 @@ void Canavar::Engine::NodeManager::ImportNodes(const QString& path)
         }
     }
 
-    for (const auto element : Array)
+    for (const auto Element : Array)
     {
-        QJsonObject Object = element.toObject();
+        QJsonObject Object = Element.toObject();
         QString NodeTypeName = Object["node_type_name"].toString();
         QString Uuid = Object["uuid"].toString();
 

@@ -58,28 +58,28 @@ void Canavar::Engine::TextRenderer::Shutdown()
 
 void Canavar::Engine::TextRenderer::InitializeCharacters()
 {
-    FT_Library ft;
-    if (FT_Init_FreeType(&ft))
+    FT_Library Ft;
+    if (FT_Init_FreeType(&Ft))
     {
         CGE_EXIT_FAILURE("TextRenderer::InitializeCharacters: Could not init FreeType Library.");
     }
 
-    QByteArray bytes = Util::GetBytes(FONT_PATH);
+    QByteArray Bytes = Util::GetBytes(FONT_PATH);
 
-    if (bytes.size() == 0)
+    if (Bytes.size() == 0)
     {
         CGE_EXIT_FAILURE("TextRenderer::InitializeCharacters: Font file '{}' could not be found.", FONT_PATH);
     }
 
-    FT_Face face;
+    FT_Face Face;
 
-    if (FT_New_Memory_Face(ft, reinterpret_cast<FT_Byte *>(bytes.data()), bytes.size(), 0, &face))
+    if (FT_New_Memory_Face(Ft, reinterpret_cast<FT_Byte *>(Bytes.data()), Bytes.size(), 0, &Face))
     {
         CGE_EXIT_FAILURE("TextRenderer::InitializeCharacters: Failed to load font.");
     }
 
     // Set size to load glyphs as
-    FT_Set_Pixel_Sizes(face, 0, 32);
+    FT_Set_Pixel_Sizes(Face, 0, 32);
 
     // Initialize character textures and other OpenGL settings here
     // This is typically done by loading a font and generating textures for each character.
@@ -89,7 +89,7 @@ void Canavar::Engine::TextRenderer::InitializeCharacters()
     for (unsigned char c = 0; c < 128; c++)
     {
         // load character glyph
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+        if (FT_Load_Char(Face, c, FT_LOAD_RENDER))
         {
             LOG_FATAL("TextRenderer::InitializeCharacters:  Failed to load Glyph for character '{}'.", c);
             continue;
@@ -98,22 +98,22 @@ void Canavar::Engine::TextRenderer::InitializeCharacters()
         unsigned int texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, face->glyph->bitmap.width, face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, face->glyph->bitmap.buffer);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, Face->glyph->bitmap.width, Face->glyph->bitmap.rows, 0, GL_RED, GL_UNSIGNED_BYTE, Face->glyph->bitmap.buffer);
         // set texture options
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // now store character for later use
-        Character character = { texture,                                                        //
-                                QVector2D(face->glyph->bitmap.width, face->glyph->bitmap.rows), //
-                                QVector2D(face->glyph->bitmap_left, face->glyph->bitmap_top),   //
-                                static_cast<unsigned int>(face->glyph->advance.x) };
-        mCharacters.insert(std::pair<QChar, Character>(c, character));
+        Character Char = { texture,                                                        //
+                                QVector2D(Face->glyph->bitmap.width, Face->glyph->bitmap.rows), //
+                                QVector2D(Face->glyph->bitmap_left, Face->glyph->bitmap_top),   //
+                                static_cast<unsigned int>(Face->glyph->advance.x) };
+        mCharacters.insert(std::pair<QChar, Character>(c, Char));
     }
 
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
+    FT_Done_Face(Face);
+    FT_Done_FreeType(Ft);
 }
 
 void Canavar::Engine::TextRenderer::InitializeBuffers()
@@ -132,10 +132,10 @@ void Canavar::Engine::TextRenderer::InitializeBuffers()
     glBindVertexArray(0);
 }
 
-void Canavar::Engine::TextRenderer::Resize(int w, int h)
+void Canavar::Engine::TextRenderer::Resize(int Width, int Height)
 {
     mProjectionMatrix.setToIdentity();
-    mProjectionMatrix.ortho(0.0f, static_cast<float>(w), 0.0f, static_cast<float>(h), -1.0f, 1.0f);
+    mProjectionMatrix.ortho(0.0f, static_cast<float>(Width), 0.0f, static_cast<float>(Height), -1.0f, 1.0f);
 }
 
 void Canavar::Engine::TextRenderer::InRender(PerspectiveCamera *pActiveCamera)
@@ -188,7 +188,7 @@ void Canavar::Engine::TextRenderer::Render3DTexts(PerspectiveCamera *pActiveCame
 
     // Bind the text shader
     mText3DShader->Bind();
-    mText3DShader->SetUniformValue("uZFar", pActiveCamera->GetZFar());
+    mText3DShader->SetUniformValue("uFarPlane", pActiveCamera->GetZFar());
 
     // Bind the vertex array
     glBindVertexArray(mVAO);
@@ -216,21 +216,21 @@ void Canavar::Engine::TextRenderer::Render3DTexts(PerspectiveCamera *pActiveCame
     glDisable(GL_BLEND);
 }
 
-void Canavar::Engine::TextRenderer::RenderText(Shader *pShader, const QString &text, float x, float y, float scale, const QVector3D &color)
+void Canavar::Engine::TextRenderer::RenderText(Shader *pShader, const QString &Text, float x, float y, float Scale, const QVector3D &Color)
 {
     // Set the text color
-    pShader->SetUniformValue("uTextColor", color);
+    pShader->SetUniformValue("uTextColor", Color);
 
     // Render each character
-    for (const QChar &c : text)
+    for (const QChar &c : Text)
     {
-        const auto it = mCharacters.find(c);
+        const auto Iterator = mCharacters.find(c);
         // If the character is not found, log an error and skip rendering
-        if (it != mCharacters.end())
+        if (Iterator != mCharacters.end())
         {
-            const auto &ch = it->second;
-            RenderCharacter(pShader, ch, x, y, scale);
-            x += (ch.Advance >> 6) * scale; // Advance cursor
+            const auto &Char = Iterator->second;
+            RenderCharacter(pShader, Char, x, y, Scale);
+            x += (Char.Advance >> 6) * Scale; // Advance cursor
         }
         else
         {
@@ -239,24 +239,24 @@ void Canavar::Engine::TextRenderer::RenderText(Shader *pShader, const QString &t
     }
 }
 
-void Canavar::Engine::TextRenderer::RenderCharacter(Shader *pShader, const Character &ch, float x, float y, float scale)
+void Canavar::Engine::TextRenderer::RenderCharacter(Shader *pShader, const Character &Char, float x, float y, float Scale)
 {
-    float xpos = x + ch.Bearing.x() * scale;
-    float ypos = y - (ch.Size.y() - ch.Bearing.y()) * scale;
+    float xpos = x + Char.Bearing.x() * Scale;
+    float ypos = y - (Char.Size.y() - Char.Bearing.y()) * Scale;
 
-    float w = ch.Size.x() * scale;
-    float h = ch.Size.y() * scale;
+    float Width = Char.Size.x() * Scale;
+    float Height = Char.Size.y() * Scale;
 
     // Update VBO for each character
-    float vertices[6][4] = { { xpos, ypos + h, 0.0f, 0.0f }, //
+    float vertices[6][4] = { { xpos, ypos + Height, 0.0f, 0.0f }, //
                              { xpos, ypos, 0.0f, 1.0f },     //
-                             { xpos + w, ypos, 1.0f, 1.0f }, //
-                             { xpos, ypos + h, 0.0f, 0.0f }, //
-                             { xpos + w, ypos, 1.0f, 1.0f }, //
-                             { xpos + w, ypos + h, 1.0f, 0.0f } };
+                             { xpos + Width, ypos, 1.0f, 1.0f }, //
+                             { xpos, ypos + Height, 0.0f, 0.0f }, //
+                             { xpos + Width, ypos, 1.0f, 1.0f }, //
+                             { xpos + Width, ypos + Height, 1.0f, 0.0f } };
 
     // Render glyph texture over quad
-    pShader->SetSampler("uTextTexture", 0, ch.TextureID, GL_TEXTURE_2D);
+    pShader->SetSampler("uTextTexture", 0, Char.TextureID, GL_TEXTURE_2D);
 
     // Update content of VBO memory
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);

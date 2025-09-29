@@ -20,8 +20,8 @@ out vec4 OutFragColor;
 
 void main()
 {
-    vec3 hdrColor = texture(uSceneTexture, fsTextureCoords).rgb;
-    hdrColor *= uExposure; // Apply exposure
-    vec3 ldrColor = ACESFilm(hdrColor);
-    OutFragColor = vec4(ldrColor, 1.0f);
+    vec3 HdrColor = texture(uSceneTexture, fsTextureCoords).rgb;
+    HdrColor *= uExposure; // Apply exposure
+    vec3 LdrColor = ACESFilm(HdrColor);
+    OutFragColor = vec4(LdrColor, 1.0f);
 }

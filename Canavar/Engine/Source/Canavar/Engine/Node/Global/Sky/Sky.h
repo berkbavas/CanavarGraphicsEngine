@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Node/Global/Global.h"
-#include "Canavar/Engine/Primitive/Quad.h"
+#include "Canavar/Engine/Primitive/QuadData.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <QOpenGLExtraFunctions>
@@ -23,7 +23,7 @@ namespace Canavar::Engine
         void Render(Shader* pShader, DirectionalLight* pSun, Camera* pCamera);
 
       private:
-        Quad* mQuad;
+        QuadDataPtr mQuadData{ nullptr };
 
         DEFINE_MEMBER(float, SunIntensity, 22.0f);
         DEFINE_MEMBER(float, PlanetRadius, 6371e3f);

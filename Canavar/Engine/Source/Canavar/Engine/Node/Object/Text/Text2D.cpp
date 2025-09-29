@@ -1,35 +1,35 @@
 #include "Text2D.h"
 
-void Canavar::Engine::Text2D::ToJson(QJsonObject &object)
+void Canavar::Engine::Text2D::ToJson(QJsonObject &Object)
 {
-    Node::ToJson(object);
+    Node::ToJson(Object);
 
-    QJsonObject color;
-    color.insert("r", mColor.x());
-    color.insert("g", mColor.y());
-    color.insert("b", mColor.z());
-    object.insert("color", color);
+    QJsonObject Color;
+    Color.insert("r", mColor.x());
+    Color.insert("g", mColor.y());
+    Color.insert("b", mColor.z());
+    Object.insert("color", Color);
 
-    QJsonObject position;
-    position.insert("x", mPosition.x());
-    position.insert("y", mPosition.y());
-    object.insert("position", position);
+    QJsonObject Position;
+    Position.insert("x", mPosition.x());
+    Position.insert("y", mPosition.y());
+    Object.insert("position", Position);
 
-    object.insert("scale", mScale);
-    object.insert("text", mText);
+    Object.insert("scale", mScale);
+    Object.insert("text", mText);
 }
 
-void Canavar::Engine::Text2D::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::Text2D::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    Node::FromJson(object, nodes);
+    Node::FromJson(Object, Nodes);
 
-    mColor = QVector3D(object["color"].toObject().value("r").toDouble(), //
-                       object["color"].toObject().value("g").toDouble(), //
-                       object["color"].toObject().value("b").toDouble());
+    mColor = QVector3D(Object["color"].toObject().value("r").toDouble(), //
+                       Object["color"].toObject().value("g").toDouble(), //
+                       Object["color"].toObject().value("b").toDouble());
 
-    mPosition = QVector2D(object["position"].toObject().value("x").toDouble(), //
-                          object["position"].toObject().value("y").toDouble());
+    mPosition = QVector2D(Object["position"].toObject().value("x").toDouble(), //
+                          Object["position"].toObject().value("y").toDouble());
 
-    mScale = object["scale"].toVariant().value<float>();
-    mText = object["text"].toString();
+    mScale = Object["scale"].toVariant().value<float>();
+    mText = Object["text"].toString();
 }

@@ -13,20 +13,20 @@ namespace Canavar::Engine
       public:
         Util() = delete;
 
-        static QByteArray GetBytes(const QString& path);
-        static QVector3D GenerateRandomVector(float x, float y, float z);
-        static float GenerateRandom(float bound);
+        static QByteArray GetBytes(const QString& Path);
+        static QVector3D GenerateRandomVector(float X, float Y, float Z);
+        static float GenerateRandom(float Bound);
 
         static QString GenerateUuid();
-        static bool WriteTextToFile(const QString& path, const QByteArray& content);
-        static bool WriteDataToFile(const QString& path, const QByteArray& content);
-        static QByteArray ReadDataFromFile(const QString& path);
-        static QJsonDocument ReadJson(const QString& path);
+        static bool WriteTextToFile(const QString& Path, const QByteArray& Content);
+        static bool WriteDataToFile(const QString& Path, const QByteArray& Content);
+        static QByteArray ReadDataFromFile(const QString& Path);
+        static QJsonDocument ReadJson(const QString& Path);
 
         template<typename T, typename S>
-        static bool Contains(const std::vector<T>& vec, const S& value)
+        static bool Contains(const std::vector<T>& Vector, const S& Value)
         {
-            return std::find(vec.begin(), vec.end(), std::dynamic_pointer_cast<T>(value)) != vec.end();
+            return std::find(Vector.begin(), Vector.end(), std::dynamic_pointer_cast<T>(Value)) != Vector.end();
         }
 
       private:

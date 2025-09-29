@@ -13,35 +13,35 @@ Canavar::Engine::PersecutorCamera::PersecutorCamera()
     connect(mAnimator.get(), &PersecutorCameraAnimator::Updated, this, &PersecutorCamera::OnAnimationAnglesUpdated);
 }
 
-void Canavar::Engine::PersecutorCamera::Accept(NodeVisitor& visitor)
+void Canavar::Engine::PersecutorCamera::Accept(NodeVisitor& Visitor)
 {
-    visitor.Visit(*this);
+    Visitor.Visit(*this);
 }
 
-bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::PersecutorCamera::MousePressed(QMouseEvent* pEvent)
 {
     if (ShouldIgnoreEvents())
     {
         return false;
     }
 
-    mMouse.X = event->position().x();
-    mMouse.Y = event->position().y();
-    mMouse.Z = event->position().x();
-    mMouse.W = event->position().y();
-    mMouse.Button = event->button();
+    mMouse.X = pEvent->position().x();
+    mMouse.Y = pEvent->position().y();
+    mMouse.Z = pEvent->position().x();
+    mMouse.W = pEvent->position().y();
+    mMouse.Button = pEvent->button();
 
     return true;
 }
 
-bool Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
+bool Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* pEvent)
 {
     if (ShouldIgnoreEvents())
     {
         return false;
     }
 
-    if (mMouse.Button == event->button())
+    if (mMouse.Button == pEvent->button())
     {
         mMouse.Button = Qt::NoButton;
     }
@@ -49,15 +49,15 @@ bool Canavar::Engine::PersecutorCamera::MouseReleased(QMouseEvent* event)
     return false;
 }
 
-bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* pEvent)
 {
     if (ShouldIgnoreEvents())
     {
         return false;
     }
 
-    float x = event->position().x();
-    float y = event->position().y();
+    float x = pEvent->position().x();
+    float y = pEvent->position().y();
 
     if (mMouse.Button == Qt::MiddleButton)
     {
@@ -83,19 +83,19 @@ bool Canavar::Engine::PersecutorCamera::MouseMoved(QMouseEvent* event)
     return false;
 }
 
-bool Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* event)
+bool Canavar::Engine::PersecutorCamera::WheelMoved(QWheelEvent* pEvent)
 {
     if (ShouldIgnoreEvents())
     {
         return false;
     }
 
-    if (event->angleDelta().y() < 0)
+    if (pEvent->angleDelta().y() < 0)
     {
         mDistanceBuffer += mZoomStep;
     }
 
-    if (event->angleDelta().y() > 0)
+    if (pEvent->angleDelta().y() > 0)
     {
         mDistanceBuffer -= mZoomStep;
     }
@@ -205,36 +205,36 @@ void Canavar::Engine::PersecutorCamera::SetTarget(ObjectPtr pNewTarget)
     Reset();
 }
 
-void Canavar::Engine::PersecutorCamera::ToJson(QJsonObject& object)
+void Canavar::Engine::PersecutorCamera::ToJson(QJsonObject& Object)
 {
-    PerspectiveCamera::ToJson(object);
+    PerspectiveCamera::ToJson(Object);
 
     if (mTarget)
     {
-        object.insert("target_uuid", QString::fromStdString(mTarget->GetUuid()));
+        Object.insert("target_uuid", QString::fromStdString(mTarget->GetUuid()));
     }
 
-    object.insert("angular_speed", mAngularSpeed);
+    Object.insert("angular_speed", mAngularSpeed);
 }
 
-void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes)
+void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes)
 {
-    PerspectiveCamera::FromJson(object, nodes);
+    PerspectiveCamera::FromJson(Object, Nodes);
 
-    mAngularSpeed = object["angular_speed"].toDouble(25.0f);
+    mAngularSpeed = Object["angular_speed"].toDouble(25.0f);
 
-    QString targetUuid = object["target_uuid"].toString("");
+    QString TargetUuid = Object["target_uuid"].toString("");
 
-    if (targetUuid.isEmpty() == false)
+    if (TargetUuid.isEmpty() == false)
     {
-        LOG_DEBUG("PersecutorCamera::FromJson: UUID of my target is {}.", targetUuid.toStdString());
+        LOG_DEBUG("PersecutorCamera::FromJson: UUID of my target is {}.", TargetUuid.toStdString());
 
-        for (const auto pNode : nodes)
+        for (const auto pNode : Nodes)
         {
-            if (targetUuid == pNode->GetUuid())
+            if (TargetUuid == pNode->GetUuid())
             {
                 LOG_DEBUG("PersecutorCamera::FromJson: I have found my target.");
-                SetTarget(std::dynamic_pointer_cast<Object>(pNode));
+                SetTarget(std::dynamic_pointer_cast<Canavar::Engine::Object>(pNode));
             }
         }
     }
@@ -244,15 +244,15 @@ void Canavar::Engine::PersecutorCamera::FromJson(const QJsonObject& object, cons
     }
 }
 
-void Canavar::Engine::PersecutorCamera::AnimateTo(float yaw, float pitch)
+void Canavar::Engine::PersecutorCamera::AnimateTo(float Yaw, float Pitch)
 {
     mMouse.Reset();
-    mAnimator->Animate(mYaw, mPitch, yaw, pitch);
+    mAnimator->Animate(mYaw, mPitch, Yaw, Pitch);
 }
 
-void Canavar::Engine::PersecutorCamera::AnimateTo(ViewDirection viewDirection)
+void Canavar::Engine::PersecutorCamera::AnimateTo(ViewDirection ViewDirection)
 {
-    switch (viewDirection)
+    switch (ViewDirection)
     {
     case ViewDirection::Front:
         AnimateTo(0, 0);
@@ -277,10 +277,10 @@ void Canavar::Engine::PersecutorCamera::AnimateTo(ViewDirection viewDirection)
     }
 }
 
-void Canavar::Engine::PersecutorCamera::OnAnimationAnglesUpdated(float yaw, float pitch)
+void Canavar::Engine::PersecutorCamera::OnAnimationAnglesUpdated(float Yaw, float Pitch)
 {
-    mYaw = yaw;
-    mPitch = pitch;
+    mYaw = Yaw;
+    mPitch = Pitch;
 }
 
 void Canavar::Engine::PersecutorCamera::ClampAngles()

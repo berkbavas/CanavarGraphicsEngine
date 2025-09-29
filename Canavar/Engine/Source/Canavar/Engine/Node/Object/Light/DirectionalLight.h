@@ -11,10 +11,10 @@ namespace Canavar::Engine
 
         float GetTheta() const;
         float GetPhi() const;
-        void SetDirectionFromThetaPhi(float theta, float phi);
+        void SetDirectionFromThetaPhi(float Theta, float Phi);
 
-        void ToJson(QJsonObject &object) override;
-        void FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes) override;
+        void ToJson(QJsonObject &Object) override;
+        void FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes) override;
 
         DEFINE_MEMBER(QVector3D, Direction, QVector3D(0, 1, 0));
         DEFINE_MEMBER(float, Radiance, 5.0f);

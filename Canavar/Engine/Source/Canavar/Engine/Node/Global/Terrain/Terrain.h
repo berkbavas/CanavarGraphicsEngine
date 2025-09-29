@@ -19,10 +19,10 @@ namespace Canavar::Engine
         Terrain();
 
         const char* GetNodeTypeName() const override { return "Terrain"; }
-        void Accept(NodeVisitor& visitor) override;
+        void Accept(NodeVisitor& Visitor) override;
 
-        void ToJson(QJsonObject& object) override;
-        void FromJson(const QJsonObject& object, const QSet<NodePtr>& nodes) override;
+        void ToJson(QJsonObject& Object) override;
+        void FromJson(const QJsonObject& Object, const QSet<NodePtr>& Nodes) override;
 
         void Render(Shader* pShader, Camera* pCamera);
 
@@ -32,10 +32,10 @@ namespace Canavar::Engine
         void SetUpTextures();
         void CleanUp();
 
-        GLuint Load2DArray(const std::array<std::string, 4>& filepaths, int miplevels);
+        GLuint Load2DArray(const std::array<std::string, 4>& Filepaths, int Miplevels);
 
-        QVector2D WhichTile(const QVector3D& subject) const;
-        void TranslateTiles(const QVector2D& translation);
+        QVector2D WhichTile(const QVector3D& Subject) const;
+        void TranslateTiles(const QVector2D& Translation);
 
         QVector<QVector2D> mTilePositions;
         QVector<QVector3D> mPositions;

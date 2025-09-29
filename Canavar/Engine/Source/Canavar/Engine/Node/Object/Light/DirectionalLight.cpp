@@ -18,44 +18,44 @@ float Canavar::Engine::DirectionalLight::GetPhi() const
     return qRadiansToDegrees(std::atan2(y, std::sqrt(z * z + x * x)));
 }
 
-void Canavar::Engine::DirectionalLight::SetDirectionFromThetaPhi(float theta, float phi)
+void Canavar::Engine::DirectionalLight::SetDirectionFromThetaPhi(float Theta, float Phi)
 {
     const auto r = mDirection.length();
-    const auto x = r * std::cos(qDegreesToRadians(phi)) * std::cos(qDegreesToRadians(theta));
-    const auto y = r * std::sin(qDegreesToRadians(phi));
-    const auto z = r * std::cos(qDegreesToRadians(phi)) * std::sin(qDegreesToRadians(theta));
+    const auto x = r * std::cos(qDegreesToRadians(Phi)) * std::cos(qDegreesToRadians(Theta));
+    const auto y = r * std::sin(qDegreesToRadians(Phi));
+    const auto z = r * std::cos(qDegreesToRadians(Phi)) * std::sin(qDegreesToRadians(Theta));
 
     mDirection = QVector3D(x, y, z);
 }
 
-void Canavar::Engine::DirectionalLight::ToJson(QJsonObject &object)
+void Canavar::Engine::DirectionalLight::ToJson(QJsonObject &Object)
 {
-    Light::ToJson(object);
+    Light::ToJson(Object);
 
-    QJsonObject direction;
-    direction.insert("x", mDirection.x());
-    direction.insert("y", mDirection.y());
-    direction.insert("z", mDirection.z());
-    object.insert("direction", direction);
+    QJsonObject Direction;
+    Direction.insert("x", mDirection.x());
+    Direction.insert("y", mDirection.y());
+    Direction.insert("z", mDirection.z());
+    Object.insert("direction", Direction);
 
-    object.insert("radience", mRadiance);
+    Object.insert("radiance", mRadiance);
 }
 
-void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::DirectionalLight::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    Light::FromJson(object, nodes);
+    Light::FromJson(Object, Nodes);
 
-    QJsonObject defaultDirection;
-    defaultDirection.insert("x", 0);
-    defaultDirection.insert("y", 1);
-    defaultDirection.insert("z", 0);
+    QJsonObject DefaultDirection;
+    DefaultDirection.insert("x", 0);
+    DefaultDirection.insert("y", 1);
+    DefaultDirection.insert("z", 0);
 
-    QJsonObject direction = object["direction"].toObject(defaultDirection);
-    float x = direction["x"].toDouble();
-    float y = direction["y"].toDouble();
-    float z = direction["z"].toDouble();
+    QJsonObject Direction = Object["direction"].toObject(DefaultDirection);
+    float x = Direction["x"].toDouble();
+    float y = Direction["y"].toDouble();
+    float z = Direction["z"].toDouble();
 
     mDirection = QVector3D(x, y, z);
 
-    mRadiance = object["radiance"].toDouble(5.0);
+    mRadiance = Object["radiance"].toDouble(5.0);
 }

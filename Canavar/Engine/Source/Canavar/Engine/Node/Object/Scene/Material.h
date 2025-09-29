@@ -28,10 +28,10 @@ namespace Canavar::Engine
         Material();
         ~Material();
 
-        bool LoadTextureFromPath(TextureType type, const QString &path, int components);
-        bool LoadTextureFromImage(TextureType type, const QImage &image, int components);
+        bool LoadTextureFromPath(TextureType Type, const QString &Path, int Components);
+        bool LoadTextureFromImage(TextureType Type, const QImage &Image, int Components);
 
-        GLuint GetTexture(TextureType type);
+        GLuint GetTexture(TextureType Type) const;
 
         bool HasTextureBaseColor() const;
         bool HasTextureMetallic() const;

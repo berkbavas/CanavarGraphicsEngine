@@ -16,9 +16,9 @@ void Canavar::Engine::Scene::Destroy()
     }
 }
 
-void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader, RenderPass renderPass)
+void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader, RenderPass RenderPass)
 {
-    mRootNode->Render(pModel, pShader, renderPass, mRootNode->GetTransformation());
+    mRootNode->Render(pModel, pShader, RenderPass, mRootNode->GetTransformation());
 }
 
 void Canavar::Engine::Scene::AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List)
@@ -36,12 +36,12 @@ void Canavar::Engine::Scene::AddMaterial(MaterialPtr pMaterial)
     mMaterials.push_back(pMaterial);
 }
 
-Canavar::Engine::MeshPtr Canavar::Engine::Scene::GetMesh(int index)
+Canavar::Engine::MeshPtr Canavar::Engine::Scene::GetMesh(int Index)
 {
-    return mMeshes[index];
+    return mMeshes[Index];
 }
 
-Canavar::Engine::MaterialPtr Canavar::Engine::Scene::GetMaterial(int index)
+Canavar::Engine::MaterialPtr Canavar::Engine::Scene::GetMaterial(int Index)
 {
-    return mMaterials[index];
+    return mMaterials[Index];
 }

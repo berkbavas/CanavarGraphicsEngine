@@ -34,9 +34,9 @@ void Canavar::Engine::Widget::initializeGL()
     emit Initialize();
 }
 
-void Canavar::Engine::Widget::resizeGL(int width, int height)
+void Canavar::Engine::Widget::resizeGL(int Width, int Height)
 {
-    emit Resize(width, height);
+    emit Resize(Width, Height);
 }
 
 void Canavar::Engine::Widget::paintGL()

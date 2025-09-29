@@ -11,19 +11,19 @@ void Canavar::Engine::CameraManager::Initialize()
     LOG_DEBUG("CameraManager::Initialize: Initialization is done.");
 }
 
-void Canavar::Engine::CameraManager::Resize(int w, int h)
+void Canavar::Engine::CameraManager::Resize(int Width, int Height)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->Resize(w, h);
+        mActiveCamera->Resize(Width, Height);
     }
 }
 
-void Canavar::Engine::CameraManager::SetDevicePixelRatio(float dpr)
+void Canavar::Engine::CameraManager::SetDevicePixelRatio(float Ratio)
 {
     if (mActiveCamera)
     {
-        mActiveCamera->SetDevicePixelRatio(dpr);
+        mActiveCamera->SetDevicePixelRatio(Ratio);
     }
 }
 
@@ -61,60 +61,60 @@ Canavar::Engine::PerspectiveCamera* Canavar::Engine::CameraManager::GetActiveCam
     return dynamic_cast<PerspectiveCamera*>(mActiveCamera.get());
 }
 
-bool Canavar::Engine::CameraManager::KeyPressed(QKeyEvent* event)
+bool Canavar::Engine::CameraManager::KeyPressed(QKeyEvent* pEvent)
 {
     if (mActiveCamera)
     {
-        return mActiveCamera->KeyPressed(event);
+        return mActiveCamera->KeyPressed(pEvent);
     }
 
     return false;
 }
 
-bool Canavar::Engine::CameraManager::KeyReleased(QKeyEvent* event)
+bool Canavar::Engine::CameraManager::KeyReleased(QKeyEvent* pEvent)
 {
     if (mActiveCamera)
     {
-        return mActiveCamera->KeyReleased(event);
+        return mActiveCamera->KeyReleased(pEvent);
     }
 
     return false;
 }
 
-bool Canavar::Engine::CameraManager::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::CameraManager::MousePressed(QMouseEvent* pEvent)
 {
     if (mActiveCamera)
     {
-        return mActiveCamera->MousePressed(event);
+        return mActiveCamera->MousePressed(pEvent);
     }
 
     return false;
 }
 
-bool Canavar::Engine::CameraManager::MouseReleased(QMouseEvent* event)
+bool Canavar::Engine::CameraManager::MouseReleased(QMouseEvent* pEvent)
 {
     if (mActiveCamera)
     {
-        return mActiveCamera->MouseReleased(event);
+        return mActiveCamera->MouseReleased(pEvent);
     }
 
     return false;
 }
 
-bool Canavar::Engine::CameraManager::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::CameraManager::MouseMoved(QMouseEvent* pEvent)
 {
     if (mActiveCamera)
     {
-        return mActiveCamera->MouseMoved(event);
+        return mActiveCamera->MouseMoved(pEvent);
     }
     return false;
 }
 
-bool Canavar::Engine::CameraManager::WheelMoved(QWheelEvent* event)
+bool Canavar::Engine::CameraManager::WheelMoved(QWheelEvent* pEvent)
 {
     if (mActiveCamera)
     {
-        return mActiveCamera->WheelMoved(event);
+        return mActiveCamera->WheelMoved(pEvent);
     }
 
     return false;

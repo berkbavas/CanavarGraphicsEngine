@@ -12,7 +12,7 @@ namespace Canavar::Engine
         DISABLE_COPY(ShadowMappingFramebuffer);
 
       public:
-        ShadowMappingFramebuffer(int width, int height);
+        ShadowMappingFramebuffer(int Width, int Height);
         ~ShadowMappingFramebuffer();
 
         void Bind();

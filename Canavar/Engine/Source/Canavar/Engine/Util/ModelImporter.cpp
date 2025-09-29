@@ -5,51 +5,51 @@
 
 #include <QDir>
 
-std::map<std::string, Canavar::Engine::ScenePtr> Canavar::Engine::ModelImporter::Import(const QString& directory, const QStringList& formats)
+std::map<std::string, Canavar::Engine::ScenePtr> Canavar::Engine::ModelImporter::Import(const QString& Directory, const QStringList& Formats)
 {
-    qInfo() << "Loading and models at" << directory << "whose extensions are" << formats;
+    qInfo() << "Loading and models at" << Directory << "whose extensions are" << Formats;
 
-    std::map<std::string, ScenePtr> result;
+    std::map<std::string, ScenePtr> Result;
 
-    QDir dir(directory);
-    QStringList dirs = dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
+    QDir Dir(Directory);
+    QStringList Dirs = Dir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
 
-    qInfo() << "All directories are: " << dirs;
+    qInfo() << "All directories are: " << Dirs;
 
-    for (const auto& dirName : dirs)
+    for (const auto& DirName : Dirs)
     {
-        QDir childDir(dir.path() + "/" + dirName);
-        childDir.setNameFilters(formats);
-        QStringList files = childDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+        QDir ChildDir(Dir.path() + "/" + DirName);
+        ChildDir.setNameFilters(Formats);
+        QStringList Files = ChildDir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
-        for (const auto& file : files)
+        for (const auto& File : Files)
         {
-            QString path = childDir.path() + "/" + file;
-            ScenePtr pScene = Import(dirName, path);
+            QString Path = ChildDir.path() + "/" + File;
+            ScenePtr pScene = Import(DirName, Path);
 
             if (pScene)
             {
-                result.insert(std::make_pair(pScene->GetSceneName(), pScene));
+                Result.insert(std::make_pair(pScene->GetSceneName(), pScene));
             }
             else
             {
-                qWarning() << "Model" << dirName << "at" << path << "could not be loaded.";
+                qWarning() << "Model" << DirName << "at" << Path << "could not be loaded.";
             }
         }
     }
 
-    qInfo() << "All models are loaded at" << directory;
+    qInfo() << "All models are loaded at" << Directory;
 
-    return result;
+    return Result;
 }
 
-Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& sceneName, const QString& fullpath)
+Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& SceneName, const QString& Fullpath)
 {
-    LOG_DEBUG("Importer::Import: Loading model: {}", fullpath.toStdString());
+    LOG_DEBUG("Importer::Import: Loading model: {}", Fullpath.toStdString());
 
-    Assimp::Importer importer;
+    Assimp::Importer Importer;
 
-    const aiScene* aiScene = importer.ReadFile(fullpath.toStdString(),
+    const aiScene* aiScene = Importer.ReadFile(Fullpath.toStdString(),
                                                aiProcess_Triangulate |          //
                                                    aiProcess_GenSmoothNormals | //
                                                    aiProcess_FlipUVs |          //
@@ -57,33 +57,33 @@ Canavar::Engine::ScenePtr Canavar::Engine::ModelImporter::Import(const QString& 
                                                    aiProcess_GenBoundingBoxes);
     if (aiScene == nullptr)
     {
-        LOG_FATAL("Importer::Import: scene is nullptr. Error: {}", importer.GetErrorString());
+        LOG_FATAL("Importer::Import: scene is nullptr. Error: {}", Importer.GetErrorString());
         return nullptr;
     }
 
     if (aiScene->mFlags & AI_SCENE_FLAGS_INCOMPLETE)
     {
-        LOG_FATAL("Importer::Import: AI_SCENE_FLAGS_INCOMPLETE is true. Error: {}", importer.GetErrorString());
+        LOG_FATAL("Importer::Import: AI_SCENE_FLAGS_INCOMPLETE is true. Error: {}", Importer.GetErrorString());
         return nullptr;
     }
 
     if (aiScene->mRootNode == nullptr)
     {
-        LOG_FATAL("Importer::Import: scene->mRootNode is nullptr. Error: {}", importer.GetErrorString());
+        LOG_FATAL("Importer::Import: scene->mRootNode is nullptr. Error: {}", Importer.GetErrorString());
         return nullptr;
     }
 
-    const int lastIndexOf = fullpath.lastIndexOf("/");
-    const QString directory = fullpath.left(lastIndexOf);
-    const QString filename = fullpath.right(lastIndexOf);
+    const int LastIndexOf = Fullpath.lastIndexOf("/");
+    const QString Directory = Fullpath.left(LastIndexOf);
+    const QString Filename = Fullpath.right(LastIndexOf);
 
     ScenePtr pScene = std::make_shared<Scene>();
-    pScene->SetSceneName(sceneName.toStdString());
+    pScene->SetSceneName(SceneName.toStdString());
 
     // Materials
     for (unsigned int i = 0; i < aiScene->mNumMaterials; ++i)
     {
-        MaterialPtr pMaterial = ProcessMaterial(aiScene, aiScene->mMaterials[i], directory);
+        MaterialPtr pMaterial = ProcessMaterial(aiScene, aiScene->mMaterials[i], Directory);
         pScene->AddMaterial(pMaterial);
     }
 
@@ -135,39 +135,39 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
 {
     MeshPtr pMesh = std::make_shared<Mesh>();
 
-    Vertex vertex;
+    Vertex Vertex;
 
     for (unsigned int i = 0; i < aiMesh->mNumVertices; i++)
     {
-        vertex.Position.setX(aiMesh->mVertices[i].x);
-        vertex.Position.setY(aiMesh->mVertices[i].y);
-        vertex.Position.setZ(aiMesh->mVertices[i].z);
+        Vertex.Position.setX(aiMesh->mVertices[i].x);
+        Vertex.Position.setY(aiMesh->mVertices[i].y);
+        Vertex.Position.setZ(aiMesh->mVertices[i].z);
 
         if (aiMesh->HasNormals())
         {
-            vertex.Normal.setX(aiMesh->mNormals[i].x);
-            vertex.Normal.setY(aiMesh->mNormals[i].y);
-            vertex.Normal.setZ(aiMesh->mNormals[i].z);
+            Vertex.Normal.setX(aiMesh->mNormals[i].x);
+            Vertex.Normal.setY(aiMesh->mNormals[i].y);
+            Vertex.Normal.setZ(aiMesh->mNormals[i].z);
         }
 
         if (aiMesh->mTextureCoords[0])
         {
-            vertex.Texture.setX(aiMesh->mTextureCoords[0][i].x);
-            vertex.Texture.setY(aiMesh->mTextureCoords[0][i].y);
+            Vertex.Texture.setX(aiMesh->mTextureCoords[0][i].x);
+            Vertex.Texture.setY(aiMesh->mTextureCoords[0][i].y);
         }
 
         if (aiMesh->HasTangentsAndBitangents())
         {
-            vertex.Tangent.setX(aiMesh->mTangents[i].x);
-            vertex.Tangent.setY(aiMesh->mTangents[i].y);
-            vertex.Tangent.setZ(aiMesh->mTangents[i].z);
+            Vertex.Tangent.setX(aiMesh->mTangents[i].x);
+            Vertex.Tangent.setY(aiMesh->mTangents[i].y);
+            Vertex.Tangent.setZ(aiMesh->mTangents[i].z);
 
-            vertex.Bitangent.setX(aiMesh->mBitangents[i].x);
-            vertex.Bitangent.setY(aiMesh->mBitangents[i].y);
-            vertex.Bitangent.setZ(aiMesh->mBitangents[i].z);
+            Vertex.Bitangent.setX(aiMesh->mBitangents[i].x);
+            Vertex.Bitangent.setY(aiMesh->mBitangents[i].y);
+            Vertex.Bitangent.setZ(aiMesh->mBitangents[i].z);
         }
 
-        pMesh->AddVertex(vertex);
+        pMesh->AddVertex(Vertex);
     }
 
     for (unsigned int i = 0; i < aiMesh->mNumFaces; i++)
@@ -182,27 +182,27 @@ Canavar::Engine::MeshPtr Canavar::Engine::ModelImporter::ProcessMesh(aiMesh* aiM
 
     pMesh->SetMeshName(aiMesh->mName.C_Str());
 
-    const auto min = aiMesh->mAABB.mMin;
-    const auto max = aiMesh->mAABB.mMax;
-    pMesh->SetAABB(AABB{ QVector3D(min.x, min.y, min.z), QVector3D(max.x, max.y, max.z) });
+    const auto Min = aiMesh->mAABB.mMin;
+    const auto Max = aiMesh->mAABB.mMax;
+    pMesh->SetAABB(AABB{ QVector3D(Min.x, Min.y, Min.z), QVector3D(Max.x, Max.y, Max.z) });
 
     return pMesh;
 }
 
-Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& directory)
+Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& Directory)
 {
     MaterialPtr pMaterial = std::make_shared<Material>();
 
-    std::map<const char*, bool> results;
-    results["aiTextureType_BASE_COLOR"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, directory, 4);
-    results["aiTextureType_METALNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, directory, 1);
-    results["aiTextureType_DIFFUSE_ROUGHNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, directory, 1);
-    results["aiTextureType_AMBIENT_OCCLUSION"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, directory, 1);
-    results["aiTextureType_NORMALS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, directory, 4);
+    std::map<const char*, bool> Results;
+    Results["aiTextureType_BASE_COLOR"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_BASE_COLOR, TextureType::BaseColor, Directory, 4);
+    Results["aiTextureType_METALNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_METALNESS, TextureType::Metallic, Directory, 1);
+    Results["aiTextureType_DIFFUSE_ROUGHNESS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_DIFFUSE_ROUGHNESS, TextureType::Roughness, Directory, 1);
+    Results["aiTextureType_AMBIENT_OCCLUSION"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_AMBIENT_OCCLUSION, TextureType::AmbientOcclusion, Directory, 1);
+    Results["aiTextureType_NORMALS"] = ProcessTexture(pScene, pMaterial, aiMaterial, aiTextureType_NORMALS, TextureType::Normal, Directory, 4);
 
-    for (const auto [textureType, result] : results)
+    for (const auto [TextureType, Result] : Results)
     {
-        qDebug() << "ModelImporter::ProcessMaterial:" << textureType << ":" << result;
+        qDebug() << "ModelImporter::ProcessMaterial:" << TextureType << ":" << Result;
     }
 
     // Process opacity
@@ -244,26 +244,26 @@ Canavar::Engine::MaterialPtr Canavar::Engine::ModelImporter::ProcessMaterial(con
     return pMaterial;
 }
 
-bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType type, const QString& directory, int components)
+bool Canavar::Engine::ModelImporter::ProcessTexture(const aiScene* pScene, MaterialPtr pMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType Type, const QString& Directory, int components)
 {
     for (int i = 0; i < aiMaterial->GetTextureCount(aiType); i++)
     {
-        aiString str;
-        aiMaterial->GetTexture(aiType, i, &str);
+        aiString Str;
+        aiMaterial->GetTexture(aiType, i, &Str);
 
-        if (const auto* pTexture = pScene->GetEmbeddedTexture(str.C_Str()))
+        if (const auto* pTexture = pScene->GetEmbeddedTexture(Str.C_Str()))
         {
-            LOG_DEBUG("ModelImporter::ProcessTexture: Loading embedded texture for {}", str.C_Str());
-            QImage image(reinterpret_cast<uchar*>(pTexture->pcData), pTexture->mWidth, pTexture->mHeight, QImage::Format_RGBA8888);
-            return pMaterial->LoadTextureFromImage(type, image, components);
+            LOG_DEBUG("ModelImporter::ProcessTexture: Loading embedded texture for {}", Str.C_Str());
+            QImage Image(reinterpret_cast<uchar*>(pTexture->pcData), pTexture->mWidth, pTexture->mHeight, QImage::Format_RGBA8888);
+            return pMaterial->LoadTextureFromImage(Type, Image, components);
         }
         else
         {
-            QString filename(str.C_Str());
-            QString path = directory + "/" + filename;
+            QString Filename(Str.C_Str());
+            QString Path = Directory + "/" + Filename;
 
-            LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", path.toStdString());
-            return pMaterial->LoadTextureFromPath(type, path, components);
+            LOG_DEBUG("ModelImporter::ProcessTexture: Loading texture for {}", Path.toStdString());
+            return pMaterial->LoadTextureFromPath(Type, Path, components);
         }
     }
 
@@ -283,16 +283,16 @@ QMatrix4x4 Canavar::Engine::ModelImporter::ToQMatrix4x4(const aiMatrix4x4& aiMat
     return QMatrix4x4(aiMatrix[0]);
 }
 
-QOpenGLTexture* Canavar::Engine::ModelImporter::CreateTexture(const QString& path)
+QOpenGLTexture* Canavar::Engine::ModelImporter::CreateTexture(const QString& Path)
 {
-    QImage image(path);
+    QImage Image(Path);
 
-    if (image.isNull())
+    if (Image.isNull())
     {
-        CGE_EXIT_FAILURE("ModelImporter::CreateTexture: Image at '{}' is null.", path.toStdString());
+        CGE_EXIT_FAILURE("ModelImporter::CreateTexture: Image at '{}' is null.", Path.toStdString());
     }
 
-    QOpenGLTexture* pTexture = new QOpenGLTexture(image, QOpenGLTexture::GenerateMipMaps);
+    QOpenGLTexture* pTexture = new QOpenGLTexture(Image, QOpenGLTexture::GenerateMipMaps);
     pTexture->setWrapMode(QOpenGLTexture::WrapMode::Repeat);
     pTexture->setMinMagFilters(QOpenGLTexture::Filter::LinearMipMapLinear, QOpenGLTexture::Filter::Linear);
 

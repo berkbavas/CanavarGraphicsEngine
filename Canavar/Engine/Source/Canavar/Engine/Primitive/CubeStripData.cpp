@@ -1,6 +1,6 @@
-#include "CubeStrip.h"
+#include "CubeStripData.h"
 
-Canavar::Engine::CubeStrip::CubeStrip()
+Canavar::Engine::CubeStripData::CubeStripData()
 {
     static constexpr QVector3D CUBE_STRIP[] = {
         QVector3D(-0.5f, -0.5f, -0.5f), //
@@ -23,7 +23,6 @@ Canavar::Engine::CubeStrip::CubeStrip()
     };
 
     initializeOpenGLFunctions();
-
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
 
@@ -37,7 +36,13 @@ Canavar::Engine::CubeStrip::CubeStrip()
     glBindVertexArray(0);
 }
 
-void Canavar::Engine::CubeStrip::Render()
+Canavar::Engine::CubeStripData::~CubeStripData()
+{
+    glDeleteVertexArrays(1, &mVAO);
+    glDeleteBuffers(1, &mVBO);
+}
+
+void Canavar::Engine::CubeStripData::Render()
 {
     glBindVertexArray(mVAO);
     glDrawArrays(GL_LINE_STRIP, 0, 17);

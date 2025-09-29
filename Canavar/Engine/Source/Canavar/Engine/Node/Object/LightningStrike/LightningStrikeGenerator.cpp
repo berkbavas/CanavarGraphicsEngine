@@ -19,34 +19,34 @@ void Canavar::Engine::LightningStrikeGenerator::AddAttractor(LightningStrikeAttr
     mAttractors << pAttractor;
 }
 
-void Canavar::Engine::LightningStrikeGenerator::ToJson(QJsonObject &object)
+void Canavar::Engine::LightningStrikeGenerator::ToJson(QJsonObject &Object)
 {
-    LightningStrikeBase::ToJson(object);
+    LightningStrikeBase::ToJson(Object);
 
-    QJsonArray attractors;
+    QJsonArray Attractors;
 
     for (const auto &pAttractor : mAttractors)
     {
-        attractors.append(QString::fromStdString(pAttractor->GetUuid()));
+        Attractors.append(QString::fromStdString(pAttractor->GetUuid()));
     }
 
-    object.insert("attractors", attractors);
+    Object.insert("attractors", Attractors);
 }
 
-void Canavar::Engine::LightningStrikeGenerator::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::LightningStrikeGenerator::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    LightningStrikeBase::FromJson(object, nodes);
+    LightningStrikeBase::FromJson(Object, Nodes);
 
-    QJsonArray attractors = object["attractors"].toArray();
+    QJsonArray Attractors = Object["attractors"].toArray();
 
-    if (attractors.isEmpty())
+    if (Attractors.isEmpty())
     {
         return;
     }
 
-    for (const auto &uuid : attractors)
+    for (const auto &uuid : Attractors)
     {
-        for (const auto pNode : nodes)
+        for (const auto pNode : Nodes)
         {
             if (uuid == QString::fromStdString(pNode->GetUuid()))
             {

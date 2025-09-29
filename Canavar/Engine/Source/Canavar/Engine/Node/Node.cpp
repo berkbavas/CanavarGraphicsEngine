@@ -22,17 +22,17 @@ const std::string &Canavar::Engine::Node::GetNodeIdString()
     return mNodeIdString;
 }
 
-void Canavar::Engine::Node::ToJson(QJsonObject &object)
+void Canavar::Engine::Node::ToJson(QJsonObject &Object)
 {
-    object.insert("node_name", QString::fromStdString(mNodeName));
-    object.insert("uuid", QString::fromStdString(mUuid));
-    object.insert("node_type_name", QString::fromStdString(GetNodeTypeName()));
+    Object.insert("node_name", QString::fromStdString(mNodeName));
+    Object.insert("uuid", QString::fromStdString(mUuid));
+    Object.insert("node_type_name", QString::fromStdString(GetNodeTypeName()));
 }
 
-void Canavar::Engine::Node::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::Node::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    mNodeName = object["node_name"].toString().toStdString();
-    mUuid = object["uuid"].toString().toStdString();
+    mNodeName = Object["node_name"].toString().toStdString();
+    mUuid = Object["uuid"].toString().toStdString();
 }
 
 void Canavar::Engine::Node::RemoveParent()
@@ -47,12 +47,12 @@ void Canavar::Engine::Node::SetParent(NodeWeakPtr pNewParent)
     const auto pCurrentParentLocked = mParent.lock();
     const auto pNewParentLocked = pNewParent.lock();
 
-    QVector3D worldPos;
+    QVector3D WorldPosition;
     Object *pThisObject = nullptr;
 
     if (pThisObject = dynamic_cast<Object *>(this))
     {
-        worldPos = pThisObject->GetWorldPosition();
+        WorldPosition = pThisObject->GetWorldPosition();
     }
 
     if (pCurrentParentLocked == nullptr)
@@ -92,7 +92,7 @@ void Canavar::Engine::Node::SetParent(NodeWeakPtr pNewParent)
 
     if (pThisObject)
     {
-        pThisObject->SetWorldPosition(worldPos);
+        pThisObject->SetWorldPosition(WorldPosition);
     }
 
     LOG_DEBUG("Object::SetParent: < Parent has been set. I am done.");

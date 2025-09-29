@@ -13,12 +13,12 @@ void main()
     gl_Position = vec4(aPos, 0.0, 1.0);
 
     // clip -> eye -> world, build world-space view ray direction
-    vec4 clip = vec4(aPos, 0.0, 1.0);
-    vec4 eye = uInvProjectionMatrix * clip;
-    eye.z = -1.0; // forward
-    eye.w = 0.0;  // vector
-    vec4 world = uInvViewMatrix * eye;
-    world.y += uHorizonOffset;
+    vec4 Clip = vec4(aPos, 0.0, 1.0);
+    vec4 Eye = uInvProjectionMatrix * Clip;
+    Eye.z = -1.0; // forward
+    Eye.w = 0.0;  // vector
+    vec4 World = uInvViewMatrix * Eye;
+    World.y += uHorizonOffset;
 
-    vViewDir = normalize(world.xyz);
+    vViewDir = normalize(World.xyz);
 }

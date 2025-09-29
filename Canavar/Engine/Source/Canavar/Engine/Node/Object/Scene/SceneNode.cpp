@@ -48,66 +48,66 @@ void Canavar::Engine::SceneNode::AddChild(SceneNodePtr pChild)
 Canavar::Engine::AABB Canavar::Engine::SceneNode::CalculateAABB(const QMatrix4x4 &ParentTransformation) const
 {
     // AABB
-    float minX = std::numeric_limits<float>::infinity();
-    float minY = std::numeric_limits<float>::infinity();
-    float minZ = std::numeric_limits<float>::infinity();
+    float MinXValue = std::numeric_limits<float>::infinity();
+    float MinYValue = std::numeric_limits<float>::infinity();
+    float MinZValue = std::numeric_limits<float>::infinity();
 
-    float maxX = -std::numeric_limits<float>::infinity();
-    float maxY = -std::numeric_limits<float>::infinity();
-    float maxZ = -std::numeric_limits<float>::infinity();
+    float MaxXValue = -std::numeric_limits<float>::infinity();
+    float MaxYValue = -std::numeric_limits<float>::infinity();
+    float MaxZValue = -std::numeric_limits<float>::infinity();
 
     const auto &WorldTransformation = ParentTransformation * mTransformation;
 
     for (const auto &pMesh : mMeshes)
     {
-        const auto aabb = pMesh->GetAABB().Transform(WorldTransformation);
-        const auto min = aabb.GetMin();
-        const auto max = aabb.GetMax();
+        const auto AABB = pMesh->GetAABB().Transform(WorldTransformation);
+        const auto Min = AABB.GetMin();
+        const auto Max = AABB.GetMax();
 
-        if (minX > min.x())
-            minX = min.x();
+        if (MinXValue > Min.x())
+            MinXValue = Min.x();
 
-        if (minY > min.y())
-            minY = min.y();
+        if (MinYValue > Min.y())
+            MinYValue = Min.y();
 
-        if (minZ > min.z())
-            minZ = min.z();
+        if (MinZValue > Min.z())
+            MinZValue = Min.z();
 
-        if (maxX < max.x())
-            maxX = max.x();
+        if (MaxXValue < Max.x())
+            MaxXValue = Max.x();
 
-        if (maxY < max.y())
-            maxY = max.y();
+        if (MaxYValue < Max.y())
+            MaxYValue = Max.y();
 
-        if (maxZ < max.z())
-            maxZ = max.z();
+        if (MaxZValue < Max.z())
+            MaxZValue = Max.z();
     }
 
     for (const auto &pChild : mChildren)
     {
-        const auto aabb = pChild->CalculateAABB(WorldTransformation);
+        const auto AABB = pChild->CalculateAABB(WorldTransformation);
 
-        const auto min = aabb.GetMin();
-        const auto max = aabb.GetMax();
+        const auto Min = AABB.GetMin();
+        const auto Max = AABB.GetMax();
 
-        if (minX > min.x())
-            minX = min.x();
+        if (MinXValue > Min.x())
+            MinXValue = Min.x();
 
-        if (minY > min.y())
-            minY = min.y();
+        if (MinYValue > Min.y())
+            MinYValue = Min.y();
 
-        if (minZ > min.z())
-            minZ = min.z();
+        if (MinZValue > Min.z())
+            MinZValue = Min.z();
 
-        if (maxX < max.x())
-            maxX = max.x();
+        if (MaxXValue < Max.x())
+            MaxXValue = Max.x();
 
-        if (maxY < max.y())
-            maxY = max.y();
+        if (MaxYValue < Max.y())
+            MaxYValue = Max.y();
 
-        if (maxZ < max.z())
-            maxZ = max.z();
+        if (MaxZValue < Max.z())
+            MaxZValue = Max.z();
     }
 
-    return AABB{ QVector3D(minX, minY, minZ), QVector3D(maxX, maxY, maxZ) };
+    return AABB{ QVector3D(MinXValue, MinYValue, MinZValue), QVector3D(MaxXValue, MaxYValue, MaxZValue) };
 }

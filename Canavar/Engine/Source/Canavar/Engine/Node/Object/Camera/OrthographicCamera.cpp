@@ -1,12 +1,12 @@
 #include "OrthographicCamera.h"
 
-bool Canavar::Engine::OrthographicCamera::MousePressed(QMouseEvent* event)
+bool Canavar::Engine::OrthographicCamera::MousePressed(QMouseEvent* pEvent)
 {
-    mMouse.X = event->position().x();
-    mMouse.Y = event->position().y();
+    mMouse.X = pEvent->position().x();
+    mMouse.Y = pEvent->position().y();
     mMouse.DX = 0;
     mMouse.DY = 0;
-    mMouse.Button = event->button();
+    mMouse.Button = pEvent->button();
     return true;
 }
 
@@ -16,15 +16,15 @@ bool Canavar::Engine::OrthographicCamera::MouseReleased(QMouseEvent*)
     return true;
 }
 
-bool Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* event)
+bool Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* pEvent)
 {
     if (mMouse.Button == mActionReceiveButton)
     {
-        mMouse.DX += mMouse.X - event->pos().x();
-        mMouse.DY += mMouse.Y - event->pos().y();
+        mMouse.DX += mMouse.X - pEvent->pos().x();
+        mMouse.DY += mMouse.Y - pEvent->pos().y();
 
-        mMouse.X = event->pos().x();
-        mMouse.Y = event->pos().y();
+        mMouse.X = pEvent->pos().x();
+        mMouse.Y = pEvent->pos().y();
 
         mLeft += mDevicePixelRatio * mZoom * mMouse.DX;
         mTop += mDevicePixelRatio * mZoom * mMouse.DY;
@@ -36,21 +36,21 @@ bool Canavar::Engine::OrthographicCamera::MouseMoved(QMouseEvent* event)
     return false;
 }
 
-bool Canavar::Engine::OrthographicCamera::WheelMoved(QWheelEvent* event)
+bool Canavar::Engine::OrthographicCamera::WheelMoved(QWheelEvent* pEvent)
 {
-    QPointF cursorWorldPosition = CameraToWorld(event->position());
+    QPointF CursorWorldPosition = CameraToWorld(pEvent->position());
 
-    if (event->angleDelta().y() < 0)
+    if (pEvent->angleDelta().y() < 0)
         mZoom = 1.1f * mZoom;
     else
         mZoom = mZoom / 1.1f;
 
     mZoom = qMax(0.001f, qMin(10.0f, mZoom));
 
-    QPointF newWorldPosition = CameraToWorld(event->position());
-    QPointF delta = cursorWorldPosition - newWorldPosition;
-    mLeft += delta.x();
-    mTop += delta.y();
+    QPointF NewWorldPosition = CameraToWorld(pEvent->position());
+    QPointF Delta = CursorWorldPosition - NewWorldPosition;
+    mLeft += Delta.x();
+    mTop += Delta.y();
 
     return true;
 }
@@ -124,22 +124,22 @@ QPointF Canavar::Engine::OrthographicCamera::WorldToCamera(const QPointF& world)
     return WorldToCamera(world.x(), world.y()).toPointF();
 }
 
-float Canavar::Engine::OrthographicCamera::WorldDistanceToCameraDistance(float distance)
+float Canavar::Engine::OrthographicCamera::WorldDistanceToCameraDistance(float Distance)
 {
-    const auto origin = WorldToCamera(QPointF(0, 0));
-    const auto vector = WorldToCamera(QPointF(0, distance));
-    const auto delta = vector - origin;
+    const auto Origin = WorldToCamera(QPointF(0, 0));
+    const auto Vector = WorldToCamera(QPointF(0, Distance));
+    const auto Delta = Vector - Origin;
 
-    return std::sqrt(delta.x() * delta.x() + delta.y() * delta.y());
+    return std::sqrt(Delta.x() * Delta.x() + Delta.y() * Delta.y());
 }
 
-float Canavar::Engine::OrthographicCamera::CameraDistanceToWorldDistance(float distance)
+float Canavar::Engine::OrthographicCamera::CameraDistanceToWorldDistance(float Distance)
 {
-    const auto origin = CameraToWorld(QPointF(0, 0));
-    const auto vector = CameraToWorld(QPointF(0, distance));
-    const auto delta = vector - origin;
+    const auto Origin = CameraToWorld(QPointF(0, 0));
+    const auto Vector = CameraToWorld(QPointF(0, Distance));
+    const auto Delta = Vector - Origin;
 
-    return std::sqrt(delta.x() * delta.x() + delta.y() * delta.y());
+    return std::sqrt(Delta.x() * Delta.x() + Delta.y() * Delta.y());
 }
 
 void Canavar::Engine::OrthographicCamera::Reset()

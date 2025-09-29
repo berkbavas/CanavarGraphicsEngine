@@ -2,26 +2,26 @@
 
 #include "Canavar/Engine/Node/NodeVisitor.h"
 
-void Canavar::Engine::Text3D::ToJson(QJsonObject &object)
+void Canavar::Engine::Text3D::ToJson(QJsonObject &Object)
 {
-    Object::ToJson(object);
+    Object::ToJson(Object);
 
-    QJsonObject color;
-    color.insert("r", mColor.x());
-    color.insert("g", mColor.y());
-    color.insert("b", mColor.z());
-    object.insert("color", color);
+    QJsonObject Color;
+    Color.insert("r", mColor.x());
+    Color.insert("g", mColor.y());
+    Color.insert("b", mColor.z());
+    Object.insert("color", Color);
 
-    object.insert("text", mText);
+    Object.insert("text", mText);
 }
 
-void Canavar::Engine::Text3D::FromJson(const QJsonObject &object, const QSet<NodePtr> &nodes)
+void Canavar::Engine::Text3D::FromJson(const QJsonObject &Object, const QSet<NodePtr> &Nodes)
 {
-    Object::FromJson(object, nodes);
+    Object::FromJson(Object, Nodes);
 
-    mColor = QVector3D(object["color"].toObject().value("r").toDouble(), //
-                       object["color"].toObject().value("g").toDouble(), //
-                       object["color"].toObject().value("b").toDouble());
+    mColor = QVector3D(Object["color"].toObject().value("r").toDouble(), //
+                       Object["color"].toObject().value("g").toDouble(), //
+                       Object["color"].toObject().value("b").toDouble());
 
-    mText = object["text"].toString();
+    mText = Object["text"].toString();
 }

@@ -5,10 +5,10 @@
 #include <QDebug>
 #include <QFile>
 
-Canavar::Engine::Shader::Shader(ShaderType type, const QString& name)
+Canavar::Engine::Shader::Shader(ShaderType Type, const QString& Name)
     : mProgram(nullptr)
-    , mShaderType(type)
-    , mName(name)
+    , mShaderType(Type)
+    , mName(Name)
 {}
 
 void Canavar::Engine::Shader::Initialize()
@@ -19,18 +19,18 @@ void Canavar::Engine::Shader::Initialize()
 
     mProgram = new QOpenGLShaderProgram;
 
-    for (const auto& [shaderType, path] : mPaths)
+    for (const auto& [ShaderType, Path] : mPaths)
     {
-        const auto bytes = Util::GetBytes(path);
+        const auto Bytes = Util::GetBytes(Path);
 
-        if (bytes.size() == 0)
+        if (Bytes.size() == 0)
         {
-            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be found: '{}'", GetShaderTypeString(shaderType).toStdString(), mName.toStdString());
+            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be found: '{}'", GetShaderTypeString(ShaderType).toStdString(), mName.toStdString());
         }
 
-        if (!mProgram->addShaderFromSourceCode(shaderType, bytes))
+        if (!mProgram->addShaderFromSourceCode(ShaderType, Bytes))
         {
-            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be loaded: '{}'", GetShaderTypeString(shaderType).toStdString(), mName.toStdString());
+            CGE_EXIT_FAILURE("Shader::Initialize: '{}' could not be loaded: '{}'", GetShaderTypeString(ShaderType).toStdString(), mName.toStdString());
         }
     }
 
@@ -69,9 +69,9 @@ void Canavar::Engine::Shader::SetCallbackBeforeLinking(const Callback& callback)
     mCallback = callback;
 }
 
-void Canavar::Engine::Shader::AddPath(QOpenGLShader::ShaderTypeBit type, const QString& path)
+void Canavar::Engine::Shader::AddPath(QOpenGLShader::ShaderTypeBit Type, const QString& path)
 {
-    mPaths.emplace(type, path);
+    mPaths.emplace(Type, path);
 }
 
 QString Canavar::Engine::Shader::GetName() const
@@ -84,9 +84,9 @@ Canavar::Engine::ShaderType Canavar::Engine::Shader::GetShaderType() const
     return mShaderType;
 }
 
-QString Canavar::Engine::Shader::GetShaderTypeString(QOpenGLShader::ShaderTypeBit type)
+QString Canavar::Engine::Shader::GetShaderTypeString(QOpenGLShader::ShaderTypeBit Type)
 {
-    switch (type)
+    switch (Type)
     {
     case QOpenGLShader::Vertex:
         return "Vertex Shader";
@@ -105,9 +105,9 @@ QString Canavar::Engine::Shader::GetShaderTypeString(QOpenGLShader::ShaderTypeBi
     }
 }
 
-void Canavar::Engine::Shader::SetSampler(const QString& name, GLuint unit, GLuint textureId, GLuint target)
+void Canavar::Engine::Shader::SetSampler(const QString& Name, GLuint Unit, GLuint TextureId, GLuint Target)
 {
-    SetUniformValue(name, unit);
-    glActiveTexture(GL_TEXTURE0 + unit);
-    glBindTexture(target, textureId);
+    SetUniformValue(Name, Unit);
+    glActiveTexture(GL_TEXTURE0 + Unit);
+    glBindTexture(Target, TextureId);
 }
