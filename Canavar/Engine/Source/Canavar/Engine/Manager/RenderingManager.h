@@ -12,11 +12,12 @@
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
+#include "Canavar/Engine/Primitive/PlaneData.h"
 #include "Canavar/Engine/Primitive/PrimitiveMesh.h"
-#include "Canavar/Engine/Util/Macros.h"
 #include "Canavar/Engine/Primitive/QuadData.h"
 #include "Canavar/Engine/Primitive/SphereData.h"
 #include "Canavar/Engine/Primitive/TorusData.h"
+#include "Canavar/Engine/Util/Macros.h"
 
 #include <map>
 
@@ -117,6 +118,7 @@ namespace Canavar::Engine
         QuadDataPtr mQuadData{ nullptr };
         SphereDataPtr mSphereData{ nullptr };
         TorusDataPtr mTorusData{ nullptr };
+        PlaneDataPtr mPlaneData{ nullptr };
 
         std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;

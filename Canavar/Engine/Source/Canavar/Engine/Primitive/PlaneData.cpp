@@ -4,18 +4,6 @@
 
 Canavar::Engine::PlaneData::PlaneData()
 {
-    //               +y
-    //                |
-    //      (-1,1,0)  |   (1,1,0)
-    //          *-----|------*
-    //          |     |      |
-    //  -x <----|-----*------|----> +x
-    //          |     |      |
-    //          *-----|------*
-    //      (-1,-1,0) |   (1,-1,0)
-    //                |
-    //               -y
-
     struct Vertex
     {
         QVector3D Position;
@@ -23,15 +11,13 @@ Canavar::Engine::PlaneData::PlaneData()
     };
 
     constexpr Vertex VERTICES[6] = {
-        // First Triangle
-        { QVector3D(-1.0f, +1.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f) }, // Top Left
-        { QVector3D(-1.0f, -1.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f) }, // Bottom Left
-        { QVector3D(+1.0f, -1.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f) }, // Bottom Right
+        { QVector3D(-1.0f, 0.0f, -1.0f), QVector3D(0.0f, 1.0f, 0.0f) }, //
+        { QVector3D(1.0f, 0.0f, -1.0f), QVector3D(0.0f, 1.0f, 0.0f) },  //
+        { QVector3D(1.0f, 0.0f, 1.0f), QVector3D(0.0f, 1.0f, 0.0f) },   //
 
-        // Second Triangle
-        { QVector3D(-1.0f, +1.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f) }, // Top Left
-        { QVector3D(+1.0f, -1.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f) }, // Bottom Right
-        { QVector3D(+1.0f, +1.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f) }  // Top Right
+        { QVector3D(1.0f, 0.0f, 1.0f), QVector3D(0.0f, 1.0f, 0.0f) },   //
+        { QVector3D(-1.0f, 0.0f, 1.0f), QVector3D(0.0f, 1.0f, 0.0f) },  //
+        { QVector3D(-1.0f, 0.0f, -1.0f), QVector3D(0.0f, 1.0f, 0.0f) }, //
     };
 
     initializeOpenGLFunctions();
@@ -43,8 +29,11 @@ Canavar::Engine::PlaneData::PlaneData()
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(QVector4D), (void *) 0);
     glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, Position)));
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void *>(offsetof(Vertex, Normal)));
 
     glBindVertexArray(0);
 }

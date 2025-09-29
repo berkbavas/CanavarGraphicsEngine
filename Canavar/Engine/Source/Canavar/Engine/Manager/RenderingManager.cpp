@@ -33,6 +33,7 @@ void Canavar::Engine::RenderingManager::Initialize()
     mQuadData = std::make_shared<QuadData>();
     mSphereData = std::make_shared<SphereData>(1.0f, 72, 36);
     mTorusData = std::make_shared<TorusData>(1.0f, 0.025f, 72, 36);
+    mPlaneData = std::make_shared<PlaneData>();
 
     ResizeFramebuffers();
 }
@@ -350,6 +351,10 @@ void Canavar::Engine::RenderingManager::RenderPrimitiveMesh(PrimitiveMesh* pPrim
     else if (const auto* pTorus = dynamic_cast<Torus*>(pPrimitiveMesh))
     {
         mTorusData->Render();
+    }
+    else if (const auto* pPlane = dynamic_cast<Plane*>(pPrimitiveMesh))
+    {
+        mPlaneData->Render();
     }
 
     mBasicShader->Release();
