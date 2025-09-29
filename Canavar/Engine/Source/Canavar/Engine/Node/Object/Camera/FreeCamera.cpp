@@ -101,7 +101,7 @@ bool Canavar::Engine::FreeCamera::KeyPressed(QKeyEvent* pEvent)
 {
     mPressedKeys.insert((Qt::Key) pEvent->key(), true);
     mUpdatePosition = true;
-    return true;
+    return false;
 }
 
 bool Canavar::Engine::FreeCamera::KeyReleased(QKeyEvent* pEvent)

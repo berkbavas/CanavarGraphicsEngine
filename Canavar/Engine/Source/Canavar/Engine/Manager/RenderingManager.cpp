@@ -527,30 +527,30 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
 
 QVector3D Canavar::Engine::RenderingManager::FetchFragmentLocalPositionFromScreen(int x, int y)
 {
-    QVector3D position;
+    QVector3D Position;
     mFramebuffers[Singlesample]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT1);
-    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &Position);
     mFramebuffers[Singlesample]->release();
-    return position;
+    return Position;
 }
 
 QVector3D Canavar::Engine::RenderingManager::FetchFragmentWorldPositionFromScreen(int x, int y)
 {
-    QVector3D position;
+    QVector3D Position;
     mFramebuffers[Singlesample]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT2);
-    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &position);
+    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &Position);
     mFramebuffers[Singlesample]->release();
-    return position;
+    return Position;
 }
 
 Canavar::Engine::NodeInfo Canavar::Engine::RenderingManager::FetchNodeInfoFromScreenCoordinates(int x, int y)
 {
-    NodeInfo info;
+    NodeInfo NodeInfo;
     mFramebuffers[Singlesample]->bind();
     glReadBuffer(GL_COLOR_ATTACHMENT3);
-    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &info);
+    glReadPixels(x, mFramebuffers[Singlesample]->height() - y, 1, 1, GL_RGBA, GL_FLOAT, &NodeInfo);
     mFramebuffers[Singlesample]->release();
-    return info;
+    return NodeInfo;
 }

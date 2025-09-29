@@ -581,7 +581,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeInfo()
 {
     if (ImGui::CollapsingHeader("Node Information"))
     {
-        if (mNodeInfo.Success)
+        if (static_cast<bool>(mNodeInfo.Success))
         {
             if (const auto pNode = mNodeManager->FindNodeById(mNodeInfo.NodeId))
             {
@@ -757,7 +757,7 @@ bool Canavar::Engine::ImGuiWidget::MousePressed(QMouseEvent *pEvent)
         const int x = pEvent->position().x();
         const int y = pEvent->position().y();
         ProcessMouseAction(x, y);
-        if (mNodeInfo.Success)
+        if (static_cast<bool>(mNodeInfo.Success))
         {
             const auto pSelectedNode = mNodeManager->FindNodeById(mNodeInfo.NodeId);
             SetSelectedNode(pSelectedNode);
