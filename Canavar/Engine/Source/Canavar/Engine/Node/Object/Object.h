@@ -71,8 +71,6 @@ namespace Canavar::Engine
         QVector3D mPosition{ QVector3D(0, 0, 0) };
         QVector3D mScale{ QVector3D(1, 1, 1) };
 
-        bool mTransformationDirty{ false };
-
         float mYaw{ 0 };
         float mPitch{ 0 };
         float mRoll{ 0 };

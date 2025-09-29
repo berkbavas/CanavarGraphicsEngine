@@ -12,6 +12,11 @@
 #include "Canavar/Engine/Node/Object/Effect/NozzleEffect/NozzleEffect.h"
 #include "Canavar/Engine/Node/Object/Light/DirectionalLight.h"
 #include "Canavar/Engine/Node/Object/Model/Model.h"
+#include "Canavar/Engine/Primitive/PrimitiveMesh.h"
+#include "Canavar/Engine/Util/Macros.h"
+#include "Canavar/Engine/Primitive/QuadData.h"
+#include "Canavar/Engine/Primitive/SphereData.h"
+#include "Canavar/Engine/Primitive/TorusData.h"
 
 #include <map>
 
@@ -63,11 +68,11 @@ namespace Canavar::Engine
       private:
         void RenderObjects(PerspectiveCamera *pCamera);
         void RenderModel(Model *pModel, RenderPass RenderPass);
+        void RenderPrimitiveMesh(PrimitiveMesh *pPrimitiveMesh, RenderPass RenderPass);
         void RenderNozzleEffect(NozzleEffect *pEffect, PerspectiveCamera *pCamera);
         void RenderSky(PerspectiveCamera *pCamera);
         void RenderTerrain(Terrain *pTerrain, PerspectiveCamera *pCamera);
 
-        void SetUniforms(PerspectiveCamera *pCamera);
         void SetCommonUniforms(Shader *pShader, PerspectiveCamera *pCamera);
         void SetDirectionalLights(Shader *pShader);
         void SetPointLights(Shader *pShader, Object *pObject);
@@ -102,6 +107,7 @@ namespace Canavar::Engine
         Shader *mAcesShader{ nullptr };
         Shader *mCloudsShader{ nullptr };
         Shader *mScreenShader{ nullptr };
+        Shader *mBasicShader{ nullptr };
 
         SkyPtr mSky;
         SunPtr mSun;
@@ -109,6 +115,8 @@ namespace Canavar::Engine
         HazePtr mHaze;
 
         QuadDataPtr mQuadData{ nullptr };
+        SphereDataPtr mSphereData{ nullptr };
+        TorusDataPtr mTorusData{ nullptr };
 
         std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;

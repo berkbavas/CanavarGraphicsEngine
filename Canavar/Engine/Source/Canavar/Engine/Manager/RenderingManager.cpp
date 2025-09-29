@@ -31,6 +31,8 @@ void Canavar::Engine::RenderingManager::Initialize()
     }
 
     mQuadData = std::make_shared<QuadData>();
+    mSphereData = std::make_shared<SphereData>(1.0f, 72, 36);
+    mTorusData = std::make_shared<TorusData>(1.0f, 0.025f, 72, 36);
 
     ResizeFramebuffers();
 }
@@ -58,6 +60,7 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mTerrainShader = mShaderManager->GetShader(ShaderType::Terrain);
     mAcesShader = mShaderManager->GetShader(ShaderType::Aces);
     mScreenShader = mShaderManager->GetShader(ShaderType::Screen);
+    mBasicShader = mShaderManager->GetShader(ShaderType::Basic);
 }
 
 void Canavar::Engine::RenderingManager::Shutdown()
@@ -196,7 +199,11 @@ void Canavar::Engine::RenderingManager::RenderToFramebuffer(QOpenGLFramebufferOb
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    SetUniforms(mActiveCamera);
+    SetCommonUniforms(mModelShader, pActiveCamera);
+    SetDirectionalLights(mModelShader);
+
+    SetCommonUniforms(mBasicShader, pActiveCamera);
+    SetDirectionalLights(mBasicShader);
 
     RenderSky(mActiveCamera);
     RenderTerrain(mTerrain.get(), mActiveCamera);
@@ -220,6 +227,7 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
     const auto& Nodes = mNodeManager->GetNodes();
 
     // Opaque render pass
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -236,6 +244,10 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
             {
                 RenderModel(pModel.get(), RenderPass::Opaque);
             }
+            else if (PrimitiveMeshPtr pPrimitiveMesh = std::dynamic_pointer_cast<PrimitiveMesh>(pObject))
+            {
+                RenderPrimitiveMesh(pPrimitiveMesh.get(), RenderPass::Opaque);
+            }
             else if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pObject))
             {
                 RenderNozzleEffect(pEffect.get(), pCamera);
@@ -249,7 +261,6 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
 
     // Transparent render pass
 
-    // Render transparent objects
     glDepthMask(GL_FALSE);
 
     for (const auto& pNode : Nodes)
@@ -264,6 +275,10 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
             if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
             {
                 RenderModel(pModel.get(), RenderPass::Transparent);
+            }
+            else if (PrimitiveMeshPtr pPrimitiveMesh = std::dynamic_pointer_cast<PrimitiveMesh>(pObject))
+            {
+                RenderPrimitiveMesh(pPrimitiveMesh.get(), RenderPass::Transparent);
             }
         }
     }
@@ -285,11 +300,6 @@ void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass Re
     mModelShader->SetUniformValue("uModel.Diffuse", pModel->GetDiffuse());
     mModelShader->SetUniformValue("uModel.Specular", pModel->GetSpecular());
     mModelShader->SetUniformValue("uModel.Shininess", pModel->GetShininess());
-    mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-    mModelShader->SetSampler("uShadow.Map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-    mModelShader->SetUniformValue("uShadow.Enabled", mShadowMappingRenderer->GetShadowsEnabled());
-    mModelShader->SetUniformValue("uShadow.Bias", mShadowMappingRenderer->GetShadowBias());
-    mModelShader->SetUniformValue("uShadow.Samples", mShadowMappingRenderer->GetShadowSamples());
 
     if (const auto pScene = mNodeManager->GetScene(pModel))
     {
@@ -299,6 +309,43 @@ void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass Re
     {
         LOG_FATAL("RenderingManager::RenderModel: Model data is not found for this model: {}", pModel->GetSceneName());
     }
+}
+
+void Canavar::Engine::RenderingManager::RenderPrimitiveMesh(PrimitiveMesh* pPrimitiveMesh, RenderPass RenderPass)
+{
+    if (RenderPass == RenderPass::Opaque && pPrimitiveMesh->GetOpacity() < 1.0f)
+    {
+        return;
+    }
+
+    if (RenderPass == RenderPass::Transparent && pPrimitiveMesh->GetOpacity() >= 1.0f)
+    {
+        return;
+    }
+
+    SetPointLights(mBasicShader, pPrimitiveMesh);
+
+    mBasicShader->Bind();
+    mBasicShader->SetUniformValue("uModel.Color", pPrimitiveMesh->GetColor());
+    mBasicShader->SetUniformValue("uModel.Ambient", pPrimitiveMesh->GetAmbient());
+    mBasicShader->SetUniformValue("uModel.Diffuse", pPrimitiveMesh->GetDiffuse());
+    mBasicShader->SetUniformValue("uModel.Specular", pPrimitiveMesh->GetSpecular());
+    mBasicShader->SetUniformValue("uModel.Shininess", pPrimitiveMesh->GetShininess());
+    mBasicShader->SetUniformValue("uModel.Opacity", pPrimitiveMesh->GetOpacity());
+    mBasicShader->SetUniformValue("uNodeId", pPrimitiveMesh->GetNodeId());
+    mBasicShader->SetUniformValue("uModelMatrix", pPrimitiveMesh->GetTransformation());
+    mBasicShader->SetUniformValue("uNormalMatrix", pPrimitiveMesh->GetLocalNormalMatrix());
+
+    if (const auto* pSphere = dynamic_cast<Sphere*>(pPrimitiveMesh))
+    {
+        mSphereData->Render();
+    }
+    else if (const auto* pTorus = dynamic_cast<Torus*>(pPrimitiveMesh))
+    {
+        mTorusData->Render();
+    }
+
+    mBasicShader->Release();
 }
 
 void Canavar::Engine::RenderingManager::RenderNozzleEffect(NozzleEffect* pEffect, PerspectiveCamera* pCamera)
@@ -366,18 +413,25 @@ void Canavar::Engine::RenderingManager::RenderTerrain(Terrain* pTerrain, Perspec
     mTerrain->Render(mTerrainShader, pCamera);
 }
 
-void Canavar::Engine::RenderingManager::SetUniforms(PerspectiveCamera* pCamera)
-{
-    SetCommonUniforms(mModelShader, pCamera);
-    SetDirectionalLights(mModelShader);
-}
-
 void Canavar::Engine::RenderingManager::SetCommonUniforms(Shader* pShader, PerspectiveCamera* pCamera)
 {
     pShader->Bind();
-
     pShader->SetUniformValue("uFarPlane", pCamera->GetZFar());
-    pShader->SetUniformValue("uMeshSelectionEnabled", static_cast<int>(mMeshSelectionEnabled));
+
+    if (pShader->GetShaderType() == ShaderType::Model)
+    {
+        pShader->SetUniformValue("uMeshSelectionEnabled", static_cast<int>(mMeshSelectionEnabled));
+    }
+
+    if (pShader->GetShaderType() == ShaderType::Basic || pShader->GetShaderType() == ShaderType::Model)
+    {
+        pShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
+        pShader->SetSampler("uShadow.Map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
+        pShader->SetUniformValue("uShadow.Enabled", mShadowMappingRenderer->GetShadowsEnabled());
+        pShader->SetUniformValue("uShadow.Bias", mShadowMappingRenderer->GetShadowBias());
+        pShader->SetUniformValue("uShadow.Samples", mShadowMappingRenderer->GetShadowSamples());
+    }
+
     pShader->SetUniformValue("uHaze.Enabled", mHaze->GetEnabled());
     pShader->SetUniformValue("uHaze.Color", mHaze->GetColor());
     pShader->SetUniformValue("uHaze.Density", mHaze->GetDensity());

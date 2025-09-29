@@ -484,7 +484,7 @@ void main()
     vec3 Normal = CalculateNormal();
     vec3 Color = CalculateColor(Opacity);
     vec3 Lo = normalize(uCameraPosition - fsWorldPosition);
-    float distance = length(uCameraPosition - fsWorldPosition);
+    float Distance = length(uCameraPosition - fsWorldPosition);
 
     // Process
     vec3 Result = vec3(0.0f);
@@ -505,7 +505,7 @@ void main()
     }
 
     // Final
-    Result = ProcessHaze(distance, fsWorldPosition, Result);
+    Result = ProcessHaze(Distance, fsWorldPosition, Result);
 
     OutFragColor = vec4(Result, Opacity);
 

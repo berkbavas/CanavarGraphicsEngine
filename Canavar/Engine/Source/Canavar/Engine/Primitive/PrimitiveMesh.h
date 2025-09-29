@@ -10,6 +10,13 @@ namespace Canavar::Engine
     {
       public:
         PrimitiveMesh() = default;
+
+        DEFINE_MEMBER(QVector3D, Color, QVector3D(1.0f, 1.0f, 1.0f));
+        DEFINE_MEMBER(float, Ambient, 0.25f);
+        DEFINE_MEMBER(float, Diffuse, 0.75f);
+        DEFINE_MEMBER(float, Specular, 0.25f);
+        DEFINE_MEMBER(float, Shininess, 8.0f);
+        DEFINE_MEMBER(float, Opacity, 1.0f);
     };
 
     class Plane : public PrimitiveMesh

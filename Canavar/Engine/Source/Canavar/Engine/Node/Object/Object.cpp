@@ -223,7 +223,6 @@ void Canavar::Engine::Object::UpdateTransformation()
     mTransformation.setColumn(3, QVector4D(mPosition, 1.0f));
 
     mNormalMatrix = mTransformation.normalMatrix();
-    mTransformationDirty = false;
 }
 
 float& Canavar::Engine::Object::GetYaw()
