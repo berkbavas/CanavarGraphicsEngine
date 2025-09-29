@@ -313,14 +313,21 @@ void Canavar::Engine::RenderingManager::RenderModel(Model* pModel, RenderPass Re
 
 void Canavar::Engine::RenderingManager::RenderPrimitiveMesh(PrimitiveMesh* pPrimitiveMesh, RenderPass RenderPass)
 {
-    if (RenderPass == RenderPass::Opaque && pPrimitiveMesh->GetOpacity() < 1.0f)
+    switch (RenderPass)
     {
-        return;
-    }
-
-    if (RenderPass == RenderPass::Transparent && pPrimitiveMesh->GetOpacity() >= 1.0f)
-    {
-        return;
+    case RenderPass::Opaque:
+        if (pPrimitiveMesh->GetOpacity() < 1.0f)
+        {
+            return;
+        }
+        break;
+    case RenderPass::Transparent:
+        if (pPrimitiveMesh->GetOpacity() >= 1.0f)
+        {
+            return;
+        }
+    default:
+        return; // Should not reach here
     }
 
     SetPointLights(mBasicShader, pPrimitiveMesh);
