@@ -136,12 +136,12 @@ void Canavar::Simulator::Aircraft::OnKeyReleased(QKeyEvent* pEvent)
     mPressedKeys.remove((Qt::Key) pEvent->key());
 }
 
-void Canavar::Simulator::Aircraft::ProcessCommand(Command command, QVariant variant)
+void Canavar::Simulator::Aircraft::ProcessCommand(Command Command, QVariant Variant)
 {
-    switch (command)
+    switch (Command)
     {
     case Command::InitRunning:
-        mPropulsion->InitRunning(variant.toInt());
+        mPropulsion->InitRunning(Variant.toInt());
         break;
     case Command::Hold:
         mExecutor->Hold();
@@ -150,49 +150,49 @@ void Canavar::Simulator::Aircraft::ProcessCommand(Command command, QVariant vari
         mExecutor->Resume();
         break;
     case Command::Aileron:
-        mCommander->SetDaCmd(variant.toDouble());
+        mCommander->SetDaCmd(Variant.toDouble());
         break;
     case Command::Elevator:
-        mCommander->SetDeCmd(variant.toDouble());
+        mCommander->SetDeCmd(Variant.toDouble());
         break;
     case Command::Rudder:
-        mCommander->SetDrCmd(variant.toDouble());
+        mCommander->SetDrCmd(Variant.toDouble());
         break;
     case Command::Steering:
-        mCommander->SetDsCmd(variant.toDouble());
+        mCommander->SetDsCmd(Variant.toDouble());
         break;
     case Command::Flaps:
-        mCommander->SetDfCmd(variant.toDouble());
+        mCommander->SetDfCmd(Variant.toDouble());
         break;
     case Command::Speedbrake:
-        mCommander->SetDsbCmd(variant.toDouble());
+        mCommander->SetDsbCmd(Variant.toDouble());
         break;
     case Command::Spoiler:
-        mCommander->SetDspCmd(variant.toDouble());
+        mCommander->SetDspCmd(Variant.toDouble());
         break;
     case Command::PitchTrim:
-        mCommander->SetPitchTrimCmd(variant.toDouble());
+        mCommander->SetPitchTrimCmd(Variant.toDouble());
         break;
     case Command::RudderTrim:
-        mCommander->SetYawTrimCmd(variant.toDouble());
+        mCommander->SetYawTrimCmd(Variant.toDouble());
         break;
     case Command::AileronTrim:
-        mCommander->SetRollTrimCmd(variant.toDouble());
+        mCommander->SetRollTrimCmd(Variant.toDouble());
         break;
     case Command::Throttle:
-        mCommander->SetThrottleCmd(-1, variant.toDouble());
+        mCommander->SetThrottleCmd(-1, Variant.toDouble());
         break;
     case Command::Mixture:
-        mCommander->SetMixtureCmd(-1, variant.toDouble());
+        mCommander->SetMixtureCmd(-1, Variant.toDouble());
         break;
     case Command::Gear:
-        mCommander->SetGearCmd(variant.toDouble());
+        mCommander->SetGearCmd(Variant.toDouble());
         break;
     case Command::PropellerPitch:
-        mCommander->SetPropAdvanceCmd(-1, variant.toDouble());
+        mCommander->SetPropAdvanceCmd(-1, Variant.toDouble());
         break;
     case Command::PropellerFeather:
-        mCommander->SetFeatherCmd(-1, variant.toDouble());
+        mCommander->SetFeatherCmd(-1, Variant.toDouble());
         break;
     }
 }
@@ -296,19 +296,19 @@ void Canavar::Simulator::Aircraft::ProcessAutoPilotIfEnabled()
     }
 }
 
-QVariant Canavar::Simulator::Aircraft::GetAutoPilotCommand(Command command, QVariant value)
+QVariant Canavar::Simulator::Aircraft::GetAutoPilotCommand(Command Command, QVariant Value)
 {
-    switch (command)
+    switch (Command)
     {
     case Command::Aileron:
     {
-        double cmd = (value.toDouble() - mPfd.Roll) / 30.0;
-        return qMax(-1.0, qMin(cmd, 1.0));
+        double Cmd = (Value.toDouble() - mPfd.Roll) / 30.0;
+        return qMax(-1.0, qMin(Cmd, 1.0));
     }
     case Command::Elevator:
     {
-        double cmd = (mPfd.Pitch - value.toDouble()) / 20.0;
-        return qMax(-1.0, qMin(cmd, 1.0));
+        double Cmd = (mPfd.Pitch - Value.toDouble()) / 20.0;
+        return qMax(-1.0, qMin(Cmd, 1.0));
     }
     default:
         break;

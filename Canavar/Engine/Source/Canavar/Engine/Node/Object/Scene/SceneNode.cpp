@@ -13,28 +13,6 @@ void Canavar::Engine::SceneNode::Render(Model *pModel, Shader *pShader, RenderPa
     }
 }
 
-void Canavar::Engine::SceneNode::AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List, const QMatrix4x4 &ParentTransformation)
-{
-    for (const auto &pMesh : mMeshes)
-    {
-        const auto &ModelMatrix = pModel->GetWorldTransformation();
-        const auto MeshMatrix = pModel->GetMeshTransformation(pMesh->GetUniqueMeshName());
-        const auto NodeMatrix = ParentTransformation * mTransformation;
-        const auto CombinedTranformation = ModelMatrix * (MeshMatrix * NodeMatrix);
-
-        // If the mesh has transparency, add it to the list.
-        if (pMesh->HasTransparency(pModel))
-        {
-            List.push_back({ pModel, pMesh.get(), NodeMatrix, CombinedTranformation });
-        }
-    }
-
-    for (const auto &pChild : mChildren)
-    {
-        pChild->AddMeshesToListIfHasTransparency(pModel, List, (ParentTransformation * mTransformation));
-    }
-}
-
 void Canavar::Engine::SceneNode::AddMesh(MeshPtr pMesh)
 {
     mMeshes.emplace(pMesh);

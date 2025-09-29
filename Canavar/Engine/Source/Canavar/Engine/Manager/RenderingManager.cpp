@@ -223,8 +223,6 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    QVector<Model*> VisibleModels;
-
     for (const auto& pNode : Nodes)
     {
         if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
@@ -236,7 +234,6 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
 
             if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
             {
-                VisibleModels.append(pModel.get());
                 RenderModel(pModel.get(), RenderPass::Opaque);
             }
             else if (NozzleEffectPtr pEffect = std::dynamic_pointer_cast<NozzleEffect>(pObject))
@@ -252,51 +249,23 @@ void Canavar::Engine::RenderingManager::RenderObjects(PerspectiveCamera* pCamera
 
     // Transparent render pass
 
-    // First add transparent meshes to render list
-    QVector<TransparentMeshListElement> TransparentMeshes;
-
-    for (auto* pModel : VisibleModels)
-    {
-        if (const auto pScene = mNodeManager->GetScene(pModel))
-        {
-            pScene->AddMeshesToListIfHasTransparency(pModel, TransparentMeshes);
-        }
-    }
-
-    // Sort transparent meshes back to front
-    std::sort(TransparentMeshes.begin(), TransparentMeshes.end(), [&](const TransparentMeshListElement& left, const TransparentMeshListElement& right) {
-        const auto l = left.CombinedTransformation * ORIGIN;
-        const auto r = right.CombinedTransformation * ORIGIN;
-
-        float dl = (pCamera->GetWorldPosition() - l).length();
-        float dr = (pCamera->GetWorldPosition() - r).length();
-
-        return dl > dr;
-    });
-
     // Render transparent objects
     glDepthMask(GL_FALSE);
 
-    for (const auto& Element : TransparentMeshes)
+    for (const auto& pNode : Nodes)
     {
-        const auto pModel = Element.pModel;
+        if (const auto pObject = std::dynamic_pointer_cast<Object>(pNode))
+        {
+            if (pObject->GetVisible() == false)
+            {
+                continue;
+            }
 
-        mModelShader->Bind();
-        mModelShader->SetUniformValue("uModel.Color", pModel->GetColor());
-        mModelShader->SetUniformValue("uModel.TransparencyColor", pModel->GetTransparencyColor());
-        mModelShader->SetUniformValue("uModel.ShadingMode", pModel->GetShadingMode());
-        mModelShader->SetUniformValue("uModel.UseModelColor", pModel->GetUseModelColor());
-        mModelShader->SetUniformValue("uModel.Ambient", pModel->GetAmbient());
-        mModelShader->SetUniformValue("uModel.Diffuse", pModel->GetDiffuse());
-        mModelShader->SetUniformValue("uModel.Specular", pModel->GetSpecular());
-        mModelShader->SetUniformValue("uModel.Shininess", pModel->GetShininess());
-        mModelShader->SetUniformValue("uLightViewProjectionMatrix", mShadowMappingRenderer->GetLightViewProjectionMatrix());
-        mModelShader->SetSampler("uShadow.Map", SHADOW_MAP_TEXTURE_UNIT, mShadowMappingRenderer->GetShadowMapTexture());
-        mModelShader->SetUniformValue("uShadow.Enabled", mShadowMappingRenderer->GetShadowsEnabled());
-        mModelShader->SetUniformValue("uShadow.Bias", mShadowMappingRenderer->GetShadowBias());
-        mModelShader->SetUniformValue("uShadow.Samples", mShadowMappingRenderer->GetShadowSamples());
-        Element.pMesh->Render(pModel, mModelShader, Element.NodeMatrix, RenderPass::Transparent);
-        mModelShader->Release();
+            if (ModelPtr pModel = std::dynamic_pointer_cast<Model>(pObject))
+            {
+                RenderModel(pModel.get(), RenderPass::Transparent);
+            }
+        }
     }
 
     glDepthMask(GL_TRUE);

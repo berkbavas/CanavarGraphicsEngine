@@ -14,14 +14,6 @@ namespace Canavar::Engine
         float Success;
     };
 
-    struct TransparentMeshListElement
-    {
-        Model *pModel;
-        Mesh *pMesh;
-        QMatrix4x4 NodeMatrix;
-        QMatrix4x4 CombinedTransformation;
-    };
-
     struct Mouse
     {
         float X;

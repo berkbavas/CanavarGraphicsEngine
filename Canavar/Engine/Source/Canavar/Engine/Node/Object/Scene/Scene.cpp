@@ -21,11 +21,6 @@ void Canavar::Engine::Scene::Render(Model *pModel, Shader *pShader, RenderPass R
     mRootNode->Render(pModel, pShader, RenderPass, mRootNode->GetTransformation());
 }
 
-void Canavar::Engine::Scene::AddMeshesToListIfHasTransparency(Model *pModel, QVector<TransparentMeshListElement> &List)
-{
-    mRootNode->AddMeshesToListIfHasTransparency(pModel, List, mRootNode->GetTransformation());
-}
-
 void Canavar::Engine::Scene::AddMesh(MeshPtr pMesh)
 {
     mMeshes.push_back(pMesh);

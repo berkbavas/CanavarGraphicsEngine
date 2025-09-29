@@ -43,9 +43,9 @@ namespace Canavar::Simulator
         void ProcessInputs();
         void ProcessAutoPilotIfEnabled();
         void Run(float ifps);
-        void ProcessCommand(Command command, QVariant variant = QVariant());
+        void ProcessCommand(Command Command, QVariant Variant = QVariant());
 
-        QVariant GetAutoPilotCommand(Command command, QVariant value);
+        QVariant GetAutoPilotCommand(Command Command, QVariant Value);
 
         std::shared_ptr<JSBSim::FGFDMExec> mExecutor{ nullptr };
         std::shared_ptr<JSBSim::FGFCS> mCommander{ nullptr };
