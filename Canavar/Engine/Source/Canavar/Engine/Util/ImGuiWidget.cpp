@@ -35,6 +35,11 @@ void Canavar::Engine::ImGuiWidget::PostInitialize()
     mShadowMappingRenderer = mRenderingContext->GetShadowMappingRenderer();
     mBoundingBoxRenderer = mRenderingContext->GetBoundingBoxRenderer();
 
+    mGizmoModelRenderer = std::make_shared<GizmoModelRenderer>(mRenderingContext);
+    mGizmo = std::make_shared<Gizmo>(mRenderingContext, mGizmoModelRenderer.get());
+
+    connect(mRenderingManager, &RenderingManager::RenderLoop, this, &ImGuiWidget::Render);
+
     mSky = mNodeManager->GetSky();
     mHaze = mNodeManager->GetHaze();
     mSun = mNodeManager->GetSun();
@@ -57,6 +62,11 @@ void Canavar::Engine::ImGuiWidget::DrawImGui(float ifps)
     DrawNodeInfo();
     DrawStats();
     ImGui::End();
+}
+
+void Canavar::Engine::ImGuiWidget::Render()
+{
+    mGizmoModelRenderer->Render();
 }
 
 void Canavar::Engine::ImGuiWidget::DrawNodeParametersWidget()
@@ -152,7 +162,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                     {
                         if (pObject->GetChildren().size() > 0)
                         {
-                            bool open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().c_str()); // Column 1
+                            bool Open = ImGui::TreeNodeEx(pObject->GetUniqueNodeName().c_str()); // Column 1
                             ImGui::TableNextColumn();
                             ImGui::Text(pObject->GetNodeTypeName());
                             ImGui::TableNextColumn();
@@ -161,7 +171,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTreeViewWidget()
                                 pSelectedNode = pObject;
                             }
 
-                            if (open)
+                            if (Open)
                             {
                                 const auto &children = pObject->GetChildren();
 
@@ -239,11 +249,11 @@ void Canavar::Engine::ImGuiWidget::DrawSun()
     ImGui::SliderFloat("Specular##Sun", &mSun->GetSpecular_NonConst(), 0.0f, 1.0f, "%.3f");
     ImGui::SliderFloat("Radiance##Sun", &mSun->GetRadiance_NonConst(), 0.0f, 100.0f, "%.3f");
 
-    float theta = mSun->GetTheta();
-    float phi = mSun->GetPhi();
-    ImGui::SliderFloat("Theta##Sun", &theta, -179.0f, 179.0f, "%.1f");
-    ImGui::SliderFloat("Phi##Sun", &phi, -89.0f, 89.0f, "%.1f");
-    mSun->SetDirectionFromThetaPhi(theta, phi);
+    float Theta = mSun->GetTheta();
+    float Phi = mSun->GetPhi();
+    ImGui::SliderFloat("Theta##Sun", &Theta, -179.0f, 179.0f, "%.1f");
+    ImGui::SliderFloat("Phi##Sun", &Phi, -89.0f, 89.0f, "%.1f");
+    mSun->SetDirectionFromThetaPhi(Theta, Phi);
 
     ImGui::ColorEdit4("Color##Sun", (float *) &mSun->GetColor_NonConst());
 }
@@ -454,11 +464,11 @@ void Canavar::Engine::ImGuiWidget::DrawDirectionalLight(Engine::DirectionalLight
     ImGui::SliderFloat("Radiance##DirectionalLight", &pLight->GetRadiance_NonConst(), 0.0f, 100.0f, "%.3f");
     ImGui::ColorEdit3("Color##DirectionalLight", &pLight->GetColor_NonConst()[0]);
 
-    float theta = pLight->GetTheta();
-    float phi = pLight->GetPhi();
-    ImGui::SliderFloat("Theta##DirectionalLight", &theta, -179.0f, 179.0f, "%.1f");
-    ImGui::SliderFloat("Phi##DirectionalLight", &phi, -89.0f, 89.0f, "%.1f");
-    pLight->SetDirectionFromThetaPhi(theta, phi);
+    float Theta = pLight->GetTheta();
+    float Phi = pLight->GetPhi();
+    ImGui::SliderFloat("Theta##DirectionalLight", &Theta, -179.0f, 179.0f, "%.1f");
+    ImGui::SliderFloat("Phi##DirectionalLight", &Phi, -89.0f, 89.0f, "%.1f");
+    pLight->SetDirectionFromThetaPhi(Theta, Phi);
 }
 
 void Canavar::Engine::ImGuiWidget::DrawPointLight(Engine::PointLight *pLight)
@@ -754,23 +764,33 @@ bool Canavar::Engine::ImGuiWidget::MousePressed(QMouseEvent *pEvent)
     }
     else if (pEvent->button() == Qt::LeftButton)
     {
-        const int x = pEvent->position().x();
-        const int y = pEvent->position().y();
-        ProcessMouseAction(x, y);
-        if (static_cast<bool>(mNodeInfo.Success))
+        if (mGizmo->OnMousePressed(pEvent))
         {
-            const auto pSelectedNode = mNodeManager->FindNodeById(mNodeInfo.NodeId);
-            SetSelectedNode(pSelectedNode);
-            SetSelectedMesh(pSelectedNode, mNodeInfo.MeshId);
+            return true;
         }
-        return true;
+        else
+        {
+            const int x = pEvent->position().x();
+            const int y = pEvent->position().y();
+
+            ProcessMouseAction(x, y);
+
+            if (static_cast<bool>(mNodeInfo.Success))
+            {
+                const auto pSelectedNode = mNodeManager->FindNodeById(mNodeInfo.NodeId);
+                SetSelectedNode(pSelectedNode);
+                SetSelectedMesh(pSelectedNode, mNodeInfo.MeshId);
+            }
+            return true;
+        }
     }
 
     return false;
 }
 
-bool Canavar::Engine::ImGuiWidget::MouseReleased(QMouseEvent *)
+bool Canavar::Engine::ImGuiWidget::MouseReleased(QMouseEvent *pEvent)
 {
+    mGizmo->OnMouseReleased(pEvent);
     return ImGui::GetIO().WantCaptureMouse;
 }
 
@@ -779,7 +799,8 @@ bool Canavar::Engine::ImGuiWidget::MouseMoved(QMouseEvent *pEvent)
     const int x = pEvent->position().x();
     const int y = pEvent->position().y();
     ProcessMouseAction(x, y);
-    return ImGui::GetIO().WantCaptureMouse;
+
+    return ImGui::GetIO().WantCaptureMouse || mGizmo->OnMouseMoved(pEvent);
 }
 
 bool Canavar::Engine::ImGuiWidget::WheelMoved(QWheelEvent *)
@@ -819,6 +840,12 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(NodePtr pNode)
     if (ModelPtr pCurrentSelectedModel = std::dynamic_pointer_cast<Model>(mSelectedNode))
     {
         SetSelectedMesh(pCurrentSelectedModel, -1);
+    }
+
+    if (const auto pObject = std::dynamic_pointer_cast<Engine::Object>(mSelectedNode))
+    {
+        mGizmo->Exit();
+        mGizmo->Enter(pObject.get());
     }
 }
 

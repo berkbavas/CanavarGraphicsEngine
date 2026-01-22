@@ -77,6 +77,8 @@ namespace Canavar::Engine
 
         void RemoveAllNodes();
 
+        uint32_t GetNextNodeId() { return ++mCurrentNodeId; }
+
       private:
         std::map<std::string, ScenePtr> mScenes; // 3D model data
 

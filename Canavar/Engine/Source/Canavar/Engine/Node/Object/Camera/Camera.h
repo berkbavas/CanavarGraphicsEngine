@@ -17,7 +17,9 @@ namespace Canavar::Engine
         int GetWidth() const;
         int GetHeight() const;
 
-        QVector2D Project3DTo2D(const QVector3D &Pos3D);
+        QVector2D ProjectWorldToScreenSpace(const QVector3D &WorldPosition) const;
+        QVector3D UnprojectScreenToWorldSpace(const QVector2D &ScreenPos, float Depth) const;
+        QVector3D ComputeRayFromScreenPosition(const QPointF &ScreenPos) const;
 
         virtual QMatrix4x4 GetProjectionMatrix() const = 0;
         virtual QMatrix4x4 GetViewProjectionMatrix() const = 0;

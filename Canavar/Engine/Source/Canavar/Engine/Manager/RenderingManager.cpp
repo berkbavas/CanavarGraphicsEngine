@@ -469,7 +469,7 @@ void Canavar::Engine::RenderingManager::SetDirectionalLights(Shader* pShader)
         pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Diffuse", Lights[i]->GetDiffuse());
         pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Specular", Lights[i]->GetSpecular());
 
-        if (pShader == mModelShader)
+        if (pShader->GetShaderType() == ShaderType::Model)
         {
             pShader->SetUniformValue("uDirectionalLights[" + QString::number(i) + "].Radiance", Lights[i]->GetRadiance());
         }

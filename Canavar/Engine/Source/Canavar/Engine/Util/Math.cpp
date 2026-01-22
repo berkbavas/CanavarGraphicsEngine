@@ -82,6 +82,24 @@ float Canavar::Engine::Math::AngleBetween(const QVector3D& V1, const QVector3D& 
     }
 }
 
+float Canavar::Engine::Math::SignedAngleBetween(const QVector3D& V1, const QVector3D& V2, const QVector3D& Axis)
+{
+    QVector3D A = V1.normalized();
+    QVector3D B = V2.normalized();
+    QVector3D N = Axis.normalized();
+
+    float Dot = QVector3D::dotProduct(A, B);
+    QVector3D Cross = QVector3D::crossProduct(A, B);
+    float Sign = QVector3D::dotProduct(N, Cross);
+
+    return qRadiansToDegrees(qAtan2(Sign, Dot));
+}
+
+QVector3D Canavar::Engine::Math::ProjectOntoPlane(const QVector3D& Vector, const QVector3D& PlaneNormal)
+{
+    return Vector - QVector3D::dotProduct(Vector, PlaneNormal) * PlaneNormal;
+}
+
 QQuaternion Canavar::Engine::Math::RotationBetweenVectors(const QVector3D& V0, const QVector3D& V1)
 {
     QVector3D From = V0.normalized();
@@ -112,4 +130,50 @@ QQuaternion Canavar::Engine::Math::RotationBetweenVectors(const QVector3D& V0, c
     float Angle = qRadiansToDegrees(std::acos(Dot));
 
     return QQuaternion::fromAxisAndAngle(Axis.normalized(), Angle);
+}
+
+bool Canavar::Engine::Math::IntersectRayPlane(const QVector3D& RayOrigin, const QVector3D& RayDir, const QVector3D& PlanePoint, const QVector3D& PlaneNormal, QVector3D& IntersectionPoint)
+{
+    float Denom = QVector3D::dotProduct(RayDir, PlaneNormal);
+    if (qFuzzyCompare(Denom, 0.0f))
+    {
+        // Ray is parallel to the plane
+        return false;
+    }
+
+    float t = QVector3D::dotProduct(PlanePoint - RayOrigin, PlaneNormal) / Denom;
+    if (t < 0)
+    {
+        // Intersection point is behind the ray origin
+        return false;
+    }
+
+    IntersectionPoint = RayOrigin + t * RayDir;
+    return true;
+}
+
+bool Canavar::Engine::Math::IntersectRaySphere(const QVector3D& RayOrigin, const QVector3D& RayDirection, const QVector3D& SphereCenter, float SphereRadius, QVector3D& OutIntersectionPoint)
+{
+    QVector3D L = SphereCenter - RayOrigin;
+    float Dot = QVector3D::dotProduct(L, RayDirection);
+    if (Dot < 0)
+    {
+        return false; // Sphere is behind the ray
+    }
+
+    float D2 = QVector3D::dotProduct(L, L) - Dot * Dot;
+    float R2 = SphereRadius * SphereRadius;
+    if (D2 > R2)
+    {
+        return false; // No intersection
+    }
+
+    float THC = sqrt(R2 - D2);
+    float T0 = Dot - THC;
+    float T1 = Dot + THC;
+
+    // Use the closest intersection point
+    float T = (T0 < T1) ? T0 : T1;
+    OutIntersectionPoint = RayOrigin + T * RayDirection;
+    return true;
 }

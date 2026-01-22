@@ -13,6 +13,8 @@
 #include "Canavar/Engine/Node/Object/Model/Model.h"
 #include "Canavar/Engine/Node/Object/Text/Text2D.h"
 #include "Canavar/Engine/Node/Object/Text/Text3D.h"
+#include "Canavar/Engine/Util/Gizmo/Gizmo.h"
+#include "Canavar/Engine/Util/Gizmo/GizmoModelRenderer.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 namespace Canavar::Engine
@@ -27,6 +29,8 @@ namespace Canavar::Engine
 
         void PostInitialize();
         void DrawImGui(float ifps);
+
+        void Render();
 
         bool KeyPressed(QKeyEvent *) override;
         bool KeyReleased(QKeyEvent *) override;
@@ -151,6 +155,9 @@ namespace Canavar::Engine
 
         std::string mSelectedSceneName = "-";
         std::string mSelectedObjectName = "-";
+
+        GizmoModelRendererPtr mGizmoModelRenderer{ nullptr };
+        GizmoPtr mGizmo{ nullptr };
     };
 
 }
