@@ -541,6 +541,41 @@ void Canavar::Engine::ImGuiWidget::DrawRenderSettings()
         ImGui::SliderFloat("Vignette Radius", &mRenderingManager->GetVignetteRadius_NonConst(), 0.0f, 1.0f, "%.2f");
         ImGui::SliderFloat("Vignette Softness", &mRenderingManager->GetVignetteSoftness_NonConst(), 0.0f, 1.0f, "%.2f");
         ImGui::SliderFloat("Grain Strength", &mRenderingManager->GetGrainStrength_NonConst(), 0.0f, 1.0f, "%.2f");
+
+        ImGui::Separator();
+        ImGui::Text("Bloom");
+        ImGui::Checkbox("Bloom Enabled", &mRenderingManager->GetBloomEnabled_NonConst());
+        if (mRenderingManager->GetBloomEnabled())
+        {
+            ImGui::SliderFloat("Bloom Intensity", &mRenderingManager->GetBloomIntensity_NonConst(), 0.0f, 5.0f, "%.2f");
+            ImGui::SliderFloat("Bloom Threshold", &mRenderingManager->GetBloomThreshold_NonConst(), 0.0f, 2.0f, "%.2f");
+            ImGui::SliderInt("Bloom Blur Passes", &mRenderingManager->GetBloomBlurPasses_NonConst(), 1, 10);
+        }
+
+        ImGui::Separator();
+        ImGui::Text("FXAA Anti-Aliasing");
+        ImGui::Checkbox("FXAA Enabled", &mRenderingManager->GetFXAAEnabled_NonConst());
+        if (mRenderingManager->GetFXAAEnabled())
+        {
+            ImGui::SliderFloat("FXAA Span Max", &mRenderingManager->GetFXAASpanMax_NonConst(), 1.0f, 16.0f, "%.1f");
+        }
+
+        ImGui::Separator();
+        ImGui::Text("Color Grading");
+        ImGui::Checkbox("Color Grading Enabled", &mRenderingManager->GetColorGradingEnabled_NonConst());
+        if (mRenderingManager->GetColorGradingEnabled())
+        {
+            ImGui::SliderFloat("Saturation", &mRenderingManager->GetSaturation_NonConst(), 0.0f, 2.0f, "%.2f");
+            ImGui::SliderFloat("Contrast", &mRenderingManager->GetContrast_NonConst(), 0.5f, 2.0f, "%.2f");
+            ImGui::SliderFloat("Brightness", &mRenderingManager->GetBrightness_NonConst(), -0.5f, 0.5f, "%.3f");
+            ImGui::SliderFloat("Gamma", &mRenderingManager->GetGamma_NonConst(), 1.0f, 3.0f, "%.2f");
+            ImGui::ColorEdit3("Color Tint", (float *)&mRenderingManager->GetColorTint_NonConst());
+            ImGui::Checkbox("Chromatic Aberration", &mRenderingManager->GetChromaticAberrationEnabled_NonConst());
+            if (mRenderingManager->GetChromaticAberrationEnabled())
+            {
+                ImGui::SliderFloat("Aberration Strength", &mRenderingManager->GetChromaticAberrationStrength_NonConst(), 0.0f, 5.0f, "%.2f");
+            }
+        }
     }
 }
 

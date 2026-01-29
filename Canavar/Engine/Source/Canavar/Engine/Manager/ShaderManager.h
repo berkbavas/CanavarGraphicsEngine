@@ -34,5 +34,9 @@ namespace Canavar::Engine
         Shader* mCinematicShader{ nullptr };
         Shader* mAcesShader{ nullptr };
         Shader* mScreenShader{ nullptr };
+        Shader* mBloomShader{ nullptr };
+        Shader* mBlurShader{ nullptr };
+        Shader* mFXAAShader{ nullptr };
+        Shader* mColorGradingShader{ nullptr };
     };
 }

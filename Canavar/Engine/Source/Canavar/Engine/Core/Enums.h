@@ -20,6 +20,10 @@ namespace Canavar::Engine
         Cinematic,
         Aces,
         Screen,
+        Bloom,
+        Blur,
+        FXAA,
+        ColorGrading,
     };
 
     enum class ViewDirection

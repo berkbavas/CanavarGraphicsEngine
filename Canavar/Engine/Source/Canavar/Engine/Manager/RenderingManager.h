@@ -41,7 +41,12 @@ namespace Canavar::Engine
         Singlesample,
         Aces,
         Cinematic,
-        Temp
+        Temp,
+        BloomBrightness,
+        BloomBlurH,
+        BloomBlurV,
+        FXAA,
+        ColorGrading
     };
 
     class RenderingManager : public Manager, protected QOpenGLFunctions_4_5_Core
@@ -85,6 +90,9 @@ namespace Canavar::Engine
 
         void ApplyAcesPass();
         void ApplyCinematicPass();
+        void ApplyBloomPass();
+        void ApplyFXAAPass();
+        void ApplyColorGradingPass();
 
         void DestroyFramebuffers();
 
@@ -109,6 +117,9 @@ namespace Canavar::Engine
         Shader *mCloudsShader{ nullptr };
         Shader *mScreenShader{ nullptr };
         Shader *mBasicShader{ nullptr };
+        Shader *mBloomShader{ nullptr };
+        Shader *mFXAAShader{ nullptr };
+        Shader *mColorGradingShader{ nullptr };
 
         SkyPtr mSky;
         SunPtr mSun;
@@ -122,7 +133,7 @@ namespace Canavar::Engine
 
         std::map<Framebuffer, QOpenGLFramebufferObject *> mFramebuffers;
         std::map<Framebuffer, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
-        static constexpr std::array<Framebuffer, 5> FBO_TYPES = { Multisample, Singlesample, Aces, Cinematic, Temp };
+        static constexpr std::array<Framebuffer, 10> FBO_TYPES = { Multisample, Singlesample, Aces, Cinematic, Temp, BloomBrightness, BloomBlurH, BloomBlurV, FXAA, ColorGrading };
 
         int mWidth{ INITIAL_WIDTH };
         int mHeight{ INITIAL_HEIGHT };
@@ -149,6 +160,28 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, VignetteRadius, 0.95f);
         DEFINE_MEMBER(float, VignetteSoftness, 0.5f);
         DEFINE_MEMBER(float, GrainStrength, 0.00f);
+
+        // Bloom
+        DEFINE_MEMBER(bool, BloomEnabled, false);
+        DEFINE_MEMBER(float, BloomIntensity, 1.0f);
+        DEFINE_MEMBER(float, BloomThreshold, 0.8f);
+        DEFINE_MEMBER(int, BloomBlurPasses, 5);
+
+        // FXAA
+        DEFINE_MEMBER(bool, FXAAEnabled, false);
+        DEFINE_MEMBER(float, FXAASpanMax, 8.0f);
+        DEFINE_MEMBER(float, FXAAReduceMin, 0.0078125f);
+        DEFINE_MEMBER(float, FXAAReduceMul, 0.125f);
+
+        // Color Grading
+        DEFINE_MEMBER(bool, ColorGradingEnabled, false);
+        DEFINE_MEMBER(float, Saturation, 1.0f);
+        DEFINE_MEMBER(float, Contrast, 1.0f);
+        DEFINE_MEMBER(float, Brightness, 0.0f);
+        DEFINE_MEMBER(float, Gamma, 2.2f);
+        DEFINE_MEMBER(QVector3D, ColorTint, QVector3D(1.0f, 1.0f, 1.0f));
+        DEFINE_MEMBER(bool, ChromaticAberrationEnabled, false);
+        DEFINE_MEMBER(float, ChromaticAberrationStrength, 1.0f);
 
         // Mesh Selection
         DEFINE_MEMBER(bool, MeshSelectionEnabled, false);

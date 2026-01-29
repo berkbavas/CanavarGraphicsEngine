@@ -24,6 +24,16 @@ void Canavar::Engine::RenderingManager::Initialize()
     mFramebufferFormats[Cinematic].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
     mFramebufferFormats[Temp].setSamples(0);
     mFramebufferFormats[Temp].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferFormats[BloomBrightness].setSamples(0);
+    mFramebufferFormats[BloomBrightness].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferFormats[BloomBlurH].setSamples(0);
+    mFramebufferFormats[BloomBlurH].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferFormats[BloomBlurV].setSamples(0);
+    mFramebufferFormats[BloomBlurV].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferFormats[FXAA].setSamples(0);
+    mFramebufferFormats[FXAA].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferFormats[ColorGrading].setSamples(0);
+    mFramebufferFormats[ColorGrading].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
 
     for (const auto type : FBO_TYPES)
     {
@@ -62,6 +72,10 @@ void Canavar::Engine::RenderingManager::PostInitialize()
     mAcesShader = mShaderManager->GetShader(ShaderType::Aces);
     mScreenShader = mShaderManager->GetShader(ShaderType::Screen);
     mBasicShader = mShaderManager->GetShader(ShaderType::Basic);
+    mBloomShader = mShaderManager->GetShader(ShaderType::Bloom);
+    mBlurShader = mShaderManager->GetShader(ShaderType::Blur);
+    mFXAAShader = mShaderManager->GetShader(ShaderType::FXAA);
+    mColorGradingShader = mShaderManager->GetShader(ShaderType::ColorGrading);
 }
 
 void Canavar::Engine::RenderingManager::Shutdown()
@@ -109,7 +123,10 @@ void Canavar::Engine::RenderingManager::DoPostProcessing()
 {
     QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Singlesample], GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+    ApplyBloomPass();
     ApplyAcesPass();
+    ApplyFXAAPass();
+    ApplyColorGradingPass();
     ApplyCinematicPass();
 
     QOpenGLFramebufferObject::bindDefault();
@@ -166,6 +183,144 @@ void Canavar::Engine::RenderingManager::ApplyCinematicPass()
     mFramebuffers[Cinematic]->release();
 
     QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Cinematic], GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+void Canavar::Engine::RenderingManager::ApplyBloomPass()
+{
+    if (!mBloomEnabled)
+    {
+        return;
+    }
+
+    // Step 1: Extract bright areas
+    mFramebuffers[BloomBrightness]->bind();
+    glViewport(0, 0, mWidth, mHeight);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    mBloomShader->Bind();
+    mBloomShader->SetSampler("uSceneTexture", 0, mFramebuffers[Temp]->texture());
+    mBloomShader->SetUniformValue("uBloomThreshold", mBloomThreshold);
+    mBloomShader->SetUniformValue("uExtractBrightness", true);
+    mQuadData->Render();
+    mBloomShader->Release();
+    mFramebuffers[BloomBrightness]->release();
+
+    // Step 2: Gaussian blur (ping-pong between horizontal and vertical)
+    bool horizontal = true;
+    for (int i = 0; i < mBloomBlurPasses * 2; ++i)
+    {
+        if (horizontal)
+        {
+            mFramebuffers[BloomBlurH]->bind();
+        }
+        else
+        {
+            mFramebuffers[BloomBlurV]->bind();
+        }
+
+        glViewport(0, 0, mWidth, mHeight);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        mBlurShader->Bind();
+        
+        GLuint sourceTexture;
+        if (i == 0)
+        {
+            sourceTexture = mFramebuffers[BloomBrightness]->texture();
+        }
+        else if (horizontal)
+        {
+            sourceTexture = mFramebuffers[BloomBlurV]->texture();
+        }
+        else
+        {
+            sourceTexture = mFramebuffers[BloomBlurH]->texture();
+        }
+
+        mBlurShader->SetSampler("uTexture", 0, sourceTexture);
+        mBlurShader->SetUniformValue("uHorizontal", horizontal);
+        mBlurShader->SetUniformValue("uBlurScale", 1.0f);
+        mQuadData->Render();
+        mBlurShader->Release();
+
+        if (horizontal)
+        {
+            mFramebuffers[BloomBlurH]->release();
+        }
+        else
+        {
+            mFramebuffers[BloomBlurV]->release();
+        }
+
+        horizontal = !horizontal;
+    }
+
+    // Step 3: Combine bloom with original scene
+    mFramebuffers[Aces]->bind(); // Reuse Aces FBO temporarily
+    glViewport(0, 0, mWidth, mHeight);
+    glClear(GL_COLOR_BUFFER_BIT);
+    mBloomShader->Bind();
+    mBloomShader->SetSampler("uSceneTexture", 0, mFramebuffers[Temp]->texture());
+    mBloomShader->SetSampler("uBloomTexture", 1, mFramebuffers[BloomBlurV]->texture());
+    mBloomShader->SetUniformValue("uBloomIntensity", mBloomIntensity);
+    mBloomShader->SetUniformValue("uExtractBrightness", false);
+    mQuadData->Render();
+    mBloomShader->Release();
+    mFramebuffers[Aces]->release();
+
+    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[Aces], GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+void Canavar::Engine::RenderingManager::ApplyFXAAPass()
+{
+    if (!mFXAAEnabled)
+    {
+        return;
+    }
+
+    mFramebuffers[FXAA]->bind();
+    glViewport(0, 0, mWidth, mHeight);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    mFXAAShader->Bind();
+    mFXAAShader->SetSampler("uSceneTexture", 0, mFramebuffers[Temp]->texture());
+    mFXAAShader->SetUniformValue("uResolution", QVector2D(mWidth, mHeight));
+    mFXAAShader->SetUniformValue("uFxaaSpanMax", mFXAASpanMax);
+    mFXAAShader->SetUniformValue("uFxaaReduceMin", mFXAAReduceMin);
+    mFXAAShader->SetUniformValue("uFxaaReduceMul", mFXAAReduceMul);
+    mQuadData->Render();
+    mFXAAShader->Release();
+    mFramebuffers[FXAA]->release();
+
+    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[FXAA], GL_COLOR_BUFFER_BIT, GL_NEAREST);
+}
+
+void Canavar::Engine::RenderingManager::ApplyColorGradingPass()
+{
+    if (!mColorGradingEnabled)
+    {
+        return;
+    }
+
+    mFramebuffers[ColorGrading]->bind();
+    glViewport(0, 0, mWidth, mHeight);
+    glClearColor(0, 0, 0, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    mColorGradingShader->Bind();
+    mColorGradingShader->SetSampler("uSceneTexture", 0, mFramebuffers[Temp]->texture());
+    mColorGradingShader->SetUniformValue("uSaturation", mSaturation);
+    mColorGradingShader->SetUniformValue("uContrast", mContrast);
+    mColorGradingShader->SetUniformValue("uBrightness", mBrightness);
+    mColorGradingShader->SetUniformValue("uGamma", mGamma);
+    mColorGradingShader->SetUniformValue("uColorTint", mColorTint);
+    mColorGradingShader->SetUniformValue("uChromaticAberrationEnabled", mChromaticAberrationEnabled);
+    mColorGradingShader->SetUniformValue("uChromaticAberrationStrength", mChromaticAberrationStrength);
+    mColorGradingShader->SetUniformValue("uResolution", QVector2D(mWidth, mHeight));
+    mQuadData->Render();
+    mColorGradingShader->Release();
+    mFramebuffers[ColorGrading]->release();
+
+    QOpenGLFramebufferObject::blitFramebuffer(mFramebuffers[Temp], mFramebuffers[ColorGrading], GL_COLOR_BUFFER_BIT, GL_NEAREST);
 }
 
 void Canavar::Engine::RenderingManager::DestroyFramebuffers()
@@ -519,7 +674,7 @@ void Canavar::Engine::RenderingManager::ResizeFramebuffers()
         mFramebuffers[type]->release();
     }
 
-    for (const auto type : { Aces, Cinematic, Temp })
+    for (const auto type : { Aces, Cinematic, Temp, BloomBrightness, BloomBlurH, BloomBlurV, FXAA, ColorGrading })
     {
         mFramebuffers[type] = new QOpenGLFramebufferObject(mWidth, mHeight, mFramebufferFormats[type]);
     }

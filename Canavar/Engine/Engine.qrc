@@ -33,6 +33,10 @@
         <file>Resources/Shaders/Cinematic.frag</file>
         <file>Resources/Shaders/Aces.frag</file>
         <file>Resources/Shaders/Screen.frag</file>
+        <file>Resources/Shaders/Bloom.frag</file>
+        <file>Resources/Shaders/Blur.frag</file>
+        <file>Resources/Shaders/FXAA.frag</file>
+        <file>Resources/Shaders/ColorGrading.frag</file>
 
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>

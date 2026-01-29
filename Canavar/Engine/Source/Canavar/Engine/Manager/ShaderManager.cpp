@@ -88,6 +88,26 @@ void Canavar::Engine::ShaderManager::Initialize()
     mScreenShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Screen.frag");
     mScreenShader->Initialize();
 
+    mBloomShader = new Shader(ShaderType::Bloom, "Bloom Shader");
+    mBloomShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mBloomShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Bloom.frag");
+    mBloomShader->Initialize();
+
+    mBlurShader = new Shader(ShaderType::Blur, "Blur Shader");
+    mBlurShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mBlurShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/Blur.frag");
+    mBlurShader->Initialize();
+
+    mFXAAShader = new Shader(ShaderType::FXAA, "FXAA Shader");
+    mFXAAShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mFXAAShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/FXAA.frag");
+    mFXAAShader->Initialize();
+
+    mColorGradingShader = new Shader(ShaderType::ColorGrading, "Color Grading Shader");
+    mColorGradingShader->AddPath(QOpenGLShader::Vertex, ":/Resources/Shaders/Quad.vert");
+    mColorGradingShader->AddPath(QOpenGLShader::Fragment, ":/Resources/Shaders/ColorGrading.frag");
+    mColorGradingShader->Initialize();
+
     // Emplace
     mShaders.emplace(std::pair(ShaderType::Model, mModelShader));
     mShaders.emplace(std::pair(ShaderType::Sky, mSkyShader));
@@ -103,6 +123,10 @@ void Canavar::Engine::ShaderManager::Initialize()
     mShaders.emplace(std::pair(ShaderType::Cinematic, mCinematicShader));
     mShaders.emplace(std::pair(ShaderType::Aces, mAcesShader));
     mShaders.emplace(std::pair(ShaderType::Screen, mScreenShader));
+    mShaders.emplace(std::pair(ShaderType::Bloom, mBloomShader));
+    mShaders.emplace(std::pair(ShaderType::Blur, mBlurShader));
+    mShaders.emplace(std::pair(ShaderType::FXAA, mFXAAShader));
+    mShaders.emplace(std::pair(ShaderType::ColorGrading, mColorGradingShader));
 }
 
 void Canavar::Engine::ShaderManager::Shutdown()
