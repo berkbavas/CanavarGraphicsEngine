@@ -1,0 +1,94 @@
+cmake_minimum_required(VERSION 3.25.1)
+
+project(Canavar VERSION 1.0.0 LANGUAGES CXX)
+
+if(NOT MSVC)
+    message(FATAL_ERROR "This project can only be built with Microsoft Visual C++ (MSVC).")
+endif()
+
+if(DEFINED ENV{Qt6_DIR})
+  list(APPEND CMAKE_PREFIX_PATH "$ENV{Qt6_DIR}")
+endif()
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets)
+
+set(EXTERNAL_DIR  "${CMAKE_SOURCE_DIR}/External")
+set(QT_IMGUI_DIR  "${EXTERNAL_DIR}/qtimgui")
+set(ASSIMP_DIR    "${EXTERNAL_DIR}/Assimp")
+set(JSBSIM_DIR    "${EXTERNAL_DIR}/JSBSim")
+set(FREETYPE_DIR  "${EXTERNAL_DIR}/freetype")
+
+add_compile_options($<$<CXX_COMPILER_ID:MSVC>:/MP>)
+
+add_library(EngineVendor INTERFACE)
+
+target_include_directories(EngineVendor INTERFACE
+  "${QT_IMGUI_DIR}/include"
+  "${ASSIMP_DIR}/include"
+  "${JSBSIM_DIR}/include"
+  "${JSBSIM_DIR}/include/JSBSim"
+  "${FREETYPE_DIR}/include/freetype2"
+)
+
+target_link_directories(EngineVendor INTERFACE
+  "${QT_IMGUI_DIR}/lib"
+  "${ASSIMP_DIR}/lib"
+  "${JSBSIM_DIR}/lib"
+  "${FREETYPE_DIR}/lib"
+)
+
+target_link_libraries(EngineVendor INTERFACE
+  debug imguid              optimized imgui
+  debug qt_imgui_widgetsd   optimized qt_imgui_widgets
+  debug assimp-vc143-mtd    optimized assimp-vc143-mt
+  debug zlibstaticd         optimized zlibstatic
+  debug JSBSimd             optimized JSBSim
+  debug freetyped           optimized freetype
+  debug ws2_32              optimized ws2_32
+)
+
+target_compile_definitions(EngineVendor INTERFACE JSBSIM_STATIC_LINK)
+
+function(configure_app_runtime TARGET_NAME)
+  # Copy Assimp DLLs if present
+  add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${ASSIMP_DIR}/bin"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  )
+
+  # Remove Resources folder first
+  add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E rm -rf
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
+  )
+
+  # Copy Resources folder then
+  add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_CURRENT_SOURCE_DIR}/Resources/"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/Resources/"
+  )
+
+  # Run windeployqt
+  add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND Qt6::windeployqt
+      --dir "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+      "$<TARGET_FILE_DIR:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+  )
+
+  set_target_properties(${TARGET_NAME} PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${TARGET_NAME}>"
+  )
+
+endfunction()
+
+add_subdirectory(Canavar/Engine)
+add_subdirectory(Canavar/Editor)

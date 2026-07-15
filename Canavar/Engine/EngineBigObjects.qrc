@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/Sky/SkyRGB.data</file>
+        <file>Resources/Sky/SkyRGBRad.data</file>
+        <file>Resources/Terrain/Beach/Albedo.jpg</file>
+        <file>Resources/Terrain/Grass/Albedo.jpg</file>
+        <file>Resources/Terrain/Rock/Albedo.jpg</file>
+        <file>Resources/Terrain/Snow/Albedo.jpg</file>
+        <file>Resources/Terrain/Beach/Normal.jpg</file>
+        <file>Resources/Terrain/Grass/Normal.jpg</file>
+        <file>Resources/Terrain/Rock/Normal.jpg</file>
+        <file>Resources/Terrain/Snow/Normal.jpg</file>
+        <file>Resources/Terrain/Beach/Displacement.jpg</file>
+        <file>Resources/Terrain/Grass/Displacement.jpg</file>
+        <file>Resources/Terrain/Rock/Displacement.jpg</file>
+        <file>Resources/Terrain/Snow/Displacement.jpg</file>
+    </qresource>
+</RCC>

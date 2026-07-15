@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/Shaders/Screen.frag</file>
+        <file>Resources/Shaders/Quad.vert</file>
+        <file>Resources/Shaders/TexturedModel.frag</file>
+        <file>Resources/Shaders/TexturedModel.vert</file>
+        <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
+    </qresource>
+</RCC>
