@@ -104,12 +104,12 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         {
             if (ImGui::MenuItem("Free Camera"))
             {
-                mSelectedNode = mNodeManager->CreateCamera<FreeCamera>();
+                mSelectedNode = mNodeManager->CreateNode<FreeCamera>();
             }
 
             if (ImGui::MenuItem("Persecutor Camera"))
             {
-                mSelectedNode = mNodeManager->CreateCamera<PersecutorCamera>();
+                mSelectedNode = mNodeManager->CreateNode<PersecutorCamera>();
             }
 
             ImGui::EndMenu();
@@ -120,12 +120,12 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         {
             if (ImGui::MenuItem("Point Light"))
             {
-                mSelectedNode = mNodeManager->CreateLight<PointLight>();
+                mSelectedNode = mNodeManager->CreateNode<PointLight>();
             }
 
             if (ImGui::MenuItem("Directional Light"))
             {
-                mSelectedNode = mNodeManager->CreateLight<DirectionalLight>();
+                mSelectedNode = mNodeManager->CreateNode<DirectionalLight>();
             }
 
             ImGui::EndMenu();
@@ -151,7 +151,7 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
                     const auto &ModelName = Iterator.key();
                     if (ImGui::MenuItem(ModelName.toStdString().c_str()))
                     {
-                        mSelectedNode = mNodeManager->CreateTexturedModel<TexturedModel>(ModelName);
+                        mSelectedNode = mNodeManager->CreateNode<TexturedModel>(ModelName);
                     }
                 }
             }

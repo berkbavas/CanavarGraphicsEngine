@@ -24,75 +24,53 @@ namespace Canavar::Engine
 
         void Initialize();
 
-        template<typename T>
-        T *CreateCamera()
-        {
-            static_assert(std::is_base_of<Camera, T>::value, "T must be derived from Camera");
-            auto pCamera = std::make_unique<T>();
-            pCamera->SetNodeId(mNextNodeId++);
-
-            T *pCameraRawPtr = pCamera.get();
-
-            mCameras.push_back(std::move(pCamera));
-            mNodes.push_back(pCameraRawPtr);
-            mObjects.push_back(pCameraRawPtr);
-
-            return pCameraRawPtr;
-        }
-
-        template<typename T>
-        T *CreateLight()
-        {
-            static_assert(std::is_base_of<Light, T>::value, "T must be derived from Light");
-            auto pLight = std::make_unique<T>();
-            pLight->SetNodeId(mNextNodeId++);
-            T *pLightRawPtr = pLight.get();
-
-            mLights.push_back(std::move(pLight));
-            mNodes.push_back(pLightRawPtr);
-            mObjects.push_back(pLightRawPtr);
-
-            if constexpr (std::is_same<T, PointLight>::value)
-            {
-                mPointLights.push_back(pLightRawPtr);
-            }
-            else if constexpr (std::is_same<T, DirectionalLight>::value)
-            {
-                mDirectionalLights.push_back(pLightRawPtr);
-            }
-
-            mLightManager->AddLight(pLightRawPtr);
-
-            return pLightRawPtr;
-        }
-
-        template<typename T>
-        T *CreateTexturedModel(const QString &ModelName)
-        {
-            static_assert(std::is_base_of<TexturedModel, T>::value, "T must be derived from TexturedModel");
-            auto pTexturedModel = std::make_unique<T>(ModelName);
-            pTexturedModel->SetNodeId(mNextNodeId++);
-
-            T *pTexturedModelRawPtr = pTexturedModel.get();
-            mTexturedModels.push_back(std::move(pTexturedModel));
-            mNodes.push_back(pTexturedModelRawPtr);
-            mObjects.push_back(pTexturedModelRawPtr);
-
-            return pTexturedModelRawPtr;
-        }
-
         template<typename T, typename... Args>
-        T *CreateGlobalNode(Args&&... args)
-        { 
-            static_assert(std::is_base_of<GlobalNode, T>::value, "T must be derived from GlobalNode");
-            auto pGlobalNode = std::make_unique<T>(std::forward<Args>(args)...);
-            pGlobalNode->SetNodeId(mNextNodeId++);
+        T *CreateNode(Args &&...args)
+        {
+            static_assert(std::is_base_of_v<Camera, T> ||            //
+                              std::is_base_of_v<Light, T> ||         //
+                              std::is_base_of_v<TexturedModel, T> || //
+                              std::is_base_of_v<GlobalNode, T>,      //
+                          "T must be derived from Camera, Light, TexturedModel, or GlobalNode");
 
-            T *pGlobalNodeRawPtr = pGlobalNode.get();
-            mNodes.push_back(pGlobalNodeRawPtr);
-            mGlobalNodes.push_back(std::move(pGlobalNode));
+            auto pNode = std::make_unique<T>(std::forward<Args>(args)...);
+            pNode->SetNodeId(mNextNodeId++);
+            T *pRawPtr = pNode.get();
 
-            return pGlobalNodeRawPtr;
+            mNodes.push_back(pRawPtr);
+
+            if constexpr (std::is_base_of_v<Camera, T>)
+            {
+                mCameras.push_back(std::move(pNode));
+                mObjects.push_back(pRawPtr);
+            }
+            else if constexpr (std::is_base_of_v<Light, T>)
+            {
+                mLights.push_back(std::move(pNode));
+                mObjects.push_back(pRawPtr);
+
+                if constexpr (std::is_same_v<T, PointLight>)
+                {
+                    mPointLights.push_back(pRawPtr);
+                }
+                else if constexpr (std::is_same_v<T, DirectionalLight>)
+                {
+                    mDirectionalLights.push_back(pRawPtr);
+                }
+
+                mLightManager->AddLight(pRawPtr);
+            }
+            else if constexpr (std::is_base_of_v<TexturedModel, T>)
+            {
+                mTexturedModels.push_back(std::move(pNode));
+                mObjects.push_back(pRawPtr);
+            }
+            else if constexpr (std::is_base_of_v<GlobalNode, T>)
+            {
+                mGlobalNodes.push_back(std::move(pNode));
+            }
+
+            return pRawPtr;
         }
 
         void RemoveNode(Node *pNode);

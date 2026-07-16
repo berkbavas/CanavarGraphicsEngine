@@ -393,21 +393,21 @@ void Canavar::Engine::Renderer::CreateFreeCameraIfAbsent()
 {
     if (mCameraManager->GetActiveCamera() == nullptr)
     {
-        FreeCamera *pCamera = mNodeManager->CreateCamera<FreeCamera>();
+        FreeCamera *pCamera = mNodeManager->CreateNode<FreeCamera>();
         mCameraManager->SetActiveCamera(pCamera);
     }
 }
 
 void Canavar::Engine::Renderer::CreateDirectionalLights()
 {
-    mSun = mNodeManager->CreateLight<DirectionalLight>();
+    mSun = mNodeManager->CreateNode<DirectionalLight>();
     mSun->SetDirection(QVector3D(-1, -1, -1).normalized());
 
     QVector3D Directions[5] = { UP, LEFT, RIGHT, FORWARD, BACKWARD };
 
     for (const QVector3D &Direction : Directions)
     {
-        DirectionalLight *pLight = mNodeManager->CreateLight<DirectionalLight>();
+        DirectionalLight *pLight = mNodeManager->CreateNode<DirectionalLight>();
         pLight->SetAmbient(0.125f);
         pLight->SetDiffuse(0.5f);
         pLight->SetRadiance(4.0f);
@@ -417,9 +417,9 @@ void Canavar::Engine::Renderer::CreateDirectionalLights()
 
 void Canavar::Engine::Renderer::CreateGlobalNodes()
 {
-    mSky = mNodeManager->CreateGlobalNode<Sky>();
-    mHaze = mNodeManager->CreateGlobalNode<Haze>();
-    mTerrain = mNodeManager->CreateGlobalNode<Terrain>(this);
+    mSky = mNodeManager->CreateNode<Sky>();
+    mHaze = mNodeManager->CreateNode<Haze>();
+    mTerrain = mNodeManager->CreateNode<Terrain>(this);
 }
 
 void Canavar::Engine::Renderer::ApplyPostProcessEffects()
