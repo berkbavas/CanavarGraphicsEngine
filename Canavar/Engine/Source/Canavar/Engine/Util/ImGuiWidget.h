@@ -3,6 +3,14 @@
 #include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
+#include "Canavar/Engine/PostProcessEffect/AcesEffect.h"
+#include "Canavar/Engine/PostProcessEffect/ChromaticAberrationEffect.h"
+#include "Canavar/Engine/PostProcessEffect/CinematicEffect.h"
+#include "Canavar/Engine/PostProcessEffect/ColorGradingEffect.h"
+#include "Canavar/Engine/PostProcessEffect/DepthOfFieldEffect.h"
+#include "Canavar/Engine/PostProcessEffect/FxaaEffect.h"
+#include "Canavar/Engine/PostProcessEffect/LensDistortionEffect.h"
+#include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
 
 #include <QtImGui.h>
 
@@ -48,6 +56,7 @@ namespace Canavar::Engine
         void DrawSkyProperties();
         void DrawHazeProperties();
         void DrawTerrainProperties();
+        void DrawPostProcessPanel();
 
         // --- Helpers ---
         void ValidateSelectedNode();

@@ -13,6 +13,14 @@
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
+#include "Canavar/Engine/PostProcessEffect/AcesEffect.h"
+#include "Canavar/Engine/PostProcessEffect/ChromaticAberrationEffect.h"
+#include "Canavar/Engine/PostProcessEffect/CinematicEffect.h"
+#include "Canavar/Engine/PostProcessEffect/ColorGradingEffect.h"
+#include "Canavar/Engine/PostProcessEffect/DepthOfFieldEffect.h"
+#include "Canavar/Engine/PostProcessEffect/FxaaEffect.h"
+#include "Canavar/Engine/PostProcessEffect/LensDistortionEffect.h"
+#include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
@@ -38,6 +46,18 @@ namespace Canavar::Engine
         Sky* GetSky() const;
         Haze* GetHaze() const;
         Terrain* GetTerrain() const;
+
+        AcesEffect* GetAcesEffect() const;
+        DepthOfFieldEffect* GetDepthOfFieldEffect() const;
+        FxaaEffect* GetFxaaEffect() const;
+        ColorGradingEffect* GetColorGradingEffect() const;
+        SharpenEffect* GetSharpenEffect() const;
+        ChromaticAberrationEffect* GetChromaticAberrationEffect() const;
+        LensDistortionEffect* GetLensDistortionEffect() const;
+        CinematicEffect* GetCinematicEffect() const;
+
+        bool GetPostProcessEffectEnabled(PostProcessEffectType Type) const;
+        void SetPostProcessEffectEnabled(PostProcessEffectType Type, bool Enabled);
 
         PerspectiveCamera* GetActiveCamera() const;
 
@@ -65,6 +85,8 @@ namespace Canavar::Engine
         void CreateDirectionalLights();
         void CreateGlobalNodes();
 
+        void ApplyPostProcessEffects();
+
         OpenGLWidget* mOpenGLWidget{ nullptr };
         RenderingContext* mRenderingContext{ nullptr };
 
@@ -83,9 +105,21 @@ namespace Canavar::Engine
         std::map<FramebufferType, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
         std::map<FramebufferType, QVector<GLenum>> mFramebufferExtraColorAttachments;
 
+        std::map<PostProcessEffectType, bool> mPostProcessEffectEnabled;
+        std::map<PostProcessEffectType, PostProcessEffect*> mPostProcessEffects;
+
+        AcesEffectPtr mAcesEffect{ nullptr };
+        DepthOfFieldEffectPtr mDepthOfFieldEffect{ nullptr };
+        ColorGradingEffectPtr mColorGradingEffect{ nullptr };
+        SharpenEffectPtr mSharpenEffect{ nullptr };
+        FxaaEffectPtr mFxaaEffect{ nullptr };
+        ChromaticAberrationEffectPtr mChromaticAberrationEffect{ nullptr };
+        LensDistortionEffectPtr mLensDistortionEffect{ nullptr };
+        CinematicEffectPtr mCinematicEffect{ nullptr };
+
         Sky* mSky{ nullptr };
         Haze* mHaze{ nullptr };
-        Terrain*   mTerrain{ nullptr };
+        Terrain* mTerrain{ nullptr };
 
         int mWidth{ 1600 };
         int mHeight{ 900 };

@@ -38,6 +38,20 @@ namespace Canavar::Engine
     {
         Multisample,
         Singlesample,
+        Ping,
+        Pong,
     };
 
+    enum class PostProcessEffectType
+    {
+        None,
+        DepthOfField,        // Bokeh depth of field (runs first, before tone mapping)
+        Aces,                // ACES tone mapping (HDR -> LDR)
+        ColorGrading,        // Brightness / contrast / saturation / temperature
+        Sharpen,             // Unsharp-mask image sharpening
+        Fxaa,                // Fast Approximate Anti-Aliasing
+        ChromaticAberration, // RGB channel separation at screen edges
+        LensDistortion,      // Barrel / pincushion lens distortion
+        Cinematic,           // Vignette + film grain (applied last)
+    };
 }

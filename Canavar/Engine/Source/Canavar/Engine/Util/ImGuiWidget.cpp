@@ -5,6 +5,7 @@
 #include "Canavar/Engine/Camera/PersecutorCamera.h"
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Core/Constants.h"
+#include "Canavar/Engine/Core/Enums.h"
 #include "Canavar/Engine/GlobalNode/Haze/Haze.h"
 #include "Canavar/Engine/GlobalNode/Sky/Sky.h"
 #include "Canavar/Engine/GlobalNode/Terrain/Terrain.h"
@@ -71,6 +72,7 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
     DrawSkyProperties();
     DrawHazeProperties();
     DrawTerrainProperties();
+    DrawPostProcessPanel();
     DrawStats(Ifps);
     ImGui::End();
 
@@ -616,6 +618,178 @@ void Canavar::Engine::ImGuiWidget::DrawTerrainProperties()
         ImGui::SliderFloat("Diffuse##DrawTerrainProperties", &pTerrain->GetDiffuse_NonConst(), 0.0f, 1.0f);
         ImGui::SliderFloat("Specular##DrawTerrainProperties", &pTerrain->GetSpecular_NonConst(), 0.0f, 1.0f);
         ImGui::SliderFloat("Shininess##DrawTerrainProperties", &pTerrain->GetShininess_NonConst(), 1.0f, 512.0f);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Post-Process Effects Panel
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
+{
+    if (!ImGui::CollapsingHeader("Post-Process Effects##DrawPostProcessPanel"))
+    {
+        return;
+    }
+
+    // ── ACES Tone Mapping ─────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::Aces);
+        if (ImGui::Checkbox("ACES Tone Mapping##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::Aces, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            AcesEffect *pAces = mRenderer->GetAcesEffect();
+            ImGui::SliderFloat("Exposure##DrawPostProcessPanel_Aces", &pAces->GetExposure_NonConst(), 0.1f, 2.0f);
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── Depth of Field ────────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::DepthOfField);
+        if (ImGui::Checkbox("Depth of Field##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::DepthOfField, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            DepthOfFieldEffect *pDOF = mRenderer->GetDepthOfFieldEffect();
+            ImGui::DragFloat("Focus Distance##DrawPostProcessPanel_DOF", &pDOF->GetFocusDistance_NonConst(), 1.0f, 0.1f, 1'000'000.0f);
+            ImGui::DragFloat("Focus Range##DrawPostProcessPanel_DOF",    &pDOF->GetFocusRange_NonConst(),    1.0f, 0.1f, 100'000.0f);
+            ImGui::SliderFloat("Max Blur Radius (px)##DrawPostProcessPanel_DOF", &pDOF->GetMaxBlurRadius_NonConst(), 1.0f, 64.0f);
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── Color Grading ─────────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::ColorGrading);
+        if (ImGui::Checkbox("Color Grading##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::ColorGrading, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            ColorGradingEffect *pCG = mRenderer->GetColorGradingEffect();
+            ImGui::SliderFloat("Brightness##DrawPostProcessPanel_CG", &pCG->GetBrightness_NonConst(), -1.0f, 1.0f);
+            ImGui::SliderFloat("Contrast##DrawPostProcessPanel_CG", &pCG->GetContrast_NonConst(), 0.0f, 3.0f);
+            ImGui::SliderFloat("Saturation##DrawPostProcessPanel_CG", &pCG->GetSaturation_NonConst(), 0.0f, 3.0f);
+            ImGui::SliderFloat("Temperature##DrawPostProcessPanel_CG", &pCG->GetTemperature_NonConst(), -1.0f, 1.0f);
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── Sharpen ───────────────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::Sharpen);
+        if (ImGui::Checkbox("Sharpen##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::Sharpen, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            SharpenEffect *pSharpen = mRenderer->GetSharpenEffect();
+            ImGui::SliderFloat("Strength##DrawPostProcessPanel_Sharpen", &pSharpen->GetStrength_NonConst(), 0.0f, 3.0f);
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── FXAA ──────────────────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::Fxaa);
+        if (ImGui::Checkbox("FXAA##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::Fxaa, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            FxaaEffect *pFxaa = mRenderer->GetFxaaEffect();
+            ImGui::SliderFloat("Subpixel Quality##DrawPostProcessPanel_Fxaa", &pFxaa->GetSubpixelQuality_NonConst(), 0.0f, 1.0f);
+            ImGui::SliderFloat("Edge Threshold##DrawPostProcessPanel_Fxaa", &pFxaa->GetEdgeThreshold_NonConst(), 0.063f, 0.333f);
+            ImGui::SliderFloat("Edge Threshold Min##DrawPostProcessPanel_Fxaa", &pFxaa->GetEdgeThresholdMin_NonConst(), 0.0f, 0.0833f);
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── Chromatic Aberration ───────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::ChromaticAberration);
+        if (ImGui::Checkbox("Chromatic Aberration##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::ChromaticAberration, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            ChromaticAberrationEffect *pCA = mRenderer->GetChromaticAberrationEffect();
+            ImGui::SliderFloat("Strength##DrawPostProcessPanel_CA", &pCA->GetStrength_NonConst(), 0.0f, 0.02f, "%.4f");
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── Lens Distortion ───────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::LensDistortion);
+        if (ImGui::Checkbox("Lens Distortion##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::LensDistortion, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            LensDistortionEffect *pLD = mRenderer->GetLensDistortionEffect();
+            ImGui::SliderFloat("Barrel##DrawPostProcessPanel_LD",  &pLD->GetBarrel_NonConst(), -0.5f, 0.5f);
+            ImGui::SliderFloat("Zoom##DrawPostProcessPanel_LD",    &pLD->GetZoom_NonConst(),   0.5f,  1.0f);
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
+    // ── Cinematic ─────────────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::Cinematic);
+        if (ImGui::Checkbox("Cinematic##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::Cinematic, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            CinematicEffect *pCin = mRenderer->GetCinematicEffect();
+            ImGui::SliderFloat("Vignette Radius##DrawPostProcessPanel_Cin", &pCin->GetVignetteRadius_NonConst(), 0.0f, 2.0f);
+            ImGui::SliderFloat("Vignette Softness##DrawPostProcessPanel_Cin", &pCin->GetVignetteSoftness_NonConst(), 0.0f, 1.0f);
+            ImGui::SliderFloat("Grain Strength##DrawPostProcessPanel_Cin", &pCin->GetGrainStrength_NonConst(), 0.0f, 0.5f);
+            ImGui::Unindent();
+        }
     }
 }
 

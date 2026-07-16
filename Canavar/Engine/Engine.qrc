@@ -10,6 +10,14 @@
         <file>Resources/Shaders/Terrain.vert</file>
         <file>Resources/Shaders/Terrain.tesc</file>
         <file>Resources/Shaders/Terrain.tese</file>
+        <file>Resources/Shaders/Cinematic.frag</file>
+        <file>Resources/Shaders/Aces.frag</file>
+        <file>Resources/Shaders/Fxaa.frag</file>
+        <file>Resources/Shaders/ColorGrading.frag</file>
+        <file>Resources/Shaders/Sharpen.frag</file>
+        <file>Resources/Shaders/ChromaticAberration.frag</file>
+        <file>Resources/Shaders/LensDistortion.frag</file>
+        <file>Resources/Shaders/DepthOfField.frag</file>
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>
 </RCC>

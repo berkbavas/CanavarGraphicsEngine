@@ -30,18 +30,19 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mFramebufferFormats[Multisample].setSamples(NUM_SAMPLES);
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
-
-    // Set extra color attachments for multisample framebuffer
-    // OutFragLocalPosition, OutFragWorldPosition, OutNodeInfo
     mFramebufferExtraColorAttachments[Multisample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F };
 
     mFramebufferFormats[Singlesample].setSamples(0);
     mFramebufferFormats[Singlesample].setMipmap(false);
     mFramebufferFormats[Singlesample].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-
-    // Set extra color attachments for singlesample framebuffer
-    // OutFragLocalPosition, OutFragWorldPosition, OutNodeInfo
     mFramebufferExtraColorAttachments[Singlesample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F };
+
+    mFramebufferFormats[Ping].setSamples(0);
+    mFramebufferFormats[Ping].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+
+    mFramebufferFormats[Pong].setSamples(0);
+    mFramebufferFormats[Pong].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+
 }
 
 Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() const
@@ -72,6 +73,57 @@ Canavar::Engine::Haze *Canavar::Engine::Renderer::GetHaze() const
 Canavar::Engine::Terrain *Canavar::Engine::Renderer::GetTerrain() const
 {
     return mTerrain;
+}
+
+Canavar::Engine::AcesEffect *Canavar::Engine::Renderer::GetAcesEffect() const
+{
+    return mAcesEffect.get();
+}
+
+Canavar::Engine::DepthOfFieldEffect *Canavar::Engine::Renderer::GetDepthOfFieldEffect() const
+{
+    return mDepthOfFieldEffect.get();
+}
+
+Canavar::Engine::FxaaEffect *Canavar::Engine::Renderer::GetFxaaEffect() const
+{
+    return mFxaaEffect.get();
+}
+
+Canavar::Engine::ColorGradingEffect *Canavar::Engine::Renderer::GetColorGradingEffect() const
+{
+    return mColorGradingEffect.get();
+}
+
+Canavar::Engine::SharpenEffect *Canavar::Engine::Renderer::GetSharpenEffect() const
+{
+    return mSharpenEffect.get();
+}
+
+Canavar::Engine::ChromaticAberrationEffect *Canavar::Engine::Renderer::GetChromaticAberrationEffect() const
+{
+    return mChromaticAberrationEffect.get();
+}
+
+Canavar::Engine::LensDistortionEffect *Canavar::Engine::Renderer::GetLensDistortionEffect() const
+{
+    return mLensDistortionEffect.get();
+}
+
+Canavar::Engine::CinematicEffect *Canavar::Engine::Renderer::GetCinematicEffect() const
+{
+    return mCinematicEffect.get();
+}
+
+bool Canavar::Engine::Renderer::GetPostProcessEffectEnabled(PostProcessEffectType Type) const
+{
+    auto It = mPostProcessEffectEnabled.find(Type);
+    return (It != mPostProcessEffectEnabled.end()) && It->second;
+}
+
+void Canavar::Engine::Renderer::SetPostProcessEffectEnabled(PostProcessEffectType Type, bool Enabled)
+{
+    mPostProcessEffectEnabled[Type] = Enabled;
 }
 
 Canavar::Engine::PerspectiveCamera *Canavar::Engine::Renderer::GetActiveCamera() const
@@ -133,6 +185,39 @@ void Canavar::Engine::Renderer::Initialize()
     mScreenShader->Initialize();
 
     mQuad = std::make_unique<Quad>();
+
+    // Post-process effects (order determines pipeline execution)
+    mAcesEffect = std::make_unique<AcesEffect>();
+    mPostProcessEffects[PostProcessEffectType::Aces] = mAcesEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::Aces] = false;
+
+    mDepthOfFieldEffect = std::make_unique<DepthOfFieldEffect>();
+    mPostProcessEffects[PostProcessEffectType::DepthOfField] = mDepthOfFieldEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::DepthOfField] = false;
+
+    mColorGradingEffect = std::make_unique<ColorGradingEffect>();
+    mPostProcessEffects[PostProcessEffectType::ColorGrading] = mColorGradingEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::ColorGrading] = false;
+
+    mSharpenEffect = std::make_unique<SharpenEffect>();
+    mPostProcessEffects[PostProcessEffectType::Sharpen] = mSharpenEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::Sharpen] = false;
+
+    mFxaaEffect = std::make_unique<FxaaEffect>();
+    mPostProcessEffects[PostProcessEffectType::Fxaa] = mFxaaEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::Fxaa] = false;
+
+    mChromaticAberrationEffect = std::make_unique<ChromaticAberrationEffect>();
+    mPostProcessEffects[PostProcessEffectType::ChromaticAberration] = mChromaticAberrationEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::ChromaticAberration] = false;
+
+    mLensDistortionEffect = std::make_unique<LensDistortionEffect>();
+    mPostProcessEffects[PostProcessEffectType::LensDistortion] = mLensDistortionEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::LensDistortion] = false;
+
+    mCinematicEffect = std::make_unique<CinematicEffect>();
+    mPostProcessEffects[PostProcessEffectType::Cinematic] = mCinematicEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::Cinematic] = true;
 
     CreateFreeCameraIfAbsent();
     CreateDirectionalLights();
@@ -198,6 +283,8 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT2);
     mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT3);
 
+    ApplyPostProcessEffects(); // Pong contains the final result after all post-processing effects have been applied.
+
     QOpenGLFramebufferObject::bindDefault();
     glViewport(0, 0, mWidth * mDevicePixelRatio, mHeight * mDevicePixelRatio);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -205,7 +292,7 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     glDisable(GL_DEPTH_TEST);
 
     mScreenShader->Bind();
-    mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Singlesample]->GetTexture());
+    mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Pong]->GetTexture());
     mQuad->Render();
     mScreenShader->Unbind();
 
@@ -333,4 +420,35 @@ void Canavar::Engine::Renderer::CreateGlobalNodes()
     mSky = mNodeManager->CreateGlobalNode<Sky>();
     mHaze = mNodeManager->CreateGlobalNode<Haze>();
     mTerrain = mNodeManager->CreateGlobalNode<Terrain>(this);
+}
+
+void Canavar::Engine::Renderer::ApplyPostProcessEffects()
+{
+    // Singlesample -> Pong
+    mFramebuffers[Singlesample]->BlitColorBufferTo(mFramebuffers[Pong].get(), GL_COLOR_ATTACHMENT0);
+
+    // Supply per-frame depth data to the DOF effect before the pipeline runs
+    {
+        const auto Textures = mFramebuffers[Singlesample]->GetTextures();
+        if (Textures.size() > 2)
+        {
+            mDepthOfFieldEffect->SetWorldPositionTexture(Textures[2]); // COLOR_ATTACHMENT2 = World Position
+        }
+        if (PerspectiveCamera* pCamera = mCameraManager->GetActiveCamera())
+        {
+            mDepthOfFieldEffect->SetCameraPosition(pCamera->GetPosition());
+        }
+    }
+
+    for (const auto &[EffectType, pEffect] : mPostProcessEffects)
+    {
+        if (mPostProcessEffectEnabled[EffectType])
+        {
+            pEffect->ApplyEffect(mFramebuffers[Pong].get(), mFramebuffers[Ping].get());
+
+            // Ping -> Pong
+            // Ensure that final result is written to Pong framebuffer for the next effect in the chain
+            mFramebuffers[Ping]->BlitColorBufferTo(mFramebuffers[Pong].get(), GL_COLOR_ATTACHMENT0);
+        }
+    }
 }
