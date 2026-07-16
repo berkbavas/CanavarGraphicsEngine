@@ -23,22 +23,19 @@ namespace Canavar::Engine
 
         void Initialize() override;
         void Render(RenderPass RenderPass) override;
+        void RenderOverlay(RenderPass RenderPass) override;
         void Resize(int Width, int Height) override;
 
       private:
-        // Render Disk / Plane / Sphere using the Primitive shader
-        void RenderSolidPrimitives(RenderPass RenderPass, PerspectiveCamera *pCamera);
-
-        // Render Circle / Line using the CircleLine shader (geometry stage)
-        void RenderLinePrimitives(PerspectiveCamera *pCamera);
-
-        void SetSolidCommonUniforms(PerspectiveCamera *pCamera);
-        void SetLineCommonUniforms(PerspectiveCamera *pCamera);
+        void RenderPrimitiveModels(RenderPass RenderPass, bool OverlayPass, PerspectiveCamera *pCamera);
+        bool ShouldRenderPrimitiveModel(PrimitiveModel *pPrimitiveModel, RenderPass RenderPass, bool OverlayPass) const;
+        void SetCommonUniforms(PerspectiveCamera *pCamera);
 
         Renderer *mRenderer{ nullptr };
         NodeManager *mNodeManager{ nullptr };
 
         std::map<PrimitiveType, GeometryBasePtr> mGeometries;
+        std::map<PrimitiveType, Shader *> mShaders;
 
         ShaderPtr mPrimitiveShader{ nullptr };  // Disk, Plane, Sphere
         ShaderPtr mCircleLineShader{ nullptr }; // Circle, Line

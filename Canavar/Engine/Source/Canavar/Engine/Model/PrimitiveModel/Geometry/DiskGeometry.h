@@ -2,19 +2,44 @@
 
 #include "Canavar/Engine/Model/PrimitiveModel/Geometry/GeometryBase.h"
 
+#include <QVector3D>
+#include <QVector>
+
 namespace Canavar::Engine
 {
-    // Generates a filled unit disk in the XZ plane (Y=0).
-    // Vertex layout: location 0 = position (vec3), location 1 = normal (vec3).
-    // Use with the Primitive shader.
-    class DiskGeometry final : public GeometryBase
+    class DiskGeometry : public GeometryBase
     {
       public:
-        explicit DiskGeometry(int Segments = 64);
-        void Initialize() override;
+        explicit DiskGeometry(float Radius, int SegmentCount);
+        ~DiskGeometry() override;
+
+        void Render() override;
 
       private:
-        int mSegments;
+        struct Vertex
+        {
+            QVector3D Position;
+            QVector3D Normal;
+        };
+
+        struct TriangleFace
+        {
+            unsigned int Index0;
+            unsigned int Index1;
+            unsigned int Index2;
+        };
+
+        void CreateGeometry(float Radius, int SegmentCount);
+
+        GLuint mVAO{ 0 };
+        GLuint mVBO{ 0 };
+        GLuint mEBO{ 0 };
+
+        QVector<Vertex> mVertices;
+        QVector<TriangleFace> mFaces;
+
+        int mNumberOfFaces{ 0 };
     };
 
-} // namespace Canavar::Engine
+    using DiskGeometryPtr = std::unique_ptr<DiskGeometry>;
+}

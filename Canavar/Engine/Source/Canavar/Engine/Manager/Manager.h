@@ -21,6 +21,7 @@ namespace Canavar::Engine
         virtual void PostInitialize();
         virtual void Update(float Ifps);
         virtual void Render(RenderPass RenderPass);
+        virtual void RenderOverlay(RenderPass RenderPass);
         virtual void DrawImGuiWidget();
         virtual void Resize(int Width, int Height);
         virtual void Paint(QPaintDevice *pPaintDevice);

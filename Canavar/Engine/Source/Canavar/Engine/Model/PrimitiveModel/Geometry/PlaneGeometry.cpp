@@ -1,43 +1,84 @@
 #include "PlaneGeometry.h"
 
-void Canavar::Engine::PlaneGeometry::Initialize()
+#include "Canavar/Engine/Util/Logger.h"
+
+#include <QVector3D>
+
+Canavar::Engine::PlaneGeometry::PlaneGeometry()
 {
+    LOG_DEBUG("PlaneGeometry::PlaneGeometry: Initializing PlaneGeometry...");
+
+    struct Vertex
+    {
+        QVector3D Position;
+        QVector3D Normal;
+    };
+
+    //               +y
+    //                |
+    //      (-1,1,0) |   (1,1,0)
+    //        B *-----|------* A
+    //          |     |      |
+    //  -x <----|-----*------|----> +x
+    //          |     |      |
+    //        C *-----|------* D
+    //      (-1,-1,0)  |   (1,-1,0)
+    //                |
+    //               -y
+
+    constexpr QVector3D A = QVector3D(1, 1, 0);
+    constexpr QVector3D B = QVector3D(-1, 1, 0);
+    constexpr QVector3D C = QVector3D(-1, -1, 0);
+    constexpr QVector3D D = QVector3D(1, -1, 0);
+    constexpr QVector3D NORMAL = QVector3D(0, 0, -1);
+
+    constexpr Vertex VERTICES[6] = { { A, NORMAL },   //
+                                     { B, NORMAL },   //
+                                     { C, NORMAL },   //
+                                     { C, NORMAL },   //
+                                     { D, NORMAL },   //
+                                     { A, NORMAL } }; //
     initializeOpenGLFunctions();
-
-    // position(3) + normal(3) per vertex
-    const float Vertices[] = {
-        -0.5f, 0.0f, -0.5f, 0.0f, 1.0f, 0.0f, //
-        0.5f,  0.0f, -0.5f, 0.0f, 1.0f, 0.0f, //
-        0.5f,  0.0f, 0.5f,  0.0f, 1.0f, 0.0f, //
-        -0.5f, 0.0f, 0.5f,  0.0f, 1.0f, 0.0f, //
-    };
-
-    const unsigned int Indices[] = {
-        0, 1, 2, 0, 2, 3,
-    };
-
-    mMode = GL_TRIANGLES;
-    mCount = 6;
-    mUseEBO = true;
-
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
 
-    glGenBuffers(1, &mEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
-
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
 
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Position));
     glEnableVertexAttribArray(0);
 
-    // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, Normal));
     glEnableVertexAttribArray(1);
 
+    glBindVertexArray(0);
+
+    LOG_DEBUG("PlaneGeometry::PlaneGeometry: PlaneGeometry has been initialized.");
+}
+
+Canavar::Engine::PlaneGeometry::~PlaneGeometry()
+{
+    LOG_DEBUG("PlaneGeometry::~PlaneGeometry: Deleting OpenGL stuff...");
+
+    if (mVAO)
+    {
+        glDeleteVertexArrays(1, &mVAO);
+        mVAO = 0;
+    }
+
+    if (mVBO)
+    {
+        glDeleteBuffers(1, &mVBO);
+        mVBO = 0;
+    }
+
+    LOG_DEBUG("PlaneGeometry::~PlaneGeometry: OpenGL stuff has been deleted.");
+}
+
+void Canavar::Engine::PlaneGeometry::Render()
+{
+    glBindVertexArray(mVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);
 }

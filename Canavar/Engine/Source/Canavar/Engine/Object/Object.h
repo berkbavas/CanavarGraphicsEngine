@@ -24,10 +24,10 @@ namespace Canavar::Engine
         const QMatrix3x3& GetNormalMatrix() const;
 
         // World-space accessors (walks up the parent chain).
-        QMatrix4x4  GetWorldTransformation() const;
-        QVector3D   GetWorldPosition() const;
+        QMatrix4x4 GetWorldTransformation() const;
+        QVector3D GetWorldPosition() const;
         QQuaternion GetWorldRotation() const;
-        QVector3D   GetWorldScale() const;
+        QVector3D GetWorldScale() const;
 
         void SetTransformation(const QMatrix4x4& NewTransformation);
         void SetRotation(const QQuaternion& NewRotation);

@@ -14,20 +14,24 @@ bool Canavar::Engine::PersecutorCamera::OnMousePressed(QMouseEvent* pEvent)
     {
         return false;
     }
+    
+    bool Consumed = false;
 
     if (pEvent->buttons().testFlag(Qt::MiddleButton))
     {
         mMouse.SetButtonPressed(Qt::MiddleButton, true);
         mMouse.SetLastPressPosition(Qt::MiddleButton, pEvent->position());
+        Consumed = true;
     }
 
     if (pEvent->buttons().testFlag(Qt::RightButton))
     {
         mMouse.SetButtonPressed(Qt::RightButton, true);
         mMouse.SetLastPressPosition(Qt::RightButton, pEvent->position());
+        Consumed = true;
     }
 
-    return true;
+    return Consumed;
 }
 
 bool Canavar::Engine::PersecutorCamera::OnMouseReleased(QMouseEvent* pEvent)

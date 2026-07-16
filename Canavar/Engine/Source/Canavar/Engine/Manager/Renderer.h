@@ -22,6 +22,7 @@
 #include "Canavar/Engine/PostProcessEffect/FxaaEffect.h"
 #include "Canavar/Engine/PostProcessEffect/LensDistortionEffect.h"
 #include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
+#include "Canavar/Engine/Util/Gizmo.h"
 #include "Canavar/Engine/Util/Macros.h"
 
 #include <memory>
@@ -48,6 +49,8 @@ namespace Canavar::Engine
         Sky* GetSky() const;
         Haze* GetHaze() const;
         Terrain* GetTerrain() const;
+
+        Gizmo* GetGizmo() const;
 
         AcesEffect* GetAcesEffect() const;
         DepthOfFieldEffect* GetDepthOfFieldEffect() const;
@@ -84,9 +87,9 @@ namespace Canavar::Engine
         void OnLeaveEvent(QEvent* pEvent);
         void ResizeFramebuffers(int Width, int Height);
         void CreateFreeCameraIfAbsent();
+        void CreatePersecutorCameraIfAbsent();
         void CreateDirectionalLights();
         void CreateGlobalNodes();
-
         void ApplyPostProcessEffects();
 
         OpenGLWidget* mOpenGLWidget{ nullptr };
@@ -123,6 +126,9 @@ namespace Canavar::Engine
         Sky* mSky{ nullptr };
         Haze* mHaze{ nullptr };
         Terrain* mTerrain{ nullptr };
+
+        // Gizmo for object manipulation
+        GizmoPtr mGizmo{ nullptr };
 
         int mWidth{ 1600 };
         int mHeight{ 900 };

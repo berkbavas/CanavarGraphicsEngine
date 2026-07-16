@@ -61,6 +61,8 @@ namespace Canavar::Engine
         void DrawTerrainProperties();
         void DrawPostProcessPanel();
 
+        void SetSelectedNode(Node *pNode);
+
         // --- Helpers ---
         void ValidateSelectedNode();
         void DrawNodeTree(Node *pNode);
@@ -72,7 +74,6 @@ namespace Canavar::Engine
 
         // Selection state
         Node *mSelectedNode{ nullptr };
-        Node *mLastSelectedNode{ nullptr };
 
         // Text input buffers
         char mNodeNameBuffer[128]{};

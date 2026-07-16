@@ -21,6 +21,7 @@
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
 #include "Canavar/Engine/Node/Node.h"
 #include "Canavar/Engine/Object/Object.h"
+#include "Canavar/Engine/Util/Gizmo.h"
 
 #include <algorithm>
 #include <cstring>
@@ -106,12 +107,14 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         {
             if (ImGui::MenuItem("Free Camera"))
             {
-                mSelectedNode = mNodeManager->CreateNode<FreeCamera>();
+                const auto pNode = mNodeManager->CreateNode<FreeCamera>();
+                SetSelectedNode(pNode);
             }
 
             if (ImGui::MenuItem("Persecutor Camera"))
             {
-                mSelectedNode = mNodeManager->CreateNode<PersecutorCamera>();
+                const auto pNode = mNodeManager->CreateNode<PersecutorCamera>();
+                SetSelectedNode(pNode);
             }
 
             ImGui::EndMenu();
@@ -122,12 +125,14 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         {
             if (ImGui::MenuItem("Point Light"))
             {
-                mSelectedNode = mNodeManager->CreateNode<PointLight>();
+                const auto pNode = mNodeManager->CreateNode<PointLight>();
+                SetSelectedNode(pNode);
             }
 
             if (ImGui::MenuItem("Directional Light"))
             {
-                mSelectedNode = mNodeManager->CreateNode<DirectionalLight>();
+                const auto pNode = mNodeManager->CreateNode<DirectionalLight>();
+                SetSelectedNode(pNode);
             }
 
             ImGui::EndMenu();
@@ -153,7 +158,8 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
                     const auto &ModelName = Iterator.key();
                     if (ImGui::MenuItem(ModelName.toStdString().c_str()))
                     {
-                        mSelectedNode = mNodeManager->CreateNode<TexturedModel>(ModelName);
+                        const auto pNode = mNodeManager->CreateNode<TexturedModel>(ModelName);
+                        SetSelectedNode(pNode);
                     }
                 }
             }
@@ -166,23 +172,28 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         {
             if (ImGui::MenuItem("Circle"))
             {
-                mSelectedNode = mNodeManager->CreateNode<Circle>();
+                const auto pNode = mNodeManager->CreateNode<Circle>();
+                SetSelectedNode(pNode);
             }
             if (ImGui::MenuItem("Disk"))
             {
-                mSelectedNode = mNodeManager->CreateNode<Disk>();
+                const auto pNode = mNodeManager->CreateNode<Disk>();
+                SetSelectedNode(pNode);
             }
             if (ImGui::MenuItem("Line"))
             {
-                mSelectedNode = mNodeManager->CreateNode<Line>();
+                const auto pNode = mNodeManager->CreateNode<Line>();
+                SetSelectedNode(pNode);
             }
             if (ImGui::MenuItem("Plane"))
             {
-                mSelectedNode = mNodeManager->CreateNode<Plane>();
+                const auto pNode = mNodeManager->CreateNode<Plane>();
+                SetSelectedNode(pNode);
             }
             if (ImGui::MenuItem("Sphere"))
             {
-                mSelectedNode = mNodeManager->CreateNode<Sphere>();
+                const auto pNode = mNodeManager->CreateNode<Sphere>();
+                SetSelectedNode(pNode);
             }
             ImGui::EndMenu();
         }
@@ -210,25 +221,18 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTree(Node *pNode)
 {
     const bool HasChildren = !pNode->GetChildren().empty();
 
-    ImGuiTreeNodeFlags Flags = HasChildren
-        ? (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)
-        : (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
+    ImGuiTreeNodeFlags Flags = HasChildren ? (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick) : (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
 
     if (mSelectedNode == pNode)
     {
         Flags |= ImGuiTreeNodeFlags_Selected;
     }
 
-    const bool Open = ImGui::TreeNodeEx(
-        reinterpret_cast<void*>(static_cast<intptr_t>(pNode->GetNodeId())),
-        Flags,
-        "[%s]  %s",
-        pNode->GetNodeTypeName(),
-        pNode->GetNodeUniqueName().c_str());
+    const bool Open = ImGui::TreeNodeEx(reinterpret_cast<void *>(static_cast<intptr_t>(pNode->GetNodeId())), Flags, "[%s]  %s", pNode->GetNodeTypeName(), pNode->GetNodeUniqueName().c_str());
 
     if (ImGui::IsItemClicked())
     {
-        mSelectedNode = pNode;
+        SetSelectedNode(pNode);
     }
 
     if (HasChildren && Open)
@@ -249,9 +253,8 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
     }
 
     // Only draw root nodes; children are drawn recursively via DrawNodeTree.
-    const auto DrawRootsFrom = [this](auto& List)
-    {
-        for (const auto& pOwned : List)
+    const auto DrawRootsFrom = [this](auto &List) {
+        for (const auto &pOwned : List)
         {
             if (!pOwned->GetParent())
             {
@@ -272,15 +275,6 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
 
 void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
 {
-    // Refresh the name buffer whenever the selected node changes.
-    if (mSelectedNode != mLastSelectedNode)
-    {
-        mLastSelectedNode = mSelectedNode;
-        const auto &Name = mSelectedNode->GetNodeName();
-        std::strncpy(mNodeNameBuffer, Name.c_str(), sizeof(mNodeNameBuffer) - 1);
-        mNodeNameBuffer[sizeof(mNodeNameBuffer) - 1] = '\0';
-    }
-
     // ── Header info ──────────────────────────────────────────────────────────
     if (ImGui::InputText("Name##DrawNodeProperties", mNodeNameBuffer, sizeof(mNodeNameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
     {
@@ -330,8 +324,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
     if (ImGui::Button("Delete Node##DrawNodeProperties", ImVec2(-1, 0)))
     {
         Node *pToDelete = mSelectedNode;
-        mSelectedNode = nullptr;
-        mLastSelectedNode = nullptr;
+        SetSelectedNode(nullptr);
         mRenderer->GetNodeManager()->RemoveNode(pToDelete);
     }
     ImGui::PopStyleColor(2);
@@ -380,9 +373,8 @@ void Canavar::Engine::ImGuiWidget::DrawHierarchyProperties(Node *pNode)
     ImGui::Separator();
     if (ImGui::BeginCombo("Set Parent##DrawHierarchyProperties", "Select node..."))
     {
-        const auto TryListNodes = [&](auto& List)
-        {
-            for (const auto& pOwned : List)
+        const auto TryListNodes = [&](auto &List) {
+            for (const auto &pOwned : List)
             {
                 Node *pCandidate = pOwned.get();
 
@@ -628,13 +620,6 @@ void Canavar::Engine::ImGuiWidget::DrawPrimitiveModelProperties(PrimitiveModel *
 
     // Opacity
     ImGui::SliderFloat("Opacity##DrawPrimitiveModelProperties", &pModel->GetOpacity_NonConst(), 0.0f, 1.0f);
-
-    // Screen-space thickness (Circle and Line only)
-    const auto Type = pModel->GetPrimitiveType();
-    if (Type == PrimitiveType::Circle || Type == PrimitiveType::Line)
-    {
-        ImGui::DragFloat("Thickness (px)##DrawPrimitiveModelProperties", &pModel->GetThickness_NonConst(), 0.5f, 0.5f, 64.0f);
-    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -846,7 +831,7 @@ void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
             ImGui::Indent();
             DepthOfFieldEffect *pDOF = mRenderer->GetDepthOfFieldEffect();
             ImGui::DragFloat("Focus Distance##DrawPostProcessPanel_DOF", &pDOF->GetFocusDistance_NonConst(), 1.0f, 0.1f, 1'000'000.0f);
-            ImGui::DragFloat("Focus Range##DrawPostProcessPanel_DOF",    &pDOF->GetFocusRange_NonConst(),    1.0f, 0.1f, 100'000.0f);
+            ImGui::DragFloat("Focus Range##DrawPostProcessPanel_DOF", &pDOF->GetFocusRange_NonConst(), 1.0f, 0.1f, 100'000.0f);
             ImGui::SliderFloat("Max Blur Radius (px)##DrawPostProcessPanel_DOF", &pDOF->GetMaxBlurRadius_NonConst(), 1.0f, 64.0f);
             ImGui::Unindent();
         }
@@ -947,8 +932,8 @@ void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
         {
             ImGui::Indent();
             LensDistortionEffect *pLD = mRenderer->GetLensDistortionEffect();
-            ImGui::SliderFloat("Barrel##DrawPostProcessPanel_LD",  &pLD->GetBarrel_NonConst(), -0.5f, 0.5f);
-            ImGui::SliderFloat("Zoom##DrawPostProcessPanel_LD",    &pLD->GetZoom_NonConst(),   0.5f,  1.0f);
+            ImGui::SliderFloat("Barrel##DrawPostProcessPanel_LD", &pLD->GetBarrel_NonConst(), -0.5f, 0.5f);
+            ImGui::SliderFloat("Zoom##DrawPostProcessPanel_LD", &pLD->GetZoom_NonConst(), 0.5f, 1.0f);
             ImGui::Unindent();
         }
     }
@@ -975,6 +960,26 @@ void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
     }
 }
 
+void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
+{
+    Gizmo *pGizmo = mRenderer->GetGizmo();
+    pGizmo->Exit();
+
+    mSelectedNode = pNode;
+
+    if (mSelectedNode)
+    {
+        const auto &Name = mSelectedNode->GetNodeName();
+        std::strncpy(mNodeNameBuffer, Name.c_str(), sizeof(mNodeNameBuffer) - 1);
+        mNodeNameBuffer[sizeof(mNodeNameBuffer) - 1] = '\0';
+
+        if (Object *pObject = dynamic_cast<Object *>(mSelectedNode))
+        {
+            pGizmo->Enter(pObject);
+        }
+    }
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
@@ -990,7 +995,6 @@ void Canavar::Engine::ImGuiWidget::ValidateSelectedNode()
     const bool StillAlive = std::any_of(Nodes.begin(), Nodes.end(), [this](Node *pNode) { return pNode == mSelectedNode; });
     if (!StillAlive)
     {
-        mSelectedNode = nullptr;
-        mLastSelectedNode = nullptr;
+        SetSelectedNode(nullptr);
     }
 }

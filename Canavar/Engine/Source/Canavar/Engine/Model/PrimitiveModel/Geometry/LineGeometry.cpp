@@ -1,6 +1,6 @@
 #include "LineGeometry.h"
 
-void Canavar::Engine::LineGeometry::Initialize()
+Canavar::Engine::LineGeometry::LineGeometry()
 {
     initializeOpenGLFunctions();
 
@@ -9,10 +9,6 @@ void Canavar::Engine::LineGeometry::Initialize()
         0.0f, 0.0f, 0.0f, // start
         0.0f, 0.0f, 1.0f, // end
     };
-
-    mMode   = GL_LINES;
-    mCount  = 2;
-    mUseEBO = false;
 
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
@@ -24,5 +20,27 @@ void Canavar::Engine::LineGeometry::Initialize()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
     glEnableVertexAttribArray(0);
 
+    glBindVertexArray(0);
+}
+
+Canavar::Engine::LineGeometry::~LineGeometry()
+{
+    if (mVAO)
+    {
+        glDeleteVertexArrays(1, &mVAO);
+        mVAO = 0;
+    }
+
+    if (mVBO)
+    {
+        glDeleteBuffers(1, &mVBO);
+        mVBO = 0;
+    }
+}
+
+void Canavar::Engine::LineGeometry::Render()
+{
+    glBindVertexArray(mVAO);
+    glDrawArrays(GL_LINES, 0, 2);
     glBindVertexArray(0);
 }

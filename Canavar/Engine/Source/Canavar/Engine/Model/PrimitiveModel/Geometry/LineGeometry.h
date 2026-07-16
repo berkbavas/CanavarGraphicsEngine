@@ -10,8 +10,14 @@ namespace Canavar::Engine
     class LineGeometry final : public GeometryBase
     {
       public:
-        LineGeometry() = default;
-        void Initialize() override;
+        LineGeometry();
+        ~LineGeometry() override;
+
+        void Render() override;
+
+      private:
+        GLuint mVAO{ 0 };
+        GLuint mVBO{ 0 };
     };
 
 } // namespace Canavar::Engine

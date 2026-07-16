@@ -29,6 +29,11 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
 
     AddEventReceiver(mCameraManager.get());
 
+    mGizmo = std::make_unique<Gizmo>(this);
+
+    AddEventReceiver(mGizmo.get());
+
+    // FBOs
     mFramebufferFormats[Multisample].setSamples(NUM_SAMPLES);
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
@@ -44,7 +49,6 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
 
     mFramebufferFormats[Pong].setSamples(0);
     mFramebufferFormats[Pong].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-
 }
 
 Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() const
@@ -80,6 +84,11 @@ Canavar::Engine::Haze *Canavar::Engine::Renderer::GetHaze() const
 Canavar::Engine::Terrain *Canavar::Engine::Renderer::GetTerrain() const
 {
     return mTerrain;
+}
+
+Canavar::Engine::Gizmo *Canavar::Engine::Renderer::GetGizmo() const
+{
+    return mGizmo.get();
 }
 
 Canavar::Engine::AcesEffect *Canavar::Engine::Renderer::GetAcesEffect() const
@@ -226,7 +235,7 @@ void Canavar::Engine::Renderer::Initialize()
     mPostProcessEffects[PostProcessEffectType::Cinematic] = mCinematicEffect.get();
     mPostProcessEffectEnabled[PostProcessEffectType::Cinematic] = true;
 
-    CreateFreeCameraIfAbsent();
+    CreatePersecutorCameraIfAbsent();
     CreateDirectionalLights();
     CreateGlobalNodes();
 
@@ -273,13 +282,27 @@ void Canavar::Engine::Renderer::Render(float Ifps)
         pManager->Render(RenderPass::Opaque);
     }
 
+    glDisable(GL_DEPTH_TEST); // Disable depth testing for overlay rendering in the opaque pass
+
+    for (Manager *pManager : mManagers)
+    {
+        pManager->RenderOverlay(RenderPass::Opaque);
+    }
+
+    glEnable(GL_DEPTH_TEST); // Re-enable depth testing for the transparent pass
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDepthMask(GL_FALSE);
 
     for (Manager *pManager : mManagers)
     {
         pManager->Render(RenderPass::Transparent);
+    }
+
+    glDisable(GL_DEPTH_TEST); // Disable depth testing for overlay rendering in the transparent pass
+
+    for (Manager *pManager : mManagers)
+    {
+        pManager->RenderOverlay(RenderPass::Transparent);
     }
 
     mFramebuffers[Multisample]->Unbind();
@@ -295,8 +318,6 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     QOpenGLFramebufferObject::bindDefault();
     glViewport(0, 0, mWidth * mDevicePixelRatio, mHeight * mDevicePixelRatio);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    glDisable(GL_DEPTH_TEST);
 
     mScreenShader->Bind();
     mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Pong]->GetTexture());
@@ -405,6 +426,15 @@ void Canavar::Engine::Renderer::CreateFreeCameraIfAbsent()
     }
 }
 
+void Canavar::Engine::Renderer::CreatePersecutorCameraIfAbsent()
+{
+    if (mCameraManager->GetActiveCamera() == nullptr)
+    {
+        PersecutorCamera *pCamera = mNodeManager->CreateNode<PersecutorCamera>();
+        mCameraManager->SetActiveCamera(pCamera);
+    }
+}
+
 void Canavar::Engine::Renderer::CreateDirectionalLights()
 {
     mSun = mNodeManager->CreateNode<DirectionalLight>();
@@ -441,7 +471,7 @@ void Canavar::Engine::Renderer::ApplyPostProcessEffects()
         {
             mDepthOfFieldEffect->SetWorldPositionTexture(Textures[2]); // COLOR_ATTACHMENT2 = World Position
         }
-        if (PerspectiveCamera* pCamera = mCameraManager->GetActiveCamera())
+        if (PerspectiveCamera *pCamera = mCameraManager->GetActiveCamera())
         {
             mDepthOfFieldEffect->SetCameraPosition(pCamera->GetPosition());
         }

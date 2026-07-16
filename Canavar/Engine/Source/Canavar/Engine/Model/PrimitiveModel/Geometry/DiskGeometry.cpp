@@ -1,70 +1,98 @@
 #include "DiskGeometry.h"
 
-#include <cmath>
-#include <vector>
+#include "Canavar/Engine/Util/Logger.h"
 
-Canavar::Engine::DiskGeometry::DiskGeometry(int Segments)
-    : mSegments(Segments)
-{}
-
-void Canavar::Engine::DiskGeometry::Initialize()
+Canavar::Engine::DiskGeometry::DiskGeometry(float Radius, int SegmentCount)
 {
+    LOG_DEBUG("DiskGeometry::DiskGeometry: Initializing DiskGeometry...");
+
+    CreateGeometry(Radius, SegmentCount);
+
     initializeOpenGLFunctions();
-
-    // Layout: position(3) + normal(3) = 6 floats per vertex
-    // Vertex 0: center
-    // Vertices 1..N: edge points
-    struct PosNorm
-    {
-        float x, y, z;   // position
-        float nx, ny, nz; // normal (0,1,0) for all disk vertices
-    };
-
-    std::vector<PosNorm> Vertices;
-    Vertices.reserve(static_cast<size_t>(mSegments + 1));
-
-    // Center
-    Vertices.push_back({ 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f });
-
-    const float Step = 2.0f * static_cast<float>(M_PI) / static_cast<float>(mSegments);
-    for (int i = 0; i < mSegments; ++i)
-    {
-        const float Angle = static_cast<float>(i) * Step;
-        Vertices.push_back({ std::cos(Angle), 0.0f, std::sin(Angle), 0.0f, 1.0f, 0.0f });
-    }
-
-    // Indices: fan triangles (0, i, i+1) wrapping around
-    std::vector<unsigned int> Indices;
-    Indices.reserve(static_cast<size_t>(mSegments) * 3);
-    for (int i = 1; i <= mSegments; ++i)
-    {
-        Indices.push_back(0);
-        Indices.push_back(static_cast<unsigned int>(i));
-        Indices.push_back(static_cast<unsigned int>(i % mSegments + 1));
-    }
-
-    mMode   = GL_TRIANGLES;
-    mCount  = static_cast<GLsizei>(Indices.size());
-    mUseEBO = true;
 
     glGenVertexArrays(1, &mVAO);
     glBindVertexArray(mVAO);
 
     glGenBuffers(1, &mEBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(Indices.size() * sizeof(unsigned int)), Indices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mFaces.size() * sizeof(DiskGeometry::TriangleFace), mFaces.data(), GL_STATIC_DRAW);
 
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(Vertices.size() * sizeof(PosNorm)), Vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mVertices.size() * sizeof(DiskGeometry::Vertex), mVertices.data(), GL_STATIC_DRAW);
 
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(PosNorm), reinterpret_cast<void *>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(DiskGeometry::Vertex), (void *) offsetof(DiskGeometry::Vertex, Position));
     glEnableVertexAttribArray(0);
 
-    // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(PosNorm), reinterpret_cast<void *>(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(DiskGeometry::Vertex), (void *) offsetof(DiskGeometry::Vertex, Normal));
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
+
+    mVertices.clear();
+    mFaces.clear();
+
+    LOG_DEBUG("DiskGeometry::DiskGeometry: DiskGeometry has been initialized.");
+}
+
+Canavar::Engine::DiskGeometry::~DiskGeometry()
+{
+    LOG_DEBUG("DiskGeometry::~DiskGeometry: Deleting OpenGL stuff...");
+
+    if (mVAO)
+    {
+        glDeleteVertexArrays(1, &mVAO);
+        mVAO = 0;
+    }
+
+    if (mVBO)
+    {
+        glDeleteBuffers(1, &mVBO);
+        mVBO = 0;
+    }
+
+    if (mEBO)
+    {
+        glDeleteBuffers(1, &mEBO);
+        mEBO = 0;
+    }
+
+    LOG_DEBUG("DiskGeometry::~DiskGeometry: OpenGL stuff has been deleted.");
+}
+
+void Canavar::Engine::DiskGeometry::Render()
+{
+    glBindVertexArray(mVAO);
+    glDrawElements(GL_TRIANGLES, 3 * mNumberOfFaces, GL_UNSIGNED_INT, 0); // 3 vertex per triangle
+    glBindVertexArray(0);
+}
+
+void Canavar::Engine::DiskGeometry::CreateGeometry(float Radius, int SegmentCount)
+{
+    mNumberOfFaces = 0;
+    mVertices.clear();
+    mFaces.clear();
+
+    // Center vertex
+    mVertices.push_back(Vertex{ { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+
+    // Create rim vertices
+    for (int i = 0; i < SegmentCount; ++i)
+    {
+        float Angle = 2.0f * M_PI * i / SegmentCount;
+        float x = Radius * std::cos(Angle);
+        float y = Radius * std::sin(Angle);
+        mVertices.push_back(Vertex{ { x, y, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+    }
+
+    // Create faces (triangles)
+    for (int i = 0; i < SegmentCount; ++i)
+    {
+        const unsigned int Next = (i + 1) % SegmentCount;
+        const unsigned int CenterIndex = 0;         // The center vertex is at index 0
+        const unsigned int RimIndex = i + 1;        // Rim vertices start from index 1
+        const unsigned int NextRimIndex = Next + 1; // Next rim vertex
+        mFaces.push_back(TriangleFace{ CenterIndex, RimIndex, NextRimIndex });
+        ++mNumberOfFaces;
+    }
 }

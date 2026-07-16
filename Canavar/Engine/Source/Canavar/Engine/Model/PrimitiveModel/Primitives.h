@@ -1,57 +1,40 @@
 #pragma once
 
+#include "Canavar/Engine/Model/PrimitiveModel/OutlinePrimitive.h"
 #include "Canavar/Engine/Model/PrimitiveModel/PrimitiveModel.h"
 
 namespace Canavar::Engine
 {
-    class Circle final : public PrimitiveModel
+    class Line final : public OutlinePrimitive
     {
       public:
-        Circle()
-            : PrimitiveModel(PrimitiveType::Circle)
-        {
-            SetNodeName("Circle");
-        }
+        Line();
+
+        void SetPoints(const QVector3D &StartPoint, const QVector3D &EndPoint);
+    };
+
+    class Circle final : public OutlinePrimitive
+    {
+      public:
+        Circle();
     };
 
     class Disk final : public PrimitiveModel
     {
       public:
-        Disk()
-            : PrimitiveModel(PrimitiveType::Disk)
-        {
-            SetNodeName("Disk");
-        }
-    };
-
-    class Line final : public PrimitiveModel
-    {
-      public:
-        Line()
-            : PrimitiveModel(PrimitiveType::Line)
-        {
-            SetNodeName("Line");
-        }
+        Disk();
     };
 
     class Plane final : public PrimitiveModel
     {
       public:
-        Plane()
-            : PrimitiveModel(PrimitiveType::Plane)
-        {
-            SetNodeName("Plane");
-        }
+        Plane();
     };
 
     class Sphere final : public PrimitiveModel
     {
       public:
-        Sphere()
-            : PrimitiveModel(PrimitiveType::Sphere)
-        {
-            SetNodeName("Sphere");
-        }
+        Sphere();
     };
 
 } // namespace Canavar::Engine

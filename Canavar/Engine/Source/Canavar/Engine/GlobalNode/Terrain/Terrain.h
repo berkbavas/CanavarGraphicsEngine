@@ -62,7 +62,7 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Diffuse, 0.75f);
         DEFINE_MEMBER(float, Specular, 0.25f);
         DEFINE_MEMBER(float, Shininess, 8.0f);
-        DEFINE_MEMBER(bool, Enabled, true);
+        DEFINE_MEMBER(bool, Enabled, false);
 
         GLuint mAlbedoTexture{ 0 };
         GLuint mNormalTexture{ 0 };
