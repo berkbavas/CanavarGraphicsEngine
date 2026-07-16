@@ -59,7 +59,7 @@ namespace Canavar::Engine
         QVector3D mPreviousIntersectionPoint{ 0, 0, 0 };
 
         // Traits of the gizmo
-        float mSphereRadius{ 10.0f };           // Radius of the gizmo's interaction sphere
+        float mSphereRadius{ 20.0f };           // Radius of the gizmo's interaction sphere
         float mAxisSelectionThreshold{ 0.85f }; // Threshold for selecting an axis based on the angle between the ray and the axis direction
 
         Object *mTargetObject{ nullptr };
