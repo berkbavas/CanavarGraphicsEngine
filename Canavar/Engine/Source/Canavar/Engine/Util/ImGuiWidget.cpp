@@ -178,64 +178,63 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
 // Node List
 // ─────────────────────────────────────────────────────────────────────────────
 
+void Canavar::Engine::ImGuiWidget::DrawNodeTree(Node *pNode)
+{
+    const bool HasChildren = !pNode->GetChildren().empty();
+
+    ImGuiTreeNodeFlags Flags = HasChildren
+        ? (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)
+        : (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
+
+    if (mSelectedNode == pNode)
+    {
+        Flags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    const bool Open = ImGui::TreeNodeEx(
+        reinterpret_cast<void*>(static_cast<intptr_t>(pNode->GetNodeId())),
+        Flags,
+        "[%s]  %s",
+        pNode->GetNodeTypeName(),
+        pNode->GetNodeUniqueName().c_str());
+
+    if (ImGui::IsItemClicked())
+    {
+        mSelectedNode = pNode;
+    }
+
+    if (HasChildren && Open)
+    {
+        for (Node *pChild : pNode->GetChildren())
+        {
+            DrawNodeTree(pChild);
+        }
+        ImGui::TreePop();
+    }
+}
+
 void Canavar::Engine::ImGuiWidget::DrawNodeList()
 {
-    // ── Cameras ──────────────────────────────────────────────────────────────
-    if (ImGui::CollapsingHeader("Cameras##DrawNodeList"))
+    if (!ImGui::CollapsingHeader("Scene Hierarchy##DrawNodeList", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        for (const auto &pCamera : mNodeManager->GetCameras())
-        {
-            ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-            if (mSelectedNode == pCamera.get())
-            {
-                Flags |= ImGuiTreeNodeFlags_Selected;
-            }
-
-            ImGui::TreeNodeEx(pCamera->GetNodeUniqueName().c_str(), Flags);
-            if (ImGui::IsItemClicked())
-            {
-                mSelectedNode = pCamera.get();
-            }
-        }
+        return;
     }
 
-    // ── Lights ───────────────────────────────────────────────────────────────
-    if (ImGui::CollapsingHeader("Lights##DrawNodeList"))
+    // Only draw root nodes; children are drawn recursively via DrawNodeTree.
+    const auto DrawRootsFrom = [this](auto& List)
     {
-        for (const auto &pLight : mNodeManager->GetLights())
+        for (const auto& pOwned : List)
         {
-            ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-            if (mSelectedNode == pLight.get())
+            if (!pOwned->GetParent())
             {
-                Flags |= ImGuiTreeNodeFlags_Selected;
-            }
-            ImGui::TreeNodeEx(pLight->GetNodeUniqueName().c_str(), Flags);
-
-            if (ImGui::IsItemClicked())
-            {
-                mSelectedNode = pLight.get();
+                DrawNodeTree(pOwned.get());
             }
         }
-    }
+    };
 
-    // ── Models ───────────────────────────────────────────────────────────────
-    if (ImGui::CollapsingHeader("Models##DrawNodeList"))
-    {
-        for (const auto &pModel : mNodeManager->GetTexturedModels())
-        {
-            ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
-            if (mSelectedNode == pModel.get())
-            {
-                Flags |= ImGuiTreeNodeFlags_Selected;
-            }
-
-            ImGui::TreeNodeEx(pModel->GetNodeUniqueName().c_str(), Flags);
-            if (ImGui::IsItemClicked())
-            {
-                mSelectedNode = pModel.get();
-            }
-        }
-    }
+    DrawRootsFrom(mNodeManager->GetCameras());
+    DrawRootsFrom(mNodeManager->GetLights());
+    DrawRootsFrom(mNodeManager->GetTexturedModels());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -261,6 +260,9 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
 
     ImGui::Text("Type : %s", mSelectedNode->GetNodeTypeName());
     ImGui::Text("ID   : %d", mSelectedNode->GetNodeId());
+
+    // ── Hierarchy ─────────────────────────────────────────────────────────────
+    DrawHierarchyProperties(mSelectedNode);
 
     // ── Dispatch to per-type drawers ─────────────────────────────────────────
     // Derived-most types are tested first so PointLight is not accidentally
@@ -302,9 +304,95 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Transform
+// Hierarchy Properties
 // ─────────────────────────────────────────────────────────────────────────────
 
+void Canavar::Engine::ImGuiWidget::DrawHierarchyProperties(Node *pNode)
+{
+    if (!ImGui::CollapsingHeader("Hierarchy##DrawHierarchyProperties", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        return;
+    }
+
+    // ── Current parent ────────────────────────────────────────────────────────
+    Node *pParent = pNode->GetParent();
+    if (pParent)
+    {
+        ImGui::LabelText("Parent##DrawHierarchyProperties", "%s", pParent->GetNodeUniqueName().c_str());
+
+        if (ImGui::Button("Detach from Parent##DrawHierarchyProperties"))
+        {
+            pNode->SetParent(nullptr);
+        }
+    }
+    else
+    {
+        ImGui::TextDisabled("No parent (root node)");
+    }
+
+    // ── Children ─────────────────────────────────────────────────────────────
+    const auto &Children = pNode->GetChildren();
+    if (!Children.empty())
+    {
+        ImGui::Separator();
+        ImGui::Text("Children (%d):", static_cast<int>(Children.size()));
+        for (Node *pChild : Children)
+        {
+            ImGui::BulletText("%s", pChild->GetNodeUniqueName().c_str());
+        }
+    }
+
+    // ── Attach to a new parent ────────────────────────────────────────────────
+    ImGui::Separator();
+    if (ImGui::BeginCombo("Set Parent##DrawHierarchyProperties", "Select node..."))
+    {
+        const auto TryListNodes = [&](auto& List)
+        {
+            for (const auto& pOwned : List)
+            {
+                Node *pCandidate = pOwned.get();
+
+                // Skip self, current parent, and existing children to avoid trivial cycles.
+                if (pCandidate == pNode || pCandidate == pParent)
+                {
+                    continue;
+                }
+
+                // Guard: skip if pNode is already an ancestor of pCandidate.
+                bool IsCycle = false;
+                Node *pAncestor = pCandidate->GetParent();
+                while (pAncestor)
+                {
+                    if (pAncestor == pNode)
+                    {
+                        IsCycle = true;
+                        break;
+                    }
+                    pAncestor = pAncestor->GetParent();
+                }
+                if (IsCycle)
+                {
+                    continue;
+                }
+
+                if (ImGui::Selectable(pCandidate->GetNodeUniqueName().c_str()))
+                {
+                    pNode->SetParent(pCandidate);
+                }
+            }
+        };
+
+        TryListNodes(mNodeManager->GetCameras());
+        TryListNodes(mNodeManager->GetLights());
+        TryListNodes(mNodeManager->GetTexturedModels());
+
+        ImGui::EndCombo();
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Transform
+// ─────────────────────────────────────────────────────────────────────────────
 void Canavar::Engine::ImGuiWidget::DrawObjectTransform(Object *pObject)
 {
     if (!ImGui::CollapsingHeader("Transform##DrawNodeProperties", ImGuiTreeNodeFlags_DefaultOpen))
@@ -314,6 +402,7 @@ void Canavar::Engine::ImGuiWidget::DrawObjectTransform(Object *pObject)
 
     ImGui::Checkbox("Visible##DrawNodeProperties", &pObject->GetVisible_NonConst());
 
+    // ── Local transform ───────────────────────────────────────────────────────
     // Position
     {
         const auto &Position = pObject->GetPosition();
@@ -342,6 +431,32 @@ void Canavar::Engine::ImGuiWidget::DrawObjectTransform(Object *pObject)
         if (ImGui::DragFloat3("Scale##DrawNodeProperties", Vector, 0.01f, 0.001f, 10000.0f))
         {
             pObject->SetScale(Vector[0], Vector[1], Vector[2]);
+        }
+    }
+
+    // ── World-space readout (only when a parent is present) ───────────────────
+    if (pObject->GetParent())
+    {
+        ImGui::Separator();
+        ImGui::TextDisabled("World Space (read-only)");
+
+        {
+            const auto WPos = pObject->GetWorldPosition();
+            float Vector[3] = { WPos.x(), WPos.y(), WPos.z() };
+            ImGui::InputFloat3("World Position##DrawNodeProperties", Vector, "%.3f", ImGuiInputTextFlags_ReadOnly);
+        }
+
+        {
+            float Pitch, Yaw, Roll;
+            pObject->GetWorldRotation().getEulerAngles(&Pitch, &Yaw, &Roll);
+            float Vector[3] = { Pitch, Yaw, Roll };
+            ImGui::InputFloat3("World Rotation##DrawNodeProperties", Vector, "%.3f", ImGuiInputTextFlags_ReadOnly);
+        }
+
+        {
+            const auto WScale = pObject->GetWorldScale();
+            float Vector[3] = { WScale.x(), WScale.y(), WScale.z() };
+            ImGui::InputFloat3("World Scale##DrawNodeProperties", Vector, "%.3f", ImGuiInputTextFlags_ReadOnly);
         }
     }
 }

@@ -87,3 +87,45 @@ const QMatrix3x3& Canavar::Engine::Object::GetNormalMatrix() const
 {
     return mNormalMatrix;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// World-space accessors
+// ─────────────────────────────────────────────────────────────────────────────
+
+QMatrix4x4 Canavar::Engine::Object::GetWorldTransformation() const
+{
+    if (const auto* pParent = dynamic_cast<const Object*>(GetParent()))
+    {
+        return pParent->GetWorldTransformation() * mTransformation;
+    }
+    return mTransformation;
+}
+
+QVector3D Canavar::Engine::Object::GetWorldPosition() const
+{
+    return GetWorldTransformation().column(3).toVector3D();
+}
+
+QQuaternion Canavar::Engine::Object::GetWorldRotation() const
+{
+    const QMatrix4x4 World = GetWorldTransformation();
+    const QVector3D Scale(
+        World.column(0).toVector3D().length(),
+        World.column(1).toVector3D().length(),
+        World.column(2).toVector3D().length());
+
+    QMatrix4x4 RotMatrix = World;
+    RotMatrix.setColumn(0, RotMatrix.column(0) / Scale.x());
+    RotMatrix.setColumn(1, RotMatrix.column(1) / Scale.y());
+    RotMatrix.setColumn(2, RotMatrix.column(2) / Scale.z());
+    return QQuaternion::fromRotationMatrix(RotMatrix.toGenericMatrix<3, 3>());
+}
+
+QVector3D Canavar::Engine::Object::GetWorldScale() const
+{
+    const QMatrix4x4 World = GetWorldTransformation();
+    return QVector3D(
+        World.column(0).toVector3D().length(),
+        World.column(1).toVector3D().length(),
+        World.column(2).toVector3D().length());
+}

@@ -48,6 +48,7 @@ namespace Canavar::Engine
 
         // --- Per-type property drawers ---
         void DrawObjectTransform(Object *pObject);
+        void DrawHierarchyProperties(Node *pNode);
         void DrawCameraProperties(Camera *pCamera);
         void DrawLightProperties(Light *pLight);
         void DrawPointLightProperties(PointLight *pLight);
@@ -60,6 +61,7 @@ namespace Canavar::Engine
 
         // --- Helpers ---
         void ValidateSelectedNode();
+        void DrawNodeTree(Node *pNode);
 
         QtImGui::RenderRef mRenderRef;
         Renderer *mRenderer{ nullptr };

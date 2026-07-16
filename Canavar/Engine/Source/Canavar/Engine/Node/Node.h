@@ -5,6 +5,7 @@
 #include <format>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <QUuid>
 #include <QVector3D>
@@ -26,6 +27,19 @@ namespace Canavar::Engine
 
         void SetNodeName(const std::string& NodeName);
 
+        // ── Hierarchy ────────────────────────────────────────────────────────
+        Node* GetParent() const;
+        const std::vector<Node*>& GetChildren() const;
+
+        // Attaches pChild under this node (detaches from its current parent first).
+        void AddChild(Node* pChild);
+
+        // Detaches pChild from this node. No-op if pChild is not a direct child.
+        void RemoveChild(Node* pChild);
+
+        // Convenience: reparents this node. Pass nullptr to detach from any parent.
+        void SetParent(Node* pParent);
+
       private:
         void UpdateNodeUniqueName();
         void SetUuid(const QUuid& Uuid);
@@ -35,6 +49,9 @@ namespace Canavar::Engine
         std::string mNodeUniqueName;      // Unique name generated from NodeName and NodeId
         QUuid mUuid;                      // Persistent ID
         int mNodeId{ UNDEFINED_NODE_ID }; // Runtime ID
+
+        Node* mParent{ nullptr };
+        std::vector<Node*> mChildren;
 
         friend class NodeManager;
     };

@@ -2,6 +2,8 @@
 
 #include "Canavar/Engine/Manager/Renderer.h"
 
+#include <vector>
+
 Canavar::Engine::NodeManager::NodeManager(Renderer *pRenderer)
     : mRenderer(pRenderer)
 {}
@@ -13,6 +15,22 @@ void Canavar::Engine::NodeManager::Initialize()
 
 void Canavar::Engine::NodeManager::RemoveNode(Node *pNode)
 {
+    // ── Clean up hierarchy links ──────────────────────────────────────────────
+    // Detach from parent so the parent's child list has no dangling pointer.
+    if (pNode->GetParent())
+    {
+        pNode->SetParent(nullptr);
+    }
+
+    // Orphan direct children so they become root nodes (prevents dangling parent ptrs).
+    // Copy the list first — SetParent modifies pNode->mChildren during iteration.
+    const std::vector<Node*> ChildrenCopy = pNode->GetChildren();
+    for (Node *pChild : ChildrenCopy)
+    {
+        pChild->SetParent(nullptr);
+    }
+
+    // ── Remove from manager lists ─────────────────────────────────────────────
     mNodes.remove(pNode);
     mObjects.remove(dynamic_cast<Object *>(pNode));
     mPointLights.remove(dynamic_cast<PointLight *>(pNode));
