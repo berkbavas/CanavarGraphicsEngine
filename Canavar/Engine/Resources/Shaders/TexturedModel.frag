@@ -52,6 +52,14 @@ struct PointLight
     float Quadratic;
 };
 
+struct Haze
+{
+    vec3 Color;
+    float Density;
+    float Gradient;
+    bool Enabled;
+};
+
 // Constants
 const float PI = 3.141592653;
 const float ONE_OVER_PI = 0.31830988618;
@@ -64,6 +72,7 @@ const int PHONG_SHADING = 1;
 uniform PhongMaterial uPhongMaterial;
 uniform PbrMaterial uPbrMaterial;
 uniform Texture uTexture;
+uniform Haze uHaze;
 uniform vec3 uColor;
 uniform bool uUseColor;
 uniform float uOpacity;
@@ -235,7 +244,7 @@ vec3 ProcessDirectionalLightsPhong(vec3 Color, vec3 Normal, vec3 Lo)
         float Specular = pow(Sf, uPhongMaterial.Shininess) * uPhongMaterial.Specular * Light.Specular;
 
         // Attenuation
-        float LightFactor = Ambient + Diffuse + Specular;
+        float LightFactor = (Ambient + Diffuse + Specular) * Light.Radiance / 4.0f; // Divide by 4 to balance the intensity of directional lights
 
         // Accumulate the result
         Result += LightFactor * Color * Light.Color;
@@ -355,11 +364,26 @@ vec3 ProcessPointLightsPbr(vec3 Color, float Metallic, float Roughness, float Am
     return FinalColor;
 }
 
+vec3 ProcessHaze(float Distance, vec3 FragWorldPos, vec3 SubjectColor)
+{
+    vec3 Result = SubjectColor;
+
+    if (uHaze.Enabled)
+    {
+        float Factor = exp(-pow(Distance * 0.00005f * uHaze.Density, uHaze.Gradient));
+        Factor = clamp(Factor, 0.0f, 1.0f);
+        Result = mix(uHaze.Color * clamp(-uDirectionalLights[0].Direction.y, 0.0f, 1.0f), SubjectColor, Factor);
+    }
+
+    return Result;
+}
+
 void main()
 {
     const vec3 Color = CalculateColor();
     const vec3 Normal = CalculateNormal();
     const vec3 Lo = normalize(uCameraPosition - fsFragWorldPosition);
+    const float Distance = length(uCameraPosition - fsFragWorldPosition);
 
     vec4 FragColor;
 
@@ -367,8 +391,9 @@ void main()
     {
         const vec3 DirectLighting = ProcessDirectionalLightsPhong(Color, Normal, Lo);
         const vec3 PointLighting = ProcessPointLightsPhong(Color, Normal, Lo);
-        const vec3 FinalColor = DirectLighting + PointLighting;
+        vec3 FinalColor = DirectLighting + PointLighting;
 
+        FinalColor = ProcessHaze(Distance, fsFragWorldPosition, FinalColor);
         FragColor = vec4(FinalColor, uOpacity);
     }
     else if (uShadingMode == PBR_SHADING)
@@ -379,8 +404,9 @@ void main()
 
         const vec3 DirectLighting = ProcessDirectionalLightsPbr(Color, Metallic, Roughness, AmbientOcclusion, Normal, Lo);
         const vec3 PointLighting = ProcessPointLightsPbr(Color, Metallic, Roughness, AmbientOcclusion, Normal, Lo);
-        const vec3 FinalColor = DirectLighting + PointLighting;
+        vec3 FinalColor = DirectLighting + PointLighting;
 
+        FinalColor = ProcessHaze(Distance, fsFragWorldPosition, FinalColor);
         FragColor = vec4(FinalColor, uOpacity);
     }
     else

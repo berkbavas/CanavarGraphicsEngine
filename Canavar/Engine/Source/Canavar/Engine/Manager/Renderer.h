@@ -1,16 +1,19 @@
 #pragma once
 
+#include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Core/Framebuffer.h"
 #include "Canavar/Engine/Core/OpenGLWidget.h"
 #include "Canavar/Engine/Core/Quad.h"
 #include "Canavar/Engine/Core/RenderingContext.h"
 #include "Canavar/Engine/Core/Shader.h"
+#include "Canavar/Engine/GlobalNode/Haze/Haze.h"
+#include "Canavar/Engine/GlobalNode/Sky/Sky.h"
+#include "Canavar/Engine/GlobalNode/Terrain/Terrain.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
 #include "Canavar/Engine/Util/Macros.h"
-#include "Canavar/Engine/Camera/PerspectiveCamera.h"
 
 #include <memory>
 
@@ -31,6 +34,10 @@ namespace Canavar::Engine
         LightManager* GetLightManager() const;
         CameraManager* GetCameraManager() const;
         TexturedModelRenderer* GetTexturedModelRenderer() const;
+
+        Sky* GetSky() const;
+        Haze* GetHaze() const;
+        Terrain* GetTerrain() const;
 
         PerspectiveCamera* GetActiveCamera() const;
 
@@ -56,6 +63,7 @@ namespace Canavar::Engine
         void ResizeFramebuffers(int Width, int Height);
         void CreateFreeCameraIfAbsent();
         void CreateDirectionalLights();
+        void CreateGlobalNodes();
 
         OpenGLWidget* mOpenGLWidget{ nullptr };
         RenderingContext* mRenderingContext{ nullptr };
@@ -75,11 +83,16 @@ namespace Canavar::Engine
         std::map<FramebufferType, QOpenGLFramebufferObjectFormat> mFramebufferFormats;
         std::map<FramebufferType, QVector<GLenum>> mFramebufferExtraColorAttachments;
 
+        Sky* mSky{ nullptr };
+        Haze* mHaze{ nullptr };
+        Terrain*   mTerrain{ nullptr };
+
         int mWidth{ 1600 };
         int mHeight{ 900 };
         float mDevicePixelRatio{ 1.0f };
 
         DEFINE_MEMBER(QVector3D, ClearColor, QVector3D(0.0f, 0.0f, 0.0f));
+        DEFINE_MEMBER_PTR_CONST(DirectionalLight, Sun);
     };
 
     using RendererPtr = std::unique_ptr<Renderer>;

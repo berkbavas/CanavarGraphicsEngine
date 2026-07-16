@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>Resources/Sky/SkyRGB.data</file>
-        <file>Resources/Sky/SkyRGBRad.data</file>
         <file>Resources/Terrain/Beach/Albedo.jpg</file>
         <file>Resources/Terrain/Grass/Albedo.jpg</file>
         <file>Resources/Terrain/Rock/Albedo.jpg</file>

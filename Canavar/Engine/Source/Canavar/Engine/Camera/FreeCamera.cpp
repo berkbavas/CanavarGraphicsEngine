@@ -113,11 +113,11 @@ float Canavar::Engine::FreeCamera::CalculateLinearSpeed(float Ifps) const
 {
     if (IsKeyPressed(Qt::Key_Shift)) // If Shift is pressed, increase speed for faster movement
     {
-        return mLinearSpeed * 10.0f * Ifps;
+        return mLinearSpeed * 100.0f * Ifps;
     }
     else if (IsKeyPressed(Qt::Key_Space)) // If Space is pressed, increase speed for even faster movement
     {
-        return mLinearSpeed * 5.0f * Ifps;
+        return mLinearSpeed * 10.0f * Ifps;
     }
     else if (IsKeyPressed(Qt::Key_Control)) // If Control is pressed, reduce speed for precision movement
     {

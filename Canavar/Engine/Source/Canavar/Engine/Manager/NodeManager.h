@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Camera/FreeCamera.h"
 #include "Canavar/Engine/Camera/PersecutorCamera.h"
+#include "Canavar/Engine/GlobalNode/GlobalNode.h"
 #include "Canavar/Engine/Light/DirectionalLight.h"
 #include "Canavar/Engine/Light/PointLight.h"
 #include "Canavar/Engine/Manager/LightManager.h"
@@ -80,6 +81,20 @@ namespace Canavar::Engine
             return pTexturedModelRawPtr;
         }
 
+        template<typename T, typename... Args>
+        T *CreateGlobalNode(Args&&... args)
+        { 
+            static_assert(std::is_base_of<GlobalNode, T>::value, "T must be derived from GlobalNode");
+            auto pGlobalNode = std::make_unique<T>(std::forward<Args>(args)...);
+            pGlobalNode->SetNodeId(mNextNodeId++);
+
+            T *pGlobalNodeRawPtr = pGlobalNode.get();
+            mNodes.push_back(pGlobalNodeRawPtr);
+            mGlobalNodes.push_back(std::move(pGlobalNode));
+
+            return pGlobalNodeRawPtr;
+        }
+
         void RemoveNode(Node *pNode);
 
         const std::list<CameraPtr> &GetCameras() const;
@@ -98,6 +113,7 @@ namespace Canavar::Engine
         std::list<CameraPtr> mCameras;
         std::list<LightPtr> mLights;
         std::list<TexturedModelPtr> mTexturedModels;
+        std::list<GlobalNodePtr> mGlobalNodes;
 
         std::list<Node *> mNodes;
         std::list<Object *> mObjects;

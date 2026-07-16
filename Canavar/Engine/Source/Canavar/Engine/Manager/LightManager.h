@@ -10,17 +10,21 @@ namespace Canavar::Engine
     class DirectionalLight;
     class PointLight;
     class Light;
+    class Shader;
 
     class LightManager : public Manager
     {
       public:
         LightManager() = default;
 
-        QVector<PointLight *> GetPointLightsAround(QVector3D TargetPosition, float Radius);
+        QVector<PointLight *> GetPointLightsAround(QVector3D TargetPosition, float Radius) const;
         const QList<PointLight *> &GetPointLights() const;
         const QList<DirectionalLight *> &GetDirectionalLights() const;
         void AddLight(Light *pLight);
         void RemoveLight(Light *pLight);
+
+        void SetDirectionalLightsUniforms(Shader *pShader) const;
+        void SetPointLightsUniforms(Shader *pShader, const QVector3D &TargetPosition, float Radius) const;
 
       private:
         QList<DirectionalLight *> mDirectionalLights;

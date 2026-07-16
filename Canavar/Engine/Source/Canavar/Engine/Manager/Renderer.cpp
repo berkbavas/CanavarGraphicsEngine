@@ -59,6 +59,21 @@ Canavar::Engine::TexturedModelRenderer *Canavar::Engine::Renderer::GetTexturedMo
     return mTexturedModelRenderer.get();
 }
 
+Canavar::Engine::Sky *Canavar::Engine::Renderer::GetSky() const
+{
+    return mSky;
+}
+
+Canavar::Engine::Haze *Canavar::Engine::Renderer::GetHaze() const
+{
+    return mHaze;
+}
+
+Canavar::Engine::Terrain *Canavar::Engine::Renderer::GetTerrain() const
+{
+    return mTerrain;
+}
+
 Canavar::Engine::PerspectiveCamera *Canavar::Engine::Renderer::GetActiveCamera() const
 {
     return mCameraManager->GetActiveCamera();
@@ -121,6 +136,7 @@ void Canavar::Engine::Renderer::Initialize()
 
     CreateFreeCameraIfAbsent();
     CreateDirectionalLights();
+    CreateGlobalNodes();
 
     emit Initialized();
 }
@@ -156,6 +172,9 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     glClearColor(mClearColor.x(), mClearColor.y(), mClearColor.z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    mSky->Render(mCameraManager->GetActiveCamera(), mSun);
+
+    mTerrain->Render();
 
     for (Manager *pManager : mManagers)
     {
@@ -294,7 +313,10 @@ void Canavar::Engine::Renderer::CreateFreeCameraIfAbsent()
 
 void Canavar::Engine::Renderer::CreateDirectionalLights()
 {
-    QVector3D Directions[6] = { UP, DOWN, LEFT, RIGHT, FORWARD, BACKWARD };
+    mSun = mNodeManager->CreateLight<DirectionalLight>();
+    mSun->SetDirection(QVector3D(-1, -1, -1).normalized());
+
+    QVector3D Directions[5] = { UP, LEFT, RIGHT, FORWARD, BACKWARD };
 
     for (const QVector3D &Direction : Directions)
     {
@@ -304,4 +326,11 @@ void Canavar::Engine::Renderer::CreateDirectionalLights()
         pLight->SetRadiance(4.0f);
         pLight->SetDirection(Direction);
     }
+}
+
+void Canavar::Engine::Renderer::CreateGlobalNodes()
+{
+    mSky = mNodeManager->CreateGlobalNode<Sky>();
+    mHaze = mNodeManager->CreateGlobalNode<Haze>();
+    mTerrain = mNodeManager->CreateGlobalNode<Terrain>(this);
 }

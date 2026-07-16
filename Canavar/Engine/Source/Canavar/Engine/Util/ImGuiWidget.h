@@ -17,6 +17,9 @@ namespace Canavar::Engine
     class DirectionalLight;
     class TexturedModel;
     class NodeManager;
+    class Sky;
+    class Haze;
+    class Terrain;
 
     class ImGuiWidget : public QObject, public EventReceiver
     {
@@ -42,6 +45,9 @@ namespace Canavar::Engine
         void DrawPointLightProperties(PointLight *pLight);
         void DrawDirectionalLightProperties(DirectionalLight *pLight);
         void DrawTexturedModelProperties(TexturedModel *pModel);
+        void DrawSkyProperties();
+        void DrawHazeProperties();
+        void DrawTerrainProperties();
 
         // --- Helpers ---
         void ValidateSelectedNode();

@@ -5,6 +5,9 @@
 #include "Canavar/Engine/Camera/PersecutorCamera.h"
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Core/Constants.h"
+#include "Canavar/Engine/GlobalNode/Haze/Haze.h"
+#include "Canavar/Engine/GlobalNode/Sky/Sky.h"
+#include "Canavar/Engine/GlobalNode/Terrain/Terrain.h"
 #include "Canavar/Engine/Light/DirectionalLight.h"
 #include "Canavar/Engine/Light/Light.h"
 #include "Canavar/Engine/Light/PointLight.h"
@@ -65,6 +68,9 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
     ImGui::Begin("Scene Editor##DrawImGuiWidgets", nullptr, ImGuiWindowFlags_MenuBar);
     DrawMenuBar();
     DrawNodeList();
+    DrawSkyProperties();
+    DrawHazeProperties();
+    DrawTerrainProperties();
     DrawStats(Ifps);
     ImGui::End();
 
@@ -173,7 +179,7 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
 void Canavar::Engine::ImGuiWidget::DrawNodeList()
 {
     // ── Cameras ──────────────────────────────────────────────────────────────
-    if (ImGui::CollapsingHeader("Cameras##DrawNodeList", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Cameras##DrawNodeList"))
     {
         for (const auto &pCamera : mNodeManager->GetCameras())
         {
@@ -192,7 +198,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
     }
 
     // ── Lights ───────────────────────────────────────────────────────────────
-    if (ImGui::CollapsingHeader("Lights##DrawNodeList", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Lights##DrawNodeList"))
     {
         for (const auto &pLight : mNodeManager->GetLights())
         {
@@ -211,7 +217,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
     }
 
     // ── Models ───────────────────────────────────────────────────────────────
-    if (ImGui::CollapsingHeader("Models##DrawNodeList", ImGuiTreeNodeFlags_DefaultOpen))
+    if (ImGui::CollapsingHeader("Models##DrawNodeList"))
     {
         for (const auto &pModel : mNodeManager->GetTexturedModels())
         {
@@ -507,6 +513,109 @@ void Canavar::Engine::ImGuiWidget::DrawTexturedModelProperties(TexturedModel *pM
             ImGui::SliderFloat("Specular##DrawTexturedModelProperties", &Material.Specular, 0.0f, 1.0f);
             ImGui::SliderFloat("Shininess##DrawTexturedModelProperties", &Material.Shininess, 1.0f, 512.0f);
         }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sky Properties
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawSkyProperties()
+{
+    Sky *pSky = mRenderer->GetSky();
+    if (!pSky)
+    {
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Sky##DrawSkyProperties"))
+    {
+        ImGui::Checkbox("Enabled##DrawSkyProperties", &pSky->GetEnabled_NonConst());
+
+        ImGui::DragFloat("Sun Intensity##DrawSkyProperties", &pSky->GetSunIntensity_NonConst(), 0.1f, 0.0f, 200.0f);
+        ImGui::DragFloat("Planet Radius##DrawSkyProperties", &pSky->GetPlanetRadius_NonConst(), 1000.0f, 1.0e3f, 1.0e7f, "%.0f m");
+        ImGui::DragFloat("Atmosphere Radius##DrawSkyProperties", &pSky->GetAtmosphereRadius_NonConst(), 1000.0f, 1.0e3f, 1.0e7f, "%.0f m");
+        ImGui::DragFloat("Scale Height R##DrawSkyProperties", &pSky->GetScaleHeightR_NonConst(), 10.0f, 0.0f, 50000.0f, "%.0f m");
+        ImGui::DragFloat("Scale Height M##DrawSkyProperties", &pSky->GetScaleHeightM_NonConst(), 10.0f, 0.0f, 50000.0f, "%.0f m");
+        ImGui::DragFloat("Beta Mie##DrawSkyProperties", &pSky->GetBetaMie_NonConst(), 1e-7f, 0.0f, 1e-3f, "%.2e");
+        ImGui::DragFloat("Mie G##DrawSkyProperties", &pSky->GetMieG_NonConst(), 0.001f, 0.0f, 0.9999f);
+        ImGui::DragFloat("Horizon Offset##DrawSkyProperties", &pSky->GetHorizonOffset_NonConst(), 0.001f, -1.0f, 1.0f);
+
+        {
+            const auto &Beta = pSky->GetBetaRayleigh();
+            float Vector[3] = { Beta.x(), Beta.y(), Beta.z() };
+            if (ImGui::DragFloat3("Beta Rayleigh##DrawSkyProperties", Vector, 1e-7f, 0.0f, 1e-3f, "%.2e"))
+            {
+                pSky->SetBetaRayleigh(QVector3D(Vector[0], Vector[1], Vector[2]));
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Haze Properties
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawHazeProperties()
+{
+    Haze *pHaze = mRenderer->GetHaze();
+    if (!pHaze)
+    {
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Haze##DrawHazeProperties"))
+    {
+        ImGui::Checkbox("Enabled##DrawHazeProperties", &pHaze->GetEnabled_NonConst());
+
+        {
+            const auto &Color = pHaze->GetColor();
+            float Vector[3] = { Color.x(), Color.y(), Color.z() };
+            if (ImGui::ColorEdit3("Color##DrawHazeProperties", Vector))
+            {
+                pHaze->SetColor(QVector3D(Vector[0], Vector[1], Vector[2]));
+            }
+        }
+
+        ImGui::DragFloat("Density##DrawHazeProperties", &pHaze->GetDensity_NonConst(), 0.01f, 0.0f, 10.0f);
+        ImGui::DragFloat("Gradient##DrawHazeProperties", &pHaze->GetGradient_NonConst(), 0.01f, 0.0f, 10.0f);
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Terrain Properties
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawTerrainProperties()
+{
+    Terrain *pTerrain = mRenderer->GetTerrain();
+    if (!pTerrain)
+    {
+        return;
+    }
+
+    if (ImGui::CollapsingHeader("Terrain##DrawTerrainProperties"))
+    {
+        ImGui::Checkbox("Enabled##DrawTerrainProperties", &pTerrain->GetEnabled_NonConst());
+
+        // ── Noise ────────────────────────────────────────────────────────────────────
+        ImGui::Text("Noise");
+        ImGui::SliderInt("Octaves##DrawTerrainProperties", &pTerrain->GetOctaves_NonConst(), 1, 16);
+        ImGui::DragFloat("Amplitude##DrawTerrainProperties", &pTerrain->GetAmplitude_NonConst(), 1.0f, 0.0f, 10000.0f);
+        ImGui::DragFloat("Frequency##DrawTerrainProperties", &pTerrain->GetFrequency_NonConst(), 0.001f, 0.0f, 1.0f, "%.4f");
+        ImGui::DragFloat("Persistence##DrawTerrainProperties", &pTerrain->GetPersistence_NonConst(), 0.001f, 0.0f, 1.0f, "%.4f");
+        ImGui::DragFloat("Lacunarity##DrawTerrainProperties", &pTerrain->GetLacunarity_NonConst(), 0.01f, 0.0f, 32.0f);
+
+        // ── Tessellation ──────────────────────────────────────────────────────────
+        ImGui::Text("Tessellation");
+        ImGui::SliderFloat("Multiplier##DrawTerrainProperties", &pTerrain->GetTessellationMultiplier_NonConst(), 1.0f, 64.0f);
+
+        // ── Lighting ─────────────────────────────────────────────────────────────
+        ImGui::Text("Lighting");
+        ImGui::SliderFloat("Ambient##DrawTerrainProperties", &pTerrain->GetAmbient_NonConst(), 0.0f, 1.0f);
+        ImGui::SliderFloat("Diffuse##DrawTerrainProperties", &pTerrain->GetDiffuse_NonConst(), 0.0f, 1.0f);
+        ImGui::SliderFloat("Specular##DrawTerrainProperties", &pTerrain->GetSpecular_NonConst(), 0.0f, 1.0f);
+        ImGui::SliderFloat("Shininess##DrawTerrainProperties", &pTerrain->GetShininess_NonConst(), 1.0f, 512.0f);
     }
 }
 

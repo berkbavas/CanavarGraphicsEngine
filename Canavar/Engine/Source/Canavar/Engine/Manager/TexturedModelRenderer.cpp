@@ -33,35 +33,7 @@ const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::TexturedModelRe
     return mScenes;
 }
 
-void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera* pActiveCamera)
-{
-    const auto &DirectionalLights = mNodeManager->GetDirectionalLights();
-
-    const auto NumDirectionalLights = std::min(static_cast<int>(DirectionalLights.size()), MAX_DIRECTIONAL_LIGHTS);
-
-    mTexturedModelShader->Bind();
-    mTexturedModelShader->SetUniform("uNumDirectionalLights", NumDirectionalLights);
-
-    int Index = 0;
-
-    for (const auto &pDirectionalLight : DirectionalLights)
-    {
-        mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Color").arg(Index), pDirectionalLight->GetColor());
-        mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Direction").arg(Index), pDirectionalLight->GetDirection().normalized());
-        mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Ambient").arg(Index), pDirectionalLight->GetAmbient());
-        mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Diffuse").arg(Index), pDirectionalLight->GetDiffuse());
-        mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Specular").arg(Index), pDirectionalLight->GetSpecular());
-        mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Radiance").arg(Index), pDirectionalLight->GetRadiance());
-        ++Index;
-    };
-    
-    mTexturedModelShader->SetUniform("uVP", pActiveCamera->GetViewProjectionMatrix());
-    mTexturedModelShader->SetUniform("uFar", pActiveCamera->GetZFar());
-    mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetPosition());
-    mTexturedModelShader->Unbind();
-}
-
-void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera* pActiveCamera, bool OverlayPass)
+void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera *pActiveCamera, bool OverlayPass)
 {
     SetCommonUniforms(RenderPass, pActiveCamera);
 
@@ -88,6 +60,19 @@ void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass,
             }
         }
     }
+}
+
+void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
+{
+    mLightManager->SetDirectionalLightsUniforms(mTexturedModelShader.get());
+
+    mTexturedModelShader->Bind();
+    mTexturedModelShader->SetUniform("uVP", pActiveCamera->GetViewProjectionMatrix());
+    mTexturedModelShader->SetUniform("uFar", pActiveCamera->GetZFar());
+    mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetPosition());
+    mTexturedModelShader->Unbind();
+
+    mRenderer->GetHaze()->SetUniforms(mTexturedModelShader.get());
 }
 
 bool Canavar::Engine::TexturedModelRenderer::ShouldRender(TexturedModel *pTexturedModel, bool OverlayPass) const

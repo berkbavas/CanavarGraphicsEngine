@@ -46,7 +46,7 @@ namespace Canavar::Engine
         QVector3D mTranslation;
 
         static constexpr float MIN_DISTANCE{ 0.1f };
-        static constexpr float MAX_DISTANCE{ 20.0f };
+        static constexpr float MAX_DISTANCE{ 100.0f };
     };
 
     using PersecutorCameraPtr = std::unique_ptr<PersecutorCamera>;
