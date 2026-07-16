@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Canavar/Engine/Core/RenderPassParameters.h"
+#include "Canavar/Engine/Core/Enums.h"
 
 #include <memory>
 
@@ -19,8 +19,8 @@ namespace Canavar::Engine
 
         virtual void Initialize();
         virtual void PostInitialize();
-        virtual void Update(float ifps);
-        virtual void Render(const RenderPassParameters &Parameters);
+        virtual void Update(float Ifps);
+        virtual void Render(RenderPass RenderPass);
         virtual void DrawImGuiWidget();
         virtual void Resize(int Width, int Height);
         virtual void Paint(QPaintDevice *pPaintDevice);

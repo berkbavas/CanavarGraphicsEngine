@@ -59,6 +59,11 @@ Canavar::Engine::TexturedModelRenderer *Canavar::Engine::Renderer::GetTexturedMo
     return mTexturedModelRenderer.get();
 }
 
+Canavar::Engine::PerspectiveCamera *Canavar::Engine::Renderer::GetActiveCamera() const
+{
+    return mCameraManager->GetActiveCamera();
+}
+
 Canavar::Engine::OpenGLWidget *Canavar::Engine::Renderer::GetOpenGLWidget() const
 {
     return mOpenGLWidget;
@@ -151,16 +156,11 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     glClearColor(mClearColor.x(), mClearColor.y(), mClearColor.z(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    RenderPassParameters RenderPassParameters;
-    RenderPassParameters.pActiveCamera = mCameraManager->GetActiveCamera();
-    RenderPassParameters.RenderPass = RenderPass::Opaque;
 
     for (Manager *pManager : mManagers)
     {
-        pManager->Render(RenderPassParameters);
+        pManager->Render(RenderPass::Opaque);
     }
-
-    RenderPassParameters.RenderPass = RenderPass::Transparent;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -168,7 +168,7 @@ void Canavar::Engine::Renderer::Render(float Ifps)
 
     for (Manager *pManager : mManagers)
     {
-        pManager->Render(RenderPassParameters);
+        pManager->Render(RenderPass::Transparent);
     }
 
     mFramebuffers[Multisample]->Unbind();
@@ -301,7 +301,7 @@ void Canavar::Engine::Renderer::CreateDirectionalLights()
         DirectionalLight *pLight = mNodeManager->CreateLight<DirectionalLight>();
         pLight->SetAmbient(0.125f);
         pLight->SetDiffuse(0.5f);
-        pLight->SetRadiance(2.5f);
+        pLight->SetRadiance(4.0f);
         pLight->SetDirection(Direction);
     }
 }

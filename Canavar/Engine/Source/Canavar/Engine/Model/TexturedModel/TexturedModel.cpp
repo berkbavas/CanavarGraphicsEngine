@@ -16,7 +16,7 @@ bool Canavar::Engine::TexturedModel::IsFuzzyTransparent() const
     return mOpacity < EPSILON;
 }
 
-void Canavar::Engine::TexturedModel::Render(Scene *pScene, Shader *pShader, const RenderPassParameters &RenderPassParameters, const QVector<PointLight *> &PointLights)
+void Canavar::Engine::TexturedModel::Render(Scene *pScene, Shader *pShader, RenderPass RenderPass, const QVector<PointLight *> &PointLights)
 {
     const auto NumPointLights = std::min(static_cast<int>(PointLights.size()), MAX_POINT_LIGHTS);
 
@@ -49,7 +49,7 @@ void Canavar::Engine::TexturedModel::Render(Scene *pScene, Shader *pShader, cons
     pShader->SetUniform("uShadingMode", static_cast<int>(mShadingMode));
     pShader->SetUniform("uNodeId", GetNodeId());
 
-    pScene->Render(this, pShader, RenderPassParameters.RenderPass);
+    pScene->Render(this, pShader, RenderPass);
 
     pShader->Unbind();
 }

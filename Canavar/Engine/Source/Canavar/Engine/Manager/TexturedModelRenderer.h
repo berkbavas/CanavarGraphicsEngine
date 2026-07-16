@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Canavar/Engine/Core/RenderPassParameters.h"
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Scene/Scene.h"
 
 namespace Canavar::Engine
@@ -19,12 +19,12 @@ namespace Canavar::Engine
         virtual ~TexturedModelRenderer() = default;
 
         void Initialize() override;
-        void Render(const RenderPassParameters& RenderPassParameters) override;
+        void Render(RenderPass RenderPass) override;
         const QMap<QString, ScenePtr>& GetScenes() const;
 
       private:
-        void SetCommonUniforms(const RenderPassParameters& RenderPassParameters);
-        void RenderModels(const RenderPassParameters& RenderPassParameters, bool OverlayPass);
+        void SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera* pActiveCamera);
+        void RenderModels(RenderPass RenderPass, PerspectiveCamera* pActiveCamera, bool OverlayPass);
         bool ShouldRender(TexturedModel* pTexturedModel, bool OverlayPass) const;
 
         Renderer* mRenderer{ nullptr };

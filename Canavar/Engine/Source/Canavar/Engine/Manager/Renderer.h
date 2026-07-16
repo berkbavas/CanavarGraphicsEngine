@@ -10,6 +10,7 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
 #include "Canavar/Engine/Util/Macros.h"
+#include "Canavar/Engine/Camera/PerspectiveCamera.h"
 
 #include <memory>
 
@@ -30,6 +31,8 @@ namespace Canavar::Engine
         LightManager* GetLightManager() const;
         CameraManager* GetCameraManager() const;
         TexturedModelRenderer* GetTexturedModelRenderer() const;
+
+        PerspectiveCamera* GetActiveCamera() const;
 
         void AddEventReceiver(EventReceiver* pEventReceiver);
         void RemoveEventReceiver(EventReceiver* pEventReceiver);

@@ -23,9 +23,9 @@ void Canavar::Engine::TexturedModelRenderer::Initialize()
     mTexturedModelShader->Initialize();
 }
 
-void Canavar::Engine::TexturedModelRenderer::Render(const RenderPassParameters &RenderPassParameters)
+void Canavar::Engine::TexturedModelRenderer::Render(RenderPass RenderPass)
 {
-    RenderModels(RenderPassParameters, false);
+    RenderModels(RenderPass, mRenderer->GetActiveCamera(), false);
 }
 
 const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::TexturedModelRenderer::GetScenes() const
@@ -33,7 +33,7 @@ const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::TexturedModelRe
     return mScenes;
 }
 
-void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(const RenderPassParameters &RenderPassParameters)
+void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera* pActiveCamera)
 {
     const auto &DirectionalLights = mNodeManager->GetDirectionalLights();
 
@@ -53,23 +53,21 @@ void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(const RenderPassP
         mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Specular").arg(Index), pDirectionalLight->GetSpecular());
         mTexturedModelShader->SetUniform(QString("uDirectionalLights[%1].Radiance").arg(Index), pDirectionalLight->GetRadiance());
         ++Index;
-    }
-
-    const auto &pCamera = RenderPassParameters.pActiveCamera;
+    };
     
-    mTexturedModelShader->SetUniform("uVP", pCamera->GetViewProjectionMatrix());
-    mTexturedModelShader->SetUniform("uFar", pCamera->GetZFar());
-    mTexturedModelShader->SetUniform("uCameraPosition", pCamera->GetPosition());
+    mTexturedModelShader->SetUniform("uVP", pActiveCamera->GetViewProjectionMatrix());
+    mTexturedModelShader->SetUniform("uFar", pActiveCamera->GetZFar());
+    mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetPosition());
     mTexturedModelShader->Unbind();
 }
 
-void Canavar::Engine::TexturedModelRenderer::RenderModels(const RenderPassParameters &RenderPassParameters, bool OverlayPass)
+void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera* pActiveCamera, bool OverlayPass)
 {
-    SetCommonUniforms(RenderPassParameters);
+    SetCommonUniforms(RenderPass, pActiveCamera);
 
     const auto &TexturedModels = mNodeManager->GetTexturedModels();
 
-    const auto ZFar = RenderPassParameters.pActiveCamera->GetZFar();
+    const auto ZFar = pActiveCamera->GetZFar();
 
     for (const auto &pTexturedModel : TexturedModels)
     {
@@ -82,7 +80,7 @@ void Canavar::Engine::TexturedModelRenderer::RenderModels(const RenderPassParame
                 const auto &pScene = mScenes[ModelName];
                 const auto &PointLights = mLightManager->GetPointLightsAround(pTexturedModel->GetPosition(), ZFar);
 
-                pTexturedModel->Render(pScene.get(), mTexturedModelShader.get(), RenderPassParameters, PointLights);
+                pTexturedModel->Render(pScene.get(), mTexturedModelShader.get(), RenderPass, PointLights);
             }
             else
             {

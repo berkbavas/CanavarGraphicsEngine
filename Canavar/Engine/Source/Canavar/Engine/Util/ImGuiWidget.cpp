@@ -64,7 +64,6 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
     ImGui::SetNextWindowSize(ImVec2(400, 600), ImGuiCond_FirstUseEver);
     ImGui::Begin("Scene Editor##DrawImGuiWidgets", nullptr, ImGuiWindowFlags_MenuBar);
     DrawMenuBar();
-    ImGui::Separator();
     DrawNodeList();
     DrawStats(Ifps);
     ImGui::End();
@@ -254,7 +253,6 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
 
     ImGui::Text("Type : %s", mSelectedNode->GetNodeTypeName());
     ImGui::Text("ID   : %d", mSelectedNode->GetNodeId());
-    ImGui::Separator();
 
     // ── Dispatch to per-type drawers ─────────────────────────────────────────
     // Derived-most types are tested first so PointLight is not accidentally
@@ -262,33 +260,25 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
     if (auto *pPointLight = dynamic_cast<PointLight *>(mSelectedNode))
     {
         DrawObjectTransform(pPointLight);
-        ImGui::Separator();
         DrawLightProperties(pPointLight);
-        ImGui::Separator();
         DrawPointLightProperties(pPointLight);
     }
     else if (auto *pDirLight = dynamic_cast<DirectionalLight *>(mSelectedNode))
     {
         DrawObjectTransform(pDirLight);
-        ImGui::Separator();
         DrawLightProperties(pDirLight);
-        ImGui::Separator();
         DrawDirectionalLightProperties(pDirLight);
     }
     else if (auto *pCamera = dynamic_cast<Camera *>(mSelectedNode))
     {
         DrawObjectTransform(pCamera);
-        ImGui::Separator();
         DrawCameraProperties(pCamera);
     }
     else if (auto *pModel = dynamic_cast<TexturedModel *>(mSelectedNode))
     {
         DrawObjectTransform(pModel);
-        ImGui::Separator();
         DrawTexturedModelProperties(pModel);
     }
-
-    ImGui::Separator();
 
     // ── Delete button ─────────────────────────────────────────────────────────
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.70f, 0.10f, 0.10f, 1.0f));
@@ -378,59 +368,24 @@ void Canavar::Engine::ImGuiWidget::DrawCameraProperties(Camera *pCamera)
         mCameraManager->SetActiveCamera(pPersp);
     }
 
-    // Clipping planes
-    float zNear = pPersp->GetZNear();
-    if (ImGui::DragFloat("Z Near##DrawCameraProperties", &zNear, 0.01f, 0.001f, 1000.0f))
-    {
-        pPersp->SetZNear(zNear);
-    }
+    ImGui::DragFloat("Z Near##DrawCameraProperties", &pPersp->GetZNear_NonConst(), 0.01f, 0.001f, 1000.0f);
 
-    float zFar = pPersp->GetZFar();
-    if (ImGui::DragFloat("Z Far##DrawCameraProperties", &zFar, 100.0f, 1.0f, 10000000.0f))
-    {
-        pPersp->SetZFar(zFar);
-    }
+    ImGui::DragFloat("Z Far##DrawCameraProperties", &pPersp->GetZFar_NonConst(), 100.0f, 1.0f, 10'000'000.0f);
 
-    float vFov = pPersp->GetVerticalFov();
-    if (ImGui::DragFloat("Vertical FOV##DrawCameraProperties", &vFov, 0.5f, 1.0f, 170.0f))
-    {
-        pPersp->SetVerticalFov(vFov);
-    }
+    ImGui::SliderFloat("Vertical FOV##DrawCameraProperties", &pPersp->GetVerticalFov_NonConst(), 1.0f, 170.0f);
 
     // ── PersecutorCamera extras ───────────────────────────────────────────────
     if (auto *pPersecutor = dynamic_cast<PersecutorCamera *>(pCamera))
     {
-        ImGui::Separator();
         ImGui::TextUnformatted("Persecutor Camera");
-
-        float Distance = pPersecutor->GetDistance();
-        if (ImGui::DragFloat("Distance##DrawCameraProperties", &Distance, 0.1f, 0.1f, 20000.0f))
-        {
-            pPersecutor->SetDistance(Distance);
-        }
-
-        float AngularSpeed = pPersecutor->GetAngularSpeed();
-        if (ImGui::DragFloat("Angular Speed##DrawCameraProperties", &AngularSpeed, 0.5f, 0.0f, 720.0f))
-        {
-            pPersecutor->SetAngularSpeed(AngularSpeed);
-        }
-
-        float LinearSpeed = pPersecutor->GetLinearSpeed();
-        if (ImGui::DragFloat("Linear Speed##DrawCameraProperties", &LinearSpeed, 0.01f, 0.0f, 1000.0f))
-        {
-            pPersecutor->SetLinearSpeed(LinearSpeed);
-        }
-
-        float ZoomStep = pPersecutor->GetZoomStep();
-        if (ImGui::DragFloat("Zoom Step##DrawCameraProperties", &ZoomStep, 0.01f, 0.01f, 100.0f))
-        {
-            pPersecutor->SetZoomStep(ZoomStep);
-        }
+        ImGui::DragFloat("Distance##DrawCameraProperties", &pPersecutor->GetDistance_NonConst(), 0.1f, 0.1f, 20000.0f);
+        ImGui::DragFloat("Angular Speed##DrawCameraProperties", &pPersecutor->GetAngularSpeed_NonConst(), 0.5f, 0.0f, 720.0f);
+        ImGui::DragFloat("Linear Speed##DrawCameraProperties", &pPersecutor->GetLinearSpeed_NonConst(), 0.01f, 0.0f, 1000.0f);
+        ImGui::DragFloat("Zoom Step##DrawCameraProperties", &pPersecutor->GetZoomStep_NonConst(), 0.01f, 0.01f, 100.0f);
     }
     // ── FreeCamera extras ─────────────────────────────────────────────────────
     else if (dynamic_cast<FreeCamera *>(pCamera))
     {
-        ImGui::Separator();
         ImGui::TextUnformatted("Free Camera");
         ImGui::TextDisabled("Controlled via keyboard + mouse");
     }
@@ -447,11 +402,7 @@ void Canavar::Engine::ImGuiWidget::DrawLightProperties(Light *pLight)
         return;
     }
 
-    bool Enabled = pLight->GetEnabled();
-    if (ImGui::Checkbox("Enabled##DrawLightProperties", &Enabled))
-    {
-        pLight->SetEnabled(Enabled);
-    }
+    ImGui::Checkbox("Enabled##DrawLightProperties", &pLight->GetEnabled_NonConst());
 
     const auto &Color = pLight->GetColor();
     float Vector[3] = { Color.x(), Color.y(), Color.z() };
@@ -541,9 +492,9 @@ void Canavar::Engine::ImGuiWidget::DrawTexturedModelProperties(TexturedModel *pM
         if (ImGui::CollapsingHeader("PBR Material##DrawTexturedModelProperties", ImGuiTreeNodeFlags_DefaultOpen))
         {
             PbrMaterial &Material = pModel->GetPbrMaterial_NonConst();
-            ImGui::DragFloat("Metallic##DrawTexturedModelProperties", &Material.Metallic, 0.01f, 0.0f, 1.0f);
-            ImGui::DragFloat("Roughness##DrawTexturedModelProperties", &Material.Roughness, 0.01f, 0.0f, 1.0f);
-            ImGui::DragFloat("Ambient Occlusion##DrawTexturedModelProperties", &Material.AmbientOcclusion, 0.01f, 0.0f, 1.0f);
+            ImGui::SliderFloat("Metallic##DrawTexturedModelProperties", &Material.Metallic, 0.0f, 1.0f);
+            ImGui::SliderFloat("Roughness##DrawTexturedModelProperties", &Material.Roughness, 0.0f, 1.0f);
+            ImGui::SliderFloat("Ambient Occlusion##DrawTexturedModelProperties", &Material.AmbientOcclusion, 0.0f, 1.0f);
         }
     }
     else
@@ -551,10 +502,10 @@ void Canavar::Engine::ImGuiWidget::DrawTexturedModelProperties(TexturedModel *pM
         if (ImGui::CollapsingHeader("Phong Material##DrawTexturedModelProperties", ImGuiTreeNodeFlags_DefaultOpen))
         {
             PhongMaterial &Material = pModel->GetPhongMaterial_NonConst();
-            ImGui::DragFloat("Ambient##DrawTexturedModelProperties", &Material.Ambient, 0.01f, 0.0f, 1.0f);
-            ImGui::DragFloat("Diffuse##DrawTexturedModelProperties", &Material.Diffuse, 0.01f, 0.0f, 1.0f);
-            ImGui::DragFloat("Specular##DrawTexturedModelProperties", &Material.Specular, 0.01f, 0.0f, 1.0f);
-            ImGui::DragFloat("Shininess##DrawTexturedModelProperties", &Material.Shininess, 1.0f, 1.0f, 512.0f);
+            ImGui::SliderFloat("Ambient##DrawTexturedModelProperties", &Material.Ambient, 0.0f, 1.0f);
+            ImGui::SliderFloat("Diffuse##DrawTexturedModelProperties", &Material.Diffuse, 0.0f, 1.0f);
+            ImGui::SliderFloat("Specular##DrawTexturedModelProperties", &Material.Specular, 0.0f, 1.0f);
+            ImGui::SliderFloat("Shininess##DrawTexturedModelProperties", &Material.Shininess, 1.0f, 512.0f);
         }
     }
 }

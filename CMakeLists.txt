@@ -17,6 +17,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# Prevent Qt includes from being passed as -external:I (system includes).
+# VS Code IntelliSense does not recognize -external:I, so Qt headers would be invisible.
+set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
+
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets)
 
 set(EXTERNAL_DIR  "${CMAKE_SOURCE_DIR}/External")

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Canavar/Engine/Core/Enums.h"
-#include "Canavar/Engine/Core/RenderPassParameters.h"
 #include "Canavar/Engine/Light/PointLight.h"
 #include "Canavar/Engine/Model/PbrMaterial.h"
 #include "Canavar/Engine/Model/PhongMaterial.h"
@@ -20,7 +19,7 @@ namespace Canavar::Engine
         const char *GetNodeTypeName() const override { return "TexturedModel"; }
 
         bool IsFuzzyTransparent() const;
-        void Render(Scene *pScene, Shader *pShader, const RenderPassParameters &RenderPassParameters, const QVector<PointLight *> &PointLights);
+        void Render(Scene *pScene, Shader *pShader, RenderPass RenderPass, const QVector<PointLight *> &PointLights);
 
         DEFINE_MEMBER_CONST(QString, ModelName);
         DEFINE_MEMBER_CONST(std::string, ModelUniqueNameStdString);
