@@ -24,6 +24,7 @@ namespace Canavar::Engine
     class PointLight;
     class DirectionalLight;
     class TexturedModel;
+    class PrimitiveModel;
     class NodeManager;
     class Sky;
     class Haze;
@@ -54,6 +55,7 @@ namespace Canavar::Engine
         void DrawPointLightProperties(PointLight *pLight);
         void DrawDirectionalLightProperties(DirectionalLight *pLight);
         void DrawTexturedModelProperties(TexturedModel *pModel);
+        void DrawPrimitiveModelProperties(PrimitiveModel *pModel);
         void DrawSkyProperties();
         void DrawHazeProperties();
         void DrawTerrainProperties();

@@ -54,4 +54,13 @@ namespace Canavar::Engine
         LensDistortion,      // Barrel / pincushion lens distortion
         Cinematic,           // Vignette + film grain (applied last)
     };
+
+    enum class PrimitiveType
+    {
+        Circle, // Line-loop circle in the XZ plane; has screen-space thickness
+        Disk,   // Filled disk in the XZ plane
+        Line,   // Line segment from origin to +Z; has screen-space thickness
+        Plane,  // Unit quad in the XZ plane
+        Sphere, // UV sphere of radius 1
+    };
 }

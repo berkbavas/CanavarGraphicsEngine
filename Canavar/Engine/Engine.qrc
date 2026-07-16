@@ -18,6 +18,11 @@
         <file>Resources/Shaders/ChromaticAberration.frag</file>
         <file>Resources/Shaders/LensDistortion.frag</file>
         <file>Resources/Shaders/DepthOfField.frag</file>
+        <file>Resources/Shaders/Primitive.vert</file>
+        <file>Resources/Shaders/Primitive.frag</file>
+        <file>Resources/Shaders/CircleLine.vert</file>
+        <file>Resources/Shaders/CircleLine.geom</file>
+        <file>Resources/Shaders/CircleLine.frag</file>
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>
 </RCC>

@@ -12,6 +12,7 @@
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
+#include "Canavar/Engine/Manager/PrimitiveModelRenderer.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
 #include "Canavar/Engine/PostProcessEffect/AcesEffect.h"
 #include "Canavar/Engine/PostProcessEffect/ChromaticAberrationEffect.h"
@@ -42,6 +43,7 @@ namespace Canavar::Engine
         LightManager* GetLightManager() const;
         CameraManager* GetCameraManager() const;
         TexturedModelRenderer* GetTexturedModelRenderer() const;
+        PrimitiveModelRenderer* GetPrimitiveModelRenderer() const;
 
         Sky* GetSky() const;
         Haze* GetHaze() const;
@@ -94,6 +96,7 @@ namespace Canavar::Engine
         LightManagerPtr mLightManager{ nullptr };
         CameraManagerPtr mCameraManager{ nullptr };
         TexturedModelRendererPtr mTexturedModelRenderer{ nullptr };
+        PrimitiveModelRendererPtr mPrimitiveModelRenderer{ nullptr };
 
         ShaderPtr mScreenShader{ nullptr };
         QuadPtr mQuad{ nullptr };

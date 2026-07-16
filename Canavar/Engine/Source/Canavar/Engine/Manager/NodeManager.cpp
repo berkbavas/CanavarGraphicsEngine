@@ -40,6 +40,7 @@ void Canavar::Engine::NodeManager::RemoveNode(Node *pNode)
     mCameras.remove_if([pNode](const CameraPtr &pCamera) { return pCamera.get() == pNode; });
     mLights.remove_if([pNode](const LightPtr &pLight) { return pLight.get() == pNode; });
     mTexturedModels.remove_if([pNode](const TexturedModelPtr &pTexturedModel) { return pTexturedModel.get() == pNode; });
+    mPrimitiveModels.remove_if([pNode](const PrimitiveModelPtr &pPrimitiveModel) { return pPrimitiveModel.get() == pNode; });
     mGlobalNodes.remove_if([pNode](const GlobalNodePtr &pGlobalNode) { return pGlobalNode.get() == pNode; });
 }
 
@@ -55,6 +56,11 @@ const std::list<Canavar::Engine::LightPtr> &Canavar::Engine::NodeManager::GetLig
 const std::list<Canavar::Engine::TexturedModelPtr> &Canavar::Engine::NodeManager::GetTexturedModels() const
 {
     return mTexturedModels;
+}
+
+const std::list<Canavar::Engine::PrimitiveModelPtr> &Canavar::Engine::NodeManager::GetPrimitiveModels() const
+{
+    return mPrimitiveModels;
 }
 
 const std::list<Canavar::Engine::Node *> &Canavar::Engine::NodeManager::GetNodes() const

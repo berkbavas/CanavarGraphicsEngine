@@ -7,6 +7,7 @@
 #include "Canavar/Engine/Light/PointLight.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/Manager.h"
+#include "Canavar/Engine/Model/PrimitiveModel/PrimitiveModel.h"
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
 
 #include <list>
@@ -27,11 +28,12 @@ namespace Canavar::Engine
         template<typename T, typename... Args>
         T *CreateNode(Args &&...args)
         {
-            static_assert(std::is_base_of_v<Camera, T> ||            //
-                              std::is_base_of_v<Light, T> ||         //
-                              std::is_base_of_v<TexturedModel, T> || //
-                              std::is_base_of_v<GlobalNode, T>,      //
-                          "T must be derived from Camera, Light, TexturedModel, or GlobalNode");
+            static_assert(std::is_base_of_v<Camera, T> ||             //
+                              std::is_base_of_v<Light, T> ||          //
+                              std::is_base_of_v<TexturedModel, T> ||  //
+                              std::is_base_of_v<PrimitiveModel, T> || //
+                              std::is_base_of_v<GlobalNode, T>,       //
+                          "T must be derived from Camera, Light, TexturedModel, PrimitiveModel, or GlobalNode");
 
             auto pNode = std::make_unique<T>(std::forward<Args>(args)...);
             pNode->SetNodeId(mNextNodeId++);
@@ -65,6 +67,11 @@ namespace Canavar::Engine
                 mTexturedModels.push_back(std::move(pNode));
                 mObjects.push_back(pRawPtr);
             }
+            else if constexpr (std::is_base_of_v<PrimitiveModel, T>)
+            {
+                mPrimitiveModels.push_back(std::move(pNode));
+                mObjects.push_back(pRawPtr);
+            }
             else if constexpr (std::is_base_of_v<GlobalNode, T>)
             {
                 mGlobalNodes.push_back(std::move(pNode));
@@ -83,6 +90,7 @@ namespace Canavar::Engine
         const std::list<Object *> &GetObjects() const;
         const std::list<PointLight *> &GetPointLights() const;
         const std::list<DirectionalLight *> &GetDirectionalLights() const;
+        const std::list<PrimitiveModelPtr> &GetPrimitiveModels() const;
 
       private:
         Renderer *mRenderer{ nullptr };
@@ -91,6 +99,7 @@ namespace Canavar::Engine
         std::list<CameraPtr> mCameras;
         std::list<LightPtr> mLights;
         std::list<TexturedModelPtr> mTexturedModels;
+        std::list<PrimitiveModelPtr> mPrimitiveModels;
         std::list<GlobalNodePtr> mGlobalNodes;
 
         std::list<Node *> mNodes;

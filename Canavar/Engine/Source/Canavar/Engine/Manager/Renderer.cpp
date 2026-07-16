@@ -19,11 +19,13 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mLightManager = std::make_unique<LightManager>();
     mCameraManager = std::make_unique<CameraManager>();
     mTexturedModelRenderer = std::make_unique<TexturedModelRenderer>(this);
+    mPrimitiveModelRenderer = std::make_unique<PrimitiveModelRenderer>(this);
 
     mManagers.append(mNodeManager.get());
     mManagers.append(mLightManager.get());
     mManagers.append(mCameraManager.get());
     mManagers.append(mTexturedModelRenderer.get());
+    mManagers.append(mPrimitiveModelRenderer.get());
 
     AddEventReceiver(mCameraManager.get());
 
@@ -58,6 +60,11 @@ Canavar::Engine::CameraManager *Canavar::Engine::Renderer::GetCameraManager() co
 Canavar::Engine::TexturedModelRenderer *Canavar::Engine::Renderer::GetTexturedModelRenderer() const
 {
     return mTexturedModelRenderer.get();
+}
+
+Canavar::Engine::PrimitiveModelRenderer *Canavar::Engine::Renderer::GetPrimitiveModelRenderer() const
+{
+    return mPrimitiveModelRenderer.get();
 }
 
 Canavar::Engine::Sky *Canavar::Engine::Renderer::GetSky() const

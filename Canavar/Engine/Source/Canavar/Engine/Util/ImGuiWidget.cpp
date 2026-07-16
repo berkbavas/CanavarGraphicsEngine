@@ -16,6 +16,8 @@
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
 #include "Canavar/Engine/Model/PbrMaterial.h"
 #include "Canavar/Engine/Model/PhongMaterial.h"
+#include "Canavar/Engine/Model/PrimitiveModel/PrimitiveModel.h"
+#include "Canavar/Engine/Model/PrimitiveModel/Primitives.h"
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
 #include "Canavar/Engine/Node/Node.h"
 #include "Canavar/Engine/Object/Object.h"
@@ -159,6 +161,32 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
             ImGui::EndMenu();
         }
 
+        // ── Primitives ────────────────────────────────────────────────────────
+        if (ImGui::BeginMenu("Primitive##DrawMenuBar"))
+        {
+            if (ImGui::MenuItem("Circle"))
+            {
+                mSelectedNode = mNodeManager->CreateNode<Circle>();
+            }
+            if (ImGui::MenuItem("Disk"))
+            {
+                mSelectedNode = mNodeManager->CreateNode<Disk>();
+            }
+            if (ImGui::MenuItem("Line"))
+            {
+                mSelectedNode = mNodeManager->CreateNode<Line>();
+            }
+            if (ImGui::MenuItem("Plane"))
+            {
+                mSelectedNode = mNodeManager->CreateNode<Plane>();
+            }
+            if (ImGui::MenuItem("Sphere"))
+            {
+                mSelectedNode = mNodeManager->CreateNode<Sphere>();
+            }
+            ImGui::EndMenu();
+        }
+
         ImGui::EndMenu();
     }
 
@@ -235,6 +263,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
     DrawRootsFrom(mNodeManager->GetCameras());
     DrawRootsFrom(mNodeManager->GetLights());
     DrawRootsFrom(mNodeManager->GetTexturedModels());
+    DrawRootsFrom(mNodeManager->GetPrimitiveModels());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -288,6 +317,11 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
     {
         DrawObjectTransform(pModel);
         DrawTexturedModelProperties(pModel);
+    }
+    else if (auto *pPrimitive = dynamic_cast<PrimitiveModel *>(mSelectedNode))
+    {
+        DrawObjectTransform(pPrimitive);
+        DrawPrimitiveModelProperties(pPrimitive);
     }
 
     // ── Delete button ─────────────────────────────────────────────────────────
@@ -385,6 +419,7 @@ void Canavar::Engine::ImGuiWidget::DrawHierarchyProperties(Node *pNode)
         TryListNodes(mNodeManager->GetCameras());
         TryListNodes(mNodeManager->GetLights());
         TryListNodes(mNodeManager->GetTexturedModels());
+        TryListNodes(mNodeManager->GetPrimitiveModels());
 
         ImGui::EndCombo();
     }
@@ -568,6 +603,38 @@ void Canavar::Engine::ImGuiWidget::DrawDirectionalLightProperties(DirectionalLig
     }
 
     ImGui::DragFloat("Radiance##DrawDirectionalLightProperties", &pLight->GetRadiance_NonConst(), 0.1f, 0.0f, 100.0f);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PrimitiveModel Properties
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawPrimitiveModelProperties(PrimitiveModel *pModel)
+{
+    if (!ImGui::CollapsingHeader("Primitive Model##DrawPrimitiveModelProperties", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        return;
+    }
+
+    // Color
+    {
+        const auto &Color = pModel->GetColor();
+        float Vector[3] = { Color.x(), Color.y(), Color.z() };
+        if (ImGui::ColorEdit3("Color##DrawPrimitiveModelProperties", Vector))
+        {
+            pModel->SetColor(QVector3D(Vector[0], Vector[1], Vector[2]));
+        }
+    }
+
+    // Opacity
+    ImGui::SliderFloat("Opacity##DrawPrimitiveModelProperties", &pModel->GetOpacity_NonConst(), 0.0f, 1.0f);
+
+    // Screen-space thickness (Circle and Line only)
+    const auto Type = pModel->GetPrimitiveType();
+    if (Type == PrimitiveType::Circle || Type == PrimitiveType::Line)
+    {
+        ImGui::DragFloat("Thickness (px)##DrawPrimitiveModelProperties", &pModel->GetThickness_NonConst(), 0.5f, 0.5f, 64.0f);
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
