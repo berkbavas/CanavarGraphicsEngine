@@ -67,6 +67,7 @@ namespace Canavar::Engine
         void DrawNodeTree(Node *pNode);
 
         void SetSelectedNode(Node *pNode);
+        void UpdateNameBuffer();
 
         QtImGui::RenderRef mRenderRef;
         Renderer *mRenderer{ nullptr };

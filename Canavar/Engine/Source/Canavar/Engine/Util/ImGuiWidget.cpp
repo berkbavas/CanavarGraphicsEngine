@@ -971,15 +971,17 @@ void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
 void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
 {
     Gizmo *pGizmo = mRenderer->GetGizmo();
+
+    // If the selected node is changing, exit the gizmo mode for the previous node.
+    // If gizmo is not active for the previous node, this call is harmless.
     pGizmo->Exit();
 
+    // Update the selected node and copy its name into the buffer for display in the UI.
     mSelectedNode = pNode;
 
     if (mSelectedNode)
     {
-        const auto &Name = mSelectedNode->GetNodeName();
-        std::strncpy(mNodeNameBuffer, Name.c_str(), sizeof(mNodeNameBuffer) - 1);
-        mNodeNameBuffer[sizeof(mNodeNameBuffer) - 1] = '\0';
+        UpdateNameBuffer();
 
         // If the selected node is a TexturedModel, enter the gizmo mode for it.
         if (TexturedModel *pTexturedModel = dynamic_cast<TexturedModel *>(mSelectedNode))
@@ -987,6 +989,13 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
             pGizmo->Enter(pTexturedModel);
         }
     }
+}
+
+void Canavar::Engine::ImGuiWidget::UpdateNameBuffer()
+{
+    const auto &Name = mSelectedNode->GetNodeName();
+    std::strncpy(mNodeNameBuffer, Name.c_str(), sizeof(mNodeNameBuffer) - 1);
+    mNodeNameBuffer[sizeof(mNodeNameBuffer) - 1] = '\0';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

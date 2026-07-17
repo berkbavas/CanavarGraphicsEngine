@@ -24,7 +24,7 @@ void Canavar::Engine::NodeManager::RemoveNode(Node *pNode)
 
     // Orphan direct children so they become root nodes (prevents dangling parent ptrs).
     // Copy the list first — SetParent modifies pNode->mChildren during iteration.
-    const std::vector<Node*> ChildrenCopy = pNode->GetChildren();
+    const std::vector<Node *> ChildrenCopy = pNode->GetChildren();
     for (Node *pChild : ChildrenCopy)
     {
         pChild->SetParent(nullptr);
@@ -61,6 +61,52 @@ const std::list<Canavar::Engine::TexturedModelPtr> &Canavar::Engine::NodeManager
 const std::list<Canavar::Engine::PrimitiveModelPtr> &Canavar::Engine::NodeManager::GetPrimitiveModels() const
 {
     return mPrimitiveModels;
+}
+
+void Canavar::Engine::NodeManager::AddCamera(CameraPtr &&pCamera)
+{
+    // Camera is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
+    // Camera : Object : Node
+    const auto pRawPtr = pCamera.get();
+    mCameras.push_back(std::move(pCamera));
+    mObjects.push_back(pRawPtr);
+}
+
+void Canavar::Engine::NodeManager::AddLight(LightPtr &&pLight)
+{
+    // Light is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
+    // Light : Object : Node
+    const auto pRawPtr = pLight.get();
+    mLights.push_back(std::move(pLight));
+    mObjects.push_back(pRawPtr);
+
+    // Add the light to the LightManager for uniform management.
+    mLightManager->AddLight(pRawPtr);
+}
+
+void Canavar::Engine::NodeManager::AddTexturedModel(TexturedModelPtr &&pTexturedModel)
+{
+    // TexturedModel is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
+    // TexturedModel : Object : Node
+    const auto pRawPtr = pTexturedModel.get();
+    mTexturedModels.push_back(std::move(pTexturedModel));
+    mObjects.push_back(pRawPtr);
+}
+
+void Canavar::Engine::NodeManager::AddPrimitiveModel(PrimitiveModelPtr &&pPrimitiveModel)
+{
+    // PrimitiveModel is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
+    // PrimitiveModel : Object : Node
+    const auto pRawPtr = pPrimitiveModel.get();
+    mPrimitiveModels.push_back(std::move(pPrimitiveModel));
+    mObjects.push_back(pRawPtr);
+}
+
+void Canavar::Engine::NodeManager::AddGlobalNode(GlobalNodePtr &&pGlobalNode)
+{
+    // GlobalNode is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
+    // GlobalNode : Node
+    mGlobalNodes.push_back(std::move(pGlobalNode));
 }
 
 const std::list<Canavar::Engine::Node *> &Canavar::Engine::NodeManager::GetNodes() const
