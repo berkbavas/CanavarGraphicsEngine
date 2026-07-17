@@ -40,7 +40,7 @@ Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
 {
     // Connect to the renderer's signals for initialization and overlay rendering
     connect(mRenderer, &Renderer::Initialized, this, &Canavar::Engine::ImGuiWidget::Initialize);
-    connect(mRenderer, &Renderer::CanRenderOverlay, this, &Canavar::Engine::ImGuiWidget::OnRenderOverlay);
+    connect(mRenderer, &Renderer::PostRender, this, &Canavar::Engine::ImGuiWidget::OnPostRender);
 
     // Retrieve the NodeManager and CameraManager from the renderer for later use
     mNodeManager = mRenderer->GetNodeManager();
@@ -55,7 +55,7 @@ void Canavar::Engine::ImGuiWidget::Initialize()
     mRenderRef = QtImGui::initialize(mRenderer->GetOpenGLWidget(), false);
 }
 
-void Canavar::Engine::ImGuiWidget::OnRenderOverlay(float Ifps)
+void Canavar::Engine::ImGuiWidget::OnPostRender(float Ifps)
 {
     QtImGui::newFrame(mRenderRef);
     DrawImGuiWidgets(Ifps);
@@ -266,7 +266,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
         {
             if (!pOwned->GetParent())
             {
-                DrawNodeTree(pOwned.get());
+                DrawNodeTree(pOwned);
             }
         }
     };
@@ -384,7 +384,7 @@ void Canavar::Engine::ImGuiWidget::DrawHierarchyProperties(Node *pNode)
         const auto TryListNodes = [&](auto &List) {
             for (const auto &pOwned : List)
             {
-                Node *pCandidate = pOwned.get();
+                Node *pCandidate = pOwned;
 
                 // Skip self, current parent, and existing children to avoid trivial cycles.
                 if (pCandidate == pNode || pCandidate == pParent)
@@ -1010,7 +1010,7 @@ void Canavar::Engine::ImGuiWidget::ValidateSelectedNode()
     }
 
     const auto &Nodes = mRenderer->GetNodeManager()->GetNodes();
-    const bool StillAlive = std::any_of(Nodes.begin(), Nodes.end(), [this](Node *pNode) { return pNode == mSelectedNode; });
+    const bool StillAlive = std::any_of(Nodes.begin(), Nodes.end(), [this](const NodePtr& pNode) { return pNode.get() == mSelectedNode; });
     if (!StillAlive)
     {
         SetSelectedNode(nullptr);

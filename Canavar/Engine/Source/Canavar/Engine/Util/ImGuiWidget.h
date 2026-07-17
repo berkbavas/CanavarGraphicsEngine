@@ -39,7 +39,7 @@ namespace Canavar::Engine
       private:
         // Private slots for handling signals from the renderer"
         void Initialize();
-        void OnRenderOverlay(float Ifps);
+        void OnPostRender(float Ifps);
         void DrawImGuiWidgets(float Ifps);
 
         // --- Top-level panels ---

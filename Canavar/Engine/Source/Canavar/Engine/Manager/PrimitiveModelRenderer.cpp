@@ -63,9 +63,9 @@ void Canavar::Engine::PrimitiveModelRenderer::RenderOverlay(RenderPass RenderPas
 
 void Canavar::Engine::PrimitiveModelRenderer::RenderPrimitiveModels(RenderPass RenderPass, bool OverlayPass, PerspectiveCamera *pCamera)
 {
-    for (const auto &pPrimitiveModel : mNodeManager->GetPrimitiveModels())
+    for (const auto pPrimitiveModel : mNodeManager->GetPrimitiveModels())
     {
-        if (!ShouldRenderPrimitiveModel(pPrimitiveModel.get(), RenderPass, OverlayPass))
+        if (!ShouldRenderPrimitiveModel(pPrimitiveModel, RenderPass, OverlayPass))
         {
             continue; // Skip this primitive model if it shouldn't be rendered
         }

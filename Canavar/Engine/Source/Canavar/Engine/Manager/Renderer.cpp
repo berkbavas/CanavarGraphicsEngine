@@ -147,6 +147,8 @@ void Canavar::Engine::Renderer::Render(float Ifps)
         pManager->Update(Ifps);
     }
 
+    emit Updated(Ifps);
+
     // Setup OpenGL state for rendering
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
@@ -231,7 +233,7 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     }
 
     // ImGui rendering should be done after the main render pass to ensure it appears on top of everything else.
-    emit CanRenderOverlay(Ifps);
+    emit PostRender(Ifps);
 }
 
 void Canavar::Engine::Renderer::OnKeyPressed(QKeyEvent *pEvent)

@@ -75,8 +75,9 @@ namespace Canavar::Engine
 
       signals:
         void Initialized();
+        void Updated(float Ifps);
         void Resized(int Width, int Height);
-        void CanRenderOverlay(float Ifps);
+        void PostRender(float Ifps);
 
       private:
         void Initialize();

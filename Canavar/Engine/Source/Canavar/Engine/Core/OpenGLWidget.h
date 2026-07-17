@@ -11,7 +11,7 @@ namespace Canavar::Engine
     {
         Q_OBJECT
       public:
-        explicit OpenGLWidget(QWidget* pParent);
+        explicit OpenGLWidget(QWidget* pParent = nullptr);
 
         void MakeCurrent() override;
         void DoneCurrent() override;

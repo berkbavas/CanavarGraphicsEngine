@@ -96,3 +96,4 @@ endfunction()
 
 add_subdirectory(Canavar/Engine)
 add_subdirectory(Canavar/Editor)
+add_subdirectory(Canavar/Simulator)

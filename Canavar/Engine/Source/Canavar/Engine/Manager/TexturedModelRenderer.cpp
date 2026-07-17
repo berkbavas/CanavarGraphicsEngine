@@ -51,9 +51,9 @@ void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass,
     Shader *pTexturedModelShader = mTexturedModelShader.get();
     const auto PointLightsRadius = pActiveCamera->GetZFar();
 
-    for (const auto &pTexturedModel : TexturedModels)
+    for (const auto pTexturedModel : TexturedModels)
     {
-        if (!ShouldRender(pTexturedModel.get(), OverlayPass))
+        if (!ShouldRender(pTexturedModel, OverlayPass))
         {
             continue; // Skip rendering this textured model based on visibility and overlay settings
         }

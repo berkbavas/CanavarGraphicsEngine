@@ -31,85 +31,60 @@ void Canavar::Engine::NodeManager::RemoveNode(Node *pNode)
     }
 
     // ── Remove from manager lists ─────────────────────────────────────────────
-    mNodes.remove(pNode);
     mObjects.remove(dynamic_cast<Object *>(pNode));
     mPointLights.remove(dynamic_cast<PointLight *>(pNode));
     mDirectionalLights.remove(dynamic_cast<DirectionalLight *>(pNode));
     mLightManager->RemoveLight(dynamic_cast<Light *>(pNode));
+    mCameras.remove(dynamic_cast<Camera *>(pNode));
+    mLights.remove(dynamic_cast<Light *>(pNode));
+    mTexturedModels.remove(dynamic_cast<TexturedModel *>(pNode));
+    mPrimitiveModels.remove(dynamic_cast<PrimitiveModel *>(pNode));
+    mGlobalNodes.remove(dynamic_cast<GlobalNode *>(pNode));
+    mDummyObjects.remove(dynamic_cast<DummyObject *>(pNode));
 
-    mCameras.remove_if([pNode](const CameraPtr &pCamera) { return pCamera.get() == pNode; });
-    mLights.remove_if([pNode](const LightPtr &pLight) { return pLight.get() == pNode; });
-    mTexturedModels.remove_if([pNode](const TexturedModelPtr &pTexturedModel) { return pTexturedModel.get() == pNode; });
-    mPrimitiveModels.remove_if([pNode](const PrimitiveModelPtr &pPrimitiveModel) { return pPrimitiveModel.get() == pNode; });
-    mGlobalNodes.remove_if([pNode](const GlobalNodePtr &pGlobalNode) { return pGlobalNode.get() == pNode; });
+    // Remove the node from the main list of nodes. This will also delete the node since we are using unique_ptr.
+    mNodes.remove_if([pNode](const NodePtr &ptr) { return ptr.get() == pNode; });
 }
 
-const std::list<Canavar::Engine::CameraPtr> &Canavar::Engine::NodeManager::GetCameras() const
+void Canavar::Engine::NodeManager::AddCamera(Camera *pCamera)
 {
-    return mCameras;
-}
-const std::list<Canavar::Engine::LightPtr> &Canavar::Engine::NodeManager::GetLights() const
-{
-    return mLights;
+    mCameras.push_back(pCamera);
+    mObjects.push_back(pCamera);
 }
 
-const std::list<Canavar::Engine::TexturedModelPtr> &Canavar::Engine::NodeManager::GetTexturedModels() const
+void Canavar::Engine::NodeManager::AddLight(Light *pLight)
 {
-    return mTexturedModels;
-}
-
-const std::list<Canavar::Engine::PrimitiveModelPtr> &Canavar::Engine::NodeManager::GetPrimitiveModels() const
-{
-    return mPrimitiveModels;
-}
-
-void Canavar::Engine::NodeManager::AddCamera(CameraPtr &&pCamera)
-{
-    // Camera is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
-    // Camera : Object : Node
-    const auto pRawPtr = pCamera.get();
-    mCameras.push_back(std::move(pCamera));
-    mObjects.push_back(pRawPtr);
-}
-
-void Canavar::Engine::NodeManager::AddLight(LightPtr &&pLight)
-{
-    // Light is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
-    // Light : Object : Node
-    const auto pRawPtr = pLight.get();
-    mLights.push_back(std::move(pLight));
-    mObjects.push_back(pRawPtr);
+    mLights.push_back(pLight);
+    mObjects.push_back(pLight);
 
     // Add the light to the LightManager for uniform management.
-    mLightManager->AddLight(pRawPtr);
+    mLightManager->AddLight(pLight);
 }
 
-void Canavar::Engine::NodeManager::AddTexturedModel(TexturedModelPtr &&pTexturedModel)
+void Canavar::Engine::NodeManager::AddTexturedModel(TexturedModel *pTexturedModel)
 {
-    // TexturedModel is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
-    // TexturedModel : Object : Node
-    const auto pRawPtr = pTexturedModel.get();
-    mTexturedModels.push_back(std::move(pTexturedModel));
-    mObjects.push_back(pRawPtr);
+    mTexturedModels.push_back(pTexturedModel);
+    mObjects.push_back(pTexturedModel);
 }
 
-void Canavar::Engine::NodeManager::AddPrimitiveModel(PrimitiveModelPtr &&pPrimitiveModel)
+void Canavar::Engine::NodeManager::AddPrimitiveModel(PrimitiveModel *pPrimitiveModel)
 {
-    // PrimitiveModel is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
-    // PrimitiveModel : Object : Node
-    const auto pRawPtr = pPrimitiveModel.get();
-    mPrimitiveModels.push_back(std::move(pPrimitiveModel));
-    mObjects.push_back(pRawPtr);
+    mPrimitiveModels.push_back(pPrimitiveModel);
+    mObjects.push_back(pPrimitiveModel);
 }
 
-void Canavar::Engine::NodeManager::AddGlobalNode(GlobalNodePtr &&pGlobalNode)
+void Canavar::Engine::NodeManager::AddGlobalNode(GlobalNode *pGlobalNode)
 {
-    // GlobalNode is a unique_ptr, so we need to move it into the list. We also store a raw pointer in mObjects for easy access.
-    // GlobalNode : Node
-    mGlobalNodes.push_back(std::move(pGlobalNode));
+    mGlobalNodes.push_back(pGlobalNode);
 }
 
-const std::list<Canavar::Engine::Node *> &Canavar::Engine::NodeManager::GetNodes() const
+void Canavar::Engine::NodeManager::AddDummyObject(DummyObject *pDummyObject)
+{
+    mDummyObjects.push_back(pDummyObject);
+    mObjects.push_back(pDummyObject);
+}
+
+const std::list<Canavar::Engine::NodePtr> &Canavar::Engine::NodeManager::GetNodes() const
 {
     return mNodes;
 }
@@ -127,4 +102,33 @@ const std::list<Canavar::Engine::PointLight *> &Canavar::Engine::NodeManager::Ge
 const std::list<Canavar::Engine::DirectionalLight *> &Canavar::Engine::NodeManager::GetDirectionalLights() const
 {
     return mDirectionalLights;
+}
+
+const std::list<Canavar::Engine::Camera *> &Canavar::Engine::NodeManager::GetCameras() const
+{
+    return mCameras;
+}
+const std::list<Canavar::Engine::Light *> &Canavar::Engine::NodeManager::GetLights() const
+{
+    return mLights;
+}
+
+const std::list<Canavar::Engine::TexturedModel *> &Canavar::Engine::NodeManager::GetTexturedModels() const
+{
+    return mTexturedModels;
+}
+
+const std::list<Canavar::Engine::PrimitiveModel *> &Canavar::Engine::NodeManager::GetPrimitiveModels() const
+{
+    return mPrimitiveModels;
+}
+
+const std::list<Canavar::Engine::GlobalNode *> &Canavar::Engine::NodeManager::GetGlobalNodes() const
+{
+    return mGlobalNodes;
+}
+
+const std::list<Canavar::Engine::DummyObject *> &Canavar::Engine::NodeManager::GetDummyObjects() const
+{
+    return mDummyObjects;
 }

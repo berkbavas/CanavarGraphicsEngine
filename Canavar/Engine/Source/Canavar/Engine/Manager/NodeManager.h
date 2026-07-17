@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Camera/DummyCamera.h"
 #include "Canavar/Engine/Camera/FreeCamera.h"
 #include "Canavar/Engine/Camera/PersecutorCamera.h"
 #include "Canavar/Engine/GlobalNode/GlobalNode.h"
@@ -9,6 +10,7 @@
 #include "Canavar/Engine/Manager/Manager.h"
 #include "Canavar/Engine/Model/PrimitiveModel/PrimitiveModel.h"
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
+#include "Canavar/Engine/Object/DummyObject.h"
 
 #include <list>
 #include <memory>
@@ -28,24 +30,25 @@ namespace Canavar::Engine
         template<typename T>
         static constexpr bool IsAllowedType()
         {
-           return std::is_base_of_v<Camera, T> ||
-                  std::is_base_of_v<Light, T> ||
-                  std::is_base_of_v<TexturedModel, T> ||
-                  std::is_base_of_v<PrimitiveModel, T> ||
-                  std::is_base_of_v<GlobalNode, T>;
+            return std::is_base_of_v<Camera, T> ||         //
+                   std::is_base_of_v<Light, T> ||          //
+                   std::is_base_of_v<TexturedModel, T> ||  //
+                   std::is_base_of_v<PrimitiveModel, T> || //
+                   std::is_base_of_v<DummyObject, T> ||    //
+                   std::is_base_of_v<GlobalNode, T>;
         }
 
         /**
          * Creates a new node of type T and adds it to the appropriate list based on its type.
          * The node is assigned a unique NodeId and is managed by the NodeManager.
          * The caller receives a raw pointer to the newly created node, but the NodeManager retains ownership.
-         * @tparam T The type of node to create. Must be derived from Camera, Light, TexturedModel, PrimitiveModel, or GlobalNode.
+         * @tparam T The type of node to create. Must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode.
          * @param args Arguments to forward to the constructor of T.
          */
         template<typename T, typename... Args>
         T *CreateNode(Args &&...args)
         {
-            static_assert(IsAllowedType<T>(), "NodeManager::CreateNode: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, or GlobalNode");
+            static_assert(IsAllowedType<T>(), "NodeManager::CreateNode: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode");
 
             auto pNode = std::make_unique<T>(std::forward<Args>(args)...);
             pNode->SetNodeId(mNextNodeId++);
@@ -53,36 +56,73 @@ namespace Canavar::Engine
             // Store the raw pointer before moving the unique_ptr into the list
             T *pRawPtr = pNode.get();
 
-            mNodes.push_back(pRawPtr);
-
             if constexpr (std::is_base_of_v<Camera, T>)
             {
-                AddCamera(std::move(pNode));
+                AddCamera(pRawPtr);
             }
             else if constexpr (std::is_base_of_v<Light, T>)
             {
-                AddLight(std::move(pNode));
+                AddLight(pRawPtr);
             }
             else if constexpr (std::is_base_of_v<TexturedModel, T>)
             {
-                AddTexturedModel(std::move(pNode));
+                AddTexturedModel(pRawPtr);
             }
             else if constexpr (std::is_base_of_v<PrimitiveModel, T>)
             {
-                AddPrimitiveModel(std::move(pNode));
+                AddPrimitiveModel(pRawPtr);
             }
             else if constexpr (std::is_base_of_v<GlobalNode, T>)
             {
-                AddGlobalNode(std::move(pNode));
+                AddGlobalNode(pRawPtr);
+            }
+            else if constexpr (std::is_base_of_v<DummyObject, T>)
+            {
+                AddDummyObject(pRawPtr);
             }
             else
             {
                 static_assert(false, "NodeManager::CreateNode: Unsupported node type");
             }
 
+            mNodes.push_back(std::move(pNode));
+
             // Return the raw pointer to the newly created node
             // Lifetime is managed by the NodeManager, so the caller should not delete it.
             return pRawPtr;
+        }
+
+        template<typename T>
+        T *FindNodeByName(const std::string &Name) const
+        {
+            static_assert(IsAllowedType<T>(), "NodeManager::FindNodeByName: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode");
+
+            for (const auto &pNode : mNodes)
+            {
+                if (auto *pTypedNode = dynamic_cast<T *>(pNode.get()))
+                {
+                    if (pTypedNode->GetNodeName() == Name)
+                    {
+                        return pTypedNode;
+                    }
+                }
+            }
+            return nullptr; // Not found
+        }
+
+        template<typename T>
+        T *FindNodeByType() const
+        {
+            static_assert(IsAllowedType<T>(), "NodeManager::FindNodeByType: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode");
+
+            for (const auto &pNode : mNodes)
+            {
+                if (auto *pTypedNode = dynamic_cast<T *>(pNode.get()))
+                {
+                    return pTypedNode; // Return the first node of type T found
+                }
+            }
+            return nullptr; // Not found
         }
 
         /**
@@ -91,35 +131,39 @@ namespace Canavar::Engine
          */
         void RemoveNode(Node *pNode);
 
-        const std::list<CameraPtr> &GetCameras() const;
-        const std::list<LightPtr> &GetLights() const;
-        const std::list<TexturedModelPtr> &GetTexturedModels() const;
+        const std::list<NodePtr> &GetNodes() const;
 
-        const std::list<Node *> &GetNodes() const;
+        const std::list<Camera *> &GetCameras() const;
+        const std::list<Light *> &GetLights() const;
+        const std::list<TexturedModel *> &GetTexturedModels() const;
         const std::list<Object *> &GetObjects() const;
         const std::list<PointLight *> &GetPointLights() const;
         const std::list<DirectionalLight *> &GetDirectionalLights() const;
-        const std::list<PrimitiveModelPtr> &GetPrimitiveModels() const;
+        const std::list<PrimitiveModel *> &GetPrimitiveModels() const;
+        const std::list<GlobalNode *> &GetGlobalNodes() const;
+        const std::list<DummyObject *> &GetDummyObjects() const;
 
       private:
-        void AddCamera(CameraPtr &&pCamera);
-        void AddLight(LightPtr &&pLight);
-        void AddTexturedModel(TexturedModelPtr &&pTexturedModel);
-        void AddPrimitiveModel(PrimitiveModelPtr &&pPrimitiveModel);
-        void AddGlobalNode(GlobalNodePtr &&pGlobalNode);
+        void AddCamera(Camera *pCamera);
+        void AddLight(Light *pLight);
+        void AddTexturedModel(TexturedModel *pTexturedModel);
+        void AddPrimitiveModel(PrimitiveModel *pPrimitiveModel);
+        void AddGlobalNode(GlobalNode *pGlobalNode);
+        void AddDummyObject(DummyObject *pDummyObject);
 
         Renderer *mRenderer{ nullptr };
         LightManager *mLightManager{ nullptr };
 
         // NodeManager owns the nodes, so we use unique_ptr for automatic memory management.
-        std::list<CameraPtr> mCameras;
-        std::list<LightPtr> mLights;
-        std::list<TexturedModelPtr> mTexturedModels;
-        std::list<PrimitiveModelPtr> mPrimitiveModels;
-        std::list<GlobalNodePtr> mGlobalNodes;
+        std::list<NodePtr> mNodes;
 
         // Raw pointers for easy access to nodes without ownership semantics.
-        std::list<Node *> mNodes;
+        std::list<Camera *> mCameras;
+        std::list<Light *> mLights;
+        std::list<TexturedModel *> mTexturedModels;
+        std::list<PrimitiveModel *> mPrimitiveModels;
+        std::list<GlobalNode *> mGlobalNodes;
+        std::list<DummyObject *> mDummyObjects;
         std::list<Object *> mObjects;
         std::list<PointLight *> mPointLights;
         std::list<DirectionalLight *> mDirectionalLights;
