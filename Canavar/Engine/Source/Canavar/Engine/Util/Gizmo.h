@@ -2,7 +2,9 @@
 
 #include "Canavar/Engine/Core/EventReceiver.h"
 
+#include <map>
 #include <memory>
+#include <vector>
 
 #include <QQuaternion>
 #include <QVector3D>
@@ -15,6 +17,7 @@ namespace Canavar::Engine
     class Line;
     class Circle;
     class Disk;
+    class PrimitiveModel;
 
     class Gizmo : public EventReceiver
     {
@@ -41,16 +44,22 @@ namespace Canavar::Engine
         {
             None,
             X,
-            Y
+            Y,
+            Z
         };
 
         void UpdateGizmoVisuals();
+        void UpdateGizmoVisualsTransformations();
+        void UpdateGizmoVisualsAppearance();
+
         bool CalculateMouseRaySphereIntersection(const QPointF &MousePos, QVector3D &OutIntersectionPoint) const;
         bool CalculateMouseRayViewPlaneIntersection(const QPointF &MousePos, QVector3D &OutIntersectionPoint) const;
         Axis DetermineActiveAxis(const QVector3D &IntersectionPoint) const;
         Axis DetermineActiveAxis(const QPointF &MousePos) const;
         QVector3D GetLocalAxisDirection(Axis AxisType) const;
         QVector3D GetRayDirectionFromMousePosition(const QPointF &MousePos) const;
+        QVector3D GetAxisCircleNormal(Axis Axis) const;
+        QQuaternion GetAxisCircleRotation(Axis Axis) const;
 
         // Gizmo state
         bool mIsActive{ false };
@@ -65,13 +74,15 @@ namespace Canavar::Engine
         Object *mTargetObject{ nullptr };
 
         // Gizmo visual components
-        Circle *mYawCircle{ nullptr };
-        Circle *mPitchCircle{ nullptr };
-        Disk *mYawDisk{ nullptr };
-        Disk *mPitchDisk{ nullptr };
-        Line *mYawLine{ nullptr };
-        Line *mPitchLine{ nullptr };
+        std::map<Axis, Circle *> mAxisCircles;
+        std::map<Axis, Disk *> mAxisDisks;
+        std::map<Axis, Line *> mAxisLines;
+
+        // Interaction line for visual feedback during dragging
         Line *mInteractionLine{ nullptr };
+
+        // All gizmo primitives for easy management (e.g., hiding/showing)
+        std::vector<PrimitiveModel *> mGizmoPrimitives;
 
         // Global shortcuts
         Renderer *mRenderer{ nullptr };

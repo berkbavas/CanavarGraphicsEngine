@@ -10,61 +10,111 @@ Canavar::Engine::Gizmo::Gizmo(Renderer *pRenderer)
 {
     mNodeManager = mRenderer->GetNodeManager();
 
-    mYawCircle = mNodeManager->CreateNode<Circle>();
-    mYawCircle->SetScale(mSphereRadius);
-    mYawCircle->SetVisible(false);
-    mYawCircle->SetColor(QVector3D(1, 0, 0));
-    mYawCircle->SetOverlay(true);
+    // -- Create gizmo primitives for each axis (X, Y, Z)
 
-    mYawDisk = mNodeManager->CreateNode<Disk>();
-    mYawDisk->SetScale(mSphereRadius);
-    mYawDisk->SetVisible(false);
-    mYawDisk->SetColor(QVector3D(1, 0, 0));
-    mYawDisk->SetOpacity(0.25f);
-    mYawDisk->SetOverlay(true);
+    // Yaw (Y-axis) gizmo components
+    Circle *pYawCircle = mNodeManager->CreateNode<Circle>();
+    pYawCircle->SetScale(mSphereRadius);
+    pYawCircle->SetVisible(false);
+    pYawCircle->SetColor(QVector3D(1, 0, 0));
+    pYawCircle->SetOverlay(true);
 
-    mPitchCircle = mNodeManager->CreateNode<Circle>();
-    mPitchCircle->SetScale(mSphereRadius);
-    mPitchCircle->SetVisible(false);
-    mPitchCircle->SetColor(QVector3D(0, 1, 0));
-    mPitchCircle->SetOverlay(true);
+    Disk *pYawDisk = mNodeManager->CreateNode<Disk>();
+    pYawDisk->SetScale(mSphereRadius);
+    pYawDisk->SetVisible(false);
+    pYawDisk->SetColor(QVector3D(1, 0, 0));
+    pYawDisk->SetOpacity(0.5f);
 
-    mPitchDisk = mNodeManager->CreateNode<Disk>();
-    mPitchDisk->SetScale(mSphereRadius);
-    mPitchDisk->SetVisible(false);
-    mPitchDisk->SetColor(QVector3D(0, 1, 0));
-    mPitchDisk->SetOpacity(0.25f);
-    mPitchDisk->SetOverlay(true);
+    Line *pYawLine = mNodeManager->CreateNode<Line>();
+    pYawLine->SetVisible(false);
+    pYawLine->SetColor(QVector3D(1, 0, 0));
 
+    // Pitch (X-axis) gizmo components
+    Circle *pPitchCircle = mNodeManager->CreateNode<Circle>();
+    pPitchCircle->SetScale(mSphereRadius);
+    pPitchCircle->SetVisible(false);
+    pPitchCircle->SetColor(QVector3D(0, 1, 0));
+    pPitchCircle->SetOverlay(true);
+
+    Disk *pPitchDisk = mNodeManager->CreateNode<Disk>();
+    pPitchDisk->SetScale(mSphereRadius);
+    pPitchDisk->SetVisible(false);
+    pPitchDisk->SetColor(QVector3D(0, 1, 0));
+    pPitchDisk->SetOpacity(0.5f);
+
+    Line *pPitchLine = mNodeManager->CreateNode<Line>();
+    pPitchLine->SetVisible(false);
+    pPitchLine->SetColor(QVector3D(0, 1, 0));
+
+    // Roll (Z-axis) gizmo components
+    Circle *pRollCircle = mNodeManager->CreateNode<Circle>();
+    pRollCircle->SetScale(mSphereRadius);
+    pRollCircle->SetVisible(false);
+    pRollCircle->SetColor(QVector3D(0, 0, 1));
+    pRollCircle->SetOverlay(true);
+
+    Disk *pRollDisk = mNodeManager->CreateNode<Disk>();
+    pRollDisk->SetScale(mSphereRadius);
+    pRollDisk->SetVisible(false);
+    pRollDisk->SetColor(QVector3D(0, 0, 1));
+    pRollDisk->SetOpacity(0.5f);
+
+    Line *pRollLine = mNodeManager->CreateNode<Line>();
+    pRollLine->SetVisible(false);
+    pRollLine->SetColor(QVector3D(0, 0, 1));
+
+    // Interaction line for visual feedback during dragging
     mInteractionLine = mNodeManager->CreateNode<Line>();
     mInteractionLine->SetVisible(false);
     mInteractionLine->SetColor(QVector3D(1, 1, 1));
     mInteractionLine->SetOverlay(true);
 
-    mYawLine = mNodeManager->CreateNode<Line>();
-    mYawLine->SetVisible(false);
-    mYawLine->SetColor(QVector3D(1, 0, 0));
-    mYawLine->SetOverlay(true);
+    mAxisCircles[Axis::X] = pPitchCircle;
+    mAxisDisks[Axis::X] = pPitchDisk;
+    mAxisLines[Axis::X] = pPitchLine;
 
-    mPitchLine = mNodeManager->CreateNode<Line>();
-    mPitchLine->SetVisible(false);
-    mPitchLine->SetColor(QVector3D(0, 1, 0));
-    mPitchLine->SetOverlay(true);
+    mAxisCircles[Axis::Y] = pYawCircle;
+    mAxisDisks[Axis::Y] = pYawDisk;
+    mAxisLines[Axis::Y] = pYawLine;
+
+    mAxisCircles[Axis::Z] = pRollCircle;
+    mAxisDisks[Axis::Z] = pRollDisk;
+    mAxisLines[Axis::Z] = pRollLine;
+
+    mGizmoPrimitives.push_back(pYawCircle);
+    mGizmoPrimitives.push_back(pYawDisk);
+    mGizmoPrimitives.push_back(pPitchCircle);
+    mGizmoPrimitives.push_back(pPitchDisk);
+    mGizmoPrimitives.push_back(pYawLine);
+    mGizmoPrimitives.push_back(pPitchLine);
+    mGizmoPrimitives.push_back(pRollCircle);
+    mGizmoPrimitives.push_back(pRollDisk);
+    mGizmoPrimitives.push_back(pRollLine);
+    mGizmoPrimitives.push_back(mInteractionLine);
 }
 
 void Canavar::Engine::Gizmo::Enter(Object *pTargetObject)
 {
     mTargetObject = pTargetObject;
     mIsActive = true;
+    mActiveAxis = Axis::None;
 
     SetPosition(mTargetObject->GetPosition());
     SetRotation(mTargetObject->GetRotation());
+    UpdateGizmoVisuals();
 }
 
 void Canavar::Engine::Gizmo::Exit()
 {
     mTargetObject = nullptr;
     mIsActive = false;
+    mActiveAxis = Axis::None;
+
+    // Hide all gizmo primitives when exiting
+    for (auto *pPrimitive : mGizmoPrimitives)
+    {
+        pPrimitive->SetVisible(false);
+    }
 }
 
 bool Canavar::Engine::Gizmo::OnMousePressed(QMouseEvent *pEvent)
@@ -196,84 +246,102 @@ QQuaternion Canavar::Engine::Gizmo::GetRotation() const
 
 void Canavar::Engine::Gizmo::UpdateGizmoVisuals()
 {
+    UpdateGizmoVisualsTransformations();
+    UpdateGizmoVisualsAppearance();
+}
+
+void Canavar::Engine::Gizmo::UpdateGizmoVisualsTransformations()
+{
     const auto Position = GetPosition();
     const auto Rotation = GetRotation();
 
-    mYawCircle->SetPosition(Position);
-    mYawCircle->SetRotation(Rotation * QQuaternion::fromAxisAndAngle(POSITIVE_X, 90));
-    mYawDisk->SetPosition(Position);
-    mYawDisk->SetRotation(Rotation * QQuaternion::fromAxisAndAngle(POSITIVE_X, 90));
+    for (const auto &[AxisType, pCircle] : mAxisCircles)
+    {
+        pCircle->SetPosition(Position);
+        pCircle->SetRotation(GetAxisCircleRotation(AxisType));
+    }
 
-    mPitchCircle->SetPosition(Position);
-    mPitchCircle->SetRotation(Rotation * QQuaternion::fromAxisAndAngle(POSITIVE_Y, 90));
-    mPitchDisk->SetPosition(Position);
-    mPitchDisk->SetRotation(Rotation * QQuaternion::fromAxisAndAngle(POSITIVE_Y, 90));
+    for (const auto &[AxisType, pDisk] : mAxisDisks)
+    {
+        pDisk->SetPosition(Position);
+        pDisk->SetRotation(GetAxisCircleRotation(AxisType));
+    }
 
-    mYawLine->SetPoints(Position, Position + GetLocalAxisDirection(Axis::X) * mSphereRadius);
-    mPitchLine->SetPoints(Position, Position + GetLocalAxisDirection(Axis::Y) * mSphereRadius);
+    for (const auto &[AxisType, pLine] : mAxisLines)
+    {
+        pLine->SetPoints(Position, Position + GetAxisCircleNormal(AxisType) * mSphereRadius);
+    }
 
-    mInteractionLine->SetVisible(mIsDragging);
     mInteractionLine->SetPoints(Position, mPreviousIntersectionPoint);
+}
 
+void Canavar::Engine::Gizmo::UpdateGizmoVisualsAppearance()
+{
     if (mIsDragging)
     {
-        switch (mActiveAxis)
+        for (const auto &[AxisType, pDisk] : mAxisDisks)
         {
-        case Axis::X:
-            mPitchCircle->SetThickness(3.0f);
-            mPitchCircle->SetOpacity(1.0f);
-            mPitchCircle->SetVisible(true);
-            mPitchDisk->SetVisible(true);
-            mYawCircle->SetVisible(false);
-            mYawDisk->SetVisible(false);
-            mYawLine->SetVisible(false);
-            mPitchLine->SetVisible(true);
-            break;
-        case Axis::Y:
-            mYawCircle->SetThickness(3.0f);
-            mYawCircle->SetOpacity(1.0f);
-            mYawCircle->SetVisible(true);
-            mYawDisk->SetVisible(true);
-            mPitchCircle->SetVisible(false);
-            mPitchDisk->SetVisible(false);
-            mYawLine->SetVisible(true);
-            mPitchLine->SetVisible(false);
-            break;
-        case Axis::None:
-            break; // Should not happen, but we can safely ignore it
+            pDisk->SetVisible(AxisType == mActiveAxis); // Show only the disk corresponding to the active axis
+            pDisk->SetOverlay(true);
         }
+
+        for (const auto &[AxisType, pCircle] : mAxisCircles)
+        {
+            pCircle->SetVisible(AxisType == mActiveAxis); // Show only the circle corresponding to the active axis
+            pCircle->SetOpacity(1.0f);
+            pCircle->SetThickness(4.0f);
+        }
+
+        for (const auto &[AxisType, pLine] : mAxisLines)
+        {
+            pLine->SetVisible(AxisType == mActiveAxis); // Show only the line corresponding to the active axis
+            pLine->SetOverlay(true);
+        }
+
+        mInteractionLine->SetVisible(true);
     }
     else
     {
-        // Hide the disks when not interacting
-        mYawDisk->SetVisible(false);
-        mPitchDisk->SetVisible(false);
-        mYawLine->SetVisible(false);
-        mPitchLine->SetVisible(false);
-
-        switch (mActiveAxis)
+        // Always hide all lines when not dragging
+        for (const auto &[AxisType, pLineModel] : mAxisLines)
         {
-        case Axis::X:
-            mPitchCircle->SetThickness(3.0f);
-            mPitchCircle->SetOpacity(1.0f);
-            mPitchCircle->SetVisible(true);
-            mYawCircle->SetVisible(true);
-            mYawCircle->SetOpacity(0.5f);
-            break;
-        case Axis::Y:
-            mYawCircle->SetThickness(3.0f);
-            mYawCircle->SetOpacity(1.0f);
-            mYawCircle->SetVisible(true);
-            mPitchCircle->SetVisible(true);
-            mPitchCircle->SetOpacity(0.5f);
-            break;
-        case Axis::None:
-            mPitchCircle->SetVisible(true);
-            mPitchCircle->SetOpacity(0.5f);
-            mYawCircle->SetVisible(true);
-            mYawCircle->SetOpacity(0.5f);
-            break;
+            pLineModel->SetVisible(false);
         }
+
+        if (mActiveAxis == Axis::None)
+        {
+            // Default state: show all circles with lower opacity and hide disks
+            for (const auto &[AxisType, pCircleModel] : mAxisCircles)
+            {
+                pCircleModel->SetVisible(true);
+                pCircleModel->SetOpacity(0.5f);
+                pCircleModel->SetThickness(3.0f);
+            }
+
+            // Hide disks
+            for (const auto &[AxisType, pDiskModel] : mAxisDisks)
+            {
+                pDiskModel->SetVisible(false);
+            }
+        }
+        else
+        {
+            // Highlight the active axis circle and disk
+            for (const auto &[AxisType, pCircleModel] : mAxisCircles)
+            {
+                pCircleModel->SetVisible(true);
+                pCircleModel->SetOpacity(AxisType == mActiveAxis ? 1.0f : 0.5f);
+                pCircleModel->SetThickness(AxisType == mActiveAxis ? 4.0f : 3.0f);
+            }
+
+            for (const auto &[AxisType, pDiskModel] : mAxisDisks)
+            {
+                pDiskModel->SetVisible(AxisType == mActiveAxis);
+                pDiskModel->SetOverlay(false);
+            }
+        }
+
+        mInteractionLine->SetVisible(false);
     }
 }
 
@@ -312,6 +380,7 @@ Canavar::Engine::Gizmo::Axis Canavar::Engine::Gizmo::DetermineActiveAxis(const Q
     LocalAxisDirections[Axis::None] = QVector3D(0.0f, 0.0f, 0.0f); // Placeholder for no active axis
     LocalAxisDirections[Axis::X] = GetLocalAxisDirection(Axis::X); // X-axis direction (Pitch axis)
     LocalAxisDirections[Axis::Y] = GetLocalAxisDirection(Axis::Y);
+    LocalAxisDirections[Axis::Z] = GetLocalAxisDirection(Axis::Z);
 
     for (const auto &[AxisType, LocalAxisDirection] : LocalAxisDirections)
     {
@@ -353,6 +422,8 @@ QVector3D Canavar::Engine::Gizmo::GetLocalAxisDirection(Axis AxisType) const
         return Rotation * POSITIVE_X;
     case Axis::Y:
         return Rotation * POSITIVE_Y;
+    case Axis::Z:
+        return Rotation * POSITIVE_Z;
     case Axis::None:
     default:
         return QVector3D(0.0f, 0.0f, 0.0f); // No direction for None axis
@@ -362,4 +433,38 @@ QVector3D Canavar::Engine::Gizmo::GetLocalAxisDirection(Axis AxisType) const
 QVector3D Canavar::Engine::Gizmo::GetRayDirectionFromMousePosition(const QPointF &MousePos) const
 {
     return mRenderer->GetActiveCamera()->ComputeRayFromScreen(MousePos);
+}
+
+QVector3D Canavar::Engine::Gizmo::GetAxisCircleNormal(Axis Axis) const
+{
+    switch (Axis)
+    {
+    case Axis::X:
+        return GetLocalAxisDirection(Axis::Y); // The normal of the X-axis circle is along the Y-axis
+    case Axis::Y:
+        return GetLocalAxisDirection(Axis::X); // The normal of the Y-axis circle is along the X-axis
+    case Axis::Z:
+        return GetLocalAxisDirection(Axis::X); // The normal of the Z-axis circle is along the X-axis (?)
+    case Axis::None:
+    default:
+        return QVector3D(0.0f, 0.0f, 0.0f); // No normal for None axis
+    }
+}
+
+QQuaternion Canavar::Engine::Gizmo::GetAxisCircleRotation(Axis Axis) const
+{
+    const auto Rotation = GetRotation();
+
+    switch (Axis)
+    {
+    case Axis::X:
+        return Rotation * QQuaternion::fromAxisAndAngle(POSITIVE_Y, 90.0f);
+    case Axis::Y:
+        return Rotation * QQuaternion::fromAxisAndAngle(POSITIVE_X, 90.0f);
+    case Axis::Z:
+        return Rotation; // Z-axis circle aligns with the object's rotation
+    case Axis::None:
+    default:
+        return Rotation;
+    }
 }
