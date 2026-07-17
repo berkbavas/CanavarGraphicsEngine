@@ -32,8 +32,6 @@ namespace Canavar::Engine
         bool OnMouseReleased(QMouseEvent *pEvent) override;
         bool OnMouseMoved(QMouseEvent *pEvent) override;
 
-        void SetPosition(const QVector3D &Position);
-        void SetScale(float Scale);
         void SetRotation(const QQuaternion &Rotation);
 
         QVector3D GetPosition() const;

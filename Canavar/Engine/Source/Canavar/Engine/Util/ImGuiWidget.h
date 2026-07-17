@@ -36,6 +36,9 @@ namespace Canavar::Engine
       public:
         explicit ImGuiWidget(Renderer *pRenderer);
 
+      signals:
+        void RenderImGuiWidgets(float Ifps);
+
       private:
         // Private slots for handling signals from the renderer"
         void Initialize();

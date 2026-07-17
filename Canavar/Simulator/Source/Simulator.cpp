@@ -20,6 +20,8 @@ Canavar::Simulator::Simulator::Simulator()
     mRenderer->AddEventReceiver(this);
     mAircraft = new Aircraft;
     mImGuiWidget = new Canavar::Engine::ImGuiWidget(mRenderer);
+
+    connect(mImGuiWidget, &Canavar::Engine::ImGuiWidget::RenderImGuiWidgets, this, &Simulator::DrawImGui);
 }
 
 Canavar::Simulator::Simulator::~Simulator()
@@ -49,8 +51,6 @@ void Canavar::Simulator::Simulator::Run()
 
 void Canavar::Simulator::Simulator::Initialize()
 {
-    mRenderRef = QtImGui::initialize(mWidget, false);
-
     mNodeManager = mRenderer->GetNodeManager();
     mCameraManager = mRenderer->GetCameraManager();
 
@@ -67,9 +67,9 @@ void Canavar::Simulator::Simulator::Initialize()
     mPersecutorCamera->SetTarget(mRootNode);
 }
 
-void Canavar::Simulator::Simulator::Update(float ifps)
+void Canavar::Simulator::Simulator::Update(float Ifps)
 {
-    mAircraft->Tick(ifps);
+    mAircraft->Tick(Ifps);
 }
 
 void Canavar::Simulator::Simulator::OnPostRender(float Ifps)
@@ -82,16 +82,11 @@ void Canavar::Simulator::Simulator::OnPostRender(float Ifps)
         mRootNode->SetPosition(Pfd.Position);
         mRootNode->SetRotation(Pfd.Rotation);
     }
-
-    DrawImGui();
 }
 
-void Canavar::Simulator::Simulator::DrawImGui()
+void Canavar::Simulator::Simulator::DrawImGui(float Ifps)
 {
-    QtImGui::newFrame(mRenderRef);
     mAircraft->DrawGui();
-    ImGui::Render();
-    QtImGui::render(mRenderRef);
 }
 
 bool Canavar::Simulator::Simulator::OnKeyPressed(QKeyEvent* pEvent)

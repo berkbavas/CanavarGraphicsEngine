@@ -60,6 +60,7 @@ void Canavar::Engine::ImGuiWidget::OnPostRender(float Ifps)
 {
     QtImGui::newFrame(mRenderRef);
     DrawImGuiWidgets(Ifps);
+    emit RenderImGuiWidgets(Ifps);
     ImGui::Render();
     QtImGui::render(mRenderRef);
 }

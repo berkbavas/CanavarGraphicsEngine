@@ -99,8 +99,6 @@ void Canavar::Engine::Gizmo::Enter(Object *pTargetObject)
     mIsActive = true;
     mActiveAxis = Axis::None;
 
-    SetPosition(mTargetObject->GetPosition());
-    SetRotation(mTargetObject->GetRotation());
     UpdateGizmoVisuals();
 }
 
@@ -210,22 +208,6 @@ bool Canavar::Engine::Gizmo::OnMouseMoved(QMouseEvent *pEvent)
     return Handled; // Return whether the event was handled
 }
 
-void Canavar::Engine::Gizmo::SetPosition(const QVector3D &Position)
-{
-    if (mTargetObject)
-    {
-        mTargetObject->SetPosition(Position);
-    }
-}
-
-void Canavar::Engine::Gizmo::SetScale(float Scale)
-{
-    if (mTargetObject)
-    {
-        mTargetObject->SetScale(Scale);
-    }
-}
-
 void Canavar::Engine::Gizmo::SetRotation(const QQuaternion &Rotation)
 {
     if (mTargetObject)
@@ -236,12 +218,12 @@ void Canavar::Engine::Gizmo::SetRotation(const QQuaternion &Rotation)
 
 QVector3D Canavar::Engine::Gizmo::GetPosition() const
 {
-    return mTargetObject ? mTargetObject->GetPosition() : QVector3D();
+    return mTargetObject ? mTargetObject->GetWorldPosition() : QVector3D();
 }
 
 QQuaternion Canavar::Engine::Gizmo::GetRotation() const
 {
-    return mTargetObject ? mTargetObject->GetRotation() : QQuaternion();
+    return mTargetObject ? mTargetObject->GetWorldRotation() : QQuaternion();
 }
 
 void Canavar::Engine::Gizmo::UpdateGizmoVisuals()
@@ -349,7 +331,7 @@ bool Canavar::Engine::Gizmo::CalculateMouseRaySphereIntersection(const QPointF &
 {
     const auto pActiveCamera = mRenderer->GetActiveCamera();
     const auto RayDir = pActiveCamera->ComputeRayFromScreen(MousePos);
-    const auto RayOrigin = pActiveCamera->GetPosition();
+    const auto RayOrigin = pActiveCamera->GetWorldPosition();
     const auto GizmoPos = GetPosition();
     const auto Success = Math::IntersectRaySphere(RayOrigin, RayDir, GizmoPos, mSphereRadius, OutIntersectionPoint);
 
@@ -360,7 +342,7 @@ bool Canavar::Engine::Gizmo::CalculateMouseRayViewPlaneIntersection(const QPoint
 {
     const auto pActiveCamera = mRenderer->GetActiveCamera();
     const auto RayDir = pActiveCamera->ComputeRayFromScreen(MousePos);
-    const auto RayOrigin = pActiveCamera->GetPosition();
+    const auto RayOrigin = pActiveCamera->GetWorldPosition();
     const auto GizmoPos = GetPosition();
     const auto ViewPlaneNormal = -pActiveCamera->GetViewDirection();
     const auto Success = Math::IntersectRayPlane(RayOrigin, RayDir, GizmoPos, ViewPlaneNormal, OutIntersectionPoint);

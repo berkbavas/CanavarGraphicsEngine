@@ -3,7 +3,7 @@
 #include "Aircraft.h"
 #include "Canavar/Engine/Core/EventReceiver.h"
 
-#include <QtImGui.h>
+#include <QTimer>
 
 namespace Canavar::Engine
 {
@@ -36,7 +36,7 @@ namespace Canavar::Simulator
         void Initialize();
         void Update(float Ifps);
         void OnPostRender(float Ifps);
-        void DrawImGui();
+        void DrawImGui(float Ifps);
 
         Aircraft *mAircraft;
 
@@ -54,7 +54,5 @@ namespace Canavar::Simulator
         Canavar::Engine::PersecutorCamera *mPersecutorCamera;
 
         Canavar::Engine::ImGuiWidget *mImGuiWidget;
-
-        QtImGui::RenderRef mRenderRef;
     };
 }
