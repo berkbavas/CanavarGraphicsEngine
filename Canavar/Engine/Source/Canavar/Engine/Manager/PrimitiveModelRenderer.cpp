@@ -61,12 +61,6 @@ void Canavar::Engine::PrimitiveModelRenderer::RenderOverlay(RenderPass RenderPas
     RenderPrimitiveModels(RenderPass, true, pCamera);
 }
 
-void Canavar::Engine::PrimitiveModelRenderer::Resize(int Width, int Height)
-{
-    mWidth = Width > 0 ? Width : 1;
-    mHeight = Height > 0 ? Height : 1;
-}
-
 void Canavar::Engine::PrimitiveModelRenderer::RenderPrimitiveModels(RenderPass RenderPass, bool OverlayPass, PerspectiveCamera *pCamera)
 {
     for (const auto &pPrimitiveModel : mNodeManager->GetPrimitiveModels())

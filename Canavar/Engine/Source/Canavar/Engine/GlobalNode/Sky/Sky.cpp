@@ -24,7 +24,10 @@ void Canavar::Engine::Sky::Render(PerspectiveCamera *pActiveCamera, DirectionalL
         return;
     }
 
+    // Disable depth testing to ensure the sky is rendered behind all other objects
     glDisable(GL_DEPTH_TEST);
+
+    // Bind the sky shader and set its uniforms
     mSkyShader->Bind();
     mSkyShader->SetUniform("uInvProjectionMatrix", pActiveCamera->GetProjectionMatrix().inverted());
     mSkyShader->SetUniform("uInvViewMatrix", pActiveCamera->GetRotationMatrix().inverted());
@@ -41,5 +44,7 @@ void Canavar::Engine::Sky::Render(PerspectiveCamera *pActiveCamera, DirectionalL
     mSkyShader->SetUniform("uMieG", mMieG);
     mQuad->Render();
     mSkyShader->Unbind();
+
+    // Re-enable depth testing for subsequent rendering
     glEnable(GL_DEPTH_TEST);
 }

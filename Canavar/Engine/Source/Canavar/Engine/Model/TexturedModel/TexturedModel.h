@@ -19,7 +19,7 @@ namespace Canavar::Engine
         const char *GetNodeTypeName() const override { return "TexturedModel"; }
 
         bool IsFuzzyTransparent() const;
-        void Render(Scene *pScene, Shader *pShader, RenderPass RenderPass, const QVector<PointLight *> &PointLights);
+        void Render(Scene *pScene, Shader *pShader, RenderPass RenderPass);
 
         DEFINE_MEMBER_CONST(QString, ModelName);
         DEFINE_MEMBER_CONST(std::string, ModelUniqueNameStdString);

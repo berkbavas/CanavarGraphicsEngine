@@ -28,9 +28,19 @@ void Canavar::Engine::TexturedModelRenderer::Render(RenderPass RenderPass)
     RenderModels(RenderPass, mRenderer->GetActiveCamera(), false);
 }
 
+void Canavar::Engine::TexturedModelRenderer::RenderOverlay(RenderPass RenderPass)
+{
+    RenderModels(RenderPass, mRenderer->GetActiveCamera(), true);
+}
+
 const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::TexturedModelRenderer::GetScenes() const
 {
     return mScenes;
+}
+
+Canavar::Engine::Scene *Canavar::Engine::TexturedModelRenderer::GetSceneByName(const QString &SceneName) const
+{
+    return mScenes.value(SceneName, nullptr).get();
 }
 
 void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera *pActiveCamera, bool OverlayPass)
@@ -38,26 +48,26 @@ void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass,
     SetCommonUniforms(RenderPass, pActiveCamera);
 
     const auto &TexturedModels = mNodeManager->GetTexturedModels();
-
-    const auto ZFar = pActiveCamera->GetZFar();
+    Shader *pTexturedModelShader = mTexturedModelShader.get();
+    const auto PointLightsRadius = pActiveCamera->GetZFar();
 
     for (const auto &pTexturedModel : TexturedModels)
     {
-        if (ShouldRender(pTexturedModel.get(), OverlayPass))
+        if (!ShouldRender(pTexturedModel.get(), OverlayPass))
         {
-            const auto &ModelName = pTexturedModel->GetModelName();
+            continue; // Skip rendering this textured model based on visibility and overlay settings
+        }
 
-            if (mScenes.contains(ModelName))
-            {
-                const auto &pScene = mScenes[ModelName];
-                const auto &PointLights = mLightManager->GetPointLightsAround(pTexturedModel->GetPosition(), ZFar);
+        const auto &ModelName = pTexturedModel->GetModelName();
 
-                pTexturedModel->Render(pScene.get(), mTexturedModelShader.get(), RenderPass, PointLights);
-            }
-            else
-            {
-                CGE_EXIT_FAILURE("TexturedModelRenderer::Render: Scene '{}' not found for textured model '{}'.", ModelName.toStdString(), pTexturedModel->GetModelUniqueNameStdString());
-            }
+        if (Scene *pScene = GetSceneByName(ModelName))
+        {
+            mLightManager->SetPointLightsUniforms(pTexturedModelShader, pTexturedModel->GetPosition(), PointLightsRadius);
+            pTexturedModel->Render(pScene, pTexturedModelShader, RenderPass);
+        }
+        else
+        {
+            CGE_EXIT_FAILURE("TexturedModelRenderer::Render: Scene '{}' not found for textured model '{}'.", ModelName.toStdString(), pTexturedModel->GetModelUniqueNameStdString());
         }
     }
 }
@@ -65,14 +75,13 @@ void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass,
 void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
     mLightManager->SetDirectionalLightsUniforms(mTexturedModelShader.get());
+    mRenderer->GetHaze()->SetUniforms(mTexturedModelShader.get());
 
     mTexturedModelShader->Bind();
     mTexturedModelShader->SetUniform("uVP", pActiveCamera->GetViewProjectionMatrix());
     mTexturedModelShader->SetUniform("uFar", pActiveCamera->GetZFar());
     mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetPosition());
     mTexturedModelShader->Unbind();
-
-    mRenderer->GetHaze()->SetUniforms(mTexturedModelShader.get());
 }
 
 bool Canavar::Engine::TexturedModelRenderer::ShouldRender(TexturedModel *pTexturedModel, bool OverlayPass) const

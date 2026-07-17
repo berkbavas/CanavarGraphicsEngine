@@ -24,7 +24,6 @@ namespace Canavar::Engine
         void Initialize() override;
         void Render(RenderPass RenderPass) override;
         void RenderOverlay(RenderPass RenderPass) override;
-        void Resize(int Width, int Height) override;
 
       private:
         void RenderPrimitiveModels(RenderPass RenderPass, bool OverlayPass, PerspectiveCamera *pCamera);
@@ -39,9 +38,6 @@ namespace Canavar::Engine
 
         ShaderPtr mPrimitiveShader{ nullptr };  // Disk, Plane, Sphere
         ShaderPtr mCircleLineShader{ nullptr }; // Circle, Line
-
-        int mWidth{ 1 };
-        int mHeight{ 1 };
     };
 
     using PrimitiveModelRendererPtr = std::unique_ptr<PrimitiveModelRenderer>;

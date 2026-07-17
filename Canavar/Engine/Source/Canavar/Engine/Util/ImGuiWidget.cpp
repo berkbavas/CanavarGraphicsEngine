@@ -38,11 +38,16 @@
 Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
     : mRenderer(pRenderer)
 {
+    // Connect to the renderer's signals for initialization and overlay rendering
     connect(mRenderer, &Renderer::Initialized, this, &Canavar::Engine::ImGuiWidget::Initialize);
     connect(mRenderer, &Renderer::CanRenderOverlay, this, &Canavar::Engine::ImGuiWidget::OnRenderOverlay);
 
+    // Retrieve the NodeManager and CameraManager from the renderer for later use
     mNodeManager = mRenderer->GetNodeManager();
     mCameraManager = mRenderer->GetCameraManager();
+
+    // Register this ImGuiWidget as an event receiver to handle input events
+    mRenderer->AddEventReceiver(this);
 }
 
 void Canavar::Engine::ImGuiWidget::Initialize()
@@ -221,14 +226,17 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTree(Node *pNode)
 {
     const bool HasChildren = !pNode->GetChildren().empty();
 
-    ImGuiTreeNodeFlags Flags = HasChildren ? (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick) : (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
+    ImGuiTreeNodeFlags Flags = HasChildren ? //
+                                   (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)
+                                           : (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
 
     if (mSelectedNode == pNode)
     {
         Flags |= ImGuiTreeNodeFlags_Selected;
     }
 
-    const bool Open = ImGui::TreeNodeEx(reinterpret_cast<void *>(static_cast<intptr_t>(pNode->GetNodeId())), Flags, "[%s]  %s", pNode->GetNodeTypeName(), pNode->GetNodeUniqueName().c_str());
+    const auto *pNodeId = reinterpret_cast<void *>(static_cast<intptr_t>(pNode->GetNodeId()));
+    const bool Open = ImGui::TreeNodeEx(pNodeId, Flags, "[%s]  %s", pNode->GetNodeTypeName(), pNode->GetNodeUniqueName().c_str());
 
     if (ImGui::IsItemClicked())
     {
@@ -973,9 +981,10 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
         std::strncpy(mNodeNameBuffer, Name.c_str(), sizeof(mNodeNameBuffer) - 1);
         mNodeNameBuffer[sizeof(mNodeNameBuffer) - 1] = '\0';
 
-        if (Object *pObject = dynamic_cast<Object *>(mSelectedNode))
+        // If the selected node is a TexturedModel, enter the gizmo mode for it.
+        if (TexturedModel *pTexturedModel = dynamic_cast<TexturedModel *>(mSelectedNode))
         {
-            pGizmo->Enter(pObject);
+            pGizmo->Enter(pTexturedModel);
         }
     }
 }

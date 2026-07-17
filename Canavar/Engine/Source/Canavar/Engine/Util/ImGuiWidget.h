@@ -36,11 +36,12 @@ namespace Canavar::Engine
       public:
         explicit ImGuiWidget(Renderer *pRenderer);
 
+      private:
+        // Private slots for handling signals from the renderer"
         void Initialize();
         void OnRenderOverlay(float Ifps);
         void DrawImGuiWidgets(float Ifps);
 
-      private:
         // --- Top-level panels ---
         void DrawMenuBar();
         void DrawStats(float Ifps);
@@ -61,11 +62,11 @@ namespace Canavar::Engine
         void DrawTerrainProperties();
         void DrawPostProcessPanel();
 
-        void SetSelectedNode(Node *pNode);
-
         // --- Helpers ---
         void ValidateSelectedNode();
         void DrawNodeTree(Node *pNode);
+
+        void SetSelectedNode(Node *pNode);
 
         QtImGui::RenderRef mRenderRef;
         Renderer *mRenderer{ nullptr };
@@ -79,4 +80,5 @@ namespace Canavar::Engine
         char mNodeNameBuffer[128]{};
     };
 
+    using ImGuiWidgetPtr = std::unique_ptr<ImGuiWidget>;
 }

@@ -17,6 +17,6 @@ namespace Canavar::Editor
       private:
         Canavar::Engine::OpenGLWidget *mOpenGLWidget{ nullptr };
         Canavar::Engine::RendererPtr mRenderer{ nullptr };
-        Canavar::Engine::ImGuiWidget *mImGuiWidget{ nullptr };
+        Canavar::Engine::ImGuiWidgetPtr mImGuiWidget{ nullptr };
     };
 }

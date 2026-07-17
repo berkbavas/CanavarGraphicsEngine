@@ -241,8 +241,10 @@ void Canavar::Engine::Terrain::Render()
     const auto pLightManager = mRenderer->GetLightManager();
     const auto pHaze = mRenderer->GetHaze();
 
+    // Update tile positions based on the camera's current position
     CalculateTilePositions(pCamera);
 
+    // Set light uniforms for the terrain shader
     pLightManager->SetDirectionalLightsUniforms(mTerrainShader.get());
     pLightManager->SetPointLightsUniforms(mTerrainShader.get(), pCamera->GetPosition(), pCamera->GetZFar());
     pHaze->SetUniforms(mTerrainShader.get());
@@ -278,9 +280,8 @@ void Canavar::Engine::Terrain::Render()
     mTerrainShader->SetUniformArray("uTextureDisplacementWeights", mTextureDisplacementWeights.data(), mTextureDisplacementWeights.size(), 1);
 
     glBindVertexArray(mVAO);
-
     glDrawElementsInstanced(GL_PATCHES, mIndices.size(), GL_UNSIGNED_INT, 0, mTilePositions.size());
-
     glBindVertexArray(0);
+    
     mTerrainShader->Unbind();
 }

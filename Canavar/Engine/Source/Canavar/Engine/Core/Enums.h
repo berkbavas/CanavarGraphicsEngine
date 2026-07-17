@@ -38,10 +38,11 @@ namespace Canavar::Engine
     {
         Multisample,
         Singlesample,
-        Ping,
-        Pong,
+        Ping, // Used for post-processing effects that require multiple passes (e.g., DOF, motion blur)
+        Pong, // Used for post-processing effects that require multiple passes (e.g., DOF, motion blur)
     };
 
+    // Order of post-processing effects matters, as some effects depend on the output of previous effects.
     enum class PostProcessEffectType
     {
         None,

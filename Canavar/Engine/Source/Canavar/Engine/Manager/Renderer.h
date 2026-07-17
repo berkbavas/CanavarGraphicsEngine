@@ -39,6 +39,7 @@ namespace Canavar::Engine
         explicit Renderer(OpenGLWidget* pOpenGLWidget);
         virtual ~Renderer() = default;
 
+        // Accessors for various managers and components
         OpenGLWidget* GetOpenGLWidget() const;
         NodeManager* GetNodeManager() const;
         LightManager* GetLightManager() const;
@@ -46,12 +47,15 @@ namespace Canavar::Engine
         TexturedModelRenderer* GetTexturedModelRenderer() const;
         PrimitiveModelRenderer* GetPrimitiveModelRenderer() const;
 
+        // Accessors for global nodes
         Sky* GetSky() const;
         Haze* GetHaze() const;
         Terrain* GetTerrain() const;
 
+        // Accessor for the Gizmo
         Gizmo* GetGizmo() const;
 
+        // Post-processing effects
         AcesEffect* GetAcesEffect() const;
         DepthOfFieldEffect* GetDepthOfFieldEffect() const;
         FxaaEffect* GetFxaaEffect() const;
@@ -91,6 +95,7 @@ namespace Canavar::Engine
         void CreateDirectionalLights();
         void CreateGlobalNodes();
         void ApplyPostProcessEffects();
+        void SupplyPerFrameData();
 
         OpenGLWidget* mOpenGLWidget{ nullptr };
         RenderingContext* mRenderingContext{ nullptr };

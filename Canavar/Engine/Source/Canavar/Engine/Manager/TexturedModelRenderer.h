@@ -1,8 +1,8 @@
 #pragma once
 
+#include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Manager/Manager.h"
-#include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Scene/Scene.h"
 
 namespace Canavar::Engine
@@ -20,12 +20,14 @@ namespace Canavar::Engine
 
         void Initialize() override;
         void Render(RenderPass RenderPass) override;
+        void RenderOverlay(RenderPass RenderPass) override;
         const QMap<QString, ScenePtr>& GetScenes() const;
 
       private:
         void SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera* pActiveCamera);
         void RenderModels(RenderPass RenderPass, PerspectiveCamera* pActiveCamera, bool OverlayPass);
         bool ShouldRender(TexturedModel* pTexturedModel, bool OverlayPass) const;
+        Scene* GetSceneByName(const QString& SceneName) const;
 
         Renderer* mRenderer{ nullptr };
         NodeManager* mNodeManager{ nullptr };
