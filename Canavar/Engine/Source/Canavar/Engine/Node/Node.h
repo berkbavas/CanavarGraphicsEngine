@@ -15,7 +15,7 @@ namespace Canavar::Engine
     class Node
     {
       public:
-        Node() = default;
+        Node();
         virtual ~Node() = default;
 
         virtual const char* GetNodeTypeName() const = 0;

@@ -15,6 +15,8 @@
 #include <list>
 #include <memory>
 
+#include <QUuid>
+
 namespace Canavar::Engine
 {
     class Renderer;
@@ -52,6 +54,7 @@ namespace Canavar::Engine
 
             auto pNode = std::make_unique<T>(std::forward<Args>(args)...);
             pNode->SetNodeId(mNextNodeId++);
+            pNode->SetUuid(QUuid::createUuid());
 
             // Store the raw pointer before moving the unique_ptr into the list
             T *pRawPtr = pNode.get();
@@ -130,6 +133,25 @@ namespace Canavar::Engine
          * The node is detached from its parent and children, and its memory is released.
          */
         void RemoveNode(Node *pNode);
+
+        /**
+         * Loads nodes from a JSON scene file and adds them to the NodeManager.
+         * Global nodes (Sky, Haze, Terrain) and the Sun (DirectionalLight) that were already
+         * created by the Renderer will have their properties updated from the file instead of
+         * being duplicated.  Unsupported node types are skipped with a warning.
+         * @param FilePath Path to the JSON scene file.
+         * @return true on success, false if the file could not be read or parsed.
+         */
+        bool ImportNodes(const std::string& FilePath);
+
+        /**
+         * Serialises all nodes currently managed by the NodeManager to a JSON scene
+         * file that can be re-loaded with ImportNodes.
+         * Unsupported node categories (PrimitiveModel) are silently skipped.
+         * @param FilePath Destination path for the JSON file.
+         * @return true on success, false if the file could not be written.
+         */
+        bool ExportNodes(const std::string& FilePath);
 
         const std::list<NodePtr> &GetNodes() const;
 

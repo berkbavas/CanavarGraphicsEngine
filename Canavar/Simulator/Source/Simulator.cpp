@@ -16,10 +16,9 @@ Canavar::Simulator::Simulator::Simulator()
 
     connect(mRenderer, &Canavar::Engine::Renderer::Initialized, this, &Simulator::Initialize);
     connect(mRenderer, &Canavar::Engine::Renderer::Updated, this, &Simulator::Update);
-    connect(mRenderer, &Canavar::Engine::Renderer::PostRender, this, &Simulator::DrawImGui);
+    connect(mRenderer, &Canavar::Engine::Renderer::PostRender, this, &Simulator::OnPostRender);
     mRenderer->AddEventReceiver(this);
     mAircraft = new Aircraft;
-
     mImGuiWidget = new Canavar::Engine::ImGuiWidget(mRenderer);
 }
 
@@ -45,15 +44,17 @@ void Canavar::Simulator::Simulator::Run()
     }
 
     mWidget->showMinimized();
+    mWidget->showMaximized();
 }
 
 void Canavar::Simulator::Simulator::Initialize()
 {
+    mRenderRef = QtImGui::initialize(mWidget, false);
+
     mNodeManager = mRenderer->GetNodeManager();
     mCameraManager = mRenderer->GetCameraManager();
 
-    // TODO: Load the aircraft model and set up the scene. This is a placeholder for now.
-    // mNodeManager->ImportNodes("Resources/f16.json");
+    mNodeManager->ImportNodes("Resources/f16.json");
 
     mFreeCamera = mNodeManager->FindNodeByType<Canavar::Engine::FreeCamera>();
     mDummyCamera = mNodeManager->FindNodeByType<Canavar::Engine::DummyCamera>();
@@ -64,16 +65,15 @@ void Canavar::Simulator::Simulator::Initialize()
 
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
-
-    mRenderRef = QtImGui::initialize(mWidget, false);
-
-    mWidget->showMaximized();
 }
 
 void Canavar::Simulator::Simulator::Update(float ifps)
 {
     mAircraft->Tick(ifps);
+}
 
+void Canavar::Simulator::Simulator::OnPostRender(float Ifps)
+{
     const auto& Pfd = mAircraft->GetPfd();
 
     // Update the root node's position and rotation based on the aircraft's PFD data
@@ -82,9 +82,11 @@ void Canavar::Simulator::Simulator::Update(float ifps)
         mRootNode->SetPosition(Pfd.Position);
         mRootNode->SetRotation(Pfd.Rotation);
     }
+
+    DrawImGui();
 }
 
-void Canavar::Simulator::Simulator::DrawImGui(float Ifps)
+void Canavar::Simulator::Simulator::DrawImGui()
 {
     QtImGui::newFrame(mRenderRef);
     mAircraft->DrawGui();

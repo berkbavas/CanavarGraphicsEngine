@@ -225,8 +225,6 @@ void Canavar::Engine::Terrain::CalculateTilePositions(PerspectiveCamera *pCamera
     {
         TranslateTiles(CurrentTilePosition - mPreviousTilePosition);
         mPreviousTilePosition = CurrentTilePosition;
-
-        LOG_DEBUG("Terrain::CalculateTilePositions: Translated tiles by ({}, {})", CurrentTilePosition.x() - mPreviousTilePosition.x(), CurrentTilePosition.y() - mPreviousTilePosition.y());
     }
 }
 

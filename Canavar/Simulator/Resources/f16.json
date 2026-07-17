@@ -1,26 +1,34 @@
 {
     "nodes": [
         {
-            "albedo": 0.10000000149011612,
-            "enabled": true,
-            "node_name": "Sky",
-            "node_type_name": "Sky",
-            "normalized_sun_y": 1.149999976158142,
-            "turbidity": 4,
-            "uuid": "2626b6b1-58e6-4392-9852-c7c78c8700f7"
-        },
-        {
-            "color": {
-                "b": 0.4699999988079071,
-                "g": 0.3799999952316284,
-                "r": 0.33000001311302185
+            "angular_speed": 25,
+            "distance": 5,
+            "linear_speed": 10,
+            "node_name": "Persecutor Camera",
+            "node_type_name": "PersecutorCamera",
+            "pitch": 0,
+            "position": {
+                "x": 3.084075927734375,
+                "y": 882.42578125,
+                "z": 66.02871704101562
             },
-            "density": 1,
-            "enabled": true,
-            "gradient": 1.5,
-            "node_name": "Haze",
-            "node_type_name": "Haze",
-            "uuid": "dd88480b-213d-4205-8229-4c71f1b3ace7"
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "uuid": "747da240-e62b-4ddb-af5e-3893cb3581fd",
+            "vertical_fov": 60,
+            "visible": true,
+            "yaw": 0,
+            "z_far": 100000,
+            "z_near": 0.10000000149011612
         },
         {
             "ambient": 1,
@@ -43,7 +51,7 @@
                 "y": 0,
                 "z": 0
             },
-            "radience": 5,
+            "radiance": 5,
             "rotation": {
                 "w": 1,
                 "x": 0,
@@ -55,10 +63,226 @@
                 "y": 1,
                 "z": 1
             },
-            "selectable": true,
             "specular": 1,
-            "uuid": "fb760a94-ebf5-4c0f-81e1-83b677ccb873",
+            "uuid": "92fb7610-f4dd-418c-ae4a-c9d0da12f3ce",
             "visible": true
+        },
+        {
+            "ambient": 0.125,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.5,
+            "direction": {
+                "x": 0,
+                "y": 1,
+                "z": 0
+            },
+            "enabled": true,
+            "node_name": "Directional Light",
+            "node_type_name": "DirectionalLight",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radiance": 4,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "specular": 1,
+            "uuid": "26b0d15d-0933-4d9c-b555-0f727ac2752d",
+            "visible": true
+        },
+        {
+            "ambient": 0.125,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.5,
+            "direction": {
+                "x": -1,
+                "y": 0,
+                "z": 0
+            },
+            "enabled": true,
+            "node_name": "Directional Light",
+            "node_type_name": "DirectionalLight",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radiance": 4,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "specular": 1,
+            "uuid": "9f785fa4-a6cd-48c1-9a42-003169a04c46",
+            "visible": true
+        },
+        {
+            "ambient": 0.125,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.5,
+            "direction": {
+                "x": 1,
+                "y": 0,
+                "z": 0
+            },
+            "enabled": true,
+            "node_name": "Directional Light",
+            "node_type_name": "DirectionalLight",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radiance": 4,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "specular": 1,
+            "uuid": "4bb3829f-1b71-4477-89b0-bba2f241d716",
+            "visible": true
+        },
+        {
+            "ambient": 0.125,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.5,
+            "direction": {
+                "x": 0,
+                "y": 0,
+                "z": -1
+            },
+            "enabled": true,
+            "node_name": "Directional Light",
+            "node_type_name": "DirectionalLight",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radiance": 4,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "specular": 1,
+            "uuid": "c83cbef1-9dfc-418e-ac3d-d5c49cacbe54",
+            "visible": true
+        },
+        {
+            "ambient": 0.125,
+            "color": {
+                "b": 1,
+                "g": 1,
+                "r": 1
+            },
+            "diffuse": 0.5,
+            "direction": {
+                "x": 0,
+                "y": 0,
+                "z": 1
+            },
+            "enabled": true,
+            "node_name": "Directional Light",
+            "node_type_name": "DirectionalLight",
+            "position": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "radiance": 4,
+            "rotation": {
+                "w": 1,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            },
+            "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            },
+            "specular": 1,
+            "uuid": "e60c1e5b-dee2-4774-b736-2d6c15146dc8",
+            "visible": true
+        },
+        {
+            "atmosphere_radius": 6471000,
+            "beta_mie": 2.099999983329326e-05,
+            "beta_rayleigh": {
+                "x": 5.500000042957254e-06,
+                "y": 1.2999999853491317e-05,
+                "z": 2.2399999579647556e-05
+            },
+            "enabled": true,
+            "horizon_offset": 0.15000000596046448,
+            "mie_g": 0.800000011920929,
+            "node_name": "Sky",
+            "node_type_name": "Sky",
+            "planet_radius": 6371000,
+            "scale_height_m": 1200,
+            "scale_height_r": 8000,
+            "sun_intensity": 22,
+            "uuid": "5637ba22-3983-4e1c-9ce0-719db6d0fd5c"
+        },
+        {
+            "color": {
+                "b": 0.4699999988079071,
+                "g": 0.3799999952316284,
+                "r": 0.33000001311302185
+            },
+            "density": 1,
+            "enabled": true,
+            "gradient": 1.5,
+            "node_name": "Haze",
+            "node_type_name": "Haze",
+            "uuid": "caf1fc3f-a6b3-43c0-9580-798829509359"
         },
         {
             "ambient": 0.25,
@@ -74,14 +298,9 @@
             "shininess": 8,
             "specular": 0.25,
             "tessellation_multiplier": 8,
-            "uuid": "6b45c764-588e-4244-af6d-1e469bc1dac7"
+            "uuid": "69c24158-d3ce-4ce8-98de-a71c77326a27"
         },
         {
-            "action_receive_button": 4,
-            "angular_speed": 25,
-            "angular_speed_muliplier": 1,
-            "linear_speed": 5,
-            "linear_speed_multiplier": 1,
             "node_name": "Free Camera",
             "node_type_name": "FreeCamera",
             "position": {
@@ -100,8 +319,7 @@
                 "y": 1,
                 "z": 1
             },
-            "selectable": true,
-            "uuid": "6509aada-6f81-4d42-864c-14c2b99580d4",
+            "uuid": "f25b4111-aca3-44f5-93e3-2b9a505c6a84",
             "vertical_fov": 60,
             "visible": true,
             "z_far": 100000,
@@ -114,18 +332,18 @@
                 "r": 0
             },
             "node_name": "f16",
-            "node_type_name": "Model",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "node_type_name": "TexturedModel",
+            "parent_uuid": "5dfbaf20-e4d9-4b80-9ba9-c13dde01d21a",
             "position": {
                 "x": 0,
                 "y": 0,
                 "z": 0
             },
             "rotation": {
-                "w": 0.5000044107437134,
-                "x": 0.49999570846557617,
-                "y": 0.5000044107437134,
-                "z": -0.4999956786632538
+                "w": 0.7071067690849304,
+                "x": 0,
+                "y": 0.7071067690849304,
+                "z": 0
             },
             "scale": {
                 "x": 0.10000000149011612,
@@ -133,66 +351,36 @@
                 "z": 0.10000000149011612
             },
             "scene_name": "f16",
-            "selectable": true,
-            "use_model_color": false,
-            "uuid": "a98471f6-5e00-499d-9f92-4cfd56389cc3",
+            "use_color": false,
+            "uuid": "1f174d0d-b266-4df0-b04c-dc0a302f88a0",
             "visible": true
         },
         {
             "node_name": "Root Node",
             "node_type_name": "DummyObject",
             "position": {
-                "x": 3.19183349609375,
-                "y": 914.4969482421875,
-                "z": 0.0003662109375
+                "x": 3.084075927734375,
+                "y": 882.42578125,
+                "z": 41.028717041015625
             },
             "rotation": {
-                "w": -4.371138828673793e-08,
-                "x": 0,
-                "y": -1,
-                "z": 8.82046576141384e-17
+                "w": 1.7003216271405108e-05,
+                "x": 3.349781036376953e-05,
+                "y": -0.9799240827560425,
+                "z": -0.19937098026275635
             },
             "scale": {
                 "x": 1,
                 "y": 1,
                 "z": 1
             },
-            "selectable": true,
-            "uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "visible": true
-        },
-        {
-            "max_length": 1.5,
-            "max_life": 0.22499999403953552,
-            "max_radius": 0.4000000059604645,
-            "max_speed": 2,
-            "node_name": "Nozzle Effect",
-            "node_type_name": "NozzleEffect",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 0,
-                "z": 4.019999980926514
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            },
-            "selectable": true,
-            "uuid": "a8c1a7e9-0ee8-4dce-abc2-387b6a1e38cc",
+            "uuid": "5dfbaf20-e4d9-4b80-9ba9-c13dde01d21a",
             "visible": true
         },
         {
             "node_name": "Dummy Camera",
             "node_type_name": "DummyCamera",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "parent_uuid": "5dfbaf20-e4d9-4b80-9ba9-c13dde01d21a",
             "position": {
                 "x": 0,
                 "y": 3,
@@ -209,42 +397,11 @@
                 "y": 1,
                 "z": 1
             },
-            "selectable": true,
-            "uuid": "1fc006c3-c9d3-4be0-be20-2716f9a9944f",
+            "uuid": "511ee870-e236-43ae-b9f0-c2514b7c61e9",
             "vertical_fov": 60,
             "visible": true,
             "z_far": 100000,
             "z_near": 1
-        },
-        {
-            "color": {
-                "b": 1,
-                "g": 1,
-                "r": 1
-            },
-            "node_name": "Text3D",
-            "node_type_name": "Text3D",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
-            "position": {
-                "x": 0,
-                "y": 2,
-                "z": 6
-            },
-            "rotation": {
-                "w": 1,
-                "x": 0,
-                "y": 0,
-                "z": 0
-            },
-            "scale": {
-                "x": 0.009999999776482582,
-                "y": 0.009999999776482582,
-                "z": 0.009999999776482582
-            },
-            "selectable": true,
-            "text": "Canavar Graphics Engine",
-            "uuid": "1cbd7c02-c62c-45ff-a711-5840a21f385e",
-            "visible": true
         },
         {
             "ambient": 1,
@@ -259,7 +416,7 @@
             "linear": 1,
             "node_name": "Red Light",
             "node_type_name": "PointLight",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "parent_uuid": "5dfbaf20-e4d9-4b80-9ba9-c13dde01d21a",
             "position": {
                 "x": -4.599999904632568,
                 "y": 0,
@@ -277,9 +434,8 @@
                 "y": 0.10000000149011612,
                 "z": 0.10000000149011612
             },
-            "selectable": true,
             "specular": 1,
-            "uuid": "9c23b7ac-a056-455f-9de4-43637f822ee9",
+            "uuid": "72168933-404e-45a8-a239-c83e2ed7d22d",
             "visible": true
         },
         {
@@ -295,7 +451,7 @@
             "linear": 0.5,
             "node_name": "Green Light",
             "node_type_name": "PointLight",
-            "parent_uuid": "c97f6f4e-ba7f-4e53-a288-d3686baae6ee",
+            "parent_uuid": "5dfbaf20-e4d9-4b80-9ba9-c13dde01d21a",
             "position": {
                 "x": 4.599999904632568,
                 "y": 0,
@@ -313,9 +469,8 @@
                 "y": 0.10000000149011612,
                 "z": 0.10000000149011612
             },
-            "selectable": true,
             "specular": 1,
-            "uuid": "9c96e794-2123-43aa-b835-0ea51b64167b",
+            "uuid": "820f9530-2076-4199-be7e-c8785dd0d202",
             "visible": true
         }
     ]

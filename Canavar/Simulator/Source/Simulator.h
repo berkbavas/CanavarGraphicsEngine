@@ -35,7 +35,8 @@ namespace Canavar::Simulator
       private:
         void Initialize();
         void Update(float Ifps);
-        void DrawImGui(float Ifps);
+        void OnPostRender(float Ifps);
+        void DrawImGui();
 
         Aircraft *mAircraft;
 

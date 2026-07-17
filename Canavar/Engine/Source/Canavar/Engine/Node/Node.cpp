@@ -4,6 +4,11 @@
 
 #include <algorithm>
 
+Canavar::Engine::Node::Node()
+{
+    mUuid = QUuid::createUuid();
+}
+
 const QUuid& Canavar::Engine::Node::GetUuid() const
 {
     return mUuid;

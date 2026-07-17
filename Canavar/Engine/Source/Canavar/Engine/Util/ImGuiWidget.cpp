@@ -29,6 +29,7 @@
 
 #include <QQuaternion>
 #include <QVector3D>
+#include <QFileDialog>
 #include <QtImGui.h>
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -206,6 +207,36 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         ImGui::EndMenu();
     }
 
+    // ── Scene ─────────────────────────────────────────────────────────────────
+    if (ImGui::BeginMenu("Scene"))
+    {
+        if (ImGui::MenuItem("Export Nodes..."))
+        {
+            const QString FilePath = QFileDialog::getSaveFileName(
+                mRenderer->GetOpenGLWidget(),
+                "Export Nodes",
+                QString(),
+                "JSON files (*.json);;All files (*)");
+
+            if (!FilePath.isEmpty())
+                mNodeManager->ExportNodes(FilePath.toStdString());
+        }
+
+        if (ImGui::MenuItem("Import Nodes..."))
+        {
+            const QString FilePath = QFileDialog::getOpenFileName(
+                mRenderer->GetOpenGLWidget(),
+                "Import Nodes",
+                QString(),
+                "JSON files (*.json);;All files (*)");
+
+            if (!FilePath.isEmpty())
+                mNodeManager->ImportNodes(FilePath.toStdString());
+        }
+
+        ImGui::EndMenu();
+    }
+
     ImGui::EndMenuBar();
 }
 
@@ -271,10 +302,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeList()
         }
     };
 
-    DrawRootsFrom(mNodeManager->GetCameras());
-    DrawRootsFrom(mNodeManager->GetLights());
-    DrawRootsFrom(mNodeManager->GetTexturedModels());
-    DrawRootsFrom(mNodeManager->GetPrimitiveModels());
+    DrawRootsFrom(mNodeManager->GetObjects());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -536,10 +564,10 @@ void Canavar::Engine::ImGuiWidget::DrawCameraProperties(Camera *pCamera)
     if (auto *pPersecutor = dynamic_cast<PersecutorCamera *>(pCamera))
     {
         ImGui::TextUnformatted("Persecutor Camera");
-        ImGui::DragFloat("Distance##DrawCameraProperties", &pPersecutor->GetDistance_NonConst(), 0.1f, 0.1f, 20000.0f);
-        ImGui::DragFloat("Angular Speed##DrawCameraProperties", &pPersecutor->GetAngularSpeed_NonConst(), 0.5f, 0.0f, 720.0f);
-        ImGui::DragFloat("Linear Speed##DrawCameraProperties", &pPersecutor->GetLinearSpeed_NonConst(), 0.01f, 0.0f, 1000.0f);
-        ImGui::DragFloat("Zoom Step##DrawCameraProperties", &pPersecutor->GetZoomStep_NonConst(), 0.01f, 0.01f, 100.0f);
+        ImGui::DragFloat("Distance##DrawCameraProperties", &pPersecutor->GetDistance_NonConst(), 0.1f, 0.1f, 200.0f);
+        ImGui::DragFloat("Angular Speed##DrawCameraProperties", &pPersecutor->GetAngularSpeed_NonConst(), 0.5f, 0.0f, 120.0f);
+        ImGui::DragFloat("Linear Speed##DrawCameraProperties", &pPersecutor->GetLinearSpeed_NonConst(), 0.01f, 0.0f, 100.0f);
+        ImGui::DragFloat("Zoom Step##DrawCameraProperties", &pPersecutor->GetZoomStep_NonConst(), 0.01f, 0.01f, 5.0f);
     }
     // ── FreeCamera extras ─────────────────────────────────────────────────────
     else if (dynamic_cast<FreeCamera *>(pCamera))
