@@ -94,8 +94,8 @@ QMatrix4x4 Canavar::Engine::Camera::GetViewProjectionMatrix() const
 QMatrix4x4 Canavar::Engine::Camera::GetViewMatrix() const
 {
     QMatrix4x4 ViewMatrix;
-    ViewMatrix.rotate(GetRotation().conjugated());
-    ViewMatrix.translate(-GetPosition());
+    ViewMatrix.rotate(GetWorldRotation().conjugated());
+    ViewMatrix.translate(-GetWorldPosition());
     return ViewMatrix;
 }
 
@@ -109,7 +109,7 @@ QMatrix4x4 Canavar::Engine::Camera::GetRotationMatrix() const
 
 QVector3D Canavar::Engine::Camera::GetViewDirection() const
 {
-    return GetRotation() * NEGATIVE_Z; // The view direction is the negative Z axis in the camera's local space
+    return GetWorldRotation() * NEGATIVE_Z; // The view direction is the negative Z axis in the camera's local space
 }
 
 QVector3D Canavar::Engine::Camera::GetDirection(ViewDirection ViewDirection) const
@@ -117,17 +117,17 @@ QVector3D Canavar::Engine::Camera::GetDirection(ViewDirection ViewDirection) con
     switch (ViewDirection)
     {
     case ViewDirection::Front:
-        return GetRotation() * NEGATIVE_Z;
+        return GetWorldRotation() * NEGATIVE_Z;
     case ViewDirection::Back:
-        return GetRotation() * POSITIVE_Z;
+        return GetWorldRotation() * POSITIVE_Z;
     case ViewDirection::Up:
-        return GetRotation() * POSITIVE_Y;
+        return GetWorldRotation() * POSITIVE_Y;
     case ViewDirection::Down:
-        return GetRotation() * NEGATIVE_Y;
+        return GetWorldRotation() * NEGATIVE_Y;
     case ViewDirection::Left:
-        return GetRotation() * NEGATIVE_X;
+        return GetWorldRotation() * NEGATIVE_X;
     case ViewDirection::Right:
-        return GetRotation() * POSITIVE_X;
+        return GetWorldRotation() * POSITIVE_X;
     default:
         return QVector3D(0, 0, 0); // Default case, should not happen
     }

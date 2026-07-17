@@ -4,7 +4,7 @@ void Canavar::Engine::Manager::Initialize() {}
 
 void Canavar::Engine::Manager::PostInitialize() {}
 
-void Canavar::Engine::Manager::Update(float ifps) {}
+void Canavar::Engine::Manager::Update(float Ifps) {}
 
 void Canavar::Engine::Manager::Render(RenderPass RenderPass) {}
 

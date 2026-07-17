@@ -8,6 +8,7 @@ QVector<Canavar::Engine::PointLight *> Canavar::Engine::LightManager::GetPointLi
 {
     QVector<PointLight *> Result;
 
+    // Filter point lights based on distance to the target position
     for (const auto &pLight : mPointLights)
     {
         float Distance = pLight->GetPosition().distanceToPoint(TargetPosition);
@@ -17,6 +18,13 @@ QVector<Canavar::Engine::PointLight *> Canavar::Engine::LightManager::GetPointLi
             Result.push_back(pLight);
         }
     }
+
+    // Sort based on distance to the target position
+    std::sort(Result.begin(), Result.end(), [TargetPosition](PointLight *pFirst, PointLight *pSecond) {
+        const auto FirstDistance = pFirst->GetPosition().distanceToPoint(TargetPosition);
+        const auto SecondDistance = pSecond->GetPosition().distanceToPoint(TargetPosition);
+        return FirstDistance < SecondDistance;
+    });
 
     return Result;
 }

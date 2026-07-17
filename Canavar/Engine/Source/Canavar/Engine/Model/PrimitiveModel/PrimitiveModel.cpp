@@ -10,7 +10,7 @@ Canavar::Engine::PrimitiveModel::PrimitiveModel(PrimitiveType Type)
 
 void Canavar::Engine::PrimitiveModel::Render(GeometryBase *pGeometry, Shader *pShader, PerspectiveCamera *pCamera)
 {
-    const auto &M = GetTransformation();
+    const auto M = GetWorldTransformation();
 
     pShader->Bind();
     pShader->SetUniform("uModelMatrix", M);

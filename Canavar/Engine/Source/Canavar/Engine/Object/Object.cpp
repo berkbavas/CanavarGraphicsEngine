@@ -60,11 +60,18 @@ void Canavar::Engine::Object::Translate(const QVector3D& Delta)
 
 void Canavar::Engine::Object::UpdateTransformation()
 {
-    mTransformation.setToIdentity();
-    mTransformation.scale(mScale);
-    mTransformation.rotate(mRotation);
-    mTransformation.setColumn(3, QVector4D(mPosition, 1.0f));
+    // Rebuild the transformation matrix from position, rotation, and scale.
+    // Note: The order of transformations is important.
+    // We scale first, then rotate, then translate.
+    // But reverse order of operations is applied when multiplying matrices.
+    // For example, if you want to scale an object, then rotate it, and finally translate it,
+    // you would multiply the matrices in the order: Translation * Rotation * Scale.
+    // Translation is applied last, so it should be the first matrix in the multiplication order.
 
+    mTransformation.setToIdentity();
+    mTransformation.translate(mPosition);
+    mTransformation.rotate(mRotation);
+    mTransformation.scale(mScale);
     mNormalMatrix = mTransformation.normalMatrix();
 }
 
@@ -109,10 +116,7 @@ QVector3D Canavar::Engine::Object::GetWorldPosition() const
 QQuaternion Canavar::Engine::Object::GetWorldRotation() const
 {
     const QMatrix4x4 World = GetWorldTransformation();
-    const QVector3D Scale(
-        World.column(0).toVector3D().length(),
-        World.column(1).toVector3D().length(),
-        World.column(2).toVector3D().length());
+    const QVector3D Scale(World.column(0).toVector3D().length(), World.column(1).toVector3D().length(), World.column(2).toVector3D().length());
 
     QMatrix4x4 RotMatrix = World;
     RotMatrix.setColumn(0, RotMatrix.column(0) / Scale.x());
@@ -124,8 +128,5 @@ QQuaternion Canavar::Engine::Object::GetWorldRotation() const
 QVector3D Canavar::Engine::Object::GetWorldScale() const
 {
     const QMatrix4x4 World = GetWorldTransformation();
-    return QVector3D(
-        World.column(0).toVector3D().length(),
-        World.column(1).toVector3D().length(),
-        World.column(2).toVector3D().length());
+    return QVector3D(World.column(0).toVector3D().length(), World.column(1).toVector3D().length(), World.column(2).toVector3D().length());
 }

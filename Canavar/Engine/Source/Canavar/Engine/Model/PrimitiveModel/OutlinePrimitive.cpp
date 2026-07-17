@@ -11,7 +11,7 @@ Canavar::Engine::OutlinePrimitive::OutlinePrimitive(PrimitiveType Type)
 void Canavar::Engine::OutlinePrimitive::Render(GeometryBase *pGeometry, Shader *pShader, PerspectiveCamera *pCamera)
 {
     pShader->Bind();
-    pShader->SetUniform("uModelMatrix", GetTransformation());
+    pShader->SetUniform("uModelMatrix", GetWorldTransformation());
     pShader->SetUniform("uColor", mColor);
     pShader->SetUniform("uOpacity", mOpacity);
     pShader->SetUniform("uThickness", mThickness);

@@ -85,7 +85,7 @@ void Canavar::Engine::Mesh::Render(TexturedModel *pTexturedModel, Shader *pShade
         return; // Skip rendering if the mesh should not be rendered for this pass
     }
 
-    const auto ModelMatrix = pTexturedModel->GetTransformation() * NodeTransformation;
+    const auto ModelMatrix = pTexturedModel->GetWorldTransformation() * NodeTransformation;
 
     pShader->SetUniform("uModelMatrix", ModelMatrix);
     pShader->SetUniform("uNormalMatrix", ModelMatrix.normalMatrix());

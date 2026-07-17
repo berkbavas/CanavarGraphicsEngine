@@ -50,4 +50,5 @@ namespace Canavar::Engine
         long long mCurrentTime{ 0 };
     };
 
+    using OpenGLWidgetPtr = std::unique_ptr<OpenGLWidget>;
 }
