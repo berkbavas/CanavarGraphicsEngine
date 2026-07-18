@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
+#include "Canavar/Engine/Core/EventThief.h"
 #include "Canavar/Engine/Core/Framebuffer.h"
 #include "Canavar/Engine/Core/OpenGLWidget.h"
 #include "Canavar/Engine/Core/Quad.h"
@@ -73,6 +74,9 @@ namespace Canavar::Engine
         void AddEventReceiver(EventReceiver* pEventReceiver);
         void RemoveEventReceiver(EventReceiver* pEventReceiver);
 
+        void AddEventThief(EventThief* pEventThief);
+        void RemoveEventThief(EventThief* pEventThief);
+
       signals:
         void Initialized();
         void Updated(float Ifps);
@@ -112,6 +116,7 @@ namespace Canavar::Engine
 
         QList<Manager*> mManagers;
         QList<EventReceiver*> mEventReceivers;
+        QList<EventThief*> mEventThieves;
 
         std::map<FramebufferType, FramebufferPtr> mFramebuffers;
         std::map<FramebufferType, QOpenGLFramebufferObjectFormat> mFramebufferFormats;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Canavar/Engine/Core/EventReceiver.h"
+#include "Canavar/Engine/Core/EventThief.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/PostProcessEffect/AcesEffect.h"
@@ -30,14 +31,17 @@ namespace Canavar::Engine
     class Haze;
     class Terrain;
 
-    class ImGuiWidget : public QObject, public EventReceiver
+    class ImGuiWidget : public QObject, public EventReceiver, public EventThief
     {
         Q_OBJECT
       public:
         explicit ImGuiWidget(Renderer *pRenderer);
 
+        bool WantsKeyboardCapture() const override;
+        bool WantsMouseCapture() const override;
+
       signals:
-        void RenderImGuiWidgets(float Ifps);
+        void CanDrawImGuiWidgets(float Ifps);
 
       private:
         // Private slots for handling signals from the renderer"

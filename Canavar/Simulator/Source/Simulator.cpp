@@ -21,7 +21,7 @@ Canavar::Simulator::Simulator::Simulator()
     mAircraft = new Aircraft;
     mImGuiWidget = new Canavar::Engine::ImGuiWidget(mRenderer);
 
-    connect(mImGuiWidget, &Canavar::Engine::ImGuiWidget::RenderImGuiWidgets, this, &Simulator::DrawImGui);
+    connect(mImGuiWidget, &Canavar::Engine::ImGuiWidget::CanDrawImGuiWidgets, this, &Simulator::DrawImGui);
 }
 
 Canavar::Simulator::Simulator::~Simulator()

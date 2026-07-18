@@ -27,9 +27,9 @@
 #include <cstring>
 #include <imgui.h>
 
+#include <QFileDialog>
 #include <QQuaternion>
 #include <QVector3D>
-#include <QFileDialog>
 #include <QtImGui.h>
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -49,6 +49,17 @@ Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
 
     // Register this ImGuiWidget as an event receiver to handle input events
     mRenderer->AddEventReceiver(this);
+    mRenderer->AddEventThief(this); // Register as an event thief to capture input events before they reach other receivers
+}
+
+bool Canavar::Engine::ImGuiWidget::WantsKeyboardCapture() const
+{
+    return ImGui::GetIO().WantCaptureKeyboard;
+}
+
+bool Canavar::Engine::ImGuiWidget::WantsMouseCapture() const
+{
+    return ImGui::GetIO().WantCaptureMouse;
 }
 
 void Canavar::Engine::ImGuiWidget::Initialize()
@@ -60,7 +71,7 @@ void Canavar::Engine::ImGuiWidget::OnPostRender(float Ifps)
 {
     QtImGui::newFrame(mRenderRef);
     DrawImGuiWidgets(Ifps);
-    emit RenderImGuiWidgets(Ifps);
+    emit CanDrawImGuiWidgets(Ifps);
     ImGui::Render();
     QtImGui::render(mRenderRef);
 }
@@ -213,11 +224,7 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
     {
         if (ImGui::MenuItem("Export Nodes..."))
         {
-            const QString FilePath = QFileDialog::getSaveFileName(
-                mRenderer->GetOpenGLWidget(),
-                "Export Nodes",
-                QString(),
-                "JSON files (*.json);;All files (*)");
+            const QString FilePath = QFileDialog::getSaveFileName(mRenderer->GetOpenGLWidget(), "Export Nodes", QString(), "JSON files (*.json);;All files (*)");
 
             if (!FilePath.isEmpty())
                 mNodeManager->ExportNodes(FilePath.toStdString());
@@ -225,11 +232,7 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
 
         if (ImGui::MenuItem("Import Nodes..."))
         {
-            const QString FilePath = QFileDialog::getOpenFileName(
-                mRenderer->GetOpenGLWidget(),
-                "Import Nodes",
-                QString(),
-                "JSON files (*.json);;All files (*)");
+            const QString FilePath = QFileDialog::getOpenFileName(mRenderer->GetOpenGLWidget(), "Import Nodes", QString(), "JSON files (*.json);;All files (*)");
 
             if (!FilePath.isEmpty())
                 mNodeManager->ImportNodes(FilePath.toStdString());
@@ -1039,7 +1042,7 @@ void Canavar::Engine::ImGuiWidget::ValidateSelectedNode()
     }
 
     const auto &Nodes = mRenderer->GetNodeManager()->GetNodes();
-    const bool StillAlive = std::any_of(Nodes.begin(), Nodes.end(), [this](const NodePtr& pNode) { return pNode.get() == mSelectedNode; });
+    const bool StillAlive = std::any_of(Nodes.begin(), Nodes.end(), [this](const NodePtr &pNode) { return pNode.get() == mSelectedNode; });
     if (!StillAlive)
     {
         SetSelectedNode(nullptr);

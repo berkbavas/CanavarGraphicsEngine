@@ -238,6 +238,14 @@ void Canavar::Engine::Renderer::Render(float Ifps)
 
 void Canavar::Engine::Renderer::OnKeyPressed(QKeyEvent *pEvent)
 {
+    for (EventThief *pEventThief : mEventThieves)
+    {
+        if (pEventThief->WantsKeyboardCapture())
+        {
+            return; // Event has been stolen, do not propagate further
+        }
+    }
+
     for (EventReceiver *pEventReceiver : mEventReceivers)
     {
         if (pEventReceiver->OnKeyPressed(pEvent))
@@ -249,6 +257,14 @@ void Canavar::Engine::Renderer::OnKeyPressed(QKeyEvent *pEvent)
 
 void Canavar::Engine::Renderer::OnKeyReleased(QKeyEvent *pEvent)
 {
+    for (EventThief *pEventThief : mEventThieves)
+    {
+        if (pEventThief->WantsKeyboardCapture())
+        {
+            return; // Event has been stolen, do not propagate further
+        }
+    }
+
     for (EventReceiver *pEventReceiver : mEventReceivers)
     {
         if (pEventReceiver->OnKeyReleased(pEvent))
@@ -260,6 +276,14 @@ void Canavar::Engine::Renderer::OnKeyReleased(QKeyEvent *pEvent)
 
 void Canavar::Engine::Renderer::OnMousePressed(QMouseEvent *pEvent)
 {
+    for (EventThief *pEventThief : mEventThieves)
+    {
+        if (pEventThief->WantsMouseCapture())
+        {
+            return; // Event has been stolen, do not propagate further
+        }
+    }
+
     for (EventReceiver *pEventReceiver : mEventReceivers)
     {
         if (pEventReceiver->OnMousePressed(pEvent))
@@ -271,6 +295,14 @@ void Canavar::Engine::Renderer::OnMousePressed(QMouseEvent *pEvent)
 
 void Canavar::Engine::Renderer::OnMouseReleased(QMouseEvent *pEvent)
 {
+    for (EventThief *pEventThief : mEventThieves)
+    {
+        if (pEventThief->WantsMouseCapture())
+        {
+            return; // Event has been stolen, do not propagate further
+        }
+    }
+
     for (EventReceiver *pEventReceiver : mEventReceivers)
     {
         if (pEventReceiver->OnMouseReleased(pEvent))
@@ -282,6 +314,14 @@ void Canavar::Engine::Renderer::OnMouseReleased(QMouseEvent *pEvent)
 
 void Canavar::Engine::Renderer::OnMouseMoved(QMouseEvent *pEvent)
 {
+    for (EventThief *pEventThief : mEventThieves)
+    {
+        if (pEventThief->WantsMouseCapture())
+        {
+            return; // Event has been stolen, do not propagate further
+        }
+    }
+
     for (EventReceiver *pEventReceiver : mEventReceivers)
     {
         if (pEventReceiver->OnMouseMoved(pEvent))
@@ -293,6 +333,14 @@ void Canavar::Engine::Renderer::OnMouseMoved(QMouseEvent *pEvent)
 
 void Canavar::Engine::Renderer::OnWheelMoved(QWheelEvent *pEvent)
 {
+    for (EventThief *pEventThief : mEventThieves)
+    {
+        if (pEventThief->WantsMouseCapture())
+        {
+            return; // Event has been stolen, do not propagate further
+        }
+    }
+
     for (EventReceiver *pEventReceiver : mEventReceivers)
     {
         if (pEventReceiver->OnWheelMoved(pEvent))
@@ -346,16 +394,16 @@ void Canavar::Engine::Renderer::CreateDirectionalLights()
     mSun = mNodeManager->CreateNode<DirectionalLight>();
     mSun->SetDirection(QVector3D(-1, -1, -1).normalized());
 
-    QVector3D Directions[5] = { UP, LEFT, RIGHT, FORWARD, BACKWARD };
+    // QVector3D Directions[5] = { UP, LEFT, RIGHT, FORWARD, BACKWARD };
 
-    for (const QVector3D &Direction : Directions)
-    {
-        DirectionalLight *pLight = mNodeManager->CreateNode<DirectionalLight>();
-        pLight->SetAmbient(0.125f);
-        pLight->SetDiffuse(0.5f);
-        pLight->SetRadiance(4.0f);
-        pLight->SetDirection(Direction);
-    }
+    // for (const QVector3D &Direction : Directions)
+    // {
+    //     DirectionalLight *pLight = mNodeManager->CreateNode<DirectionalLight>();
+    //     pLight->SetAmbient(0.125f);
+    //     pLight->SetDiffuse(0.5f);
+    //     pLight->SetRadiance(4.0f);
+    //     pLight->SetDirection(Direction);
+    // }
 }
 
 void Canavar::Engine::Renderer::CreateGlobalNodes()
@@ -517,4 +565,14 @@ void Canavar::Engine::Renderer::AddEventReceiver(EventReceiver *pEventReceiver)
 void Canavar::Engine::Renderer::RemoveEventReceiver(EventReceiver *pEventReceiver)
 {
     mEventReceivers.removeAll(pEventReceiver);
+}
+
+void Canavar::Engine::Renderer::AddEventThief(EventThief *pEventThief)
+{
+    mEventThieves.append(pEventThief);
+}
+
+void Canavar::Engine::Renderer::RemoveEventThief(EventThief *pEventThief)
+{
+    mEventThieves.removeAll(pEventThief);
 }

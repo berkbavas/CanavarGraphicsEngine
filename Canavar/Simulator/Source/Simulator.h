@@ -10,7 +10,6 @@ namespace Canavar::Engine
     class NodeManager;
     class CameraManager;
     class OpenGLWidget;
-    class Controller;
     class Renderer;
     class DummyObject;
     class TexturedModel;
