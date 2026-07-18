@@ -184,6 +184,7 @@ void Canavar::Engine::Renderer::Render(float Ifps)
 
     // Re-enable depth testing for the transparent pass
     glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE); // Disable depth writing for transparent objects
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
