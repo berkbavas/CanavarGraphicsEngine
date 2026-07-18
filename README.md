@@ -6,29 +6,50 @@ The engine is designed to be modular and extensible, supporting a variety of mod
 
 ## Features
 
-- [x] Supports loading GLTF 3D model format (powered by [assimp](https://github.com/assimp/assimp))
+- [x] Supports loading GLTF/OBJ/PLY 3D model formats (powered by [assimp](https://github.com/assimp/assimp))
 - [x] Parent-child node hierarchy
-- [x] Procedural terrain generation
+- [x] Procedural terrain generation with tessellation
 - [x] Sky with atmospheric scattering
 - [x] Haze effects
 - [x] Point lights
 - [x] Directional lights
 - [ ] Spot lights
 - [x] Free camera and persecutor camera modes
-- [x] Transformation of individual meshes within models
-- [x] Lightning Strike Generator
-- [x] Nozzle Effect
-- [x] Shadow Mapping
+- [ ] Transformation of individual meshes within models
+- [x] Primitive models (Circle, Disk, Line, Plane, Sphere)
+- [x] Gizmo for interactive object manipulation
+- [x] Scene import/export (JSON)
+- [x] Opaque and transparent rendering passes
+- [x] Editor with ImGui integration
+- [x] Physically Based Rendering (PBR) and Phong shading
+- [x] Post-processing effects pipeline:
+  - [x] ACES tone mapping
+  - [x] Depth of Field
+  - [x] FXAA anti-aliasing
+  - [x] Color Grading
+  - [x] Sharpen
+  - [x] Chromatic Aberration
+  - [x] Lens Distortion
+  - [x] Cinematic effect
+  - [ ] Bloom
+  - [ ] Motion Blur
+  - [ ] Screen Space Ambient Occlusion (SSAO)
+  - [ ] Screen Space Reflections (SSR)
 - [ ] Point Shadows
+- [ ] Directional Shadows
+- [ ] Spot Shadows
+- [ ] Deferred rendering
+- [ ] Forward+ rendering
+- [ ] Ray tracing
+- [ ] Global illumination
+- [ ] Volumetric lighting
+- [ ] Terrain LOD (Level of Detail)
+- [ ] Terrain texturing with splat maps
 - [ ] Particle generator
 - [ ] Volumetric clouds
 - [ ] Water rendering
-- [x] Vertex Painting
-- [x] Editor with ImGui integration
-- [x] Physically Based Rendering (PBR)
 - [ ] WGS84 ellipsoid support
 - [ ] Terrain generation using DTED and satellite images
-- [ ] Post processing effects
 
 ## Demo Videos
 
@@ -69,7 +90,7 @@ The engine is designed to be modular and extensible, supporting a variety of mod
    ```
 
 9. Open the generated solution file (`Canavar.sln`) with **Visual Studio 2022**.
-10. Edit `MODELS_FOLDER` variable in `Source/Canavar/Engine/Core/Constants.h` to point to your models directory. Currently, I support only the GLTF format.
+10. Edit `MODELS_FOLDER` variable in `Source/Canavar/Engine/Core/Constants.h` to point to your models directory. Supported formats: GLTF, GLB, OBJ, PLY.
 11. Set **Editor** as the startup project.
 12. Build and run the project using the **Release** configuration.
 
@@ -80,10 +101,17 @@ It is written in C++ and leverages **Qt 6** for windowing, math, and event handl
 
 ### Directory Structure
 
-- `Source/Canavar/Engine/Core/` — Core engine classes (window, rendering context, controller)
-- `Source/Canavar/Engine/Manager/` — Managers for rendering, nodes, shaders, lights, etc.
-- `Source/Canavar/Engine/Node/` — Scene nodes (objects, lights, cameras, effects, terrain, etc.)
-- `Source/Canavar/Engine/Util/` — Utilities (logging, math, ImGui integration, etc.)
+- `Source/Canavar/Engine/Camera/` — Camera types (FreeCamera, PersecutorCamera, PerspectiveCamera)
+- `Source/Canavar/Engine/Core/` — Core engine classes (OpenGLWidget, Shader, Framebuffer, RenderingContext, etc.)
+- `Source/Canavar/Engine/GlobalNode/` — Scene-wide singleton nodes (Sky, Haze, Terrain)
+- `Source/Canavar/Engine/Light/` — Light types (DirectionalLight, PointLight)
+- `Source/Canavar/Engine/Manager/` — Managers for rendering, nodes, lights, cameras, etc. (Renderer, NodeManager, LightManager, CameraManager, TexturedModelRenderer, PrimitiveModelRenderer)
+- `Source/Canavar/Engine/Model/` — Model types and materials (TexturedModel, PrimitiveModel, PbrMaterial, PhongMaterial)
+- `Source/Canavar/Engine/Node/` — Base `Node` class with hierarchy support
+- `Source/Canavar/Engine/Object/` — `Object` base class (scene objects with transform)
+- `Source/Canavar/Engine/PostProcessEffect/` — Post-processing effects (ACES, DoF, FXAA, Color Grading, Sharpen, etc.)
+- `Source/Canavar/Engine/Scene/` — Scene graph internals (Scene, SceneNode, Mesh, TextureMaterial)
+- `Source/Canavar/Engine/Util/` — Utilities (Logger, AssimpModelImporter, ImGuiWidget, Gizmo, etc.)
 - `Resources/Shaders/` — GLSL shaders used by the engine
 
 ### Dependencies
@@ -98,37 +126,41 @@ It is written in C++ and leverages **Qt 6** for windowing, math, and event handl
 
 To use the Engine module in your application:
 
-1. Create a `RenderingContext` (e.g., `Window` or `Widget`).
-2. Instantiate a `Controller` with the rendering context.
-3. Use the managers (NodeManager, RenderingManager, etc.) to set up your scene.
-4. Implement your own nodes or extend existing ones for custom behavior.
+1. Create an `OpenGLWidget` as the rendering surface.
+2. Instantiate a `Renderer` with the widget.
+3. Optionally create an `ImGuiWidget` for the built-in editor UI.
+4. Use the managers (`NodeManager`, `CameraManager`, etc.) to set up your scene.
+5. Implement your own logic by connecting to `Renderer` signals (`Initialized`, `Updated`, `PostRender`).
 
 Example:
 
 ```cpp
-#include <Canavar/Engine/Core/Window.h>
-#include <Canavar/Engine/Core/Controller.h>
-#include <Canavar/Engine/Manager/NodeManager.h>
+#include <Canavar/Engine/Core/OpenGLWidget.h>
+#include <Canavar/Engine/Manager/Renderer.h>
+#include <Canavar/Engine/Util/ImGuiWidget.h>
 
 void MyClass::Run()
 {
-   // Create a rendering context
-   mWindow = new Canavar::Engine::Window(this);
+    // Create the OpenGL rendering surface
+    mOpenGLWidget = new Canavar::Engine::OpenGLWidget(nullptr);
 
-   // Initialize the controller with rendering context
-   mController = new Canavar::Engine::Controller(mWindow, true, this); 
+    // Create the renderer (owns NodeManager, CameraManager, LightManager, etc.)
+    mRenderer = std::make_unique<Canavar::Engine::Renderer>(mOpenGLWidget);
 
-   // Setup connections
-   connect(mController, &Canavar::Engine::Controller::Initialized, this, &MyClass::Initialize);
-   connect(mController, &Canavar::Engine::Controller::Updated, this, &MyClass::Update);
-   connect(mController, &Canavar::Engine::Controller::PostRendered, this, &MyClass::PostRender);
+    // Optionally attach the built-in ImGui editor
+    mImGuiWidget = std::make_unique<Canavar::Engine::ImGuiWidget>(mRenderer.get());
 
-   mWindow->showMaximized();
+    // Setup connections
+    connect(mRenderer.get(), &Canavar::Engine::Renderer::Initialized, this, &MyClass::Initialize);
+    connect(mRenderer.get(), &Canavar::Engine::Renderer::Updated,     this, &MyClass::Update);
+    connect(mRenderer.get(), &Canavar::Engine::Renderer::PostRender,  this, &MyClass::PostRender);
+
+    mOpenGLWidget->showMaximized();
 }
 
 void MyClass::Initialize()
 {
-    mWindow->GetNodeManager()->ImportNodes("/path/to/your/scene.json");
+    mRenderer->GetNodeManager()->ImportNodes("/path/to/your/scene.json");
 }
 
 void MyClass::Update(float ifps)
@@ -138,7 +170,7 @@ void MyClass::Update(float ifps)
 
 void MyClass::PostRender(float ifps)
 {
-    // Post-render code here
+    // Post-render code here (e.g. custom ImGui windows)
 }
 ```
 

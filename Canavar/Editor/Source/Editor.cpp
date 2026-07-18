@@ -3,6 +3,7 @@
 Canavar::Editor::Editor::~Editor()
 {
     mOpenGLWidget->MakeCurrent(); // Ensure the OpenGL context is current before destroying the renderer
+    mImGuiWidget = nullptr;
     mRenderer = nullptr;
 }
 

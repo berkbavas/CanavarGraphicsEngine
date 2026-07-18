@@ -38,12 +38,14 @@ The Simulator module is built as part of the main Canavar Graphics Engine projec
 #include <Canavar/Simulator/Aircraft.h>
 
 // Create and initialize an aircraft
-Canavar::Simulator::Aircraft* aircraft = new Canavar::Simulator::Aircraft();
-aircraft->Initialize();
+Canavar::Simulator::Aircraft* pAircraft = new Canavar::Simulator::Aircraft();
+pAircraft->Initialize();
 
-// In your main loop
-aircraft->Tick(deltaTime);
-aircraft->DrawGui();
+// In your physics loop or update function
+pAircraft->Tick(DeltaTime);
+
+// Render GUI (if using ImGui)
+pAircraft->DrawGui();
 ```
 
 ## Acknowledgements
