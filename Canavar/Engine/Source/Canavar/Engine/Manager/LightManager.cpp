@@ -121,7 +121,7 @@ void Canavar::Engine::LightManager::SetPointLightsUniforms(Shader *pShader, cons
         const auto *pPointLight = PointLightsAround[i];
 
         pShader->SetUniform(QString("uPointLights[%1].Color").arg(i), pPointLight->GetColor());
-        pShader->SetUniform(QString("uPointLights[%1].Position").arg(i), pPointLight->GetPosition());
+        pShader->SetUniform(QString("uPointLights[%1].Position").arg(i), pPointLight->GetWorldPosition());
         pShader->SetUniform(QString("uPointLights[%1].Ambient").arg(i), pPointLight->GetAmbient());
         pShader->SetUniform(QString("uPointLights[%1].Diffuse").arg(i), pPointLight->GetDiffuse());
         pShader->SetUniform(QString("uPointLights[%1].Specular").arg(i), pPointLight->GetSpecular());
