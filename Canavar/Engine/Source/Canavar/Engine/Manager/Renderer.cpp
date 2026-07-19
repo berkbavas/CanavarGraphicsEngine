@@ -102,7 +102,7 @@ void Canavar::Engine::Renderer::Initialize()
 
     mSharpenEffect = std::make_unique<SharpenEffect>();
     mPostProcessEffects[PostProcessEffectType::Sharpen] = mSharpenEffect.get();
-    mPostProcessEffectEnabled[PostProcessEffectType::Sharpen] = false;
+    mPostProcessEffectEnabled[PostProcessEffectType::Sharpen] = true;
 
     mFxaaEffect = std::make_unique<FxaaEffect>();
     mPostProcessEffects[PostProcessEffectType::Fxaa] = mFxaaEffect.get();

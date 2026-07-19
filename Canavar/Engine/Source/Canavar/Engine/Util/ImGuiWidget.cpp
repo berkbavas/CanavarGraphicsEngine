@@ -635,7 +635,7 @@ void Canavar::Engine::ImGuiWidget::DrawDirectionalLightProperties(DirectionalLig
         }
     }
 
-    ImGui::DragFloat("Radiance##DrawDirectionalLightProperties", &pLight->GetRadiance_NonConst(), 0.1f, 0.0f, 100.0f);
+    ImGui::DragFloat("Radiance##DrawDirectionalLightProperties", &pLight->GetRadiance_NonConst(), 0.01f, 0.0f, 10.0f);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1006,16 +1006,33 @@ void Canavar::Engine::ImGuiWidget::DrawRendererProperties()
     if (ImGui::CollapsingHeader("Renderer##DrawRendererProperties"))
     {
         ImGui::Checkbox("Render Bounding Boxes##DrawRendererProperties", &mRenderer->GetBoundingBoxRenderer()->GetRenderBoundingBoxes_NonConst());
+        if (ImGui::Checkbox("Gizmo Enabled##DrawRendererProperties", &mGizmoEnabled))
+        {
+            mGizmoEnabled ? EnterGizmoIfApplicable() : ExitGizmoIfApplicable();
+        }
     }
+}
+
+void Canavar::Engine::ImGuiWidget::EnterGizmoIfApplicable()
+{
+    // If the selected node is a TexturedModel, enter the gizmo mode for it.
+    if (TexturedModel *pTexturedModel = dynamic_cast<TexturedModel *>(mSelectedNode))
+    {
+        if (mGizmoEnabled)
+        {
+            mRenderer->GetGizmo()->Enter(pTexturedModel);
+        }
+    }
+}
+
+void Canavar::Engine::ImGuiWidget::ExitGizmoIfApplicable()
+{
+    mRenderer->GetGizmo()->Exit();
 }
 
 void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
 {
-    Gizmo *pGizmo = mRenderer->GetGizmo();
-
-    // If the selected node is changing, exit the gizmo mode for the previous node.
-    // If gizmo is not active for the previous node, this call is harmless.
-    pGizmo->Exit();
+    ExitGizmoIfApplicable();
 
     // Update the selected node and copy its name into the buffer for display in the UI.
     mSelectedNode = pNode;
@@ -1023,12 +1040,7 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
     if (mSelectedNode)
     {
         UpdateNameBuffer();
-
-        // If the selected node is a TexturedModel, enter the gizmo mode for it.
-        if (TexturedModel *pTexturedModel = dynamic_cast<TexturedModel *>(mSelectedNode))
-        {
-            pGizmo->Enter(pTexturedModel);
-        }
+        EnterGizmoIfApplicable();
     }
 }
 

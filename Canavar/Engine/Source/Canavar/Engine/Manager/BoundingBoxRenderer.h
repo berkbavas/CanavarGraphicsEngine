@@ -33,7 +33,7 @@ namespace Canavar::Engine
         GLuint mVAO{ 0 };
         GLuint mVBO{ 0 };
 
-        DEFINE_MEMBER(bool, RenderBoundingBoxes, true);
+        DEFINE_MEMBER(bool, RenderBoundingBoxes, false); // Flag to enable or disable bounding box rendering
     };
 
     using BoundingBoxRendererPtr = std::unique_ptr<BoundingBoxRenderer>;

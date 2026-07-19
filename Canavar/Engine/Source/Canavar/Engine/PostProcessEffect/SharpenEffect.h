@@ -19,7 +19,7 @@ namespace Canavar::Engine
         QuadPtr mQuad{ nullptr };
         ShaderPtr mShader{ nullptr };
 
-        DEFINE_MEMBER(float, Strength, 0.5f);
+        DEFINE_MEMBER(float, Strength, 1.0f);
     };
 
     using SharpenEffectPtr = std::unique_ptr<SharpenEffect>;

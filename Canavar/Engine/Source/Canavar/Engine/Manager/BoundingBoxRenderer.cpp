@@ -60,7 +60,9 @@ void Canavar::Engine::BoundingBoxRenderer::Render(RenderPass RenderPass, Perspec
 void Canavar::Engine::BoundingBoxRenderer::RenderBoundingBoxes(PerspectiveCamera *pCamera)
 {
     if (!mRenderBoundingBoxes)
+    {
         return;
+    }
 
     const auto &Objects = mRenderer->GetNodeManager()->GetObjects();
 
@@ -141,6 +143,11 @@ bool Canavar::Engine::BoundingBoxRenderer::ShouldRenderBoundingBox(const Object 
     }
 
     if (dynamic_cast<const Canavar::Engine::PrimitiveModel *>(pObject))
+    {
+        return false;
+    }
+
+    if (dynamic_cast<const Canavar::Engine::DirectionalLight *>(pObject))
     {
         return false;
     }

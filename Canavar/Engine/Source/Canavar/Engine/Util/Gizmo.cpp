@@ -453,7 +453,7 @@ void Canavar::Engine::Gizmo::UpdateGizmoSphereRadius()
     if (mTargetObject)
     {
         // Update the gizmo sphere radius based on the target object's bounding sphere radius
-        mSphereRadius = std::max(1.0f, mTargetObject->GetBoundingSphereRadius());
+        mSphereRadius = std::max(1.0f, std::min(10.0f, mTargetObject->GetBoundingSphereRadius()));
     }
     else
     {

@@ -69,6 +69,8 @@ namespace Canavar::Engine
         void DrawTerrainProperties();
         void DrawPostProcessPanel();
         void DrawRendererProperties();
+        void EnterGizmoIfApplicable();
+        void ExitGizmoIfApplicable();
 
         // --- Helpers ---
         void ValidateSelectedNode();
@@ -87,6 +89,8 @@ namespace Canavar::Engine
 
         // Text input buffers
         char mNodeNameBuffer[128]{};
+
+        bool mGizmoEnabled{ false };
     };
 
     using ImGuiWidgetPtr = std::unique_ptr<ImGuiWidget>;
