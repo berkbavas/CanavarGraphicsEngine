@@ -94,6 +94,7 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
     DrawHazeProperties();
     DrawTerrainProperties();
     DrawPostProcessPanel();
+    DrawRendererProperties();
     DrawStats(Ifps);
     ImGui::End();
 
@@ -997,6 +998,14 @@ void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
             ImGui::SliderFloat("Grain Strength##DrawPostProcessPanel_Cin", &pCin->GetGrainStrength_NonConst(), 0.0f, 0.5f);
             ImGui::Unindent();
         }
+    }
+}
+
+void Canavar::Engine::ImGuiWidget::DrawRendererProperties()
+{
+    if (ImGui::CollapsingHeader("Renderer##DrawRendererProperties"))
+    {
+        ImGui::Checkbox("Render Bounding Boxes##DrawRendererProperties", &mRenderer->GetBoundingBoxRenderer()->GetRenderBoundingBoxes_NonConst());
     }
 }
 

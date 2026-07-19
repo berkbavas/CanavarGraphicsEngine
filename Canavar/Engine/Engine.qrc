@@ -23,6 +23,8 @@
         <file>Resources/Shaders/CircleLine.vert</file>
         <file>Resources/Shaders/CircleLine.geom</file>
         <file>Resources/Shaders/CircleLine.frag</file>
+        <file>Resources/Shaders/BoundingBox.vert</file>
+        <file>Resources/Shaders/BoundingBox.frag</file>
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
     </qresource>
 </RCC>

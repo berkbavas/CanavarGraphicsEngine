@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Object/AABB.h"
 #include "Canavar/Engine/Scene/TextureMaterial.h"
 #include "Canavar/Engine/Scene/TriangleFace.h"
 #include "Canavar/Engine/Scene/Vertex.h"
@@ -19,7 +20,7 @@ namespace Canavar::Engine
     class Mesh final : protected QOpenGLExtraFunctions
     {
       public:
-        explicit Mesh(const QString &MeshName, int MeshId, const QVector<Vertex> &Vertices, const QVector<TriangleFace> &TriangleFaces, TextureMaterialPtr pTextureMaterial);
+        explicit Mesh(const QString &MeshName, int MeshId, const QVector<Vertex> &Vertices, const QVector<TriangleFace> &TriangleFaces, TextureMaterialPtr pTextureMaterial, const AABB &BoundingBox);
         Mesh(const Mesh &) = delete;
         Mesh &operator=(const Mesh &) = delete;
         ~Mesh();
@@ -31,6 +32,7 @@ namespace Canavar::Engine
         unsigned int GetNumIndices() const;
         TextureMaterialPtr GetTextureMaterial() const;
         int GetMeshId() const;
+        const AABB &GetBoundingBox() const;
 
       private:
         bool ShouldRenderMesh(RenderPass RenderPass, float MeshOpacity) const;
@@ -45,6 +47,7 @@ namespace Canavar::Engine
         unsigned int mNumIndices{ 0 };
         TextureMaterialWeakPtr mTextureMaterial;
         int mMeshId{ -1 }; // Unique identifier for the mesh, used for selection and identification purposes
+        AABB mBoundingBox; // Axis-Aligned Bounding Box for the mesh
     };
 
     using MeshPtr = std::shared_ptr<Mesh>;

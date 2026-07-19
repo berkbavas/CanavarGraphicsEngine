@@ -53,7 +53,8 @@ Canavar::Engine::ScenePtr Canavar::Engine::AssimpModelImporter::Import(const QSt
                                                aiProcess_Triangulate |          //
                                                    aiProcess_GenSmoothNormals | //
                                                    aiProcess_FlipUVs |          //
-                                                   aiProcess_CalcTangentSpace);
+                                                   aiProcess_CalcTangentSpace | //
+                                                   aiProcess_GenBoundingBoxes);
 
     if (aiScene == nullptr)
     {
@@ -126,8 +127,9 @@ Canavar::Engine::MeshPtr Canavar::Engine::AssimpModelImporter::ProcessMesh(aiMes
     const auto& Vertices = ProcessVertices(aiMesh);
     const auto& TrianglesFaces = ProcessTriangleFaces(aiMesh);
     const auto MeshName = QString::fromUtf8(aiMesh->mName.C_Str());
+    const auto BoundingBox = CalculateMeshBoundingBox(aiMesh);
 
-    return std::make_shared<Canavar::Engine::Mesh>(MeshName, MeshId, Vertices, TrianglesFaces, pTextureMaterial);
+    return std::make_shared<Canavar::Engine::Mesh>(MeshName, MeshId, Vertices, TrianglesFaces, pTextureMaterial, BoundingBox);
 }
 
 QVector<Canavar::Engine::Vertex> Canavar::Engine::AssimpModelImporter::ProcessVertices(aiMesh* aiMesh)
@@ -309,4 +311,12 @@ float Canavar::Engine::AssimpModelImporter::CalculateMaterialOpacity(aiMaterial*
     }
 
     return Opacity;
+}
+
+Canavar::Engine::AABB Canavar::Engine::AssimpModelImporter::CalculateMeshBoundingBox(aiMesh* aiMesh)
+{
+    const auto Min = aiMesh->mAABB.mMin;
+    const auto Max = aiMesh->mAABB.mMax;
+
+    return AABB(QVector3D(Min.x, Min.y, Min.z), QVector3D(Max.x, Max.y, Max.z));
 }

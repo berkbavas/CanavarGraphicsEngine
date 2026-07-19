@@ -22,12 +22,12 @@ namespace Canavar::Engine
         void Render(RenderPass RenderPass, PerspectiveCamera* pActiveCamera) override;
         void RenderOverlay(RenderPass RenderPass, PerspectiveCamera* pActiveCamera) override;
         const QMap<QString, ScenePtr>& GetScenes() const;
+        Scene* GetSceneByName(const QString& SceneName) const;
 
       private:
         void SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera* pActiveCamera);
         void RenderModels(RenderPass RenderPass, PerspectiveCamera* pActiveCamera, bool OverlayPass);
         bool ShouldRender(TexturedModel* pTexturedModel, bool OverlayPass) const;
-        Scene* GetSceneByName(const QString& SceneName) const;
 
         Renderer* mRenderer{ nullptr };
         NodeManager* mNodeManager{ nullptr };

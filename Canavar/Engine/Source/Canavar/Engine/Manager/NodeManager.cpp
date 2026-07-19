@@ -75,6 +75,14 @@ void Canavar::Engine::NodeManager::AddLight(Light *pLight)
 
 void Canavar::Engine::NodeManager::AddTexturedModel(TexturedModel *pTexturedModel)
 {
+    // Set Scene's BoundingBox to include the new model's bounding box.
+
+    if (Scene *pScene = mRenderer->GetSceneByName(pTexturedModel->GetModelName()))
+    {
+        const auto& AABB = pScene->GetRootNode()->GetBoundingBox();
+        pTexturedModel->SetAABB(AABB);
+    }
+
     mTexturedModels.push_back(pTexturedModel);
     mObjects.push_back(pTexturedModel);
 }

@@ -23,6 +23,8 @@ namespace Canavar::Engine
         const QVector3D& GetScale() const;
         const QMatrix3x3& GetNormalMatrix() const;
 
+        float GetBoundingSphereRadius() const;
+
         // World-space accessors (walks up the parent chain).
         QMatrix4x4 GetWorldTransformation() const;
         QVector3D GetWorldPosition() const;

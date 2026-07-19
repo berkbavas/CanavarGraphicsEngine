@@ -20,12 +20,14 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mCameraManager = std::make_unique<CameraManager>();
     mTexturedModelRenderer = std::make_unique<TexturedModelRenderer>(this);
     mPrimitiveModelRenderer = std::make_unique<PrimitiveModelRenderer>(this);
+    mBoundingBoxRenderer = std::make_unique<BoundingBoxRenderer>(this);
 
     mManagers.append(mNodeManager.get());
     mManagers.append(mLightManager.get());
     mManagers.append(mCameraManager.get());
     mManagers.append(mTexturedModelRenderer.get());
     mManagers.append(mPrimitiveModelRenderer.get());
+    mManagers.append(mBoundingBoxRenderer.get());
 
     mGizmo = std::make_unique<Gizmo>(this);
 
@@ -247,6 +249,11 @@ void Canavar::Engine::Renderer::RenderToFramebuffer(Framebuffer *pFramebuffer, P
 const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::Renderer::GetScenes() const
 {
     return mTexturedModelRenderer->GetScenes();
+}
+
+Canavar::Engine::Scene* Canavar::Engine::Renderer::GetSceneByName(const QString &Name) const
+{
+    return mTexturedModelRenderer->GetSceneByName(Name);
 }
 
 void Canavar::Engine::Renderer::OnKeyPressed(QKeyEvent *pEvent)
@@ -472,6 +479,11 @@ Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() cons
 Canavar::Engine::CameraManager *Canavar::Engine::Renderer::GetCameraManager() const
 {
     return mCameraManager.get();
+}
+
+Canavar::Engine::BoundingBoxRenderer *Canavar::Engine::Renderer::GetBoundingBoxRenderer() const
+{
+    return mBoundingBoxRenderer.get();
 }
 
 Canavar::Engine::Sky *Canavar::Engine::Renderer::GetSky() const

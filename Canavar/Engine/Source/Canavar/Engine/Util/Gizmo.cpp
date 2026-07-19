@@ -14,13 +14,11 @@ Canavar::Engine::Gizmo::Gizmo(Renderer *pRenderer)
 
     // Yaw (Y-axis) gizmo components
     Circle *pYawCircle = mNodeManager->CreateNode<Circle>();
-    pYawCircle->SetScale(mSphereRadius);
     pYawCircle->SetVisible(false);
     pYawCircle->SetColor(QVector3D(1, 0, 0));
     pYawCircle->SetOverlay(true);
 
     Disk *pYawDisk = mNodeManager->CreateNode<Disk>();
-    pYawDisk->SetScale(mSphereRadius);
     pYawDisk->SetVisible(false);
     pYawDisk->SetColor(QVector3D(1, 0, 0));
     pYawDisk->SetOpacity(0.5f);
@@ -31,13 +29,11 @@ Canavar::Engine::Gizmo::Gizmo(Renderer *pRenderer)
 
     // Pitch (X-axis) gizmo components
     Circle *pPitchCircle = mNodeManager->CreateNode<Circle>();
-    pPitchCircle->SetScale(mSphereRadius);
     pPitchCircle->SetVisible(false);
     pPitchCircle->SetColor(QVector3D(0, 1, 0));
     pPitchCircle->SetOverlay(true);
 
     Disk *pPitchDisk = mNodeManager->CreateNode<Disk>();
-    pPitchDisk->SetScale(mSphereRadius);
     pPitchDisk->SetVisible(false);
     pPitchDisk->SetColor(QVector3D(0, 1, 0));
     pPitchDisk->SetOpacity(0.5f);
@@ -48,13 +44,11 @@ Canavar::Engine::Gizmo::Gizmo(Renderer *pRenderer)
 
     // Roll (Z-axis) gizmo components
     Circle *pRollCircle = mNodeManager->CreateNode<Circle>();
-    pRollCircle->SetScale(mSphereRadius);
     pRollCircle->SetVisible(false);
     pRollCircle->SetColor(QVector3D(0, 0, 1));
     pRollCircle->SetOverlay(true);
 
     Disk *pRollDisk = mNodeManager->CreateNode<Disk>();
-    pRollDisk->SetScale(mSphereRadius);
     pRollDisk->SetVisible(false);
     pRollDisk->SetColor(QVector3D(0, 0, 1));
     pRollDisk->SetOpacity(0.5f);
@@ -99,6 +93,7 @@ void Canavar::Engine::Gizmo::Enter(Object *pTargetObject)
     mIsActive = true;
     mActiveAxis = Axis::None;
 
+    UpdateGizmoSphereRadius();
     UpdateGizmoVisuals();
 }
 
@@ -241,12 +236,14 @@ void Canavar::Engine::Gizmo::UpdateGizmoVisualsTransformations()
     {
         pCircle->SetPosition(Position);
         pCircle->SetRotation(GetAxisCircleRotation(AxisType));
+        pCircle->SetScale(mSphereRadius);
     }
 
     for (const auto &[AxisType, pDisk] : mAxisDisks)
     {
         pDisk->SetPosition(Position);
         pDisk->SetRotation(GetAxisCircleRotation(AxisType));
+        pDisk->SetScale(mSphereRadius);
     }
 
     for (const auto &[AxisType, pLine] : mAxisLines)
@@ -448,5 +445,19 @@ QQuaternion Canavar::Engine::Gizmo::GetAxisCircleRotation(Axis Axis) const
     case Axis::None:
     default:
         return Rotation;
+    }
+}
+
+void Canavar::Engine::Gizmo::UpdateGizmoSphereRadius()
+{
+    if (mTargetObject)
+    {
+        // Update the gizmo sphere radius based on the target object's bounding sphere radius
+        mSphereRadius = std::max(1.0f, mTargetObject->GetBoundingSphereRadius());
+    }
+    else
+    {
+        // Default radius if no target object is set
+        mSphereRadius = 1.0f;
     }
 }

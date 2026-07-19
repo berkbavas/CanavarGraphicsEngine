@@ -68,6 +68,7 @@ namespace Canavar::Engine
         void DrawHazeProperties();
         void DrawTerrainProperties();
         void DrawPostProcessPanel();
+        void DrawRendererProperties();
 
         // --- Helpers ---
         void ValidateSelectedNode();

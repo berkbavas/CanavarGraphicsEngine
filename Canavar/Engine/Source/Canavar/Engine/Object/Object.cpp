@@ -95,6 +95,24 @@ const QMatrix3x3& Canavar::Engine::Object::GetNormalMatrix() const
     return mNormalMatrix;
 }
 
+float Canavar::Engine::Object::GetBoundingSphereRadius() const
+{
+    // Calculate the bounding sphere radius based on the AABB and scale.
+    const AABB& LocalAABB = GetAABB();
+    const QVector3D& Scale = GetScale();
+
+    // Calculate the half extents of the AABB in local space
+    QVector3D HalfExtents = (LocalAABB.GetMax() - LocalAABB.GetMin()) * 0.5f;
+
+    // Scale the half extents by the object's scale
+    HalfExtents.setX(HalfExtents.x() * Scale.x());
+    HalfExtents.setY(HalfExtents.y() * Scale.y());
+    HalfExtents.setZ(HalfExtents.z() * Scale.z());
+
+    // The bounding sphere radius is the length of the scaled half extents vector
+    return HalfExtents.length();
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // World-space accessors
 // ─────────────────────────────────────────────────────────────────────────────

@@ -29,5 +29,6 @@ namespace Canavar::Engine
         static TextureMaterialPtr ProcessMaterial(const aiScene* pScene, aiMaterial* aiMaterial, const QString& Directory);
         static bool ProcessTexture(const aiScene* pScene, TextureMaterialPtr pTextureMaterial, aiMaterial* aiMaterial, aiTextureType aiType, TextureType TextureType, const QString& Directory, int ComponentCount);
         static float CalculateMaterialOpacity(aiMaterial* aiMaterial);
+        static AABB CalculateMeshBoundingBox(aiMesh* aiMesh);
     };
 }

@@ -4,12 +4,13 @@
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
 #include "Canavar/Engine/Util/Logger.h"
 
-Canavar::Engine::Mesh::Mesh(const QString &MeshName, int MeshId, const QVector<Vertex> &Vertices, const QVector<TriangleFace> &TriangleFaces, TextureMaterialPtr pTextureMaterial)
+Canavar::Engine::Mesh::Mesh(const QString &MeshName, int MeshId, const QVector<Vertex> &Vertices, const QVector<TriangleFace> &TriangleFaces, TextureMaterialPtr pTextureMaterial, const AABB &BoundingBox)
     : mMeshName(MeshName)
     , mMeshNameStdString(mMeshName.toStdString())
     , mTextureMaterial(pTextureMaterial)
     , mNumIndices(static_cast<unsigned int>(TriangleFaces.size() * 3))
     , mMeshId(MeshId)
+    , mBoundingBox(BoundingBox)
 {
     LOG_DEBUG("Mesh::Mesh: Initializing '{}'...", mMeshName.toStdString());
 
@@ -143,6 +144,11 @@ Canavar::Engine::TextureMaterialPtr Canavar::Engine::Mesh::GetTextureMaterial() 
 int Canavar::Engine::Mesh::GetMeshId() const
 {
     return mMeshId;
+}
+
+const Canavar::Engine::AABB &Canavar::Engine::Mesh::GetBoundingBox() const
+{
+    return mBoundingBox;
 }
 
 bool Canavar::Engine::Mesh::ShouldRenderMesh(RenderPass RenderPass, float MeshOpacity) const

@@ -10,6 +10,7 @@
 #include "Canavar/Engine/GlobalNode/Haze/Haze.h"
 #include "Canavar/Engine/GlobalNode/Sky/Sky.h"
 #include "Canavar/Engine/GlobalNode/Terrain/Terrain.h"
+#include "Canavar/Engine/Manager/BoundingBoxRenderer.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
@@ -46,11 +47,15 @@ namespace Canavar::Engine
         // Accessor for scenes managed by the TexturedModelRenderer
         const QMap<QString, ScenePtr>& GetScenes() const;
 
+        // Accessor to retrieve a scene by its name. Returns nullptr if the scene is not found.
+        Scene* GetSceneByName(const QString& Name) const;
+
         // Accessors for various managers and components
         OpenGLWidget* GetOpenGLWidget() const;
         NodeManager* GetNodeManager() const;
         LightManager* GetLightManager() const;
         CameraManager* GetCameraManager() const;
+        BoundingBoxRenderer* GetBoundingBoxRenderer() const;
 
         // Accessors for global nodes
         Sky* GetSky() const;
@@ -114,6 +119,7 @@ namespace Canavar::Engine
         CameraManagerPtr mCameraManager{ nullptr };
         TexturedModelRendererPtr mTexturedModelRenderer{ nullptr };
         PrimitiveModelRendererPtr mPrimitiveModelRenderer{ nullptr };
+        BoundingBoxRendererPtr mBoundingBoxRenderer{ nullptr };
 
         ShaderPtr mScreenShader{ nullptr };
         QuadPtr mQuad{ nullptr };
