@@ -40,13 +40,17 @@ namespace Canavar::Engine
         explicit Renderer(OpenGLWidget* pOpenGLWidget);
         virtual ~Renderer() = default;
 
+        // Main rendering function that handles the entire rendering process for a frame.
+        void RenderToFramebuffer(Framebuffer* pFramebuffer, PerspectiveCamera* pCamera);
+
+        // Accessor for scenes managed by the TexturedModelRenderer
+        const QMap<QString, ScenePtr>& GetScenes() const;
+
         // Accessors for various managers and components
         OpenGLWidget* GetOpenGLWidget() const;
         NodeManager* GetNodeManager() const;
         LightManager* GetLightManager() const;
         CameraManager* GetCameraManager() const;
-        TexturedModelRenderer* GetTexturedModelRenderer() const;
-        PrimitiveModelRenderer* GetPrimitiveModelRenderer() const;
 
         // Accessors for global nodes
         Sky* GetSky() const;

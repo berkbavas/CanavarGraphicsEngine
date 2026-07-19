@@ -23,14 +23,14 @@ void Canavar::Engine::TexturedModelRenderer::Initialize()
     mTexturedModelShader->Initialize();
 }
 
-void Canavar::Engine::TexturedModelRenderer::Render(RenderPass RenderPass)
+void Canavar::Engine::TexturedModelRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
-    RenderModels(RenderPass, mRenderer->GetActiveCamera(), false);
+    RenderModels(RenderPass, pActiveCamera, false);
 }
 
-void Canavar::Engine::TexturedModelRenderer::RenderOverlay(RenderPass RenderPass)
+void Canavar::Engine::TexturedModelRenderer::RenderOverlay(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
-    RenderModels(RenderPass, mRenderer->GetActiveCamera(), true);
+    RenderModels(RenderPass, pActiveCamera, true);
 }
 
 const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::TexturedModelRenderer::GetScenes() const

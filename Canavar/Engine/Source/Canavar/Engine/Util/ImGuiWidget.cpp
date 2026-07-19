@@ -161,7 +161,7 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
         // offered, because the renderer aborts on unknown model names.
         if (ImGui::BeginMenu("Model##DrawMenuBar"))
         {
-            const auto &Scenes = mRenderer->GetTexturedModelRenderer()->GetScenes();
+            const auto &Scenes = mRenderer->GetScenes();
 
             if (Scenes.isEmpty())
             {

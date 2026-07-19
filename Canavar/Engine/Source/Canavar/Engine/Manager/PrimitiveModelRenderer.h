@@ -22,8 +22,8 @@ namespace Canavar::Engine
         virtual ~PrimitiveModelRenderer() = default;
 
         void Initialize() override;
-        void Render(RenderPass RenderPass) override;
-        void RenderOverlay(RenderPass RenderPass) override;
+        void Render(RenderPass RenderPass, PerspectiveCamera *pCamera) override;
+        void RenderOverlay(RenderPass RenderPass, PerspectiveCamera *pCamera) override;
 
       private:
         void RenderPrimitiveModels(RenderPass RenderPass, bool OverlayPass, PerspectiveCamera *pCamera);

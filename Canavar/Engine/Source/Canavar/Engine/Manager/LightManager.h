@@ -20,6 +20,7 @@ namespace Canavar::Engine
         QVector<PointLight *> GetPointLightsAround(QVector3D TargetPosition, float Radius) const;
         const QList<PointLight *> &GetPointLights() const;
         const QList<DirectionalLight *> &GetDirectionalLights() const;
+        QList<DirectionalLight *> GetEnabledDirectionalLights() const;
         void AddLight(Light *pLight);
         void RemoveLight(Light *pLight);
 

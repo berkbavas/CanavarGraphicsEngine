@@ -45,18 +45,14 @@ void Canavar::Engine::PrimitiveModelRenderer::Initialize()
     mShaders[PrimitiveType::Sphere] = mPrimitiveShader.get();
 }
 
-void Canavar::Engine::PrimitiveModelRenderer::Render(RenderPass RenderPass)
+void Canavar::Engine::PrimitiveModelRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pCamera)
 {
-    PerspectiveCamera *pCamera = mRenderer->GetActiveCamera();
-
     SetCommonUniforms(pCamera);
     RenderPrimitiveModels(RenderPass, false, pCamera);
 }
 
-void Canavar::Engine::PrimitiveModelRenderer::RenderOverlay(RenderPass RenderPass)
+void Canavar::Engine::PrimitiveModelRenderer::RenderOverlay(RenderPass RenderPass, PerspectiveCamera *pCamera)
 {
-    PerspectiveCamera *pCamera = mRenderer->GetActiveCamera();
-
     SetCommonUniforms(pCamera);
     RenderPrimitiveModels(RenderPass, true, pCamera);
 }

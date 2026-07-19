@@ -11,7 +11,13 @@ QVector<Canavar::Engine::PointLight *> Canavar::Engine::LightManager::GetPointLi
     // Filter point lights based on distance to the target position
     for (const auto &pLight : mPointLights)
     {
-        float Distance = pLight->GetPosition().distanceToPoint(TargetPosition);
+        // Skip if disabled
+        if (!pLight->GetEnabled())
+        {
+            continue;
+        }
+
+        const auto Distance = pLight->GetPosition().distanceToPoint(TargetPosition);
 
         if (Distance <= Radius)
         {
@@ -37,6 +43,21 @@ const QList<Canavar::Engine::PointLight *> &Canavar::Engine::LightManager::GetPo
 const QList<Canavar::Engine::DirectionalLight *> &Canavar::Engine::LightManager::GetDirectionalLights() const
 {
     return mDirectionalLights;
+}
+
+QList<Canavar::Engine::DirectionalLight *> Canavar::Engine::LightManager::GetEnabledDirectionalLights() const
+{
+    QList<DirectionalLight *> EnabledDirectionalLights;
+
+    for (auto *pDirectionalLight : mDirectionalLights)
+    {
+        if (pDirectionalLight->GetEnabled())
+        {
+            EnabledDirectionalLights.push_back(pDirectionalLight);
+        }
+    }
+
+    return EnabledDirectionalLights;
 }
 
 void Canavar::Engine::LightManager::AddLight(Light *pLight)
@@ -65,14 +86,16 @@ void Canavar::Engine::LightManager::RemoveLight(Light *pLight)
 
 void Canavar::Engine::LightManager::SetDirectionalLightsUniforms(Shader *pShader) const
 {
-    const auto NumDirectionalLights = std::min(static_cast<int>(mDirectionalLights.size()), MAX_DIRECTIONAL_LIGHTS);
+    const auto EnabledDirectionalLights = GetEnabledDirectionalLights();
+
+    const auto NumDirectionalLights = std::min(static_cast<int>(EnabledDirectionalLights.size()), MAX_DIRECTIONAL_LIGHTS);
 
     pShader->Bind();
     pShader->SetUniform("uNumDirectionalLights", NumDirectionalLights);
 
     for (int i = 0; i < NumDirectionalLights; ++i)
     {
-        const auto *pDirectionalLight = mDirectionalLights[i];
+        const auto *pDirectionalLight = EnabledDirectionalLights[i];
 
         pShader->SetUniform(QString("uDirectionalLights[%1].Color").arg(i), pDirectionalLight->GetColor());
         pShader->SetUniform(QString("uDirectionalLights[%1].Direction").arg(i), pDirectionalLight->GetDirection().normalized());

@@ -118,11 +118,13 @@ void Canavar::Engine::Renderer::Initialize()
     mPostProcessEffects[PostProcessEffectType::Cinematic] = mCinematicEffect.get();
     mPostProcessEffectEnabled[PostProcessEffectType::Cinematic] = true;
 
-    CreatePersecutorCameraIfAbsent();
     CreateDirectionalLights();
     CreateGlobalNodes();
 
     emit Initialized();
+
+    CreatePersecutorCameraIfAbsent();
+    CreateFreeCameraIfAbsent();
 }
 
 void Canavar::Engine::Renderer::Resize(int Width, int Height)
@@ -149,62 +151,8 @@ void Canavar::Engine::Renderer::Render(float Ifps)
 
     emit Updated(Ifps);
 
-    // Setup OpenGL state for rendering
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
-    glDepthMask(GL_TRUE);
-
-    // Bind the multisample framebuffer for rendering
-    mFramebuffers[Multisample]->Bind();
-
-    // Clear the framebuffer with the specified clear color and depth/stencil buffers
-    glViewport(0, 0, mFramebuffers[Multisample]->GetWidth(), mFramebuffers[Multisample]->GetHeight());
-    glClearColor(mClearColor.x(), mClearColor.y(), mClearColor.z(), 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    // Render the sky as it is the background of the scene. The sky should be rendered first to ensure it appears behind all other objects.
-    mSky->Render(mCameraManager->GetActiveCamera(), mSun);
-
-    // Render the terrain
-    mTerrain->Render();
-
-    for (Manager *pManager : mManagers)
-    {
-        pManager->Render(RenderPass::Opaque);
-    }
-
-    // Disable depth testing for overlay rendering in the opaque pass
-    glDisable(GL_DEPTH_TEST);
-
-    // Render overlays for the opaque pass
-    for (Manager *pManager : mManagers)
-    {
-        pManager->RenderOverlay(RenderPass::Opaque);
-    }
-
-    // Re-enable depth testing for the transparent pass
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE); // Disable depth writing for transparent objects
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    // Render the transparent pass for all managers
-    for (Manager *pManager : mManagers)
-    {
-        pManager->Render(RenderPass::Transparent);
-    }
-
-    // Disable depth testing for overlay rendering in the transparent pass
-    glDisable(GL_DEPTH_TEST);
-
-    // Render overlays for the transparent pass
-    for (Manager *pManager : mManagers)
-    {
-        pManager->RenderOverlay(RenderPass::Transparent);
-    }
-
-    // Unbind the multisample framebuffer to prepare for blitting to the singlesample framebuffer
-    mFramebuffers[Multisample]->Unbind();
+    // Render the scene to the multisample framebuffer using the active camera
+    RenderToFramebuffer(mFramebuffers[Multisample].get(), mCameraManager->GetActiveCamera());
 
     // Blit multisample framebuffer to singlesample framebuffer
     mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT0);
@@ -235,6 +183,70 @@ void Canavar::Engine::Renderer::Render(float Ifps)
 
     // ImGui rendering should be done after the main render pass to ensure it appears on top of everything else.
     emit PostRender(Ifps);
+}
+
+void Canavar::Engine::Renderer::RenderToFramebuffer(Framebuffer *pFramebuffer, PerspectiveCamera *pCamera)
+{
+    // Setup OpenGL state for rendering
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glDepthMask(GL_TRUE);
+
+    pFramebuffer->Bind();
+
+    // Clear the framebuffer with the specified clear color and depth/stencil buffers
+    glViewport(0, 0, pFramebuffer->GetWidth(), pFramebuffer->GetHeight());
+    glClearColor(mClearColor.x(), mClearColor.y(), mClearColor.z(), 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    // Render the sky as it is the background of the scene. The sky should be rendered first to ensure it appears behind all other objects.
+    mSky->Render(pCamera, mSun);
+
+    // Render the terrain
+    mTerrain->Render();
+
+    for (Manager *pManager : mManagers)
+    {
+        pManager->Render(RenderPass::Opaque, pCamera);
+    }
+
+    // Disable depth testing for overlay rendering in the opaque pass
+    glDisable(GL_DEPTH_TEST);
+
+    // Render overlays for the opaque pass
+    for (Manager *pManager : mManagers)
+    {
+        pManager->RenderOverlay(RenderPass::Opaque, pCamera);
+    }
+
+    // Re-enable depth testing for the transparent pass
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE); // Disable depth writing for transparent objects
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Render the transparent pass for all managers
+    for (Manager *pManager : mManagers)
+    {
+        pManager->Render(RenderPass::Transparent, pCamera);
+    }
+
+    // Disable depth testing for overlay rendering in the transparent pass
+    glDisable(GL_DEPTH_TEST);
+
+    // Render overlays for the transparent pass
+    for (Manager *pManager : mManagers)
+    {
+        pManager->RenderOverlay(RenderPass::Transparent, pCamera);
+    }
+
+    // Unbind the multisample framebuffer to prepare for blitting to the singlesample framebuffer
+    pFramebuffer->Unbind();
+}
+
+const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::Renderer::GetScenes() const
+{
+    return mTexturedModelRenderer->GetScenes();
 }
 
 void Canavar::Engine::Renderer::OnKeyPressed(QKeyEvent *pEvent)
@@ -373,7 +385,7 @@ void Canavar::Engine::Renderer::ResizeFramebuffers(int Width, int Height)
 
 void Canavar::Engine::Renderer::CreateFreeCameraIfAbsent()
 {
-    if (mCameraManager->GetActiveCamera() == nullptr)
+    if (mNodeManager->FindNodeByType<FreeCamera>() == nullptr)
     {
         FreeCamera *pCamera = mNodeManager->CreateNode<FreeCamera>();
         mCameraManager->SetActiveCamera(pCamera);
@@ -382,7 +394,7 @@ void Canavar::Engine::Renderer::CreateFreeCameraIfAbsent()
 
 void Canavar::Engine::Renderer::CreatePersecutorCameraIfAbsent()
 {
-    if (mCameraManager->GetActiveCamera() == nullptr)
+    if (mNodeManager->FindNodeByType<PersecutorCamera>() == nullptr)
     {
         PersecutorCamera *pCamera = mNodeManager->CreateNode<PersecutorCamera>();
         mCameraManager->SetActiveCamera(pCamera);
@@ -460,16 +472,6 @@ Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() cons
 Canavar::Engine::CameraManager *Canavar::Engine::Renderer::GetCameraManager() const
 {
     return mCameraManager.get();
-}
-
-Canavar::Engine::TexturedModelRenderer *Canavar::Engine::Renderer::GetTexturedModelRenderer() const
-{
-    return mTexturedModelRenderer.get();
-}
-
-Canavar::Engine::PrimitiveModelRenderer *Canavar::Engine::Renderer::GetPrimitiveModelRenderer() const
-{
-    return mPrimitiveModelRenderer.get();
 }
 
 Canavar::Engine::Sky *Canavar::Engine::Renderer::GetSky() const

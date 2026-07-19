@@ -19,8 +19,8 @@ namespace Canavar::Engine
         virtual ~TexturedModelRenderer() = default;
 
         void Initialize() override;
-        void Render(RenderPass RenderPass) override;
-        void RenderOverlay(RenderPass RenderPass) override;
+        void Render(RenderPass RenderPass, PerspectiveCamera* pActiveCamera) override;
+        void RenderOverlay(RenderPass RenderPass, PerspectiveCamera* pActiveCamera) override;
         const QMap<QString, ScenePtr>& GetScenes() const;
 
       private:

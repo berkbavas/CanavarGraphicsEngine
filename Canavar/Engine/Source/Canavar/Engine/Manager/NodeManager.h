@@ -32,29 +32,23 @@ namespace Canavar::Engine
         template<typename T>
         static constexpr bool IsAllowedType()
         {
-            return std::is_base_of_v<Camera, T> ||         //
-                   std::is_base_of_v<Light, T> ||          //
-                   std::is_base_of_v<TexturedModel, T> ||  //
-                   std::is_base_of_v<PrimitiveModel, T> || //
-                   std::is_base_of_v<DummyObject, T> ||    //
-                   std::is_base_of_v<GlobalNode, T>;
+            return std::is_base_of_v<Node, T>;
         }
 
         /**
          * Creates a new node of type T and adds it to the appropriate list based on its type.
          * The node is assigned a unique NodeId and is managed by the NodeManager.
          * The caller receives a raw pointer to the newly created node, but the NodeManager retains ownership.
-         * @tparam T The type of node to create. Must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode.
+         * @tparam T The type of node to create. Must be derived from Node.
          * @param args Arguments to forward to the constructor of T.
          */
         template<typename T, typename... Args>
         T *CreateNode(Args &&...args)
         {
-            static_assert(IsAllowedType<T>(), "NodeManager::CreateNode: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode");
+            static_assert(IsAllowedType<T>(), "NodeManager::CreateNode: T must be derived from Node");
 
             auto pNode = std::make_unique<T>(std::forward<Args>(args)...);
             pNode->SetNodeId(mNextNodeId++);
-            pNode->SetUuid(QUuid::createUuid());
 
             // Store the raw pointer before moving the unique_ptr into the list
             T *pRawPtr = pNode.get();
@@ -98,7 +92,7 @@ namespace Canavar::Engine
         template<typename T>
         T *FindNodeByName(const std::string &Name) const
         {
-            static_assert(IsAllowedType<T>(), "NodeManager::FindNodeByName: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode");
+            static_assert(IsAllowedType<T>(), "NodeManager::FindNodeByName: T must be derived from Node");
 
             for (const auto &pNode : mNodes)
             {
@@ -116,7 +110,7 @@ namespace Canavar::Engine
         template<typename T>
         T *FindNodeByType() const
         {
-            static_assert(IsAllowedType<T>(), "NodeManager::FindNodeByType: T must be derived from Camera, Light, TexturedModel, PrimitiveModel, DummyObject, or GlobalNode");
+            static_assert(IsAllowedType<T>(), "NodeManager::FindNodeByType: T must be derived from Node");
 
             for (const auto &pNode : mNodes)
             {
