@@ -47,6 +47,11 @@ void Canavar::Engine::BoundingBoxRenderer::Initialize()
 
 void Canavar::Engine::BoundingBoxRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pCamera)
 {
+    if (!mRenderBoundingBoxes)
+    {
+        return;
+    }
+
     switch (RenderPass)
     {
     case RenderPass::Opaque:
@@ -59,11 +64,6 @@ void Canavar::Engine::BoundingBoxRenderer::Render(RenderPass RenderPass, Perspec
 
 void Canavar::Engine::BoundingBoxRenderer::RenderBoundingBoxes(PerspectiveCamera *pCamera)
 {
-    if (!mRenderBoundingBoxes)
-    {
-        return;
-    }
-
     const auto &Objects = mRenderer->GetNodeManager()->GetObjects();
 
     mShader->Bind();
@@ -87,10 +87,10 @@ void Canavar::Engine::BoundingBoxRenderer::RenderBoundingBoxes(PerspectiveCamera
             continue;
         }
 
-        const AABB &LocalAABB = pObject->GetAABB();
-        const QMatrix4x4 World = pObject->GetWorldTransformation();
-        const QVector3D &Min = LocalAABB.GetMin();
-        const QVector3D &Max = LocalAABB.GetMax();
+        const auto &LocalAABB = pObject->GetAABB();
+        const auto &World = pObject->GetWorldTransformation();
+        const auto &Min = LocalAABB.GetMin();
+        const auto &Max = LocalAABB.GetMax();
 
         // 8 corners in local space, transformed to world space
         const QVector3D LocalCorners[8] = {

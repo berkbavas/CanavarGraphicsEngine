@@ -47,9 +47,11 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
 
     mFramebufferFormats[Ping].setSamples(0);
     mFramebufferFormats[Ping].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferExtraColorAttachments[Ping] = {};
 
     mFramebufferFormats[Pong].setSamples(0);
     mFramebufferFormats[Pong].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
+    mFramebufferExtraColorAttachments[Pong] = {};
 }
 
 void Canavar::Engine::Renderer::Initialize()
@@ -125,8 +127,8 @@ void Canavar::Engine::Renderer::Initialize()
 
     emit Initialized();
 
-    CreatePersecutorCameraIfAbsent();
     CreateFreeCameraIfAbsent();
+    CreatePersecutorCameraIfAbsent();
 }
 
 void Canavar::Engine::Renderer::Resize(int Width, int Height)
@@ -251,7 +253,7 @@ const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::Renderer::GetSc
     return mTexturedModelRenderer->GetScenes();
 }
 
-Canavar::Engine::Scene* Canavar::Engine::Renderer::GetSceneByName(const QString &Name) const
+Canavar::Engine::Scene *Canavar::Engine::Renderer::GetSceneByName(const QString &Name) const
 {
     return mTexturedModelRenderer->GetSceneByName(Name);
 }
