@@ -85,6 +85,8 @@ uniform int uNumDirectionalLights;
 uniform int uNodeId;
 uniform int uMeshId;
 uniform float uFar;
+uniform int uSelectedNodeId;   // -1 = no selection
+uniform int uSelectedMeshId;   // -1 = no mesh selection
 
 // Inputs from the vertex shader
 in vec3 fsFragWorldPosition;
@@ -415,6 +417,22 @@ void main()
     }
 
     OutFragColor = vec4(clamp(FragColor.rgb, 0.0f, 1.0f), FragColor.a);
+
+    // Selection highlight – applied after tone-mapping clamp so it always shows.
+    if (uSelectedNodeId != -1 && uSelectedNodeId == uNodeId)
+    {
+        if (uSelectedMeshId != -1 && uSelectedMeshId == uMeshId)
+        {
+            // Selected mesh: strong cyan overlay.
+            OutFragColor.rgb = mix(OutFragColor.rgb, vec3(0.2, 0.8, 1.0), 0.55);
+        }
+        else
+        {
+            // Selected model (no specific mesh or different mesh): subtle orange tint.
+            OutFragColor.rgb = mix(OutFragColor.rgb, vec3(1.0, 0.55, 0.1), 0.25);
+        }
+    }
+
     OutFragLocalPosition = vec4(fsFragLocalPosition, 1.0f);
     OutFragWorldPosition = vec4(fsFragWorldPosition, 1.0f);
     OutNodeInfo = vec4(float(uNodeId), float(uMeshId), float(gl_PrimitiveID), 1.0f);

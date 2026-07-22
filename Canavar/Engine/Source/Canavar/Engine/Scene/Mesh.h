@@ -36,7 +36,7 @@ namespace Canavar::Engine
 
       private:
         bool ShouldRenderMesh(RenderPass RenderPass, float MeshOpacity) const;
-        float CalculateMeshOpacity(float ModelOpacity) const;
+        float CalculateMeshOpacity(float ModelOpacity, float PerMeshOpacityFactor) const;
 
         GLuint mVAO{ 0 };
         GLuint mVBO{ 0 };

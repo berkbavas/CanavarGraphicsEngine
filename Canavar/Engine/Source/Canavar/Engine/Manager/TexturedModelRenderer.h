@@ -23,6 +23,9 @@ namespace Canavar::Engine
         const QMap<QString, ScenePtr>& GetScenes() const;
         Scene* GetSceneByName(const QString& SceneName) const;
 
+        // Sets the node/mesh IDs to highlight in the next rendered frame.
+        void SetSelectionState(int SelectedNodeId, int SelectedMeshId);
+
       private:
         void SetCommonUniforms(RenderPass RenderPass, PerspectiveCamera* pActiveCamera);
         void RenderModels(RenderPass RenderPass, PerspectiveCamera* pActiveCamera);
@@ -34,6 +37,9 @@ namespace Canavar::Engine
 
         QMap<QString, ScenePtr> mScenes;
         ShaderPtr mTexturedModelShader{ nullptr };
+
+        int mSelectedNodeId{ -1 };
+        int mSelectedMeshId{ -1 };
     };
 
     using TexturedModelRendererPtr = std::unique_ptr<TexturedModelRenderer>;

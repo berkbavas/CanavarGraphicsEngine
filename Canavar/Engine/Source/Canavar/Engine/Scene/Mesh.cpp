@@ -79,14 +79,21 @@ Canavar::Engine::Mesh::~Mesh()
 
 void Canavar::Engine::Mesh::Render(TexturedModel *pTexturedModel, Shader *pShader, RenderPass RenderPass, const QMatrix4x4 &NodeTransformation)
 {
-    const auto MeshOpacity = CalculateMeshOpacity(pTexturedModel->GetOpacity());
+    const auto MeshOpacity = CalculateMeshOpacity(pTexturedModel->GetOpacity(), pTexturedModel->GetMeshOpacityOverride(mMeshId));
 
     if (!ShouldRenderMesh(RenderPass, MeshOpacity))
     {
         return; // Skip rendering if the mesh should not be rendered for this pass
     }
 
-    const auto ModelMatrix = pTexturedModel->GetWorldTransformation() * NodeTransformation;
+    // Apply optional per-mesh local transform on top of the node transformation.
+    QMatrix4x4 EffectiveNodeTransform = NodeTransformation;
+    if (pTexturedModel->HasMeshTransformOverride(mMeshId))
+    {
+        EffectiveNodeTransform = EffectiveNodeTransform * pTexturedModel->GetMeshTransformOverride(mMeshId);
+    }
+
+    const auto ModelMatrix = pTexturedModel->GetWorldTransformation() * EffectiveNodeTransform;
 
     pShader->SetUniform("uModelMatrix", ModelMatrix);
     pShader->SetUniform("uNormalMatrix", ModelMatrix.normalMatrix());
@@ -174,14 +181,14 @@ bool Canavar::Engine::Mesh::ShouldRenderMesh(RenderPass RenderPass, float MeshOp
     return true; // Render the mesh if it passed all checks
 }
 
-float Canavar::Engine::Mesh::CalculateMeshOpacity(float ModelOpacity) const
+float Canavar::Engine::Mesh::CalculateMeshOpacity(float ModelOpacity, float PerMeshOpacityFactor) const
 {
-    float Opacity = ModelOpacity;
+    float Opacity = ModelOpacity * PerMeshOpacityFactor;
 
-    // Minimum of textured model and texture material opacity is used to calculate the final mesh opacity.
+    // Minimum of computed opacity and texture material opacity is used to calculate the final mesh opacity.
     if (const auto pTextureMaterial = mTextureMaterial.lock())
     {
-        Opacity = std::min(ModelOpacity, pTextureMaterial->GetOpacity()); // Use the minimum of model opacity and texture material opacity
+        Opacity = std::min(Opacity, pTextureMaterial->GetOpacity()); // Use the minimum of model opacity and texture material opacity
     }
 
     return Opacity;

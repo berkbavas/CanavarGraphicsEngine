@@ -38,6 +38,12 @@ Canavar::Engine::Scene *Canavar::Engine::TexturedModelRenderer::GetSceneByName(c
     return mScenes.value(SceneName, nullptr).get();
 }
 
+void Canavar::Engine::TexturedModelRenderer::SetSelectionState(int SelectedNodeId, int SelectedMeshId)
+{
+    mSelectedNodeId = SelectedNodeId;
+    mSelectedMeshId = SelectedMeshId;
+}
+
 void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
     SetCommonUniforms(RenderPass, pActiveCamera);
@@ -76,6 +82,8 @@ void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(RenderPass Render
     mTexturedModelShader->SetUniform("uVP", pActiveCamera->GetViewProjectionMatrix());
     mTexturedModelShader->SetUniform("uFar", pActiveCamera->GetZFar());
     mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetWorldPosition());
+    mTexturedModelShader->SetUniform("uSelectedNodeId", mSelectedNodeId);
+    mTexturedModelShader->SetUniform("uSelectedMeshId", mSelectedMeshId);
     mTexturedModelShader->Unbind();
 }
 

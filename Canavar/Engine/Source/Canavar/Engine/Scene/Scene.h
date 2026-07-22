@@ -23,6 +23,7 @@ namespace Canavar::Engine
         const QString &GetSceneName() const;
         const std::string &GetSceneNameStdString() const;
         SceneNodePtr GetRootNode() const;
+        const QVector<MeshPtr> &GetMeshes() const { return mMeshes; }
 
       private:
         QString mSceneName;                     // The name of the scene, used for logging and identification.

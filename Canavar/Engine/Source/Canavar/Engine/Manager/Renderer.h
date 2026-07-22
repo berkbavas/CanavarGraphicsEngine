@@ -78,6 +78,9 @@ namespace Canavar::Engine
         bool GetPostProcessEffectEnabled(PostProcessEffectType Type) const;
         void SetPostProcessEffectEnabled(PostProcessEffectType Type, bool Enabled);
 
+        // Sets which node/mesh should be highlighted in the next rendered frame.
+        void SetSelectionState(int SelectedNodeId, int SelectedMeshId);
+
         PerspectiveCamera* GetActiveCamera() const;
 
         // G-Buffer pixel queries at logical screen coordinates (x, y)

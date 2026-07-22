@@ -21,6 +21,8 @@
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
 #include "Canavar/Engine/Node/Node.h"
 #include "Canavar/Engine/Object/Object.h"
+#include "Canavar/Engine/Scene/Mesh.h"
+#include "Canavar/Engine/Scene/Scene.h"
 #include "Canavar/Engine/Util/Gizmo.h"
 
 #include <algorithm>
@@ -28,6 +30,7 @@
 #include <imgui.h>
 
 #include <QFileDialog>
+#include <QMouseEvent>
 #include <QQuaternion>
 #include <QVector3D>
 #include <QtImGui.h>
@@ -84,6 +87,16 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
 {
     // Invalidate selection if the node has been deleted.
     ValidateSelectedNode();
+
+    // Push the current selection highlight state to the renderer (takes effect next frame).
+    if (auto *pTexturedModel = dynamic_cast<TexturedModel *>(mSelectedNode))
+    {
+        mRenderer->SetSelectionState(pTexturedModel->GetNodeId(), mSelectedMeshId);
+    }
+    else
+    {
+        mRenderer->SetSelectionState(-1, -1);
+    }
 
     // Main scene-editor window.
     ImGui::SetNextWindowSize(ImVec2(400, 600), ImGuiCond_FirstUseEver);
@@ -723,6 +736,149 @@ void Canavar::Engine::ImGuiWidget::DrawTexturedModelProperties(TexturedModel *pM
             ImGui::SliderFloat("Shininess##DrawTexturedModelProperties", &Material.Shininess, 1.0f, 512.0f);
         }
     }
+
+    ImGui::Separator();
+    DrawMeshProperties(pModel);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mesh Properties (per-mesh selection, opacity, transform)
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawMeshProperties(TexturedModel *pModel)
+{
+    if (!ImGui::CollapsingHeader("Meshes##DrawMeshProperties", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        return;
+    }
+
+    Scene *pScene = mRenderer->GetSceneByName(pModel->GetModelName());
+    if (!pScene)
+    {
+        ImGui::TextDisabled("Scene not loaded.");
+        return;
+    }
+
+    const auto &Meshes = pScene->GetMeshes();
+    if (Meshes.isEmpty())
+    {
+        ImGui::TextDisabled("No meshes.");
+        return;
+    }
+
+    // ── Mesh Picking Mode toggle ───────────────────────────────────────────────
+    ImGui::Checkbox("Mesh Pick Mode (click viewport)##DrawMeshProperties", &mMeshPickingMode);
+    if (mMeshPickingMode)
+    {
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(0.2f, 1.0f, 0.4f, 1.0f), "(active)");
+    }
+
+    ImGui::Spacing();
+
+    // ── Mesh Combobox ─────────────────────────────────────────────────────────
+    std::string CurrentMeshLabel = "None";
+    for (const auto &pMesh : Meshes)
+    {
+        if (pMesh->GetMeshId() == mSelectedMeshId)
+        {
+            CurrentMeshLabel = pMesh->GetMeshNameStdString();
+            break;
+        }
+    }
+
+    if (ImGui::BeginCombo("Selected Mesh##DrawMeshProperties", CurrentMeshLabel.c_str()))
+    {
+        if (ImGui::Selectable("None##DrawMeshProperties_None", mSelectedMeshId == -1))
+        {
+            mSelectedMeshId = -1;
+        }
+
+        for (const auto &pMesh : Meshes)
+        {
+            const bool Selected = (pMesh->GetMeshId() == mSelectedMeshId);
+            if (ImGui::Selectable(pMesh->GetMeshNameStdString().c_str(), Selected))
+            {
+                mSelectedMeshId = pMesh->GetMeshId();
+            }
+            if (Selected)
+            {
+                ImGui::SetItemDefaultFocus();
+            }
+        }
+        ImGui::EndCombo();
+    }
+
+    // ── Per-mesh overrides (only when a mesh is selected) ─────────────────────
+    if (mSelectedMeshId == -1)
+    {
+        return;
+    }
+
+    ImGui::Separator();
+    ImGui::TextDisabled("Overrides for selected mesh");
+
+    // Opacity override
+    float MeshOpacity = pModel->GetMeshOpacityOverride(mSelectedMeshId);
+    if (ImGui::SliderFloat("Mesh Opacity##DrawMeshProperties", &MeshOpacity, 0.0f, 1.0f))
+    {
+        pModel->SetMeshOpacityOverride(mSelectedMeshId, MeshOpacity);
+    }
+
+    // Per-mesh local transform (TRS)
+    MeshTransformEdit &Edit = mMeshTransformEdits[mSelectedMeshId];
+
+    bool TransformChanged = false;
+    TransformChanged |= ImGui::DragFloat3("Mesh Position##DrawMeshProperties", Edit.Position, 0.1f);
+    TransformChanged |= ImGui::DragFloat3("Mesh Rotation (P/Y/R)##DrawMeshProperties", Edit.Rotation, 0.5f);
+    TransformChanged |= ImGui::DragFloat3("Mesh Scale##DrawMeshProperties", Edit.Scale, 0.01f, 0.001f, 1000.0f);
+
+    if (TransformChanged)
+    {
+        QMatrix4x4 T;
+        T.translate(Edit.Position[0], Edit.Position[1], Edit.Position[2]);
+        T.rotate(QQuaternion::fromEulerAngles(Edit.Rotation[0], Edit.Rotation[1], Edit.Rotation[2]));
+        T.scale(Edit.Scale[0], Edit.Scale[1], Edit.Scale[2]);
+        pModel->SetMeshTransformOverride(mSelectedMeshId, T);
+    }
+
+    if (ImGui::Button("Reset Mesh Transform##DrawMeshProperties"))
+    {
+        Edit = MeshTransformEdit{};
+        pModel->SetMeshTransformOverride(mSelectedMeshId, QMatrix4x4());
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Mouse picking for mesh selection
+// ─────────────────────────────────────────────────────────────────────────────
+
+bool Canavar::Engine::ImGuiWidget::OnMousePressed(QMouseEvent *pEvent)
+{
+    if (!mMeshPickingMode)
+    {
+        return false;
+    }
+
+    if (pEvent->button() != Qt::LeftButton)
+    {
+        return false;
+    }
+
+    if (!mSelectedNode || ImGui::GetIO().WantCaptureMouse)
+    {
+        return false;
+    }
+
+    const auto Info = mRenderer->QueryNodeInfo(pEvent->pos().x(), pEvent->pos().y());
+
+    // Only select a mesh if the click landed on the currently selected TexturedModel.
+    if (Info.NodeId == mSelectedNode->GetNodeId())
+    {
+        mSelectedMeshId = Info.MeshId;
+    }
+
+    return false; // Do not consume the event so camera/other handlers still work.
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1035,6 +1191,8 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
 
     // Update the selected node and copy its name into the buffer for display in the UI.
     mSelectedNode = pNode;
+    mSelectedMeshId = -1;      // Reset mesh selection when the model changes.
+    mMeshPickingMode = false;  // Turn off pick mode to avoid accidental selections.
 
     if (mSelectedNode)
     {

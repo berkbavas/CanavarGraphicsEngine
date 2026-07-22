@@ -478,8 +478,8 @@ QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int x, int y)
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT1);
-    const int FbX = static_cast<int>(x * mDevicePixelRatio);
-    const int FbY = static_cast<int>((mHeight - 1 - y) * mDevicePixelRatio);
+    const int FbX = static_cast<int>(x);
+    const int FbY = static_cast<int>(mHeight - 1 - y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -491,8 +491,8 @@ QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int x, int y)
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT2);
-    const int FbX = static_cast<int>(x * mDevicePixelRatio);
-    const int FbY = static_cast<int>((mHeight - 1 - y) * mDevicePixelRatio);
+    const int FbX = static_cast<int>(x);
+    const int FbY = static_cast<int>(mHeight - 1 - y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -504,8 +504,8 @@ Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT3);
-    const int FbX = static_cast<int>(x * mDevicePixelRatio);
-    const int FbY = static_cast<int>((mHeight - 1 - y) * mDevicePixelRatio);
+    const int FbX = static_cast<int>(x);
+    const int FbY = static_cast<int>(mHeight - 1 - y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -596,6 +596,11 @@ bool Canavar::Engine::Renderer::GetPostProcessEffectEnabled(PostProcessEffectTyp
 void Canavar::Engine::Renderer::SetPostProcessEffectEnabled(PostProcessEffectType Type, bool Enabled)
 {
     mPostProcessEffectEnabled[Type] = Enabled;
+}
+
+void Canavar::Engine::Renderer::SetSelectionState(int SelectedNodeId, int SelectedMeshId)
+{
+    mTexturedModelRenderer->SetSelectionState(SelectedNodeId, SelectedMeshId);
 }
 
 Canavar::Engine::PerspectiveCamera *Canavar::Engine::Renderer::GetActiveCamera() const
