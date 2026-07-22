@@ -79,7 +79,7 @@ void Canavar::Engine::NodeManager::AddTexturedModel(TexturedModel *pTexturedMode
 
     if (Scene *pScene = mRenderer->GetSceneByName(pTexturedModel->GetModelName()))
     {
-        const auto& AABB = pScene->GetRootNode()->GetBoundingBox();
+        const auto &AABB = pScene->GetRootNode()->GetBoundingBox();
         pTexturedModel->SetAABB(AABB);
     }
 
@@ -300,12 +300,6 @@ static void SApplyPersecutorCameraProps(Canavar::Engine::PersecutorCamera *pCam,
 {
     SApplyObjectProps(pCam, O);
     SApplyCameraProps(pCam, O);
-    if (O.contains("distance"))
-        pCam->SetDistance((float) O["distance"].toDouble());
-    if (O.contains("yaw"))
-        pCam->SetYaw((float) O["yaw"].toDouble());
-    if (O.contains("pitch"))
-        pCam->SetPitch((float) O["pitch"].toDouble());
     if (O.contains("angular_speed"))
         pCam->SetAngularSpeed((float) O["angular_speed"].toDouble());
     if (O.contains("linear_speed"))
@@ -514,9 +508,6 @@ static QJsonObject SWritePersecutorCameraProps(const Canavar::Engine::Persecutor
 {
     QJsonObject O;
     O["node_type_name"] = "PersecutorCamera";
-    O["distance"] = (double) pCam->GetDistance();
-    O["yaw"] = (double) pCam->GetYaw();
-    O["pitch"] = (double) pCam->GetPitch();
     O["angular_speed"] = (double) pCam->GetAngularSpeed();
     O["linear_speed"] = (double) pCam->GetLinearSpeed();
     SWriteObjectProps(O, pCam);
@@ -537,6 +528,8 @@ static QJsonObject SWriteFreeCameraProps(const Canavar::Engine::FreeCamera *pCam
 {
     QJsonObject O;
     O["node_type_name"] = "FreeCamera";
+    O["angular_speed"] = (double) pCam->GetAngularSpeed();
+    O["linear_speed"] = (double) pCam->GetLinearSpeed();
     SWriteObjectProps(O, pCam);
     SWritePerspCameraProps(O, pCam);
     return O;

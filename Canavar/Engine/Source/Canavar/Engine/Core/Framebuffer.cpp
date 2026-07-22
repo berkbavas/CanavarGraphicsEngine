@@ -114,10 +114,15 @@ int Canavar::Engine::Framebuffer::GetHeight() const
     return mHeight;
 }
 
-void Canavar::Engine::Framebuffer::BlitDepthTo(Framebuffer *TargetFramebuffer)
+QRect Canavar::Engine::Framebuffer::GetViewport() const
+{
+    return QRect(0, 0, mWidth, mHeight);
+}
+
+void Canavar::Engine::Framebuffer::BlitDepthTo(Framebuffer *pTargetFramebuffer)
 {
     glBindFramebuffer(GL_READ_FRAMEBUFFER, GetHandle());
-    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, TargetFramebuffer->GetHandle());
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pTargetFramebuffer->GetHandle());
 
     glBlitFramebuffer(0,
                       0,
@@ -125,19 +130,19 @@ void Canavar::Engine::Framebuffer::BlitDepthTo(Framebuffer *TargetFramebuffer)
                       mHeight, // Source bounds
                       0,
                       0,
-                      TargetFramebuffer->GetWidth(),
-                      TargetFramebuffer->GetHeight(), // Destination bounds
+                      pTargetFramebuffer->GetWidth(),
+                      pTargetFramebuffer->GetHeight(), // Destination bounds
                       GL_DEPTH_BUFFER_BIT,
                       GL_NEAREST);
 }
 
-void Canavar::Engine::Framebuffer::BlitColorBufferTo(Framebuffer *TargetFramebuffer, GLuint Attachment)
+void Canavar::Engine::Framebuffer::BlitColorBufferTo(Framebuffer *pTargetFramebuffer, GLuint Attachment)
 {
     QOpenGLFramebufferObject::blitFramebuffer( //
-        TargetFramebuffer->GetFramebufferObject(),
-        QRect(0, 0, TargetFramebuffer->GetWidth(), TargetFramebuffer->GetHeight()),
+        pTargetFramebuffer->GetFramebufferObject(),
+        pTargetFramebuffer->GetViewport(),
         mFramebuffer.get(),
-        QRect(0, 0, mWidth, mHeight),
+        GetViewport(),
         GL_COLOR_BUFFER_BIT,
         GL_LINEAR,
         Attachment - GL_COLOR_ATTACHMENT0,

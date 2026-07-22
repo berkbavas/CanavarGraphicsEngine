@@ -119,7 +119,7 @@ void Canavar::Engine::PrimitiveModelRenderer::SetCommonUniforms(PerspectiveCamer
     mPrimitiveShader->Bind();
     mPrimitiveShader->SetUniform("uVP", pCamera->GetViewProjectionMatrix());
     mPrimitiveShader->SetUniform("uFar", pCamera->GetZFar());
-    mPrimitiveShader->SetUniform("uCameraPosition", pCamera->GetPosition());
+    mPrimitiveShader->SetUniform("uCameraPosition", pCamera->GetWorldPosition());
     mPrimitiveShader->Unbind();
 
     mCircleLineShader->Bind();

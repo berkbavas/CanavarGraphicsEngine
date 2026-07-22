@@ -31,6 +31,7 @@ namespace Canavar::Engine
         GLuint GetHandle() const;
         int GetWidth() const;
         int GetHeight() const;
+        QRect GetViewport() const;
 
       private:
         void AddColorAttachment(GLenum InternalFormat);

@@ -569,15 +569,16 @@ void Canavar::Engine::ImGuiWidget::DrawCameraProperties(Camera *pCamera)
     if (auto *pPersecutor = dynamic_cast<PersecutorCamera *>(pCamera))
     {
         ImGui::TextUnformatted("Persecutor Camera");
-        ImGui::DragFloat("Distance##DrawCameraProperties", &pPersecutor->GetDistance_NonConst(), 0.1f, 0.1f, 200.0f);
         ImGui::DragFloat("Angular Speed##DrawCameraProperties", &pPersecutor->GetAngularSpeed_NonConst(), 0.5f, 0.0f, 120.0f);
         ImGui::DragFloat("Linear Speed##DrawCameraProperties", &pPersecutor->GetLinearSpeed_NonConst(), 0.01f, 0.0f, 100.0f);
         ImGui::DragFloat("Zoom Step##DrawCameraProperties", &pPersecutor->GetZoomStep_NonConst(), 0.01f, 0.01f, 5.0f);
     }
     // ── FreeCamera extras ─────────────────────────────────────────────────────
-    else if (dynamic_cast<FreeCamera *>(pCamera))
+    else if (const auto pFree = dynamic_cast<FreeCamera *>(pCamera))
     {
         ImGui::TextUnformatted("Free Camera");
+        ImGui::DragFloat("Angular Speed##DrawCameraProperties", &pFree->GetAngularSpeed_NonConst(), 0.5f, 0.0f, 120.0f);
+        ImGui::DragFloat("Linear Speed##DrawCameraProperties", &pFree->GetLinearSpeed_NonConst(), 0.01f, 0.0f, 100.0f);
         ImGui::TextDisabled("Controlled via keyboard + mouse");
     }
 }
@@ -699,8 +700,6 @@ void Canavar::Engine::ImGuiWidget::DrawTexturedModelProperties(TexturedModel *pM
             pModel->SetColor(QVector3D(Vector[0], Vector[1], Vector[2]));
         }
     }
-
-    ImGui::Checkbox("Overlay Pass##DrawTexturedModelProperties", &pModel->GetOverlay_NonConst());
 
     // ── Material ──────────────────────────────────────────────────────────────
     if (pModel->GetShadingMode() == ShadingMode::Pbr)

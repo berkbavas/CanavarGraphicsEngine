@@ -80,6 +80,18 @@ namespace Canavar::Engine
 
         PerspectiveCamera* GetActiveCamera() const;
 
+        // G-Buffer pixel queries at logical screen coordinates (x, y)
+        struct NodeInfo
+        {
+            int NodeId;
+            int MeshId;
+            int PrimitiveId;
+        };
+
+        QVector3D QueryLocalPosition(int x, int y);
+        QVector3D QueryWorldPosition(int x, int y);
+        NodeInfo QueryNodeInfo(int x, int y);
+
         void AddEventReceiver(EventReceiver* pEventReceiver);
         void RemoveEventReceiver(EventReceiver* pEventReceiver);
 

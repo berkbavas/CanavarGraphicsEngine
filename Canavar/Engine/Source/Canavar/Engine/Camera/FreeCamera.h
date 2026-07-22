@@ -26,10 +26,13 @@ namespace Canavar::Engine
         float CalculateLinearSpeed(float Ifps) const;
         float CalculateAngularSpeed(float Ifps) const;
 
-        float mAngularSpeed{ 15.0f }; // Degrees per second
-        float mLinearSpeed{ 5.0f };   // Units per second
-        float mYaw{ 0.0f };           // Rotation around the Y-axis
-        float mPitch{ 0.0f };         // Rotation around the X-axis
+        // State
+        float mYaw{ 0.0f };   // Rotation around the Y-axis
+        float mPitch{ 0.0f }; // Rotation around the X-axis
+
+        // Traits
+        DEFINE_MEMBER(float, AngularSpeed, 15.0f);
+        DEFINE_MEMBER(float, LinearSpeed, 5.0f);
 
         QMap<Qt::Key, bool> mPressedKeys; // Tracks the state of keys (pressed or not)
         Mouse mMouse;                     // Tracks the current state of the mouse (position, movement, buttons)

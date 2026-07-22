@@ -25,12 +25,7 @@ void Canavar::Engine::TexturedModelRenderer::Initialize()
 
 void Canavar::Engine::TexturedModelRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
-    RenderModels(RenderPass, pActiveCamera, false);
-}
-
-void Canavar::Engine::TexturedModelRenderer::RenderOverlay(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
-{
-    RenderModels(RenderPass, pActiveCamera, true);
+    RenderModels(RenderPass, pActiveCamera);
 }
 
 const QMap<QString, Canavar::Engine::ScenePtr> &Canavar::Engine::TexturedModelRenderer::GetScenes() const
@@ -43,7 +38,7 @@ Canavar::Engine::Scene *Canavar::Engine::TexturedModelRenderer::GetSceneByName(c
     return mScenes.value(SceneName, nullptr).get();
 }
 
-void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera *pActiveCamera, bool OverlayPass)
+void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
     SetCommonUniforms(RenderPass, pActiveCamera);
 
@@ -53,7 +48,7 @@ void Canavar::Engine::TexturedModelRenderer::RenderModels(RenderPass RenderPass,
 
     for (const auto pTexturedModel : TexturedModels)
     {
-        if (!ShouldRender(pTexturedModel, OverlayPass))
+        if (!ShouldRender(pTexturedModel))
         {
             continue; // Skip rendering this textured model based on visibility and overlay settings
         }
@@ -80,11 +75,11 @@ void Canavar::Engine::TexturedModelRenderer::SetCommonUniforms(RenderPass Render
     mTexturedModelShader->Bind();
     mTexturedModelShader->SetUniform("uVP", pActiveCamera->GetViewProjectionMatrix());
     mTexturedModelShader->SetUniform("uFar", pActiveCamera->GetZFar());
-    mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetPosition());
+    mTexturedModelShader->SetUniform("uCameraPosition", pActiveCamera->GetWorldPosition());
     mTexturedModelShader->Unbind();
 }
 
-bool Canavar::Engine::TexturedModelRenderer::ShouldRender(TexturedModel *pTexturedModel, bool OverlayPass) const
+bool Canavar::Engine::TexturedModelRenderer::ShouldRender(TexturedModel *pTexturedModel) const
 {
     if (pTexturedModel->GetVisible() == false)
     {
@@ -94,16 +89,6 @@ bool Canavar::Engine::TexturedModelRenderer::ShouldRender(TexturedModel *pTextur
     if (pTexturedModel->IsFuzzyTransparent())
     {
         return false; // Skip almost transparent textured models
-    }
-
-    if (OverlayPass && !pTexturedModel->GetOverlay())
-    {
-        return false; // Skip non-overlay textured models in overlay pass
-    }
-
-    if (!OverlayPass && pTexturedModel->GetOverlay())
-    {
-        return false; // Skip overlay textured models in non-overlay pass
     }
 
     return true; // Render the textured model if it passed all checks

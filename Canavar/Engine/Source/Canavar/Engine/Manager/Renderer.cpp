@@ -473,6 +473,45 @@ void Canavar::Engine::Renderer::SupplyPerFrameData()
     }
 }
 
+QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int x, int y)
+{
+    const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
+    const int FbX = static_cast<int>(x * mDevicePixelRatio);
+    const int FbY = static_cast<int>((mHeight - 1 - y) * mDevicePixelRatio);
+    GLfloat Pixel[4] = {};
+    glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    return QVector3D(Pixel[0], Pixel[1], Pixel[2]);
+}
+
+QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int x, int y)
+{
+    const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
+    glReadBuffer(GL_COLOR_ATTACHMENT2);
+    const int FbX = static_cast<int>(x * mDevicePixelRatio);
+    const int FbY = static_cast<int>((mHeight - 1 - y) * mDevicePixelRatio);
+    GLfloat Pixel[4] = {};
+    glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    return QVector3D(Pixel[0], Pixel[1], Pixel[2]);
+}
+
+Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int x, int y)
+{
+    const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
+    glReadBuffer(GL_COLOR_ATTACHMENT3);
+    const int FbX = static_cast<int>(x * mDevicePixelRatio);
+    const int FbY = static_cast<int>((mHeight - 1 - y) * mDevicePixelRatio);
+    GLfloat Pixel[4] = {};
+    glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    return { static_cast<int>(Pixel[0]), static_cast<int>(Pixel[1]), static_cast<int>(Pixel[2]) };
+}
+
 Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() const
 {
     return mLightManager.get();

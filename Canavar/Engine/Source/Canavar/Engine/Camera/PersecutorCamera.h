@@ -35,10 +35,11 @@ namespace Canavar::Engine
         float mDistanceBuffer{ 0.0f };
         QVector3D mTranslation;
 
+        float mYaw{ 0.0f };
+        float mPitch{ 0.0f };
+        float mDistance{ 5.0f };
+
         // Traits
-        DEFINE_MEMBER(float, Distance, 5.0f);
-        DEFINE_MEMBER(float, Yaw, 0.0f);
-        DEFINE_MEMBER(float, Pitch, 0.0f);
         DEFINE_MEMBER(float, AngularSpeed, 25.0f);
         DEFINE_MEMBER(float, AngularSpeedSmoothness, 0.25f);
         DEFINE_MEMBER(float, LinearSpeed, 2.5f);

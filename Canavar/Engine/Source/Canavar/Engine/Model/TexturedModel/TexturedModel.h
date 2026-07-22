@@ -29,7 +29,6 @@ namespace Canavar::Engine
         DEFINE_MEMBER(bool, UseColor, false);
         DEFINE_MEMBER(QVector3D, Color, QVector3D(1, 1, 1));
         DEFINE_MEMBER(float, Opacity, 1.0f);
-        DEFINE_MEMBER(bool, Overlay, false);
     };
 
     using TexturedModelPtr = std::unique_ptr<TexturedModel>;
