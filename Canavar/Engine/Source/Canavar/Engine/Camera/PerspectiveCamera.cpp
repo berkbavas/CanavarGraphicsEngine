@@ -9,9 +9,10 @@ QMatrix4x4 Canavar::Engine::PerspectiveCamera::GetProjectionMatrix() const
 
 float Canavar::Engine::PerspectiveCamera::GetHorizontalFov() const
 {
-    const auto HorizontalFov = std::atan(std::tan(mVerticalFov / 2.0) / GetAspectRatio()) * 2.0f;
-
-    return std::abs(qRadiansToDegrees(HorizontalFov));
+    float AspectRatio = GetAspectRatio();
+    float VerticalFovRad = qDegreesToRadians(mVerticalFov);
+    float HorizontalFovRad = 2.0f * std::atan(std::tan(VerticalFovRad / 2.0f) * AspectRatio);
+    return qRadiansToDegrees(HorizontalFovRad);
 }
 
 float Canavar::Engine::PerspectiveCamera::GetAspectRatio() const

@@ -188,7 +188,7 @@ float Canavar::Engine::Mesh::CalculateMeshOpacity(float ModelOpacity, float PerM
     // Minimum of computed opacity and texture material opacity is used to calculate the final mesh opacity.
     if (const auto pTextureMaterial = mTextureMaterial.lock())
     {
-        Opacity = std::min(Opacity, pTextureMaterial->GetOpacity()); // Use the minimum of model opacity and texture material opacity
+        Opacity *= pTextureMaterial->GetOpacity();
     }
 
     return Opacity;

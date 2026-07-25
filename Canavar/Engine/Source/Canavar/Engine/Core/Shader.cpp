@@ -94,7 +94,7 @@ QString Canavar::Engine::Shader::GetShaderTypeString(QOpenGLShader::ShaderTypeBi
     case QOpenGLShader::TessellationControl:
         return "Tessellation Control Shader";
     case QOpenGLShader::TessellationEvaluation:
-        return "Tesselation Evaluation Shader";
+        return "Tessellation Evaluation Shader";
     case QOpenGLShader::Compute:
         return "Compute Shader";
     default:
