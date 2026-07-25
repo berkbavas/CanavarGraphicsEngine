@@ -15,7 +15,7 @@ namespace Canavar::Engine
     class Shader : public QOpenGLExtraFunctions
     {
         using Callback = std::function<void(QOpenGLContext*, QOpenGLShaderProgram*)>;
-        static constexpr int MINIMUM_VALID_LOCATION = 0; // Minimum valid uniform location (0 or higher). Negative values indicate an invalid location.
+        static constexpr int MINIMUM_VALID_LOCATION{ 0 }; // Minimum valid uniform location (0 or higher). Negative values indicate an invalid location.
 
       public:
         explicit Shader(const QString& Name);
@@ -60,13 +60,13 @@ namespace Canavar::Engine
             }
         }
 
-        void SetUniformArray(const QString& Name, const GLfloat* Values, int Count, int TupleSize)
+        void SetUniformArray(const QString& Name, const GLfloat* pValues, int Count, int TupleSize)
         {
             const auto Location = mProgram->uniformLocation(Name);
 
-            if (0 <= Location)
+            if (MINIMUM_VALID_LOCATION <= Location)
             {
-                mProgram->setUniformValueArray(Location, Values, Count, TupleSize);
+                mProgram->setUniformValueArray(Location, pValues, Count, TupleSize);
             }
             else
             {
