@@ -20,8 +20,8 @@ namespace Canavar::Engine
         void Unbind();
         void Release();
 
-        void BlitDepthTo(Framebuffer* TargetFramebuffer);
-        void BlitColorBufferTo(Framebuffer* TargetFramebuffer, GLuint Attachment);
+        void BlitDepthTo(Framebuffer* pTargetFramebuffer);
+        void BlitColorBufferTo(Framebuffer* pTargetFramebuffer, GLuint Attachment);
         void ClearDepthBuffer();
 
         QOpenGLFramebufferObject* GetFramebufferObject() const;

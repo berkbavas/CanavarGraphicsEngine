@@ -91,9 +91,9 @@ namespace Canavar::Engine
             int PrimitiveId;
         };
 
-        QVector3D QueryLocalPosition(int x, int y);
-        QVector3D QueryWorldPosition(int x, int y);
-        NodeInfo QueryNodeInfo(int x, int y);
+        QVector3D QueryLocalPosition(int X, int Y);
+        QVector3D QueryWorldPosition(int X, int Y);
+        NodeInfo QueryNodeInfo(int X, int Y);
 
         void AddEventReceiver(EventReceiver* pEventReceiver);
         void RemoveEventReceiver(EventReceiver* pEventReceiver);

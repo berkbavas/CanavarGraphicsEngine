@@ -26,16 +26,16 @@ QQuaternion Canavar::Simulator::Converter::ConvertRotation(double Latitude, doub
 {
     QQuaternion Fix = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), Latitude - mReferenceLatitude) * //
                       QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), Longitude - mReferenceLongitude);
-                      
-    QQuaternion fixed = Fix.inverted() * LocalToBody;
 
-    float x;
-    float y;
-    float z;
-    float angle;
-    fixed.getAxisAndAngle(&x, &y, &z, &angle);
+    QQuaternion Fixed = Fix.inverted() * LocalToBody;
 
-    return QQuaternion::fromAxisAndAngle(QVector3D(y, -z, -x), angle);
+    float X;
+    float Y;
+    float Z;
+    float Angle;
+    Fixed.getAxisAndAngle(&X, &Y, &Z, &Angle);
+
+    return QQuaternion::fromAxisAndAngle(QVector3D(Y, -Z, -X), Angle);
 }
 
 QVector3D Canavar::Simulator::Converter::GeodeticToEcef(double Latitude, double Longitude, double Altitude)

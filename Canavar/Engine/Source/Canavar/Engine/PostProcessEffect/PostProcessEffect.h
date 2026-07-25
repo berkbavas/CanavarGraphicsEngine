@@ -14,7 +14,7 @@ namespace Canavar::Engine
         PostProcessEffect();
         virtual ~PostProcessEffect() = default;
 
-        virtual void ApplyEffect(Framebuffer* Input, Framebuffer* Output) = 0;
+        virtual void ApplyEffect(Framebuffer* pInput, Framebuffer* pOutput) = 0;
     };
 
     using PostProcessEffectPtr = std::unique_ptr<PostProcessEffect>;

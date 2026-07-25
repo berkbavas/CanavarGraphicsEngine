@@ -68,7 +68,7 @@ void Canavar::Engine::Logger::QtMessageOutputCallback(QtMsgType Type, const QMes
     }
 }
 
-bool Canavar::Engine::Logger::isLogEnabledFor(LogLevel LogLevel)
+bool Canavar::Engine::Logger::IsLogEnabledFor(LogLevel LogLevel)
 {
     return mLogLevel <= LogLevel;
 }

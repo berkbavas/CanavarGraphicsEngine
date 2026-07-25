@@ -34,9 +34,9 @@ namespace Canavar::Engine
         void SetTransformation(const QMatrix4x4& NewTransformation);
         void SetRotation(const QQuaternion& NewRotation);
         void SetPosition(const QVector3D& NewPosition);
-        void SetPosition(float x, float y, float z);
+        void SetPosition(float X, float Y, float Z);
         void SetScale(const QVector3D& NewScale);
-        void SetScale(float x, float y, float z);
+        void SetScale(float X, float Y, float Z);
         void SetScale(float UniformScale);
         void Translate(const QVector3D& Delta);
 

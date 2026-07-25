@@ -25,9 +25,9 @@ namespace Canavar::Engine
       private:
         void ClampAngles();
         bool ShouldIgnoreEvents() const;
-        void HandleZoom(float ifps);
-        void HandleRotation(float ifps);
-        void HandleTranslation(float ifps);
+        void HandleZoom(float Ifps);
+        void HandleRotation(float Ifps);
+        void HandleTranslation(float Ifps);
 
         // Internal state
         Object *mTarget{ nullptr };

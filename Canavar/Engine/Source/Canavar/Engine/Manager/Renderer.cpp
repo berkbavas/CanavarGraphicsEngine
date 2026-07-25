@@ -473,39 +473,39 @@ void Canavar::Engine::Renderer::SupplyPerFrameData()
     }
 }
 
-QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int x, int y)
+QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
 {
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT1);
-    const int FbX = static_cast<int>(x);
-    const int FbY = static_cast<int>(mHeight - 1 - y);
+    const int FbX = static_cast<int>(X);
+    const int FbY = static_cast<int>(mHeight - 1 - Y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     return QVector3D(Pixel[0], Pixel[1], Pixel[2]);
 }
 
-QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int x, int y)
+QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
 {
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT2);
-    const int FbX = static_cast<int>(x);
-    const int FbY = static_cast<int>(mHeight - 1 - y);
+    const int FbX = static_cast<int>(X);
+    const int FbY = static_cast<int>(mHeight - 1 - Y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
     return QVector3D(Pixel[0], Pixel[1], Pixel[2]);
 }
 
-Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int x, int y)
+Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int X, int Y)
 {
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT3);
-    const int FbX = static_cast<int>(x);
-    const int FbY = static_cast<int>(mHeight - 1 - y);
+    const int FbX = static_cast<int>(X);
+    const int FbY = static_cast<int>(mHeight - 1 - Y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

@@ -68,7 +68,7 @@ bool Canavar::Simulator::Aircraft::Initialize()
     return true;
 }
 
-void Canavar::Simulator::Aircraft::Tick(float ifps)
+void Canavar::Simulator::Aircraft::Tick(float Ifps)
 {
     ProcessAutoPilotIfEnabled();
     ProcessInputs();
@@ -84,7 +84,7 @@ void Canavar::Simulator::Aircraft::Tick(float ifps)
     ProcessCommand(Command::Rudder, mRudder);
     ProcessCommand(Command::Throttle, mThrottle);
 
-    Run(ifps);
+    Run(Ifps);
 }
 
 void Canavar::Simulator::Aircraft::DrawGui()
@@ -210,11 +210,11 @@ const Canavar::Simulator::PrimaryFlightData& Canavar::Simulator::Aircraft::GetPf
     return mPfd;
 }
 
-void Canavar::Simulator::Aircraft::Run(float ifps)
+void Canavar::Simulator::Aircraft::Run(float Ifps)
 {
     mPropagate->SetTerrainElevation(TERRAIN_ELEVATION);
 
-    mExecutor->Setdt(ifps);
+    mExecutor->Setdt(Ifps);
     mExecutor->Run();
 
     mPfd.AngleOfAttack = mAuxiliary->Getalpha();

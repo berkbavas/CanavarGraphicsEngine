@@ -53,10 +53,10 @@ void Canavar::Engine::OpenGLWidget::resizeGL(int Width, int Height)
 void Canavar::Engine::OpenGLWidget::paintGL()
 {
     mCurrentTime = QDateTime::currentMSecsSinceEpoch();
-    const float ifps = (mCurrentTime - mPreviousTime) * 0.001f;
+    const float Ifps = (mCurrentTime - mPreviousTime) * 0.001f;
     mPreviousTime = mCurrentTime;
 
-    emit Render(ifps);
+    emit Render(Ifps);
 
     CheckGLError();
 }

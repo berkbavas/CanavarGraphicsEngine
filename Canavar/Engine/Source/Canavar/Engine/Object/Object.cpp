@@ -38,14 +38,14 @@ void Canavar::Engine::Object::SetTransformation(const QMatrix4x4& NewTransformat
     mNormalMatrix = mTransformation.normalMatrix();
 }
 
-void Canavar::Engine::Object::SetPosition(float x, float y, float z)
+void Canavar::Engine::Object::SetPosition(float X, float Y, float Z)
 {
-    SetPosition(QVector3D(x, y, z));
+    SetPosition(QVector3D(X, Y, Z));
 }
 
-void Canavar::Engine::Object::SetScale(float x, float y, float z)
+void Canavar::Engine::Object::SetScale(float X, float Y, float Z)
 {
-    SetScale(QVector3D(x, y, z));
+    SetScale(QVector3D(X, Y, Z));
 }
 
 void Canavar::Engine::Object::SetScale(float UniformScale)

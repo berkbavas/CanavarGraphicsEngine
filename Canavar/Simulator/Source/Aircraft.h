@@ -5,7 +5,6 @@
 #include "Converter.h"
 #include "PrimaryFlightData.h"
 
-
 #include <QKeyEvent>
 #include <QMatrix3x3>
 #include <QObject>
@@ -33,7 +32,7 @@ namespace Canavar::Simulator
         void DrawGui();
         bool OnKeyPressed(QKeyEvent* pEvent);
         bool OnKeyReleased(QKeyEvent* pEvent);
-        void Tick(float ifps);
+        void Tick(float Ifps);
         bool IsHolding() const;
 
         const PrimaryFlightData& GetPfd() const;
@@ -41,7 +40,7 @@ namespace Canavar::Simulator
       private:
         void ProcessInputs();
         void ProcessAutoPilotIfEnabled();
-        void Run(float ifps);
+        void Run(float Ifps);
         void ProcessCommand(Command Command, QVariant Variant = QVariant());
 
         QVariant GetAutoPilotCommand(Command Command, QVariant Value);
@@ -50,7 +49,6 @@ namespace Canavar::Simulator
         bool ShouldHandleKeyRelease(Qt::Key Key) const;
         bool ShouldHandleKey(Qt::Key Key) const;
         bool IsKeyPressed(Qt::Key Key) const;
-
 
         std::shared_ptr<JSBSim::FGFDMExec> mExecutor{ nullptr };
         std::shared_ptr<JSBSim::FGFCS> mCommander{ nullptr };

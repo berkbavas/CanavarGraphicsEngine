@@ -26,9 +26,9 @@ namespace Canavar::Engine
       public:
         Logger() = delete;
 
-        static void Log(LogLevel Level, const std::string& LogMessage);
+        static void Log(LogLevel LogLevel, const std::string& LogMessage);
         static void SetLogLevel(LogLevel LogLevel);
-        static bool isLogEnabledFor(LogLevel Level);
+        static bool IsLogEnabledFor(LogLevel LogLevel);
         static LogLevel GetLogLevel();
         static std::string GetTimeString();
 
@@ -66,7 +66,7 @@ namespace Canavar::Engine
 #define LOG_PRIVATE(LEVEL, FORMAT, ...) \
     do \
     { \
-        if (Canavar::Engine::Logger::isLogEnabledFor(LEVEL)) \
+        if (Canavar::Engine::Logger::IsLogEnabledFor(LEVEL)) \
         { \
             Canavar::Engine::Logger::Log(LEVEL, std::format(FORMAT, __VA_ARGS__)); \
         } \
