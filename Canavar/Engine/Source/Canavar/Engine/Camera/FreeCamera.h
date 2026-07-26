@@ -25,6 +25,7 @@ namespace Canavar::Engine
         bool IsKeyPressed(Qt::Key Key) const;
         float CalculateLinearSpeed(float Ifps) const;
         float CalculateAngularSpeed(float Ifps) const;
+        void ApplyRotation();
 
         // State
         float mYaw{ 0.0f };   // Rotation around the Y-axis

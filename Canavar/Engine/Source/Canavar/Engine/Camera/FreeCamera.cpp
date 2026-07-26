@@ -5,6 +5,7 @@
 Canavar::Engine::FreeCamera::FreeCamera()
 {
     SetNodeName("Free Camera");
+    ApplyRotation();
 }
 
 void Canavar::Engine::FreeCamera::Update(float Ifps)
@@ -20,8 +21,7 @@ void Canavar::Engine::FreeCamera::Update(float Ifps)
         mYaw -= YawDelta;
         mPitch -= PitchDelta;
 
-        // Update rotation based on yaw and pitch
-        SetRotation(QQuaternion::fromAxisAndAngle(POSITIVE_Y, mYaw) * QQuaternion::fromAxisAndAngle(POSITIVE_X, mPitch));
+        ApplyRotation();
         mMouse.ResetCumulativeMovement(Qt::MiddleButton);
     }
 
@@ -51,7 +51,7 @@ void Canavar::Engine::FreeCamera::Reset()
 bool Canavar::Engine::FreeCamera::OnKeyPressed(QKeyEvent* pEvent)
 {
     mPressedKeys[(Qt::Key) pEvent->key()] = true;
-    return true; // Consume the event to prevent further propagation
+    return false; // Let the event propagate
 }
 
 bool Canavar::Engine::FreeCamera::OnKeyReleased(QKeyEvent* pEvent)
@@ -100,7 +100,8 @@ bool Canavar::Engine::FreeCamera::OnMouseMoved(QMouseEvent* pEvent)
 
 bool Canavar::Engine::FreeCamera::OnLeaveEvent(QEvent*)
 {
-    Reset();
+    mMouse.Reset();
+    mPressedKeys.clear();
     return true; // Consume the event to prevent further propagation
 }
 
@@ -132,6 +133,11 @@ float Canavar::Engine::FreeCamera::CalculateLinearSpeed(float Ifps) const
 float Canavar::Engine::FreeCamera::CalculateAngularSpeed(float Ifps) const
 {
     return mAngularSpeed * Ifps;
+}
+
+void Canavar::Engine::FreeCamera::ApplyRotation()
+{
+    SetRotation(QQuaternion::fromAxisAndAngle(POSITIVE_Y, mYaw) * QQuaternion::fromAxisAndAngle(POSITIVE_X, mPitch));
 }
 
 const QMap<Qt::Key, QVector3D> Canavar::Engine::FreeCamera::KEY_BINDINGS = //
