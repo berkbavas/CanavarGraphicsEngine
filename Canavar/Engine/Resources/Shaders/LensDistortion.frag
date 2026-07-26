@@ -6,7 +6,7 @@ uniform float uZoom;   // Compensating zoom to hide black borders (default 0.9)
 
 in vec2 fsTextureCoords;
 
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // Radial lens distortion (barrel / pincushion)
 // r' = r * (1 + k * r^2)  where k = uBarrel
@@ -24,9 +24,9 @@ void main()
     // Clamp — pixels outside the frame are black
     if (SampledUV.x < 0.0f || SampledUV.x > 1.0f || SampledUV.y < 0.0f || SampledUV.y > 1.0f)
     {
-        OutFragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        oFragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
         return;
     }
 
-    OutFragColor = vec4(texture(uSceneTexture, SampledUV).rgb, 1.0f);
+    oFragColor = vec4(texture(uSceneTexture, SampledUV).rgb, 1.0f);
 }

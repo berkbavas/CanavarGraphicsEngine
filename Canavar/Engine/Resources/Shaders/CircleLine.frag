@@ -9,10 +9,10 @@ uniform float uThickness;
 uniform int uNodeId;
 uniform float uFar;
 
-layout(location = 0) out vec4 OutFragColor;
-layout(location = 1) out vec4 OutFragLocalPosition;
-layout(location = 2) out vec4 OutFragWorldPosition;
-layout(location = 3) out vec4 OutNodeInfo;
+layout(location = 0) out vec4 oFragColor;
+layout(location = 1) out vec4 oFragLocalPosition;
+layout(location = 2) out vec4 oFragWorldPosition;
+layout(location = 3) out vec4 oNodeInfo;
 
 void main()
 {
@@ -25,8 +25,8 @@ void main()
     const float Edge = uThickness * 0.5f;
     const float Alpha = uOpacity * (1.0f - smoothstep(Edge - 1.0f, Edge, Dist));
 
-    OutFragColor = vec4(uColor, Alpha);
-    OutFragLocalPosition = vec4(0.0f);
-    OutFragWorldPosition = vec4(0.0f);
-    OutNodeInfo = vec4(float(uNodeId), 0.0f, 0.0f, 1.0f);
+    oFragColor = vec4(uColor, Alpha);
+    oFragLocalPosition = vec4(0.0f);
+    oFragWorldPosition = vec4(0.0f);
+    oNodeInfo = vec4(float(uNodeId), 0.0f, 0.0f, 1.0f);
 }

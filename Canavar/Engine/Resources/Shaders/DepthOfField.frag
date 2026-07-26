@@ -18,7 +18,7 @@ uniform float uMaxBlurRadius; // Maximum CoC blur radius in pixels
 uniform vec2 uResolution;     // Render-target resolution (pixels)
 
 in vec2 fsTextureCoords;
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 16-tap Poisson disc (normalised to unit circle)
@@ -80,7 +80,7 @@ void main()
     // Fast path: pixel is in focus – no blur needed
     if (BlurRadius < 0.5)
     {
-        OutFragColor = texture(uSceneTexture, fsTextureCoords);
+        oFragColor = texture(uSceneTexture, fsTextureCoords);
         return;
     }
 
@@ -107,5 +107,5 @@ void main()
         TotalWeight += Weight;
     }
 
-    OutFragColor = AccumColor / max(TotalWeight, 1e-4);
+    oFragColor = AccumColor / max(TotalWeight, 1e-4);
 }

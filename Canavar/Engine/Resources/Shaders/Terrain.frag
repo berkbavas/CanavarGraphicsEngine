@@ -63,10 +63,10 @@ in vec3 fsBitangent;
 in mat3 fsTangentMatrix;
 in float fsLogZ;
 
-layout(location = 0) out vec4 OutFragColor;
-layout(location = 1) out vec4 OutFragLocalPosition;
-layout(location = 2) out vec4 OutFragWorldPosition;
-layout(location = 3) out vec4 OutFragNodeInfo;
+layout(location = 0) out vec4 oFragColor;
+layout(location = 1) out vec4 oFragLocalPosition;
+layout(location = 2) out vec4 oFragWorldPosition;
+layout(location = 3) out vec4 oFragNodeInfo;
 
 uniform vec3 uCameraPosition;
 uniform float uFarPlane;
@@ -316,12 +316,12 @@ void main()
     Result += ProcessPointLights(Color, Normal, LightOut);
     Result = ProcessHaze(Distance, Result);
 
-    OutFragColor = vec4(Result, 1.0f);
+    oFragColor = vec4(Result, 1.0f);
 
     // Note that the terrain has no model matrix so its local and world coordinates are equal.
-    OutFragLocalPosition = vec4(fsWorldPosition, 1.0f);
-    OutFragWorldPosition = vec4(fsWorldPosition, 1.0f);
-    OutFragNodeInfo = vec4(uNodeId, 0, 0, 1);
+    oFragLocalPosition = vec4(fsWorldPosition, 1.0f);
+    oFragWorldPosition = vec4(fsWorldPosition, 1.0f);
+    oFragNodeInfo = vec4(uNodeId, 0, 0, 1);
 
     gl_FragDepth = log2(fsLogZ) / log2(uFarPlane + 1.0);
 }

@@ -9,7 +9,7 @@ uniform float uTemperature; // -1 cool (blue) .. +1 warm (orange)  (default 0.0)
 
 in vec2 fsTextureCoords;
 
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // ─── RGB <-> HSV ──────────────────────────────────────────────────────────
 vec3 RgbToHsv(vec3 c)
@@ -51,5 +51,5 @@ void main()
 
     Color = clamp(Color, 0.0f, 1.0f);
 
-    OutFragColor = vec4(Color, 1.0f);
+    oFragColor = vec4(Color, 1.0f);
 }

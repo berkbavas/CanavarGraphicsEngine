@@ -8,7 +8,7 @@ uniform float uEdgeThresholdMin; // darkest shadow threshold, default 0.0312
 
 in vec2 fsTextureCoords;
 
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // ─── Luminance helper ──────────────────────────────────────────────────────
 float Luma(vec3 rgb)
@@ -42,7 +42,7 @@ void main()
     // --- Early exit on low-contrast pixels ---
     if (lumaRange < max(uEdgeThresholdMin, lumaMax * uEdgeThreshold))
     {
-        OutFragColor = vec4(rgbM, 1.0f);
+        oFragColor = vec4(rgbM, 1.0f);
         return;
     }
 
@@ -63,7 +63,7 @@ void main()
     float lumaB = Luma(rgbB);
 
     if ((lumaB < lumaMin) || (lumaB > lumaMax))
-        OutFragColor = vec4(rgbA, 1.0f);
+        oFragColor = vec4(rgbA, 1.0f);
     else
-        OutFragColor = vec4(rgbB, 1.0f);
+        oFragColor = vec4(rgbB, 1.0f);
 }

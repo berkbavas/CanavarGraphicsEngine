@@ -85,8 +85,8 @@ uniform int uNumDirectionalLights;
 uniform int uNodeId;
 uniform int uMeshId;
 uniform float uFar;
-uniform int uSelectedNodeId;   // -1 = no selection
-uniform int uSelectedMeshId;   // -1 = no mesh selection
+uniform int uSelectedNodeId; // -1 = no selection
+uniform int uSelectedMeshId; // -1 = no mesh selection
 
 // Inputs from the vertex shader
 in vec3 fsFragWorldPosition;
@@ -98,10 +98,10 @@ flat in int fsVertexId;
 in float fsFlogZ;
 
 // Outputs to the framebuffer
-layout(location = 0) out vec4 OutFragColor;
-layout(location = 1) out vec4 OutFragLocalPosition;
-layout(location = 2) out vec4 OutFragWorldPosition;
-layout(location = 3) out vec4 OutNodeInfo;
+layout(location = 0) out vec4 oFragColor;
+layout(location = 1) out vec4 oFragLocalPosition;
+layout(location = 2) out vec4 oFragWorldPosition;
+layout(location = 3) out vec4 oNodeInfo;
 
 vec3 FresnelSchlick(float cosTheta, vec3 F0)
 {
@@ -389,7 +389,9 @@ void main()
 
     vec4 FragColor;
 
-    if (uShadingMode == PHONG_SHADING)
+    switch (uShadingMode)
+    {
+    case PHONG_SHADING:
     {
         const vec3 DirectLighting = ProcessDirectionalLightsPhong(Color, Normal, Lo);
         const vec3 PointLighting = ProcessPointLightsPhong(Color, Normal, Lo);
@@ -397,8 +399,10 @@ void main()
 
         FinalColor = ProcessHaze(Distance, fsFragWorldPosition, FinalColor);
         FragColor = vec4(FinalColor, uOpacity);
+        break;
     }
-    else if (uShadingMode == PBR_SHADING)
+
+    case PBR_SHADING:
     {
         const float Metallic = CalculateMetallic();
         const float Roughness = CalculateRoughness();
@@ -410,13 +414,16 @@ void main()
 
         FinalColor = ProcessHaze(Distance, fsFragWorldPosition, FinalColor);
         FragColor = vec4(FinalColor, uOpacity);
+        break;
     }
-    else
+    default:
     {
         FragColor = vec4(Color, uOpacity); // Fallback to base color if shading mode is not recognized
+        break;
+    }
     }
 
-    OutFragColor = vec4(clamp(FragColor.rgb, 0.0f, 1.0f), FragColor.a);
+    oFragColor = vec4(clamp(FragColor.rgb, 0.0f, 1.0f), FragColor.a);
 
     // Selection highlight – applied after tone-mapping clamp so it always shows.
     if (uSelectedNodeId != -1 && uSelectedNodeId == uNodeId)
@@ -424,18 +431,18 @@ void main()
         if (uSelectedMeshId != -1 && uSelectedMeshId == uMeshId)
         {
             // Selected mesh: strong cyan overlay.
-            OutFragColor.rgb = mix(OutFragColor.rgb, vec3(0.2, 0.8, 1.0), 0.55);
+            oFragColor.rgb = mix(oFragColor.rgb, vec3(0.2, 0.8, 1.0), 0.55);
         }
         else
         {
             // Selected model (no specific mesh or different mesh): subtle orange tint.
-            OutFragColor.rgb = mix(OutFragColor.rgb, vec3(1.0, 0.55, 0.1), 0.25);
+            oFragColor.rgb = mix(oFragColor.rgb, vec3(1.0, 0.55, 0.1), 0.25);
         }
     }
 
-    OutFragLocalPosition = vec4(fsFragLocalPosition, 1.0f);
-    OutFragWorldPosition = vec4(fsFragWorldPosition, 1.0f);
-    OutNodeInfo = vec4(float(uNodeId), float(uMeshId), float(gl_PrimitiveID), 1.0f);
+    oFragLocalPosition = vec4(fsFragLocalPosition, 1.0f);
+    oFragWorldPosition = vec4(fsFragWorldPosition, 1.0f);
+    oNodeInfo = vec4(float(uNodeId), float(uMeshId), float(gl_PrimitiveID), 1.0f);
 
     gl_FragDepth = log2(fsFlogZ) / log2(uFar + 1.0f);
 }

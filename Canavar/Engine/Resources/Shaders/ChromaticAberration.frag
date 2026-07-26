@@ -5,7 +5,7 @@ uniform float uStrength; // Separation amount in UV space (default 0.003)
 
 in vec2 fsTextureCoords;
 
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // Chromatic Aberration
 // Separates R, G, B channels by progressively larger offsets from screen centre,
@@ -22,5 +22,5 @@ void main()
     float G = texture(uSceneTexture, UV).g;
     float B = texture(uSceneTexture, UV - Dir * 1.0f).b;
 
-    OutFragColor = vec4(R, G, B, 1.0f);
+    oFragColor = vec4(R, G, B, 1.0f);
 }

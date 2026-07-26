@@ -6,7 +6,7 @@ uniform float uStrength; // 0.0 = no sharpening, 1.0 = full (default 0.5)
 
 in vec2 fsTextureCoords;
 
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // Unsharp-mask sharpening
 // Computes: original + strength * (original - blurred)
@@ -28,5 +28,5 @@ void main()
     vec3 Original = texture(uSceneTexture, UV).rgb;
     vec3 Sharpened = Original + uStrength * (Original - Blurred);
 
-    OutFragColor = vec4(clamp(Sharpened, 0.0f, 1.0f), 1.0f);
+    oFragColor = vec4(clamp(Sharpened, 0.0f, 1.0f), 1.0f);
 }

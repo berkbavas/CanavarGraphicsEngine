@@ -9,7 +9,7 @@ uniform float uVignetteSoftness;
 
 in vec2 fsTextureCoords;
 
-out vec4 OutFragColor;
+out vec4 oFragColor;
 
 // Random noise generator using screen coordinates + time
 float rand(vec2 co)
@@ -31,5 +31,5 @@ void main()
     float Vignette = smoothstep(uVignetteRadius, uVignetteRadius - uVignetteSoftness, Dist);
     Color *= Vignette;
 
-    OutFragColor = vec4(Color, 1.0f);
+    oFragColor = vec4(Color, 1.0f);
 }
