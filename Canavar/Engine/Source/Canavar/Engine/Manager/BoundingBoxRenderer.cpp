@@ -4,6 +4,7 @@
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/Renderer.h"
 #include "Canavar/Engine/Object/Object.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 Canavar::Engine::BoundingBoxRenderer::BoundingBoxRenderer(Renderer *pRenderer)
     : mRenderer(pRenderer)
@@ -47,6 +48,8 @@ void Canavar::Engine::BoundingBoxRenderer::Initialize()
 
 void Canavar::Engine::BoundingBoxRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pCamera)
 {
+    Chronometer Chronometer("BoundingBoxRenderer::Render");
+
     if (!mRenderBoundingBoxes)
     {
         return;

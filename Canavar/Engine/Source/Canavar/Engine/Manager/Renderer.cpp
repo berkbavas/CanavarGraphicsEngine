@@ -1,5 +1,7 @@
 #include "Renderer.h"
 
+#include "Canavar/Engine/Util/Chronometer.h"
+
 Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     : mOpenGLWidget(pOpenGLWidget)
     , mRenderingContext(pOpenGLWidget)
@@ -145,6 +147,8 @@ void Canavar::Engine::Renderer::Resize(int Width, int Height)
 
 void Canavar::Engine::Renderer::Render(float Ifps)
 {
+    Chronometer Chronometer("Renderer::Render");
+
     mDevicePixelRatio = mRenderingContext->GetDevicePixelRatio();
 
     // Update all managers before rendering

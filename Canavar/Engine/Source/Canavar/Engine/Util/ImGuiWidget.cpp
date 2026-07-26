@@ -23,6 +23,7 @@
 #include "Canavar/Engine/Object/Object.h"
 #include "Canavar/Engine/Scene/Mesh.h"
 #include "Canavar/Engine/Scene/Scene.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 #include "Canavar/Engine/Util/Gizmo.h"
 
 #include <algorithm>
@@ -55,6 +56,8 @@ Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
     // Register this ImGuiWidget as an event receiver to handle input events
     mRenderer->AddEventReceiver(this);
     mRenderer->AddEventThief(this); // Register as an event thief to capture input events before they reach other receivers
+
+    mElapsedTimer.start();
 }
 
 bool Canavar::Engine::ImGuiWidget::WantCaptureKeyboard() const
@@ -411,7 +414,20 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
 
 void Canavar::Engine::ImGuiWidget::DrawStats(float)
 {
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    if (ImGui::CollapsingHeader("Stats##DrawStats", ImGuiTreeNodeFlags_DefaultOpen))
+    {
+        if (mElapsedTimer.elapsed() > 500)
+        {
+            mElapsedTimer.restart();
+            mStatsText = Canavar::Engine::Chronometer::PrintAll();
+        }
+
+        ImGui::Text("Chronometer Stats:");
+        ImGui::Text("%s", mStatsText.c_str());
+
+        ImGui::Separator();
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -15,6 +15,7 @@
 #include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
 #include "Canavar/Engine/Util/CinematicPath.h"
 
+#include <QElapsedTimer>
 #include <QMap>
 #include <QMatrix4x4>
 #include <QVector3D>
@@ -117,6 +118,9 @@ namespace Canavar::Engine
         CinematicPath mCinematicPath{};
 
         ImGuiTheme mTheme{ ImGuiTheme::Dark };
+
+        QElapsedTimer mElapsedTimer;
+        std::string mStatsText;
     };
 
     using ImGuiWidgetPtr = std::unique_ptr<ImGuiWidget>;

@@ -3,9 +3,12 @@
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Light/DirectionalLight.h"
 #include "Canavar/Engine/Light/PointLight.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 QVector<Canavar::Engine::PointLight *> Canavar::Engine::LightManager::GetPointLightsAround(QVector3D TargetPosition, float Radius) const
 {
+    Chronometer Chronometer("LightManager::GetPointLightsAround");
+
     QVector<PointLight *> Result;
 
     // Filter point lights based on distance to the target position
@@ -86,6 +89,8 @@ void Canavar::Engine::LightManager::RemoveLight(Light *pLight)
 
 void Canavar::Engine::LightManager::SetDirectionalLightsUniforms(Shader *pShader) const
 {
+    Chronometer Chronometer("LightManager::SetDirectionalLightsUniforms");
+
     const auto EnabledDirectionalLights = GetEnabledDirectionalLights();
 
     const auto NumDirectionalLights = std::min(static_cast<int>(EnabledDirectionalLights.size()), MAX_DIRECTIONAL_LIGHTS);
@@ -110,6 +115,8 @@ void Canavar::Engine::LightManager::SetDirectionalLightsUniforms(Shader *pShader
 
 void Canavar::Engine::LightManager::SetPointLightsUniforms(Shader *pShader, const QVector3D &TargetPosition, float Radius) const
 {
+    Chronometer Chronometer("LightManager::SetPointLightsUniforms");
+
     const auto PointLightsAround = GetPointLightsAround(TargetPosition, Radius);
     const auto NumPointLights = std::min(static_cast<int>(PointLightsAround.size()), MAX_POINT_LIGHTS);
 

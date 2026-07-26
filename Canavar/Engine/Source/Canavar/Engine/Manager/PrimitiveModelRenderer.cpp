@@ -9,6 +9,7 @@
 #include "Canavar/Engine/Model/PrimitiveModel/Geometry/PlaneGeometry.h"
 #include "Canavar/Engine/Model/PrimitiveModel/Geometry/SphereGeometry.h"
 #include "Canavar/Engine/Model/PrimitiveModel/PrimitiveModel.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 Canavar::Engine::PrimitiveModelRenderer::PrimitiveModelRenderer(Renderer *pRenderer)
     : mRenderer(pRenderer)
@@ -47,12 +48,14 @@ void Canavar::Engine::PrimitiveModelRenderer::Initialize()
 
 void Canavar::Engine::PrimitiveModelRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pCamera)
 {
+    Chronometer Chronometer("PrimitiveModelRenderer::Render");
     SetCommonUniforms(pCamera);
     RenderPrimitiveModels(RenderPass, false, pCamera);
 }
 
 void Canavar::Engine::PrimitiveModelRenderer::RenderOverlay(RenderPass RenderPass, PerspectiveCamera *pCamera)
 {
+    Chronometer Chronometer("PrimitiveModelRenderer::RenderOverlay");
     SetCommonUniforms(pCamera);
     RenderPrimitiveModels(RenderPass, true, pCamera);
 }

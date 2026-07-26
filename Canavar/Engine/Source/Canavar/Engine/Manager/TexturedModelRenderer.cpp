@@ -5,6 +5,7 @@
 #include "Canavar/Engine/Manager/Renderer.h"
 #include "Canavar/Engine/Model/TexturedModel/TexturedModel.h"
 #include "Canavar/Engine/Util/AssimpModelImporter.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 Canavar::Engine::TexturedModelRenderer::TexturedModelRenderer(Renderer *pRenderer)
     : mRenderer(pRenderer)
@@ -25,6 +26,7 @@ void Canavar::Engine::TexturedModelRenderer::Initialize()
 
 void Canavar::Engine::TexturedModelRenderer::Render(RenderPass RenderPass, PerspectiveCamera *pActiveCamera)
 {
+    Chronometer Chronometer("TexturedModelRenderer::Render");
     RenderModels(RenderPass, pActiveCamera);
 }
 

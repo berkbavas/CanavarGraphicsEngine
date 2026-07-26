@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Light/DirectionalLight.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 Canavar::Engine::Sky::Sky()
 {
@@ -19,6 +20,8 @@ Canavar::Engine::Sky::Sky()
 
 void Canavar::Engine::Sky::Render(PerspectiveCamera *pActiveCamera, DirectionalLight *pSun)
 {
+    Chronometer Chronometer("Sky::Render");
+
     if (mEnabled == false)
     {
         return;

@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Manager/LightManager.h"
 #include "Canavar/Engine/Manager/Renderer.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 Canavar::Engine::Terrain::Terrain(Renderer *pRenderer)
     : mRenderer(pRenderer)
@@ -230,6 +231,8 @@ void Canavar::Engine::Terrain::CalculateTilePositions(PerspectiveCamera *pCamera
 
 void Canavar::Engine::Terrain::Render()
 {
+    Chronometer Chronometer("Terrain::Render");
+
     if (mEnabled == false)
     {
         return;
@@ -280,6 +283,6 @@ void Canavar::Engine::Terrain::Render()
     glBindVertexArray(mVAO);
     glDrawElementsInstanced(GL_PATCHES, mIndices.size(), GL_UNSIGNED_INT, 0, mTilePositions.size());
     glBindVertexArray(0);
-    
+
     mTerrainShader->Unbind();
 }
