@@ -42,8 +42,8 @@ namespace Canavar::Engine
       public:
         explicit ImGuiWidget(Renderer *pRenderer);
 
-        bool WantsKeyboardCapture() const override;
-        bool WantsMouseCapture() const override;
+        bool WantCaptureKeyboard() const override;
+        bool WantCaptureMouse() const override;
 
         bool OnMousePressed(QMouseEvent *pEvent) override;
 

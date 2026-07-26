@@ -70,6 +70,7 @@ namespace Canavar::Engine
         Dark = 0,
         Light = 1,
         Dracula = 2,
+        Midnight = 3,
     };
 
 }

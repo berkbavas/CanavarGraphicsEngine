@@ -262,7 +262,7 @@ void Canavar::Engine::Renderer::OnKeyPressed(QKeyEvent *pEvent)
 {
     for (EventThief *pEventThief : mEventThieves)
     {
-        if (pEventThief->WantsKeyboardCapture())
+        if (pEventThief->WantCaptureKeyboard())
         {
             return; // Event has been stolen, do not propagate further
         }
@@ -281,7 +281,7 @@ void Canavar::Engine::Renderer::OnKeyReleased(QKeyEvent *pEvent)
 {
     for (EventThief *pEventThief : mEventThieves)
     {
-        if (pEventThief->WantsKeyboardCapture())
+        if (pEventThief->WantCaptureKeyboard())
         {
             return; // Event has been stolen, do not propagate further
         }
@@ -300,7 +300,7 @@ void Canavar::Engine::Renderer::OnMousePressed(QMouseEvent *pEvent)
 {
     for (EventThief *pEventThief : mEventThieves)
     {
-        if (pEventThief->WantsMouseCapture())
+        if (pEventThief->WantCaptureMouse())
         {
             return; // Event has been stolen, do not propagate further
         }
@@ -319,7 +319,7 @@ void Canavar::Engine::Renderer::OnMouseReleased(QMouseEvent *pEvent)
 {
     for (EventThief *pEventThief : mEventThieves)
     {
-        if (pEventThief->WantsMouseCapture())
+        if (pEventThief->WantCaptureMouse())
         {
             return; // Event has been stolen, do not propagate further
         }
@@ -338,7 +338,7 @@ void Canavar::Engine::Renderer::OnMouseMoved(QMouseEvent *pEvent)
 {
     for (EventThief *pEventThief : mEventThieves)
     {
-        if (pEventThief->WantsMouseCapture())
+        if (pEventThief->WantCaptureMouse())
         {
             return; // Event has been stolen, do not propagate further
         }
@@ -357,7 +357,7 @@ void Canavar::Engine::Renderer::OnWheelMoved(QWheelEvent *pEvent)
 {
     for (EventThief *pEventThief : mEventThieves)
     {
-        if (pEventThief->WantsMouseCapture())
+        if (pEventThief->WantCaptureMouse())
         {
             return; // Event has been stolen, do not propagate further
         }

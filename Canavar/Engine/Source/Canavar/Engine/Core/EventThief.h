@@ -8,7 +8,7 @@ namespace Canavar::Engine
         EventThief() = default;
         virtual ~EventThief() = default;
 
-        virtual bool WantsKeyboardCapture() const = 0;
-        virtual bool WantsMouseCapture() const = 0;
+        virtual bool WantCaptureKeyboard() const = 0;
+        virtual bool WantCaptureMouse() const = 0;
     };
 }

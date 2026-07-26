@@ -57,12 +57,12 @@ Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
     mRenderer->AddEventThief(this); // Register as an event thief to capture input events before they reach other receivers
 }
 
-bool Canavar::Engine::ImGuiWidget::WantsKeyboardCapture() const
+bool Canavar::Engine::ImGuiWidget::WantCaptureKeyboard() const
 {
     return ImGui::GetIO().WantCaptureKeyboard;
 }
 
-bool Canavar::Engine::ImGuiWidget::WantsMouseCapture() const
+bool Canavar::Engine::ImGuiWidget::WantCaptureMouse() const
 {
     return ImGui::GetIO().WantCaptureMouse;
 }
@@ -124,6 +124,62 @@ void Canavar::Engine::ImGuiWidget::ApplyTheme()
         Color[ImGuiCol_Tab] = ImVec4(0.22f, 0.18f, 0.34f, 1.00f);
         Color[ImGuiCol_TabHovered] = ImVec4(0.48f, 0.38f, 0.70f, 1.00f);
         Color[ImGuiCol_TabSelected] = ImVec4(0.34f, 0.26f, 0.54f, 1.00f);
+        break;
+    }
+    case ImGuiTheme::Midnight:
+    {
+        ImGui::StyleColorsDark();
+        ImVec4 *Color = Style.Colors;
+
+        // Base palette: deep charcoal backgrounds, cool slate accents, cyan highlights
+        Color[ImGuiCol_Text] = ImVec4(0.88f, 0.90f, 0.94f, 1.00f);
+        Color[ImGuiCol_TextDisabled] = ImVec4(0.42f, 0.46f, 0.54f, 1.00f);
+        Color[ImGuiCol_WindowBg] = ImVec4(0.07f, 0.08f, 0.10f, 1.00f);
+        Color[ImGuiCol_ChildBg] = ImVec4(0.05f, 0.06f, 0.08f, 1.00f);
+        Color[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.08f, 0.10f, 0.97f);
+        Color[ImGuiCol_Border] = ImVec4(0.20f, 0.24f, 0.32f, 1.00f);
+        Color[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+        Color[ImGuiCol_FrameBg] = ImVec4(0.12f, 0.14f, 0.18f, 1.00f);
+        Color[ImGuiCol_FrameBgHovered] = ImVec4(0.18f, 0.22f, 0.30f, 1.00f);
+        Color[ImGuiCol_FrameBgActive] = ImVec4(0.22f, 0.28f, 0.38f, 1.00f);
+        Color[ImGuiCol_TitleBg] = ImVec4(0.05f, 0.06f, 0.08f, 1.00f);
+        Color[ImGuiCol_TitleBgActive] = ImVec4(0.10f, 0.14f, 0.22f, 1.00f);
+        Color[ImGuiCol_TitleBgCollapsed] = ImVec4(0.05f, 0.06f, 0.08f, 0.75f);
+        Color[ImGuiCol_MenuBarBg] = ImVec4(0.08f, 0.09f, 0.12f, 1.00f);
+        Color[ImGuiCol_ScrollbarBg] = ImVec4(0.05f, 0.06f, 0.08f, 1.00f);
+        Color[ImGuiCol_ScrollbarGrab] = ImVec4(0.22f, 0.28f, 0.38f, 1.00f);
+        Color[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.30f, 0.40f, 0.56f, 1.00f);
+        Color[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.20f, 0.65f, 0.85f, 1.00f);
+        Color[ImGuiCol_CheckMark] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_SliderGrab] = ImVec4(0.20f, 0.60f, 0.80f, 1.00f);
+        Color[ImGuiCol_SliderGrabActive] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_Button] = ImVec4(0.14f, 0.22f, 0.34f, 1.00f);
+        Color[ImGuiCol_ButtonHovered] = ImVec4(0.18f, 0.38f, 0.60f, 1.00f);
+        Color[ImGuiCol_ButtonActive] = ImVec4(0.20f, 0.52f, 0.78f, 1.00f);
+        Color[ImGuiCol_Header] = ImVec4(0.14f, 0.22f, 0.34f, 1.00f);
+        Color[ImGuiCol_HeaderHovered] = ImVec4(0.18f, 0.38f, 0.60f, 1.00f);
+        Color[ImGuiCol_HeaderActive] = ImVec4(0.20f, 0.52f, 0.78f, 1.00f);
+        Color[ImGuiCol_Separator] = ImVec4(0.20f, 0.24f, 0.32f, 1.00f);
+        Color[ImGuiCol_SeparatorHovered] = ImVec4(0.20f, 0.55f, 0.78f, 0.80f);
+        Color[ImGuiCol_SeparatorActive] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_ResizeGrip] = ImVec4(0.20f, 0.40f, 0.60f, 0.30f);
+        Color[ImGuiCol_ResizeGripHovered] = ImVec4(0.20f, 0.55f, 0.78f, 0.70f);
+        Color[ImGuiCol_ResizeGripActive] = ImVec4(0.20f, 0.72f, 0.90f, 0.95f);
+        Color[ImGuiCol_Tab] = ImVec4(0.10f, 0.14f, 0.20f, 1.00f);
+        Color[ImGuiCol_TabHovered] = ImVec4(0.18f, 0.38f, 0.60f, 1.00f);
+        Color[ImGuiCol_TabSelected] = ImVec4(0.14f, 0.28f, 0.46f, 1.00f);
+        Color[ImGuiCol_TabSelectedOverline] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_PlotLines] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_PlotLinesHovered] = ImVec4(0.40f, 0.85f, 1.00f, 1.00f);
+        Color[ImGuiCol_PlotHistogram] = ImVec4(0.16f, 0.55f, 0.76f, 1.00f);
+        Color[ImGuiCol_PlotHistogramHovered] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_TableHeaderBg] = ImVec4(0.09f, 0.12f, 0.17f, 1.00f);
+        Color[ImGuiCol_TableBorderStrong] = ImVec4(0.20f, 0.24f, 0.32f, 1.00f);
+        Color[ImGuiCol_TableBorderLight] = ImVec4(0.13f, 0.16f, 0.22f, 1.00f);
+        Color[ImGuiCol_TextSelectedBg] = ImVec4(0.20f, 0.52f, 0.78f, 0.35f);
+        Color[ImGuiCol_NavCursor] = ImVec4(0.20f, 0.72f, 0.90f, 1.00f);
+        Color[ImGuiCol_NavWindowingHighlight] = ImVec4(0.20f, 0.72f, 0.90f, 0.70f);
+        Color[ImGuiCol_ModalWindowDimBg] = ImVec4(0.00f, 0.00f, 0.00f, 0.60f);
         break;
     }
     }
@@ -328,9 +384,10 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
     if (ImGui::BeginMenu("Theme"))
     {
         static std::map<ImGuiTheme, std::string> ThemeNames = {
-            {ImGuiTheme::Dark, "Dark"},
-            {ImGuiTheme::Light, "Light"},
-            {ImGuiTheme::Dracula, "Dracula"},
+            { ImGuiTheme::Dark, "Dark" },
+            { ImGuiTheme::Light, "Light" },
+            { ImGuiTheme::Dracula, "Dracula" },
+            { ImGuiTheme::Midnight, "Midnight" },
         };
 
         for (const auto &[Theme, Name] : ThemeNames)
@@ -1269,7 +1326,7 @@ void Canavar::Engine::ImGuiWidget::DrawCinematicPathPanel()
 
     // ── Playback controls ─────────────────────────────────────────────────────
     const bool Playing = mCinematicPath.IsPlaying();
-    const int  Count   = mCinematicPath.GetWaypointCount();
+    const int Count = mCinematicPath.GetWaypointCount();
 
     if (Count < 2)
         ImGui::TextColored(ImVec4(1, 0.6f, 0.1f, 1), "Add at least 2 waypoints to enable playback.");
