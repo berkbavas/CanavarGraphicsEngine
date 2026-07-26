@@ -46,7 +46,7 @@ namespace Canavar::Engine
     enum class PostProcessEffectType
     {
         None,
-        DepthOfField,        // Bokeh depth of field (runs first, before tone mapping)
+        DepthOfField,        // Bokeh depth of field (runs before tone mapping)
         Aces,                // ACES tone mapping (HDR -> LDR)
         ColorGrading,        // Brightness / contrast / saturation / temperature
         Sharpen,             // Unsharp-mask image sharpening
@@ -64,4 +64,12 @@ namespace Canavar::Engine
         Plane,  // Unit quad in the XZ plane
         Sphere, // UV sphere of radius 1
     };
+
+    enum class ImGuiTheme
+    {
+        Dark = 0,
+        Light = 1,
+        Dracula = 2,
+    };
+
 }

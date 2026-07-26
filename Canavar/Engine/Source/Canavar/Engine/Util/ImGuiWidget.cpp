@@ -45,6 +45,8 @@ Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
     // Connect to the renderer's signals for initialization and overlay rendering
     connect(mRenderer, &Renderer::Initialized, this, &Canavar::Engine::ImGuiWidget::Initialize);
     connect(mRenderer, &Renderer::PostRender, this, &Canavar::Engine::ImGuiWidget::OnPostRender);
+    // Update cinematic path before each frame is rendered so the camera moves before the scene is drawn.
+    connect(mRenderer, &Renderer::Updated, &mCinematicPath, &CinematicPath::Update);
 
     // Retrieve the NodeManager and CameraManager from the renderer for later use
     mNodeManager = mRenderer->GetNodeManager();
@@ -68,6 +70,72 @@ bool Canavar::Engine::ImGuiWidget::WantsMouseCapture() const
 void Canavar::Engine::ImGuiWidget::Initialize()
 {
     mRenderRef = QtImGui::initialize(mRenderer->GetOpenGLWidget(), false);
+    ApplyTheme();
+}
+
+void Canavar::Engine::ImGuiWidget::ApplyTheme()
+{
+    ImGuiStyle &Style = ImGui::GetStyle();
+
+    switch (mTheme)
+    {
+    case ImGuiTheme::Dark:
+        ImGui::StyleColorsDark();
+        break;
+    case ImGuiTheme::Light:
+        ImGui::StyleColorsLight();
+        break;
+    case ImGuiTheme::Dracula:
+    {
+        ImGui::StyleColorsDark();
+        ImVec4 *Color = Style.Colors;
+        Color[ImGuiCol_Text] = ImVec4(0.95f, 0.92f, 1.00f, 1.00f);
+        Color[ImGuiCol_TextDisabled] = ImVec4(0.55f, 0.50f, 0.68f, 1.00f);
+        Color[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.18f, 1.00f);
+        Color[ImGuiCol_ChildBg] = ImVec4(0.10f, 0.10f, 0.16f, 1.00f);
+        Color[ImGuiCol_PopupBg] = ImVec4(0.12f, 0.12f, 0.18f, 0.97f);
+        Color[ImGuiCol_Border] = ImVec4(0.44f, 0.37f, 0.61f, 0.50f);
+        Color[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.20f, 0.29f, 1.00f);
+        Color[ImGuiCol_FrameBgHovered] = ImVec4(0.31f, 0.27f, 0.46f, 1.00f);
+        Color[ImGuiCol_FrameBgActive] = ImVec4(0.38f, 0.33f, 0.55f, 1.00f);
+        Color[ImGuiCol_TitleBg] = ImVec4(0.17f, 0.13f, 0.26f, 1.00f);
+        Color[ImGuiCol_TitleBgActive] = ImVec4(0.27f, 0.22f, 0.42f, 1.00f);
+        Color[ImGuiCol_TitleBgCollapsed] = ImVec4(0.12f, 0.10f, 0.18f, 0.75f);
+        Color[ImGuiCol_MenuBarBg] = ImVec4(0.17f, 0.13f, 0.26f, 1.00f);
+        Color[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.10f, 0.16f, 1.00f);
+        Color[ImGuiCol_ScrollbarGrab] = ImVec4(0.44f, 0.37f, 0.61f, 1.00f);
+        Color[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.57f, 0.50f, 0.76f, 1.00f);
+        Color[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.78f, 0.63f, 0.97f, 1.00f);
+        Color[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.55f, 0.90f, 1.00f);
+        Color[ImGuiCol_SliderGrab] = ImVec4(0.62f, 0.47f, 0.85f, 1.00f);
+        Color[ImGuiCol_SliderGrabActive] = ImVec4(0.78f, 0.63f, 0.97f, 1.00f);
+        Color[ImGuiCol_Button] = ImVec4(0.34f, 0.26f, 0.54f, 1.00f);
+        Color[ImGuiCol_ButtonHovered] = ImVec4(0.48f, 0.38f, 0.70f, 1.00f);
+        Color[ImGuiCol_ButtonActive] = ImVec4(0.58f, 0.48f, 0.82f, 1.00f);
+        Color[ImGuiCol_Header] = ImVec4(0.34f, 0.26f, 0.54f, 1.00f);
+        Color[ImGuiCol_HeaderHovered] = ImVec4(0.48f, 0.38f, 0.70f, 1.00f);
+        Color[ImGuiCol_HeaderActive] = ImVec4(0.58f, 0.48f, 0.82f, 1.00f);
+        Color[ImGuiCol_Separator] = ImVec4(0.44f, 0.37f, 0.61f, 0.50f);
+        Color[ImGuiCol_SeparatorHovered] = ImVec4(0.62f, 0.47f, 0.85f, 0.70f);
+        Color[ImGuiCol_SeparatorActive] = ImVec4(0.78f, 0.63f, 0.97f, 1.00f);
+        Color[ImGuiCol_ResizeGrip] = ImVec4(0.44f, 0.37f, 0.61f, 0.40f);
+        Color[ImGuiCol_ResizeGripHovered] = ImVec4(0.62f, 0.47f, 0.85f, 0.70f);
+        Color[ImGuiCol_ResizeGripActive] = ImVec4(0.78f, 0.63f, 0.97f, 0.90f);
+        Color[ImGuiCol_Tab] = ImVec4(0.22f, 0.18f, 0.34f, 1.00f);
+        Color[ImGuiCol_TabHovered] = ImVec4(0.48f, 0.38f, 0.70f, 1.00f);
+        Color[ImGuiCol_TabSelected] = ImVec4(0.34f, 0.26f, 0.54f, 1.00f);
+        break;
+    }
+    }
+
+    // Set rounding values for various UI elements
+    Style.WindowRounding = 8.0f;
+    Style.ChildRounding = 6.0f;
+    Style.FrameRounding = 4.0f;
+    Style.PopupRounding = 6.0f;
+    Style.ScrollbarRounding = 8.0f;
+    Style.GrabRounding = 4.0f;
+    Style.TabRounding = 4.0f;
 }
 
 void Canavar::Engine::ImGuiWidget::OnPostRender(float Ifps)
@@ -108,6 +176,7 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
     DrawTerrainProperties();
     DrawPostProcessPanel();
     DrawRendererProperties();
+    DrawCinematicPathPanel();
     DrawStats(Ifps);
     ImGui::End();
 
@@ -250,6 +319,27 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
 
             if (!FilePath.isEmpty())
                 mNodeManager->ImportNodes(FilePath.toStdString());
+        }
+
+        ImGui::EndMenu();
+    }
+
+    // ── Theme ─────────────────────────────────────────────────────────────
+    if (ImGui::BeginMenu("Theme"))
+    {
+        static std::map<ImGuiTheme, std::string> ThemeNames = {
+            {ImGuiTheme::Dark, "Dark"},
+            {ImGuiTheme::Light, "Light"},
+            {ImGuiTheme::Dracula, "Dracula"},
+        };
+
+        for (const auto &[Theme, Name] : ThemeNames)
+        {
+            if (ImGui::MenuItem(Name.c_str(), nullptr, mTheme == Theme))
+            {
+                mTheme = Theme;
+                ApplyTheme();
+            }
         }
 
         ImGui::EndMenu();
@@ -1168,6 +1258,123 @@ void Canavar::Engine::ImGuiWidget::DrawRendererProperties()
     }
 }
 
+void Canavar::Engine::ImGuiWidget::DrawCinematicPathPanel()
+{
+    if (!ImGui::CollapsingHeader("Cinematic Path##DrawCinematicPathPanel"))
+        return;
+
+    // ── Bind to active camera ─────────────────────────────────────────────────
+    if (PerspectiveCamera *pCam = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera()))
+        mCinematicPath.SetCamera(pCam);
+
+    // ── Playback controls ─────────────────────────────────────────────────────
+    const bool Playing = mCinematicPath.IsPlaying();
+    const int  Count   = mCinematicPath.GetWaypointCount();
+
+    if (Count < 2)
+        ImGui::TextColored(ImVec4(1, 0.6f, 0.1f, 1), "Add at least 2 waypoints to enable playback.");
+
+    ImGui::BeginDisabled(Count < 2);
+    if (Playing)
+    {
+        if (ImGui::Button("Pause##CinematicPath"))
+            mCinematicPath.Pause();
+    }
+    else
+    {
+        if (ImGui::Button("Play##CinematicPath"))
+            mCinematicPath.Play();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Stop##CinematicPath"))
+        mCinematicPath.Stop();
+    ImGui::EndDisabled();
+
+    ImGui::SameLine();
+    bool Looping = mCinematicPath.IsLooping();
+    if (ImGui::Checkbox("Loop##CinematicPath", &Looping))
+        mCinematicPath.SetLooping(Looping);
+
+    float Speed = mCinematicPath.GetSpeedMultiplier();
+    if (ImGui::SliderFloat("Speed##CinematicPath", &Speed, 0.1f, 5.0f))
+        mCinematicPath.SetSpeedMultiplier(Speed);
+
+    if (Count >= 2)
+    {
+        float Progress = mCinematicPath.GetProgress() * 100.0f;
+        ImGui::ProgressBar(mCinematicPath.GetProgress(), ImVec2(-1, 0), std::format("{:.1f}%", double(Progress)).c_str());
+    }
+
+    ImGui::Separator();
+
+    // ── Add waypoint ──────────────────────────────────────────────────────────
+    if (ImGui::Button("+ Add Waypoint (current camera pose)##CinematicPath"))
+    {
+        if (PerspectiveCamera *pCam = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera()))
+        {
+            CinematicPath::Waypoint Wp;
+            Wp.Position = pCam->GetWorldPosition();
+            Wp.Rotation = pCam->GetRotation();
+            Wp.Duration = 2.0f;
+            mCinematicPath.AddWaypoint(Wp);
+        }
+    }
+
+    if (ImGui::Button("Clear All##CinematicPath"))
+        mCinematicPath.ClearWaypoints();
+
+    ImGui::Separator();
+
+    // ── Waypoint list ─────────────────────────────────────────────────────────
+    for (int i = 0; i < mCinematicPath.GetWaypointCount(); ++i)
+    {
+        CinematicPath::Waypoint &Wp = mCinematicPath.GetWaypoint(i);
+
+        ImGui::PushID(i);
+
+        ImGui::Text("Waypoint %d", i);
+        ImGui::SameLine();
+
+        if (ImGui::SmallButton("Go##CinematicPath"))
+        {
+            if (PerspectiveCamera *pCam = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera()))
+            {
+                pCam->SetPosition(Wp.Position);
+                pCam->SetRotation(Wp.Rotation);
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("Update##CinematicPath"))
+        {
+            if (PerspectiveCamera *pCam = dynamic_cast<PerspectiveCamera *>(mCameraManager->GetActiveCamera()))
+            {
+                Wp.Position = pCam->GetWorldPosition();
+                Wp.Rotation = pCam->GetRotation();
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::SmallButton("X##CinematicPath"))
+        {
+            mCinematicPath.RemoveWaypoint(i);
+            ImGui::PopID();
+            break; // list changed, restart loop next frame
+        }
+
+        // Show position (read-only)
+        ImGui::Text("  Pos: (%.1f, %.1f, %.1f)", double(Wp.Position.x()), double(Wp.Position.y()), double(Wp.Position.z()));
+
+        // Duration to NEXT waypoint (only meaningful for all but last)
+        if (i < mCinematicPath.GetWaypointCount() - 1)
+        {
+            const std::string Label = std::format("  Duration (s)##wp{}", i);
+            ImGui::SliderFloat(Label.c_str(), &Wp.Duration, 0.1f, 30.0f, "%.1f s");
+        }
+
+        ImGui::PopID();
+        ImGui::Separator();
+    }
+}
+
 void Canavar::Engine::ImGuiWidget::EnterGizmoIfApplicable()
 {
     // If the selected node is a TexturedModel, enter the gizmo mode for it.
@@ -1191,8 +1398,8 @@ void Canavar::Engine::ImGuiWidget::SetSelectedNode(Node *pNode)
 
     // Update the selected node and copy its name into the buffer for display in the UI.
     mSelectedNode = pNode;
-    mSelectedMeshId = -1;      // Reset mesh selection when the model changes.
-    mMeshPickingMode = false;  // Turn off pick mode to avoid accidental selections.
+    mSelectedMeshId = -1;     // Reset mesh selection when the model changes.
+    mMeshPickingMode = false; // Turn off pick mode to avoid accidental selections.
 
     if (mSelectedNode)
     {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Canavar/Engine/Core/Enums.h"
 #include "Canavar/Engine/Core/EventReceiver.h"
 #include "Canavar/Engine/Core/EventThief.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
@@ -12,6 +13,7 @@
 #include "Canavar/Engine/PostProcessEffect/FxaaEffect.h"
 #include "Canavar/Engine/PostProcessEffect/LensDistortionEffect.h"
 #include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
+#include "Canavar/Engine/Util/CinematicPath.h"
 
 #include <QMap>
 #include <QMatrix4x4>
@@ -75,6 +77,7 @@ namespace Canavar::Engine
         void DrawTerrainProperties();
         void DrawPostProcessPanel();
         void DrawRendererProperties();
+        void DrawCinematicPathPanel();
         void EnterGizmoIfApplicable();
         void ExitGizmoIfApplicable();
 
@@ -84,6 +87,7 @@ namespace Canavar::Engine
 
         void SetSelectedNode(Node *pNode);
         void UpdateNameBuffer();
+        void ApplyTheme();
 
         // Per-mesh TRS editing state (ImGui-side only)
         struct MeshTransformEdit
@@ -101,13 +105,18 @@ namespace Canavar::Engine
 
         // Selection state
         Node *mSelectedNode{ nullptr };
-        int mSelectedMeshId{ -1 };   // MeshId of the selected mesh, -1 = none
+        int mSelectedMeshId{ -1 }; // MeshId of the selected mesh, -1 = none
         bool mMeshPickingMode{ false };
 
         // Text input buffers
         char mNodeNameBuffer[128]{};
 
         bool mGizmoEnabled{ false };
+
+        // Cinematic path
+        CinematicPath mCinematicPath{};
+
+        ImGuiTheme mTheme{ ImGuiTheme::Dark };
     };
 
     using ImGuiWidgetPtr = std::unique_ptr<ImGuiWidget>;
