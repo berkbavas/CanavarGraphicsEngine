@@ -419,7 +419,7 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
         if (mElapsedTimer.elapsed() > 500)
         {
             mElapsedTimer.restart();
-            mStatsText = Canavar::Engine::Chronometer::PrintAll();
+            mStatsText = Canavar::Engine::Chronometer::PrintAll(Canavar::Engine::Chronometer::SortBy::TotalCallTime);
         }
 
         ImGui::Text("Chronometer Stats:");

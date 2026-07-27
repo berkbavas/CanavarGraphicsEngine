@@ -1,6 +1,8 @@
 #include "Chronometer.h"
 
+#include <algorithm>
 #include <format>
+#include <vector>
 
 Canavar::Engine::Chronometer::Chronometer(const std::string& Name)
     : mName(Name)
@@ -34,16 +36,33 @@ std::string Canavar::Engine::Chronometer::Print(const std::string& Name)
                        Stats.TotalCallTime.count() / 1'000'000.0f);
 }
 
-std::string Canavar::Engine::Chronometer::PrintAll()
+std::string Canavar::Engine::Chronometer::PrintAll(SortBy Sort)
 {
     std::string Result;
 
-    for (const auto& [Name, Stats] : sStats)
+    switch (Sort)
     {
-        Result += Print(Name) + "\n";
+    case SortBy::Name:
+    default:
+        for (const auto& [Name, Stats] : sStats)
+        {
+            Result += Print(Name) + "\n";
+        }
+        break;
+    case SortBy::TotalCallTime:
+    {
+        std::vector<std::pair<std::string, Stats>> SortedStats(sStats.begin(), sStats.end());
+        std::sort(SortedStats.begin(), SortedStats.end(), [](const auto& A, const auto& B) { return A.second.TotalCallTime > B.second.TotalCallTime; });
+        for (const auto& [Name, Stats] : SortedStats)
+        {
+            Result += Print(Name) + "\n";
+        }
+
+        break;
+    }
     }
 
     return Result;
 }
 
-std::map<std::string, Canavar::Engine::Stats> Canavar::Engine::Chronometer::sStats{};
+std::map<std::string, Canavar::Engine::Chronometer::Stats> Canavar::Engine::Chronometer::sStats{};
