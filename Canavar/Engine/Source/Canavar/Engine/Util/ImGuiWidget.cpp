@@ -199,6 +199,8 @@ void Canavar::Engine::ImGuiWidget::ApplyTheme()
 
 void Canavar::Engine::ImGuiWidget::OnPostRender(float Ifps)
 {
+    Chronometer Chronometer("ImGuiWidget::OnPostRender");
+
     QtImGui::newFrame(mRenderRef);
     DrawImGuiWidgets(Ifps);
     emit CanDrawImGuiWidgets(Ifps);
@@ -416,7 +418,7 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
 {
     if (ImGui::CollapsingHeader("Stats##DrawStats", ImGuiTreeNodeFlags_DefaultOpen))
     {
-        if (mElapsedTimer.elapsed() > 500)
+        if (mElapsedTimer.elapsed() > 1000)
         {
             mElapsedTimer.restart();
             mStatsCache = Chronometer::GetAllStats(Chronometer::SortBy::TotalCallTime);
@@ -430,31 +432,41 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
         {
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch, 3.0f);
-            ImGui::TableSetupColumn("Last (ms)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
-            ImGui::TableSetupColumn("Max (ms)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+            ImGui::TableSetupColumn("Last (µs)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+            ImGui::TableSetupColumn("Max (µs)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
             ImGui::TableSetupColumn("Total (s)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
             ImGui::TableHeadersRow();
 
             for (const auto &E : mStatsCache)
             {
-                const float Last = static_cast<float>(E.Stats.LastCallTime.count()) / 1'000.0f;
-                const float Longest = static_cast<float>(E.Stats.LongestCallTime.count()) / 1'000.0f;
+                const float Last = static_cast<float>(E.Stats.LastCallTime.count());
+                const float Longest = static_cast<float>(E.Stats.LongestCallTime.count());
                 const float Total = static_cast<float>(E.Stats.TotalCallTime.count()) / 1'000'000.0f;
 
                 // Color the column 'Last': green → yellow → red based on Last / Longest ratio.
                 const float Ratio = (Longest > 0.0f) ? std::min(Last / Longest, 1.0f) : 0.0f;
                 const ImVec4 LastColor{ Ratio, 1.0f - Ratio, 0.2f, 1.0f };
 
+                const bool IsSelected = (mSelectedStatName == E.Name);
+
                 ImGui::TableNextRow();
 
+                // Invisible selectable spanning all columns — makes the entire row clickable.
                 ImGui::TableSetColumnIndex(0);
+                ImGui::PushID(E.Name.c_str());
+                if (ImGui::Selectable("##row", IsSelected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_AllowOverlap, ImVec2(0.0f, ImGui::GetTextLineHeight())))
+                {
+                    mSelectedStatName = IsSelected ? std::string{} : E.Name;
+                }
+                ImGui::PopID();
+                ImGui::SameLine();
                 ImGui::TextUnformatted(E.Name.c_str());
 
                 ImGui::TableSetColumnIndex(1);
-                ImGui::TextColored(LastColor, "%.3f", static_cast<double>(Last));
+                ImGui::TextColored(LastColor, "%.0f", static_cast<double>(Last));
 
                 ImGui::TableSetColumnIndex(2);
-                ImGui::Text("%.3f", static_cast<double>(Longest));
+                ImGui::Text("%.0f", static_cast<double>(Longest));
 
                 ImGui::TableSetColumnIndex(3);
                 ImGui::Text("%.3f", static_cast<double>(Total));

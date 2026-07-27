@@ -77,7 +77,7 @@ std::vector<Canavar::Engine::Chronometer::Entry> Canavar::Engine::Chronometer::G
 
     if (Sort == SortBy::TotalCallTime)
     {
-        std::sort(Entries.begin(), Entries.end(), [](const Entry& A, const Entry& B) {
+        std::sort(Entries.begin(), Entries.end(), [](const Entry& A, const Entry& B) { // Sort in descending order of total call time
             return A.Stats.TotalCallTime > B.Stats.TotalCallTime;
         });
     }

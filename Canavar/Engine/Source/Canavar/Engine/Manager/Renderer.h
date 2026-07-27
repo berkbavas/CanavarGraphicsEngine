@@ -125,6 +125,10 @@ namespace Canavar::Engine
         void CreateGlobalNodes();
         void ApplyPostProcessEffects();
         void SupplyPerFrameData();
+        void BlitFramebuffer();
+        void ResolveFinalPass();
+        void UpdateManagers(float Ifps);
+        void PaintPass();
 
         OpenGLWidget* mOpenGLWidget{ nullptr };
         RenderingContext* mRenderingContext{ nullptr };

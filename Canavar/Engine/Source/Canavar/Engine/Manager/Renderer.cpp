@@ -152,21 +152,13 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     mDevicePixelRatio = mRenderingContext->GetDevicePixelRatio();
 
     // Update all managers before rendering
-    for (Manager *pManager : mManagers)
-    {
-        pManager->Update(Ifps);
-    }
-
-    emit Updated(Ifps);
+    UpdateManagers(Ifps);
 
     // Render the scene to the multisample framebuffer using the active camera
     RenderToFramebuffer(mFramebuffers[Multisample].get(), mCameraManager->GetActiveCamera());
 
     // Blit multisample framebuffer to singlesample framebuffer
-    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT0);
-    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT1);
-    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT2);
-    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT3);
+    BlitFramebuffer();
 
     // Apply post-processing effects to the rendered scene.
     // Note: The order of effects in the mPostProcessEffects map determines the order in which they are applied.
@@ -174,20 +166,10 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     ApplyPostProcessEffects();
 
     // Render the final result to the default framebuffer (screen)
-    QOpenGLFramebufferObject::bindDefault();
-    glViewport(0, 0, mWidth * mDevicePixelRatio, mHeight * mDevicePixelRatio);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    mScreenShader->Bind();
-    mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Pong]->GetTexture());
-    mQuad->Render();
-    mScreenShader->Unbind();
+    ResolveFinalPass();
 
     // QPainter rendering should be done after the main render pass to ensure it appears on top of everything else.
-    for (Manager *pManager : mManagers)
-    {
-        pManager->Paint(mOpenGLWidget);
-    }
+    PaintPass();
 
     // ImGui rendering should be done after the main render pass to ensure it appears on top of everything else.
     emit PostRender(Ifps);
@@ -195,6 +177,8 @@ void Canavar::Engine::Renderer::Render(float Ifps)
 
 void Canavar::Engine::Renderer::RenderToFramebuffer(Framebuffer *pFramebuffer, PerspectiveCamera *pCamera)
 {
+    Chronometer Chronometer("Renderer::RenderToFramebuffer");
+
     // Setup OpenGL state for rendering
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
@@ -441,6 +425,8 @@ void Canavar::Engine::Renderer::CreateGlobalNodes()
 
 void Canavar::Engine::Renderer::ApplyPostProcessEffects()
 {
+    Chronometer Chronometer("Renderer::ApplyPostProcessEffects");
+
     // Singlesample -> Pong
     mFramebuffers[Singlesample]->BlitColorBufferTo(mFramebuffers[Pong].get(), GL_COLOR_ATTACHMENT0);
 
@@ -474,6 +460,52 @@ void Canavar::Engine::Renderer::SupplyPerFrameData()
     if (PerspectiveCamera *pCamera = mCameraManager->GetActiveCamera())
     {
         mDepthOfFieldEffect->SetCameraPosition(pCamera->GetPosition());
+    }
+}
+
+void Canavar::Engine::Renderer::BlitFramebuffer()
+{
+    Chronometer Chronometer("Renderer::BlitFramebuffer");
+
+    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT0);
+    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT1);
+    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT2);
+    mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT3);
+}
+
+void Canavar::Engine::Renderer::ResolveFinalPass()
+{
+    Chronometer Chronometer("Renderer::ResolveFinalPass");
+
+    QOpenGLFramebufferObject::bindDefault();
+    glViewport(0, 0, mWidth * mDevicePixelRatio, mHeight * mDevicePixelRatio);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+    mScreenShader->Bind();
+    mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Pong]->GetTexture());
+    mQuad->Render();
+    mScreenShader->Unbind();
+}
+
+void Canavar::Engine::Renderer::UpdateManagers(float Ifps)
+{
+    Chronometer Chronometer("Renderer::UpdateManagers");
+
+    for (Manager *pManager : mManagers)
+    {
+        pManager->Update(Ifps);
+    }
+
+    emit Updated(Ifps);
+}
+
+void Canavar::Engine::Renderer::PaintPass()
+{
+    Chronometer Chronometer("Renderer::PaintPass");
+
+    for (Manager *pManager : mManagers)
+    {
+        pManager->Paint(mOpenGLWidget);
     }
 }
 

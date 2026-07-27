@@ -123,6 +123,7 @@ namespace Canavar::Engine
 
         QElapsedTimer mElapsedTimer;
         std::vector<Chronometer::Entry> mStatsCache;
+        std::string mSelectedStatName; // name of the highlighted stats row
     };
 
     using ImGuiWidgetPtr = std::unique_ptr<ImGuiWidget>;
