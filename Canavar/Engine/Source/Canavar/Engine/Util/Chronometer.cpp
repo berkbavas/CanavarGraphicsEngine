@@ -65,4 +65,24 @@ std::string Canavar::Engine::Chronometer::PrintAll(SortBy Sort)
     return Result;
 }
 
+std::vector<Canavar::Engine::Chronometer::Entry> Canavar::Engine::Chronometer::GetAllStats(SortBy Sort)
+{
+    std::vector<Entry> Entries;
+    Entries.reserve(sStats.size());
+
+    for (const auto& [Name, Stats] : sStats)
+    {
+        Entries.push_back({ Name, Stats });
+    }
+
+    if (Sort == SortBy::TotalCallTime)
+    {
+        std::sort(Entries.begin(), Entries.end(), [](const Entry& A, const Entry& B) {
+            return A.Stats.TotalCallTime > B.Stats.TotalCallTime;
+        });
+    }
+
+    return Entries;
+}
+
 std::map<std::string, Canavar::Engine::Chronometer::Stats> Canavar::Engine::Chronometer::sStats{};

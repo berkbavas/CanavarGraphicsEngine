@@ -14,8 +14,10 @@
 #include "Canavar/Engine/PostProcessEffect/LensDistortionEffect.h"
 #include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
 #include "Canavar/Engine/Util/CinematicPath.h"
+#include "Canavar/Engine/Util/Chronometer.h"
 
 #include <QElapsedTimer>
+#include <vector>
 #include <QMap>
 #include <QMatrix4x4>
 #include <QVector3D>
@@ -120,7 +122,7 @@ namespace Canavar::Engine
         ImGuiTheme mTheme{ ImGuiTheme::Dark };
 
         QElapsedTimer mElapsedTimer;
-        std::string mStatsText;
+        std::vector<Chronometer::Entry> mStatsCache;
     };
 
     using ImGuiWidgetPtr = std::unique_ptr<ImGuiWidget>;

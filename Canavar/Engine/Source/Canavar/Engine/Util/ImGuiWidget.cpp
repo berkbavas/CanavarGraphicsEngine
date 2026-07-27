@@ -419,14 +419,51 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
         if (mElapsedTimer.elapsed() > 500)
         {
             mElapsedTimer.restart();
-            mStatsText = Canavar::Engine::Chronometer::PrintAll(Canavar::Engine::Chronometer::SortBy::TotalCallTime);
+            mStatsCache = Chronometer::GetAllStats(Chronometer::SortBy::TotalCallTime);
         }
 
-        ImGui::Text("Chronometer Stats:");
-        ImGui::Text("%s", mStatsText.c_str());
+        constexpr ImGuiTableFlags TableFlags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_ScrollY;
 
-        ImGui::Separator();
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+        const float TableHeight = ImGui::GetTextLineHeightWithSpacing() * (static_cast<float>(mStatsCache.size()) + 2.0f);
+
+        if (ImGui::BeginTable("##ChronometerTable", 4, TableFlags, ImVec2(0.0f, TableHeight)))
+        {
+            ImGui::TableSetupScrollFreeze(0, 1);
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch, 3.0f);
+            ImGui::TableSetupColumn("Last (ms)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+            ImGui::TableSetupColumn("Max (ms)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+            ImGui::TableSetupColumn("Total (s)", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+            ImGui::TableHeadersRow();
+
+            for (const auto &E : mStatsCache)
+            {
+                const float Last = static_cast<float>(E.Stats.LastCallTime.count()) / 1'000.0f;
+                const float Longest = static_cast<float>(E.Stats.LongestCallTime.count()) / 1'000.0f;
+                const float Total = static_cast<float>(E.Stats.TotalCallTime.count()) / 1'000'000.0f;
+
+                // Color the column 'Last': green → yellow → red based on Last / Longest ratio.
+                const float Ratio = (Longest > 0.0f) ? std::min(Last / Longest, 1.0f) : 0.0f;
+                const ImVec4 LastColor{ Ratio, 1.0f - Ratio, 0.2f, 1.0f };
+
+                ImGui::TableNextRow();
+
+                ImGui::TableSetColumnIndex(0);
+                ImGui::TextUnformatted(E.Name.c_str());
+
+                ImGui::TableSetColumnIndex(1);
+                ImGui::TextColored(LastColor, "%.3f", static_cast<double>(Last));
+
+                ImGui::TableSetColumnIndex(2);
+                ImGui::Text("%.3f", static_cast<double>(Longest));
+
+                ImGui::TableSetColumnIndex(3);
+                ImGui::Text("%.3f", static_cast<double>(Total));
+            }
+
+            ImGui::EndTable();
+        }
+
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / static_cast<double>(ImGui::GetIO().Framerate), static_cast<double>(ImGui::GetIO().Framerate));
     }
 }
 

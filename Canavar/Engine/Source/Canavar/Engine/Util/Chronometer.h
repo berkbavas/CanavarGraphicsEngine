@@ -4,6 +4,7 @@
 #include <map>
 #include <mutex>
 #include <string>
+#include <vector>
 
 namespace Canavar::Engine
 {
@@ -23,10 +24,6 @@ namespace Canavar::Engine
             TotalCallTime,
         };
 
-        static std::string Print(const std::string& Name);
-        static std::string PrintAll(SortBy Sort = SortBy::Name);
-
-      private:
         struct Stats
         {
             uint64_t NumberOfCalls{ 0 };
@@ -35,6 +32,17 @@ namespace Canavar::Engine
             std::chrono::microseconds LongestCallTime{ 0 };
         };
 
+        struct Entry
+        {
+            std::string Name;
+            Stats Stats;
+        };
+
+        static std::string Print(const std::string& Name);
+        static std::string PrintAll(SortBy Sort = SortBy::Name);
+        static std::vector<Entry> GetAllStats(SortBy Sort = SortBy::TotalCallTime);
+
+      private:
         Clock mStartTime{ std::chrono::system_clock::now() };
         std::string mName;
 
