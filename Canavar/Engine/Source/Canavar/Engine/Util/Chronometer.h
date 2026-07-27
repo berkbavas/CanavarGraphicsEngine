@@ -30,7 +30,6 @@ namespace Canavar::Engine
         Clock mStartTime{ std::chrono::system_clock::now() };
         std::string mName;
 
-        static std::mutex sMutex;
         static std::map<std::string, Stats> sStats;
     };
 }

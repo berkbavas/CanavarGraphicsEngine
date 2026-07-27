@@ -8,13 +8,10 @@ Canavar::Engine::Chronometer::Chronometer(const std::string& Name)
 
 Canavar::Engine::Chronometer::~Chronometer()
 {
-    std::scoped_lock Lock(sMutex);
-
     const auto Now = std::chrono::system_clock::now();
-
-    // Update
-    auto& Stats = sStats[mName];
     const auto Duration = std::chrono::duration_cast<std::chrono::microseconds>(Now - mStartTime);
+
+    auto& Stats = sStats[mName];
 
     Stats.LastCallTime = Duration;
     Stats.TotalCallTime += Duration;
@@ -48,7 +45,5 @@ std::string Canavar::Engine::Chronometer::PrintAll()
 
     return Result;
 }
-
-std::mutex Canavar::Engine::Chronometer::sMutex{};
 
 std::map<std::string, Canavar::Engine::Stats> Canavar::Engine::Chronometer::sStats{};
