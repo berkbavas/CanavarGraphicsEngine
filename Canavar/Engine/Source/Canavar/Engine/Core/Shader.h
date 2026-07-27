@@ -33,7 +33,7 @@ namespace Canavar::Engine
         template<typename T>
         void SetUniform(const QString& Name, const T& Value)
         {
-            const auto Location = mProgram->uniformLocation(Name);
+            const auto Location = GetUniformLocation(Name);
 
             if (MINIMUM_VALID_LOCATION <= Location)
             {
@@ -48,7 +48,7 @@ namespace Canavar::Engine
         template<typename T>
         void SetUniformArray(const QString& Name, const QVector<T>& Values)
         {
-            const auto Location = mProgram->uniformLocation(Name);
+            const auto Location = GetUniformLocation(Name);
 
             if (MINIMUM_VALID_LOCATION <= Location)
             {
@@ -62,7 +62,7 @@ namespace Canavar::Engine
 
         void SetUniformArray(const QString& Name, const GLfloat* pValues, int Count, int TupleSize)
         {
-            const auto Location = mProgram->uniformLocation(Name);
+            const auto Location = GetUniformLocation(Name);
 
             if (MINIMUM_VALID_LOCATION <= Location)
             {
@@ -70,17 +70,20 @@ namespace Canavar::Engine
             }
             else
             {
-                LOG_FATAL("Shader::SetUniformValueArray[{}]: Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
+                LOG_FATAL("Shader::SetUniformArray: [{}] Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
             }
         }
 
         void SetSampler(const QString& Name, GLuint Unit, GLuint TextureId, GLuint Target = GL_TEXTURE_2D);
 
       private:
+        int GetUniformLocation(const QString& Name);
+
         QString mName;
         std::unique_ptr<QOpenGLShaderProgram> mProgram;
         std::map<QOpenGLShader::ShaderTypeBit, QString> mPaths;
         Callback mCallback{ nullptr };
+        std::map<QString, int> mUniformLocations;
     };
 
     using ShaderPtr = std::unique_ptr<Shader>;

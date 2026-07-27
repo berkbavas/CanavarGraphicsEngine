@@ -108,3 +108,14 @@ void Canavar::Engine::Shader::SetSampler(const QString& Name, GLuint Unit, GLuin
     glActiveTexture(GL_TEXTURE0 + Unit);
     glBindTexture(Target, TextureId);
 }
+
+int Canavar::Engine::Shader::GetUniformLocation(const QString& Name)
+{
+    if (mUniformLocations.find(Name) == mUniformLocations.end())
+    {
+        const auto Location = mProgram->uniformLocation(Name);
+        mUniformLocations[Name] = Location;
+    }
+
+    return mUniformLocations[Name];
+}
