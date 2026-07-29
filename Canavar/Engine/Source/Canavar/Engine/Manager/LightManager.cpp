@@ -91,7 +91,7 @@ void Canavar::Engine::LightManager::SetDirectionalLightsUniforms(Shader *pShader
 {
     Chronometer Chronometer("LightManager::SetDirectionalLightsUniforms");
 
-    const auto EnabledDirectionalLights = GetEnabledDirectionalLights();
+    const auto& EnabledDirectionalLights = GetEnabledDirectionalLights();
 
     const auto NumDirectionalLights = std::min(static_cast<int>(EnabledDirectionalLights.size()), MAX_DIRECTIONAL_LIGHTS);
 

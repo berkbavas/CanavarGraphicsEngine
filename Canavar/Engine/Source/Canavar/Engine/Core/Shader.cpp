@@ -117,7 +117,7 @@ int Canavar::Engine::Shader::GetUniformLocation(const QString& Name)
 
         if (Location < MINIMUM_VALID_LOCATION)
         {
-            CGE_EXIT_FAILURE("Shader::GetUniformLocation: [{}] Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
+            CGE_EXIT_FAILURE("Shader::GetUniformLocation[{}]: Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
         }
 
         mUniformLocations[Name] = Location;
