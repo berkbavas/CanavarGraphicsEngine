@@ -308,6 +308,8 @@ void main()
         Normal += GetWorldNormal(TextureCoords[i]) * Weights[i];
     }
 
+    Normal = normalize(Normal);
+
     vec3 LightOut = normalize(uCameraPosition - fsWorldPosition);
     float Distance = length(uCameraPosition - fsWorldPosition);
 

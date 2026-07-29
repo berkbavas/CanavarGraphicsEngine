@@ -40,6 +40,7 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mFramebufferFormats[Multisample].setSamples(NUM_SAMPLES);
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
+    mFramebufferFormats[Multisample].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
     mFramebufferExtraColorAttachments[Multisample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F }; // World, Local, NodeInfo
 
     mFramebufferFormats[Singlesample].setSamples(0);
