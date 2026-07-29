@@ -88,6 +88,7 @@ void Canavar::Engine::Mesh::Render(TexturedModel *pTexturedModel, Shader *pShade
 
     // Apply optional per-mesh local transform on top of the node transformation.
     QMatrix4x4 EffectiveNodeTransform = NodeTransformation;
+
     if (pTexturedModel->HasMeshTransformOverride(mMeshId))
     {
         EffectiveNodeTransform = EffectiveNodeTransform * pTexturedModel->GetMeshTransformOverride(mMeshId);

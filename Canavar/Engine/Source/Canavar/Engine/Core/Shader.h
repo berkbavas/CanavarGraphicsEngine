@@ -5,6 +5,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <unordered_map>
 
 #include <QObject>
 #include <QOpenGLExtraFunctions>
@@ -34,44 +35,20 @@ namespace Canavar::Engine
         void SetUniform(const QString& Name, const T& Value)
         {
             const auto Location = GetUniformLocation(Name);
-
-            if (MINIMUM_VALID_LOCATION <= Location)
-            {
-                mProgram->setUniformValue(Location, Value);
-            }
-            else
-            {
-                LOG_FATAL("Shader::SetUniform: [{}] Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
-            }
+            mProgram->setUniformValue(Location, Value);
         }
 
         template<typename T>
         void SetUniformArray(const QString& Name, const QVector<T>& Values)
         {
             const auto Location = GetUniformLocation(Name);
-
-            if (MINIMUM_VALID_LOCATION <= Location)
-            {
-                mProgram->setUniformValueArray(Location, Values.constData(), Values.size());
-            }
-            else
-            {
-                LOG_FATAL("Shader::SetUniformArray: [{}] Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
-            }
+            mProgram->setUniformValueArray(Location, Values.constData(), Values.size());
         }
 
         void SetUniformArray(const QString& Name, const GLfloat* pValues, int Count, int TupleSize)
         {
             const auto Location = GetUniformLocation(Name);
-
-            if (MINIMUM_VALID_LOCATION <= Location)
-            {
-                mProgram->setUniformValueArray(Location, pValues, Count, TupleSize);
-            }
-            else
-            {
-                LOG_FATAL("Shader::SetUniformArray: [{}] Uniform location '{}' could not be found.", mName.toStdString(), Name.toStdString());
-            }
+            mProgram->setUniformValueArray(Location, pValues, Count, TupleSize);
         }
 
         void SetSampler(const QString& Name, GLuint Unit, GLuint TextureId, GLuint Target = GL_TEXTURE_2D);
@@ -82,8 +59,8 @@ namespace Canavar::Engine
         QString mName;
         std::unique_ptr<QOpenGLShaderProgram> mProgram;
         std::map<QOpenGLShader::ShaderTypeBit, QString> mPaths;
+        std::unordered_map<QString, int> mUniformLocations;
         Callback mCallback{ nullptr };
-        std::map<QString, int> mUniformLocations;
     };
 
     using ShaderPtr = std::unique_ptr<Shader>;
