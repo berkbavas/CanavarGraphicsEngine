@@ -333,15 +333,6 @@ vec3 ApplyLineOfSightAnalyzer(vec3 Color)
         return Color;
     }
 
-    // Dot stipple pattern in screen space
-    const float DotPeriod = 6.0;
-    const float DotRadius = 2.2;
-    vec2 Cell = mod(gl_FragCoord.xy, DotPeriod);
-    if (length(Cell - vec2(DotPeriod * 0.5)) > DotRadius)
-    {
-        return Color;
-    }
-
     const float ClosestDepth = texture(uLineOfSightAnalyzer.DepthMap, normalize(FragmentToObserver)).r * uLineOfSightAnalyzer.FarPlane;
 
     if (CurrentDepth - uLineOfSightAnalyzer.Bias * uLineOfSightAnalyzer.FarPlane < ClosestDepth)
