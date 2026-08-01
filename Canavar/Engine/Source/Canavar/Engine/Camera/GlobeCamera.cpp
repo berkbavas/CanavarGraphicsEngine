@@ -27,51 +27,53 @@ void Canavar::Engine::GlobeCamera::ApplyGeodeticTransform()
 
     // Build camera-to-world rotation aligned with the local ENU frame at (mLat, mLon).
     // Camera local axes map to: +X = East,  +Y = Up,  -Z = North (+Z = South).
-    QMatrix3x3 enu = Wgs84::EnuToWorld(mLat, mLon); // columns: East(0), North(1), Up(2)
+    QMatrix3x3 Enu = Wgs84::EnuToWorld(mLat, mLon); // columns: East(0), North(1), Up(2)
 
     // Row-major values for QMatrix3x3 constructor.
     // mat(row, col): col 0 = East, col 1 = Up, col 2 = South = -North
-    float vals[9] = {
-        enu(0, 0),  enu(0, 2), -enu(0, 1), // row 0
-        enu(1, 0),  enu(1, 2), -enu(1, 1), // row 1
-        enu(2, 0),  enu(2, 2), -enu(2, 1), // row 2
+    float Vals[9] = {
+        Enu(0, 0), Enu(0, 2), -Enu(0, 1), // row 0
+        Enu(1, 0), Enu(1, 2), -Enu(1, 1), // row 1
+        Enu(2, 0), Enu(2, 2), -Enu(2, 1), // row 2
     };
-    const QQuaternion baseRot = QQuaternion::fromRotationMatrix(QMatrix3x3(vals));
+    const QQuaternion BaseRot = QQuaternion::fromRotationMatrix(QMatrix3x3(Vals));
 
-    const QQuaternion yawRot   = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw);
-    const QQuaternion pitchRot = QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
+    const QQuaternion YawRot = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), mYaw);
+    const QQuaternion PitchRot = QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), mPitch);
 
     // Qt multiplication: A*B applies B first. Order: pitch → yaw → base (ENU alignment).
-    SetRotation(baseRot * yawRot * pitchRot);
+    SetRotation(BaseRot * YawRot * PitchRot);
 }
 
 void Canavar::Engine::GlobeCamera::Update(float Ifps)
 {
     if (mMouse.IsButtonPressed(Qt::MiddleButton))
     {
-        const float angSpeed = CalculateAngularSpeed(Ifps);
-        mYaw   -= angSpeed * mMouse.GetCumulativeMovement(Qt::MiddleButton).x();
-        mPitch -= angSpeed * mMouse.GetCumulativeMovement(Qt::MiddleButton).y();
-        mPitch  = qBound(-89.0f, mPitch, 89.0f);
+        const float AngSpeed = CalculateAngularSpeed(Ifps);
+        mYaw -= AngSpeed * mMouse.GetCumulativeMovement(Qt::MiddleButton).x();
+        mPitch -= AngSpeed * mMouse.GetCumulativeMovement(Qt::MiddleButton).y();
+        mPitch = qBound(-89.0f, mPitch, 89.0f);
         mMouse.ResetCumulativeMovement(Qt::MiddleButton);
     }
 
-    const float linearSpeed = CalculateLinearSpeed(Ifps);
-    QVector3D move(0, 0, 0);
+    const float LinearSpeed = CalculateLinearSpeed(Ifps);
+    QVector3D Move(0, 0, 0);
 
-    for (const auto& [key, pressed] : mPressedKeys.toStdMap())
+    for (const auto& [Key, IsPressed] : mPressedKeys.toStdMap())
     {
-        if (pressed)
-            move += GetRotation().rotatedVector(KEY_BINDINGS.value(key, QVector3D(0, 0, 0)));
+        if (IsPressed)
+        {
+            Move += GetRotation().rotatedVector(KEY_BINDINGS.value(Key, QVector3D(0, 0, 0)));
+        }
     }
 
-    if (!move.isNull())
+    if (!Move.isNull())
     {
-        const QVector3D newWorldPos = GetPosition() + move * linearSpeed;
-        const Wgs84::GeoPoint geo  = Wgs84::ToGeodetic(newWorldPos);
-        mLat = geo.Lat;
-        mLon = geo.Lon;
-        mAlt = geo.Alt;
+        const QVector3D NewWorldPos = GetPosition() + Move * LinearSpeed;
+        const Wgs84::GeoPoint Geo = Wgs84::ToGeodetic(NewWorldPos);
+        mLat = Geo.Lat;
+        mLon = Geo.Lon;
+        mAlt = Geo.Alt;
     }
 
     ApplyGeodeticTransform();
@@ -157,10 +159,10 @@ float Canavar::Engine::GlobeCamera::CalculateAngularSpeed(float Ifps) const
 }
 
 const QMap<Qt::Key, QVector3D> Canavar::Engine::GlobeCamera::KEY_BINDINGS = {
-    { Qt::Key_W, QVector3D(0, 0, -1) },
-    { Qt::Key_S, QVector3D(0, 0, 1) },
-    { Qt::Key_A, QVector3D(-1, 0, 0) },
-    { Qt::Key_D, QVector3D(1, 0, 0) },
-    { Qt::Key_E, QVector3D(0, 1, 0) },
+    { Qt::Key_W, QVector3D(0, 0, -1) }, //
+    { Qt::Key_S, QVector3D(0, 0, 1) },  //
+    { Qt::Key_A, QVector3D(-1, 0, 0) }, //
+    { Qt::Key_D, QVector3D(1, 0, 0) },  //
+    { Qt::Key_E, QVector3D(0, 1, 0) },  //
     { Qt::Key_Q, QVector3D(0, -1, 0) },
 };

@@ -76,7 +76,7 @@ void Canavar::Simulator::Simulator::Initialize()
     mAircraftCameraFramebuffer = std::make_unique<Canavar::Engine::Framebuffer>(512, 512, Format);
 
     mAircraftCamera = mNodeManager->CreateNode<Canavar::Engine::DummyCamera>();
-    mAircraftCamera->Resize(512, 512);
+    mAircraftCamera->Resize(mAircraftCameraFramebuffer->GetWidth(), mAircraftCameraFramebuffer->GetHeight());
 }
 
 void Canavar::Simulator::Simulator::Update(float Ifps)
@@ -111,7 +111,7 @@ void Canavar::Simulator::Simulator::DrawImGui(float Ifps)
     DrawAircraftCameraFramebuffer(Ifps);
 }
 
-void Canavar::Simulator::Simulator::DrawAircraftCameraFramebuffer(float Ifps)
+void Canavar::Simulator::Simulator::DrawAircraftCameraFramebuffer(float)
 {
     ImGui::Begin("Aircraft Camera View");
     const auto ImageSize = ImVec2(mAircraftCameraFramebuffer->GetWidth(), mAircraftCameraFramebuffer->GetHeight());

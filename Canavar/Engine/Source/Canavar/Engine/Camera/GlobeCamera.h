@@ -25,14 +25,14 @@ namespace Canavar::Engine
         bool OnMouseMoved(QMouseEvent*) override;
         bool OnLeaveEvent(QEvent*) override;
 
-        void             SetGeodeticPosition(double LatDeg, double LonDeg, double AltMeters);
-        Wgs84::GeoPoint  GetGeodeticPosition() const;
+        void SetGeodeticPosition(double LatDeg, double LonDeg, double AltMeters);
+        Wgs84::GeoPoint GetGeodeticPosition() const;
 
       private:
-        void  ApplyGeodeticTransform();
+        void ApplyGeodeticTransform();
         float CalculateLinearSpeed(float Ifps) const;
         float CalculateAngularSpeed(float Ifps) const;
-        bool  IsKeyPressed(Qt::Key Key) const;
+        bool IsKeyPressed(Qt::Key Key) const;
 
         double mLat{ 0.0 };
         double mLon{ 0.0 };
