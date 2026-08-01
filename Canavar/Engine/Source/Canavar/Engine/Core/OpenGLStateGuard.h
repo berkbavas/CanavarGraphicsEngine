@@ -48,6 +48,9 @@ namespace Canavar::Engine
             GLboolean PolygonOffsetFillEnabled{ GL_FALSE };
             GLfloat PolygonOffsetFactor{ 0.0f };
             GLfloat PolygonOffsetUnits{ 0.0f };
+            GLenum PolygonMode{ GL_FILL };
+            GLboolean DepthClampEnabled{ GL_FALSE };
+            GLboolean RasterizerDiscardEnabled{ GL_FALSE };
         };
 
         struct StencilState
@@ -68,6 +71,54 @@ namespace Canavar::Engine
             GLfloat ClearColor[4]{ 0.0f, 0.0f, 0.0f, 0.0f };
         };
 
+        struct PrimitiveState
+        {
+            GLboolean LineSmoothEnabled{ GL_FALSE };
+            GLenum LineSmoothHint{ GL_DONT_CARE };
+            GLfloat LineWidth{ 1.0f };
+            GLboolean ProgramPointSizeEnabled{ GL_FALSE };
+            GLboolean PolygonSmoothEnabled{ GL_FALSE };
+        };
+
+        struct ScissorState
+        {
+            GLboolean TestEnabled{ GL_FALSE };
+            GLint Box[4]{ 0, 0, 0, 0 };
+        };
+
+        struct ProgramState
+        {
+            GLint CurrentProgram{ 0 };
+            GLenum ActiveTexture{ GL_TEXTURE0 };
+        };
+
+        struct SampleState
+        {
+            GLboolean MultisampleEnabled{ GL_TRUE };
+            GLboolean AlphaToCoverageEnabled{ GL_FALSE };
+            GLboolean AlphaToOneEnabled{ GL_FALSE };
+            GLfloat CoverageValue{ 1.0f };
+            GLboolean CoverageInvert{ GL_FALSE };
+        };
+
+        struct PixelStoreState
+        {
+            GLint PackAlignment{ 4 };
+            GLint PackRowLength{ 0 };
+            GLint PackSkipRows{ 0 };
+            GLint PackSkipPixels{ 0 };
+            GLint UnpackAlignment{ 4 };
+            GLint UnpackRowLength{ 0 };
+            GLint UnpackSkipRows{ 0 };
+            GLint UnpackSkipPixels{ 0 };
+        };
+
+        struct MiscState
+        {
+            GLboolean SeamlessCubeMapEnabled{ GL_FALSE };
+            GLboolean DitherEnabled{ GL_TRUE };
+        };
+
         QOpenGLFunctions_4_5_Core *mGl{ nullptr };
 
         FramebufferState mFramebuffer;
@@ -76,5 +127,11 @@ namespace Canavar::Engine
         RasterizerState mRasterizer;
         StencilState mStencil;
         ColorState mColor;
+        PrimitiveState mPrimitive;
+        ScissorState mScissor;
+        ProgramState mProgram;
+        SampleState mSample;
+        PixelStoreState mPixelStore;
+        MiscState mMisc;
     };
 }

@@ -33,6 +33,11 @@ Canavar::Engine::OpenGLStateGuard::OpenGLStateGuard(QOpenGLFunctions_4_5_Core *p
     mRasterizer.PolygonOffsetFillEnabled = mGl->glIsEnabled(GL_POLYGON_OFFSET_FILL);
     mGl->glGetFloatv(GL_POLYGON_OFFSET_FACTOR, &mRasterizer.PolygonOffsetFactor);
     mGl->glGetFloatv(GL_POLYGON_OFFSET_UNITS, &mRasterizer.PolygonOffsetUnits);
+    GLint PolygonMode[2]{};
+    mGl->glGetIntegerv(GL_POLYGON_MODE, PolygonMode);
+    mRasterizer.PolygonMode = static_cast<GLenum>(PolygonMode[0]);
+    mRasterizer.DepthClampEnabled = mGl->glIsEnabled(GL_DEPTH_CLAMP);
+    mRasterizer.RasterizerDiscardEnabled = mGl->glIsEnabled(GL_RASTERIZER_DISCARD);
 
     // Stencil
     mStencil.TestEnabled = mGl->glIsEnabled(GL_STENCIL_TEST);
@@ -47,6 +52,42 @@ Canavar::Engine::OpenGLStateGuard::OpenGLStateGuard(QOpenGLFunctions_4_5_Core *p
     // Color
     mGl->glGetBooleanv(GL_COLOR_WRITEMASK, mColor.Mask);
     mGl->glGetFloatv(GL_COLOR_CLEAR_VALUE, mColor.ClearColor);
+
+    // Primitive
+    mPrimitive.LineSmoothEnabled = mGl->glIsEnabled(GL_LINE_SMOOTH);
+    mGl->glGetIntegerv(GL_LINE_SMOOTH_HINT, reinterpret_cast<GLint *>(&mPrimitive.LineSmoothHint));
+    mGl->glGetFloatv(GL_LINE_WIDTH, &mPrimitive.LineWidth);
+    mPrimitive.ProgramPointSizeEnabled = mGl->glIsEnabled(GL_PROGRAM_POINT_SIZE);
+    mPrimitive.PolygonSmoothEnabled = mGl->glIsEnabled(GL_POLYGON_SMOOTH);
+
+    // Scissor
+    mScissor.TestEnabled = mGl->glIsEnabled(GL_SCISSOR_TEST);
+    mGl->glGetIntegerv(GL_SCISSOR_BOX, mScissor.Box);
+
+    // Program
+    mGl->glGetIntegerv(GL_CURRENT_PROGRAM, &mProgram.CurrentProgram);
+    mGl->glGetIntegerv(GL_ACTIVE_TEXTURE, reinterpret_cast<GLint *>(&mProgram.ActiveTexture));
+
+    // Sample
+    mSample.MultisampleEnabled = mGl->glIsEnabled(GL_MULTISAMPLE);
+    mSample.AlphaToCoverageEnabled = mGl->glIsEnabled(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    mSample.AlphaToOneEnabled = mGl->glIsEnabled(GL_SAMPLE_ALPHA_TO_ONE);
+    mGl->glGetFloatv(GL_SAMPLE_COVERAGE_VALUE, &mSample.CoverageValue);
+    mGl->glGetBooleanv(GL_SAMPLE_COVERAGE_INVERT, &mSample.CoverageInvert);
+
+    // Pixel Store
+    mGl->glGetIntegerv(GL_PACK_ALIGNMENT, &mPixelStore.PackAlignment);
+    mGl->glGetIntegerv(GL_PACK_ROW_LENGTH, &mPixelStore.PackRowLength);
+    mGl->glGetIntegerv(GL_PACK_SKIP_ROWS, &mPixelStore.PackSkipRows);
+    mGl->glGetIntegerv(GL_PACK_SKIP_PIXELS, &mPixelStore.PackSkipPixels);
+    mGl->glGetIntegerv(GL_UNPACK_ALIGNMENT, &mPixelStore.UnpackAlignment);
+    mGl->glGetIntegerv(GL_UNPACK_ROW_LENGTH, &mPixelStore.UnpackRowLength);
+    mGl->glGetIntegerv(GL_UNPACK_SKIP_ROWS, &mPixelStore.UnpackSkipRows);
+    mGl->glGetIntegerv(GL_UNPACK_SKIP_PIXELS, &mPixelStore.UnpackSkipPixels);
+
+    // Misc
+    mMisc.SeamlessCubeMapEnabled = mGl->glIsEnabled(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    mMisc.DitherEnabled = mGl->glIsEnabled(GL_DITHER);
 }
 
 Canavar::Engine::OpenGLStateGuard::~OpenGLStateGuard()
@@ -73,6 +114,9 @@ Canavar::Engine::OpenGLStateGuard::~OpenGLStateGuard()
     mGl->glFrontFace(mRasterizer.FrontFace);
     mRasterizer.PolygonOffsetFillEnabled ? mGl->glEnable(GL_POLYGON_OFFSET_FILL) : mGl->glDisable(GL_POLYGON_OFFSET_FILL);
     mGl->glPolygonOffset(mRasterizer.PolygonOffsetFactor, mRasterizer.PolygonOffsetUnits);
+    mGl->glPolygonMode(GL_FRONT_AND_BACK, mRasterizer.PolygonMode);
+    mRasterizer.DepthClampEnabled ? mGl->glEnable(GL_DEPTH_CLAMP) : mGl->glDisable(GL_DEPTH_CLAMP);
+    mRasterizer.RasterizerDiscardEnabled ? mGl->glEnable(GL_RASTERIZER_DISCARD) : mGl->glDisable(GL_RASTERIZER_DISCARD);
 
     // Stencil
     mStencil.TestEnabled ? mGl->glEnable(GL_STENCIL_TEST) : mGl->glDisable(GL_STENCIL_TEST);
@@ -83,4 +127,39 @@ Canavar::Engine::OpenGLStateGuard::~OpenGLStateGuard()
     // Color
     mGl->glColorMask(mColor.Mask[0], mColor.Mask[1], mColor.Mask[2], mColor.Mask[3]);
     mGl->glClearColor(mColor.ClearColor[0], mColor.ClearColor[1], mColor.ClearColor[2], mColor.ClearColor[3]);
+
+    // Primitive
+    mPrimitive.LineSmoothEnabled ? mGl->glEnable(GL_LINE_SMOOTH) : mGl->glDisable(GL_LINE_SMOOTH);
+    mGl->glHint(GL_LINE_SMOOTH_HINT, mPrimitive.LineSmoothHint);
+    mGl->glLineWidth(mPrimitive.LineWidth);
+    mPrimitive.ProgramPointSizeEnabled ? mGl->glEnable(GL_PROGRAM_POINT_SIZE) : mGl->glDisable(GL_PROGRAM_POINT_SIZE);
+    mPrimitive.PolygonSmoothEnabled ? mGl->glEnable(GL_POLYGON_SMOOTH) : mGl->glDisable(GL_POLYGON_SMOOTH);
+
+    // Scissor
+    mScissor.TestEnabled ? mGl->glEnable(GL_SCISSOR_TEST) : mGl->glDisable(GL_SCISSOR_TEST);
+    mGl->glScissor(mScissor.Box[0], mScissor.Box[1], mScissor.Box[2], mScissor.Box[3]);
+
+    // Program
+    mGl->glUseProgram(mProgram.CurrentProgram);
+    mGl->glActiveTexture(mProgram.ActiveTexture);
+
+    // Sample
+    mSample.MultisampleEnabled ? mGl->glEnable(GL_MULTISAMPLE) : mGl->glDisable(GL_MULTISAMPLE);
+    mSample.AlphaToCoverageEnabled ? mGl->glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE) : mGl->glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    mSample.AlphaToOneEnabled ? mGl->glEnable(GL_SAMPLE_ALPHA_TO_ONE) : mGl->glDisable(GL_SAMPLE_ALPHA_TO_ONE);
+    mGl->glSampleCoverage(mSample.CoverageValue, mSample.CoverageInvert);
+
+    // Pixel Store
+    mGl->glPixelStorei(GL_PACK_ALIGNMENT, mPixelStore.PackAlignment);
+    mGl->glPixelStorei(GL_PACK_ROW_LENGTH, mPixelStore.PackRowLength);
+    mGl->glPixelStorei(GL_PACK_SKIP_ROWS, mPixelStore.PackSkipRows);
+    mGl->glPixelStorei(GL_PACK_SKIP_PIXELS, mPixelStore.PackSkipPixels);
+    mGl->glPixelStorei(GL_UNPACK_ALIGNMENT, mPixelStore.UnpackAlignment);
+    mGl->glPixelStorei(GL_UNPACK_ROW_LENGTH, mPixelStore.UnpackRowLength);
+    mGl->glPixelStorei(GL_UNPACK_SKIP_ROWS, mPixelStore.UnpackSkipRows);
+    mGl->glPixelStorei(GL_UNPACK_SKIP_PIXELS, mPixelStore.UnpackSkipPixels);
+
+    // Misc
+    mMisc.SeamlessCubeMapEnabled ? mGl->glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : mGl->glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    mMisc.DitherEnabled ? mGl->glEnable(GL_DITHER) : mGl->glDisable(GL_DITHER);
 }
