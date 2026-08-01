@@ -170,6 +170,8 @@ void Canavar::Engine::LineOfSightAnalyzer::SetEnabled(bool Enabled)
 {
     mEnabled = Enabled;
     mIsDirty = true;
+
+    mEnabled ? mObserverSphere->SetVisible(true) : mObserverSphere->SetVisible(false);
 }
 
 void Canavar::Engine::LineOfSightAnalyzer::SetVisibilityOpacity(float Opacity)
