@@ -57,6 +57,7 @@ void Canavar::Engine::GlobeCamera::Update(float Ifps)
     }
 
     const float LinearSpeed = CalculateLinearSpeed(Ifps);
+
     QVector3D Move(0, 0, 0);
 
     for (const auto& [Key, IsPressed] : mPressedKeys.toStdMap())

@@ -96,6 +96,10 @@ void Canavar::Engine::Renderer::Initialize()
     mQuad = std::make_unique<Quad>();
 
     // Post-process effects (order determines pipeline execution)
+    mAerialPerspectiveEffect = std::make_unique<AerialPerspectiveEffect>();
+    mPostProcessEffects[PostProcessEffectType::AerialPerspective] = mAerialPerspectiveEffect.get();
+    mPostProcessEffectEnabled[PostProcessEffectType::AerialPerspective] = false;
+
     mAcesEffect = std::make_unique<AcesEffect>();
     mPostProcessEffects[PostProcessEffectType::Aces] = mAcesEffect.get();
     mPostProcessEffectEnabled[PostProcessEffectType::Aces] = false;
@@ -463,11 +467,26 @@ void Canavar::Engine::Renderer::SupplyPerFrameData()
     if (Textures.size() > 2)
     {
         mDepthOfFieldEffect->SetWorldPositionTexture(Textures[2]); // COLOR_ATTACHMENT2 = World Position
+        mAerialPerspectiveEffect->SetWorldPositionTexture(Textures[2]);
     }
 
     if (PerspectiveCamera *pCamera = mCameraManager->GetActiveCamera())
     {
         mDepthOfFieldEffect->SetCameraPosition(pCamera->GetPosition());
+
+        if (mSky && mSun)
+        {
+            mAerialPerspectiveEffect->SetCameraPosition(pCamera->GetPosition());
+            mAerialPerspectiveEffect->SetSunDirection(-mSun->GetDirection().normalized());
+            mAerialPerspectiveEffect->SetSunIntensity(mSky->GetSunIntensity());
+            mAerialPerspectiveEffect->SetPlanetRadius(mSky->GetPlanetRadius());
+            mAerialPerspectiveEffect->SetAtmosphereRadius(mSky->GetAtmosphereRadius());
+            mAerialPerspectiveEffect->SetBetaRayleigh(mSky->GetBetaRayleigh());
+            mAerialPerspectiveEffect->SetBetaMie(mSky->GetBetaMie());
+            mAerialPerspectiveEffect->SetScaleHeightR(mSky->GetScaleHeightR());
+            mAerialPerspectiveEffect->SetScaleHeightM(mSky->GetScaleHeightM());
+            mAerialPerspectiveEffect->SetMieG(mSky->GetMieG());
+        }
     }
 }
 
@@ -625,6 +644,11 @@ Canavar::Engine::AcesEffect *Canavar::Engine::Renderer::GetAcesEffect() const
 Canavar::Engine::DepthOfFieldEffect *Canavar::Engine::Renderer::GetDepthOfFieldEffect() const
 {
     return mDepthOfFieldEffect.get();
+}
+
+Canavar::Engine::AerialPerspectiveEffect *Canavar::Engine::Renderer::GetAerialPerspectiveEffect() const
+{
+    return mAerialPerspectiveEffect.get();
 }
 
 Canavar::Engine::FxaaEffect *Canavar::Engine::Renderer::GetFxaaEffect() const

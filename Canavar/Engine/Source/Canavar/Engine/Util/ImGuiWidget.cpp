@@ -1364,6 +1364,25 @@ void Canavar::Engine::ImGuiWidget::DrawPostProcessPanel()
         return;
     }
 
+    // ── Aerial Perspective ────────────────────────────────────────────────────
+    {
+        bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::AerialPerspective);
+        if (ImGui::Checkbox("Aerial Perspective##DrawPostProcessPanel", &Enabled))
+        {
+            mRenderer->SetPostProcessEffectEnabled(PostProcessEffectType::AerialPerspective, Enabled);
+        }
+
+        if (Enabled)
+        {
+            ImGui::Indent();
+            AerialPerspectiveEffect *pAP = mRenderer->GetAerialPerspectiveEffect();
+            ImGui::DragFloat("Density##DrawPostProcessPanel_AP", &pAP->GetDensity_NonConst(), 1e-7f, 1e-7f, 1e-3f, "%.2e");
+            ImGui::Unindent();
+        }
+    }
+
+    ImGui::Separator();
+
     // ── ACES Tone Mapping ─────────────────────────────────────────────────────
     {
         bool Enabled = mRenderer->GetPostProcessEffectEnabled(PostProcessEffectType::Aces);

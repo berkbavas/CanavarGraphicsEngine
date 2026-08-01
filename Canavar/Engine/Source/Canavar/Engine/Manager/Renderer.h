@@ -18,6 +18,7 @@
 #include "Canavar/Engine/Manager/PrimitiveModelRenderer.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
 #include "Canavar/Engine/PostProcessEffect/AcesEffect.h"
+#include "Canavar/Engine/PostProcessEffect/AerialPerspectiveEffect.h"
 #include "Canavar/Engine/PostProcessEffect/ChromaticAberrationEffect.h"
 #include "Canavar/Engine/PostProcessEffect/CinematicEffect.h"
 #include "Canavar/Engine/PostProcessEffect/ColorGradingEffect.h"
@@ -69,6 +70,7 @@ namespace Canavar::Engine
 
         // Post-processing effects
         AcesEffect* GetAcesEffect() const;
+        AerialPerspectiveEffect* GetAerialPerspectiveEffect() const;
         DepthOfFieldEffect* GetDepthOfFieldEffect() const;
         FxaaEffect* GetFxaaEffect() const;
         ColorGradingEffect* GetColorGradingEffect() const;
@@ -163,6 +165,7 @@ namespace Canavar::Engine
         std::map<PostProcessEffectType, PostProcessEffect*> mPostProcessEffects;
 
         AcesEffectPtr mAcesEffect{ nullptr };
+        AerialPerspectiveEffectPtr mAerialPerspectiveEffect{ nullptr };
         DepthOfFieldEffectPtr mDepthOfFieldEffect{ nullptr };
         ColorGradingEffectPtr mColorGradingEffect{ nullptr };
         SharpenEffectPtr mSharpenEffect{ nullptr };
