@@ -202,7 +202,7 @@ void Canavar::Engine::Renderer::RenderToFramebuffer(Framebuffer *pFramebuffer, P
     mSky->Render(pCamera, mSun);
 
     // Render the terrain
-    mTerrain->Render();
+    mTerrain->Render(pCamera);
 
     for (Manager *pManager : mManagers)
     {

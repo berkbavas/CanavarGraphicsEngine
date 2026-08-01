@@ -2,6 +2,7 @@
 
 #include "Aircraft.h"
 #include "Canavar/Engine/Core/EventReceiver.h"
+#include "Canavar/Engine/Core/Framebuffer.h"
 
 #include <QTimer>
 
@@ -18,6 +19,7 @@ namespace Canavar::Engine
     class DummyCamera;
     class PersecutorCamera;
     class ImGuiWidget;
+    class DummyCamera;
 }
 
 namespace Canavar::Simulator
@@ -38,6 +40,7 @@ namespace Canavar::Simulator
         void Update(float Ifps);
         void OnPostRender(float Ifps);
         void DrawImGui(float Ifps);
+        void DrawAircraftCameraFramebuffer(float Ifps);
 
         Aircraft *mAircraft;
 
@@ -56,5 +59,8 @@ namespace Canavar::Simulator
         Canavar::Engine::PersecutorCamera *mPersecutorCamera;
 
         Canavar::Engine::ImGuiWidget *mImGuiWidget;
+
+        Canavar::Engine::FramebufferPtr mAircraftCameraFramebuffer;
+        Canavar::Engine::DummyCamera* mAircraftCamera;
     };
 }

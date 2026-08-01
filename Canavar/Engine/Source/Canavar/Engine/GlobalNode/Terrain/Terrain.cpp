@@ -233,7 +233,7 @@ void Canavar::Engine::Terrain::CalculateTilePositions(PerspectiveCamera *pCamera
     }
 }
 
-void Canavar::Engine::Terrain::Render()
+void Canavar::Engine::Terrain::Render(PerspectiveCamera *pCamera)
 {
     Chronometer Chronometer("Terrain::Render");
 
@@ -242,7 +242,6 @@ void Canavar::Engine::Terrain::Render()
         return;
     }
 
-    const auto pCamera = mRenderer->GetActiveCamera();
     const auto pLightManager = mRenderer->GetLightManager();
     const auto pHaze = mRenderer->GetHaze();
 

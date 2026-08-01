@@ -22,7 +22,7 @@ namespace Canavar::Engine
         ~Terrain();
 
         const char* GetNodeTypeName() const override { return "Terrain"; }
-        void Render();
+        void Render(PerspectiveCamera* pCamera);
         void RenderPatches();
 
       private:

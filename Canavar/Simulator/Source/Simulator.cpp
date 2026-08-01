@@ -68,11 +68,28 @@ void Canavar::Simulator::Simulator::Initialize()
 
     mCameraManager->SetActiveCamera(mPersecutorCamera);
     mPersecutorCamera->SetTarget(mRootNode);
+
+    QOpenGLFramebufferObjectFormat Format;
+    Format.setAttachment(QOpenGLFramebufferObject::Depth);
+    Format.setSamples(0);
+    Format.setInternalTextureFormat(GL_RGBA32F);
+    mAircraftCameraFramebuffer = std::make_unique<Canavar::Engine::Framebuffer>(512, 512, Format);
+
+    mAircraftCamera = mNodeManager->CreateNode<Canavar::Engine::DummyCamera>();
+    mAircraftCamera->Resize(512, 512);
 }
 
 void Canavar::Simulator::Simulator::Update(float Ifps)
 {
     mAircraft->Tick(Ifps);
+
+    if (mDummyCamera)
+    {
+        mAircraftCamera->SetPosition(mDummyCamera->GetWorldPosition());
+        mAircraftCamera->SetRotation(mDummyCamera->GetWorldRotation());
+    }
+
+    mRenderer->RenderToFramebuffer(mAircraftCameraFramebuffer.get(), mAircraftCamera);
 }
 
 void Canavar::Simulator::Simulator::OnPostRender(float Ifps)
@@ -90,6 +107,16 @@ void Canavar::Simulator::Simulator::OnPostRender(float Ifps)
 void Canavar::Simulator::Simulator::DrawImGui(float Ifps)
 {
     mAircraft->DrawGui();
+
+    DrawAircraftCameraFramebuffer(Ifps);
+}
+
+void Canavar::Simulator::Simulator::DrawAircraftCameraFramebuffer(float Ifps)
+{
+    ImGui::Begin("Aircraft Camera View");
+    const auto ImageSize = ImVec2(mAircraftCameraFramebuffer->GetWidth(), mAircraftCameraFramebuffer->GetHeight());
+    ImGui::Image(ImTextureID(mAircraftCameraFramebuffer->GetTexture()), ImageSize, ImVec2(0, 1), ImVec2(1, 0));
+    ImGui::End();
 }
 
 bool Canavar::Simulator::Simulator::OnKeyPressed(QKeyEvent* pEvent)
