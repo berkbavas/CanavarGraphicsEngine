@@ -40,6 +40,7 @@ void Canavar::Engine::LineOfSightAnalyzer::Initialize()
     CreateObserverCameras();
 
     mObserverSphere = mRenderer->GetNodeManager()->CreateNode<Sphere>();
+    mObserverSphere->SetVisible(mEnabled);
     mObserverSphere->SetScale(10.0f);
 }
 
