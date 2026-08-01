@@ -58,7 +58,7 @@ namespace Canavar::Engine
 
         QString mName;
         std::unique_ptr<QOpenGLShaderProgram> mProgram;
-        std::map<QOpenGLShader::ShaderTypeBit, QString> mPaths;
+        std::unordered_map<QOpenGLShader::ShaderTypeBit, QString> mPaths;
         std::unordered_map<QString, int> mUniformLocations;
         Callback mCallback{ nullptr };
     };

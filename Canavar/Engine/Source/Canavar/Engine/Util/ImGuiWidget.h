@@ -13,11 +13,12 @@
 #include "Canavar/Engine/PostProcessEffect/FxaaEffect.h"
 #include "Canavar/Engine/PostProcessEffect/LensDistortionEffect.h"
 #include "Canavar/Engine/PostProcessEffect/SharpenEffect.h"
-#include "Canavar/Engine/Util/CinematicPath.h"
 #include "Canavar/Engine/Util/Chronometer.h"
+#include "Canavar/Engine/Util/CinematicPath.h"
+
+#include <vector>
 
 #include <QElapsedTimer>
-#include <vector>
 #include <QMap>
 #include <QMatrix4x4>
 #include <QVector3D>
@@ -38,6 +39,7 @@ namespace Canavar::Engine
     class Sky;
     class Haze;
     class Terrain;
+    class LineOfSightAnalyzer;
 
     class ImGuiWidget : public QObject, public EventReceiver, public EventThief
     {
@@ -49,6 +51,8 @@ namespace Canavar::Engine
         bool WantCaptureMouse() const override;
 
         bool OnMousePressed(QMouseEvent *pEvent) override;
+        bool OnMouseReleased(QMouseEvent *pEvent) override;
+        bool OnMouseMoved(QMouseEvent *pEvent) override;
 
       signals:
         void CanDrawImGuiWidgets(float Ifps);
@@ -78,6 +82,7 @@ namespace Canavar::Engine
         void DrawSkyProperties();
         void DrawHazeProperties();
         void DrawTerrainProperties();
+        void DrawLineOfSightAnalyzerProperties();
         void DrawPostProcessPanel();
         void DrawRendererProperties();
         void DrawCinematicPathPanel();
@@ -105,6 +110,7 @@ namespace Canavar::Engine
         Renderer *mRenderer{ nullptr };
         NodeManager *mNodeManager{ nullptr };
         CameraManager *mCameraManager{ nullptr };
+        LineOfSightAnalyzer *mLosAnalyzer{ nullptr };
 
         // Selection state
         Node *mSelectedNode{ nullptr };
@@ -115,6 +121,11 @@ namespace Canavar::Engine
         char mNodeNameBuffer[128]{};
 
         bool mGizmoEnabled{ false };
+
+        bool mLosAnalyzerUpdateFromMousePosition{ false };
+        bool mLosMouseLmbDown{ false };
+        bool mLosDebugViewEnabled{ false };
+        int mLosDebugFaceIndex{ 0 };
 
         // Cinematic path
         CinematicPath mCinematicPath{};

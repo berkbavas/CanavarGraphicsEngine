@@ -13,6 +13,7 @@ namespace Canavar::Engine
 {
     class Renderer;
     class PerspectiveCamera;
+    class LineOfSightAnalyzer;
 
     class Terrain : public GlobalNode, protected QOpenGLFunctions_4_5_Core
     {
@@ -22,6 +23,7 @@ namespace Canavar::Engine
 
         const char* GetNodeTypeName() const override { return "Terrain"; }
         void Render();
+        void RenderPatches();
 
       private:
         void Generate();
@@ -34,6 +36,7 @@ namespace Canavar::Engine
         void CalculateTilePositions(PerspectiveCamera* pCamera);
 
         Renderer* mRenderer{ nullptr };
+        LineOfSightAnalyzer* mLineOfSightAnalyzer{ nullptr };
         ShaderPtr mTerrainShader{ nullptr };
 
         QVector<QVector2D> mTilePositions;
@@ -44,7 +47,6 @@ namespace Canavar::Engine
 
         int mSubdivision{ 4 };
         int mTiles{ 32 };
-        float mWidth{ 2048.0f };
 
         GLuint mVAO{ 0 };
         GLuint mEBO{ 0 };
@@ -63,6 +65,8 @@ namespace Canavar::Engine
         DEFINE_MEMBER(float, Specular, 0.25f);
         DEFINE_MEMBER(float, Shininess, 8.0f);
         DEFINE_MEMBER(bool, Enabled, false);
+
+        DEFINE_MEMBER_CONST(float, Width, 2048.0f);
 
         GLuint mAlbedoTexture{ 0 };
         GLuint mNormalTexture{ 0 };

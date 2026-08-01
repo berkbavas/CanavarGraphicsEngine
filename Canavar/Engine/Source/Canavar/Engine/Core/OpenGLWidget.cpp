@@ -10,6 +10,7 @@ Canavar::Engine::OpenGLWidget::OpenGLWidget(QWidget *pParent)
 {
     connect(this, &OpenGLWidget::frameSwapped, this, [this]() { update(); });
     setMouseTracking(true);
+    setFocusPolicy(Qt::StrongFocus); // required to receive keyPressEvent when embedded in a layout
 }
 
 void Canavar::Engine::OpenGLWidget::MakeCurrent()

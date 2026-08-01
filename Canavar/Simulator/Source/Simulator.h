@@ -14,6 +14,7 @@ namespace Canavar::Engine
     class DummyObject;
     class TexturedModel;
     class FreeCamera;
+    class GlobeCamera;
     class DummyCamera;
     class PersecutorCamera;
     class ImGuiWidget;
@@ -30,6 +31,7 @@ namespace Canavar::Simulator
         void Run();
         bool OnKeyPressed(QKeyEvent *pEvent) override;
         bool OnKeyReleased(QKeyEvent *pEvent) override;
+        bool OnLeaveEvent(QEvent *pEvent) override;
 
       private:
         void Initialize();
@@ -49,6 +51,7 @@ namespace Canavar::Simulator
         Canavar::Engine::TexturedModel *mJetNode;
 
         Canavar::Engine::FreeCamera *mFreeCamera;
+        Canavar::Engine::GlobeCamera *mGlobeCamera;
         Canavar::Engine::DummyCamera *mDummyCamera;
         Canavar::Engine::PersecutorCamera *mPersecutorCamera;
 

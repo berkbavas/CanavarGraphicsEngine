@@ -21,7 +21,7 @@ set(CMAKE_AUTOUIC ON)
 # VS Code IntelliSense does not recognize -external:I, so Qt headers would be invisible.
 set(CMAKE_NO_SYSTEM_FROM_IMPORTED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets OpenGL OpenGLWidgets Network)
 
 set(EXTERNAL_DIR  "${CMAKE_SOURCE_DIR}/External")
 set(QT_IMGUI_DIR  "${EXTERNAL_DIR}/qtimgui")
@@ -97,3 +97,9 @@ endfunction()
 add_subdirectory(Canavar/Engine)
 add_subdirectory(Canavar/Editor)
 add_subdirectory(Canavar/Simulator)
+add_subdirectory(Canavar/DualView)
+add_subdirectory(Canavar/DtedDownloader)
+add_subdirectory(Canavar/ImageryDownloader)
+add_subdirectory(Canavar/TerrainCore)
+add_subdirectory(Canavar/TerrainBuilder)
+add_subdirectory(Canavar/GlobeViewer)

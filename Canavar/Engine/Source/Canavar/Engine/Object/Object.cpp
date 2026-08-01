@@ -43,6 +43,16 @@ void Canavar::Engine::Object::SetPosition(float X, float Y, float Z)
     SetPosition(QVector3D(X, Y, Z));
 }
 
+void Canavar::Engine::Object::SetGeodeticPosition(double LatDeg, double LonDeg, double AltMeters)
+{
+    SetPosition(Wgs84::ToWorld(LatDeg, LonDeg, AltMeters));
+}
+
+Canavar::Engine::Wgs84::GeoPoint Canavar::Engine::Object::GetGeodeticPosition() const
+{
+    return Wgs84::ToGeodetic(GetPosition());
+}
+
 void Canavar::Engine::Object::SetScale(float X, float Y, float Z)
 {
     SetScale(QVector3D(X, Y, Z));

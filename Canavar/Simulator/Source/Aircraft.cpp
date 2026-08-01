@@ -11,6 +11,7 @@
 #include <models/FGFCS.h>
 #include <models/FGPropagate.h>
 #include <models/FGPropulsion.h>
+#include <models/propulsion/FGTank.h>
 #include <models/propulsion/FGThruster.h>
 
 #include <QDebug>
@@ -54,9 +55,10 @@ bool Canavar::Simulator::Aircraft::Initialize()
 
     mRefLatitude = mExecutor->GetIC()->GetLatitudeDegIC();
     mRefLongitude = mExecutor->GetIC()->GetLongitudeDegIC();
-    mRefAltitude = mExecutor->GetIC()->GetAltitudeASLFtIC() * FEET_TO_METER; // Convert feet to meters;
+    mRefAltitude = mExecutor->GetIC()->GetAltitudeASLFtIC() * FEET_TO_METER;
 
-    mConverter = std::make_unique<Converter>(mRefLatitude, mRefLongitude, 0.0); // Reference altitude is set to 0.0
+    // Establish world-space origin at the aircraft's initial geodetic position.
+    Canavar::Engine::Wgs84::SetWorldOrigin(mRefLatitude, mRefLongitude, 0.0);
 
     // Restore the current path
     QDir::setCurrent(CurrentPath);
@@ -123,7 +125,6 @@ void Canavar::Simulator::Aircraft::DrawGui()
     ImGui::Text("Roll:        %.1f °", mPfd.Roll);
     ImGui::Text("Pitch:       %.1f °", mPfd.Pitch);
     ImGui::Text("Heading:     %.1f °", mPfd.Heading);
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::End();
 }
 
@@ -139,12 +140,17 @@ bool Canavar::Simulator::Aircraft::OnKeyReleased(QKeyEvent* pEvent)
     return ShouldHandleKeyRelease((Qt::Key) pEvent->key());
 }
 
+void Canavar::Simulator::Aircraft::OnLeaveEvent(QEvent* pEvent)
+{
+    mPressedKeys.clear();
+}
+
 void Canavar::Simulator::Aircraft::ProcessCommand(Command Command, QVariant Variant)
 {
     switch (Command)
     {
     case Command::InitRunning:
-        mPropulsion->InitRunning(Variant.toInt());
+        mPropulsion->InitRunning(-1);
         break;
     case Command::Hold:
         mExecutor->Hold();
@@ -212,7 +218,13 @@ const Canavar::Simulator::PrimaryFlightData& Canavar::Simulator::Aircraft::GetPf
 
 void Canavar::Simulator::Aircraft::Run(float Ifps)
 {
-    mPropagate->SetTerrainElevation(TERRAIN_ELEVATION);
+    mPropagate->SetTerrainElevation(0.0);
+
+    // Keep tanks full so the simulation does not run out of fuel.
+    for (unsigned int i = 0; i < mPropulsion->GetNumTanks(); ++i)
+    {
+        mPropulsion->GetTank(i)->SetContents(mPropulsion->GetTank(i)->GetCapacity());
+    }
 
     mExecutor->Setdt(Ifps);
     mExecutor->Run();
@@ -239,13 +251,24 @@ void Canavar::Simulator::Aircraft::Run(float Ifps)
     mPfd.LeftAileronPos = qRadiansToDegrees(mCommander->GetDaLPos());
     mPfd.RightAileronPos = qRadiansToDegrees(mCommander->GetDaRPos());
 
-    // Rotation
-    JSBSim::FGQuaternion Rotation = mPropagate->GetQuaternion();
-    QQuaternion QtRotation = QQuaternion(Rotation(1), Rotation(2), Rotation(3), Rotation(4));
-    mPfd.Rotation = mConverter->ConvertRotation(mPfd.Latitude, mPfd.Longitude, QtRotation);
+    // Rotation: convert JSBSim NED body quaternion to engine world space.
+    // JSBSim NED axes: N=+X, E=+Y, D=+Z. Engine world axes: E=+X, U=+Y, S=+Z.
+    // Axis remapping: engine(E,U,S) = jsbsim(Y,-Z,-X).
+    {
+        JSBSim::FGQuaternion Rotation = mPropagate->GetQuaternion();
+        QQuaternion QtRotation = QQuaternion(Rotation(1), Rotation(2), Rotation(3), Rotation(4));
 
-    // Position
-    mPfd.Position = mConverter->ConvertPositionToCartesian(mPfd.Latitude, mPfd.Longitude, mPfd.Altitude);
+        const Canavar::Engine::Wgs84::GeoPoint Origin = Canavar::Engine::Wgs84::GetWorldOrigin();
+        const QQuaternion Fix = QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), static_cast<float>(mPfd.Latitude - Origin.Lat)) * QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), static_cast<float>(mPfd.Longitude - Origin.Lon));
+
+        const QQuaternion Fixed = Fix.inverted() * QtRotation;
+        float X, Y, Z, Angle;
+        Fixed.getAxisAndAngle(&X, &Y, &Z, &Angle);
+        mPfd.Rotation = QQuaternion::fromAxisAndAngle(QVector3D(Y, -Z, -X), Angle);
+    }
+
+    // Position: geodetic → world space (local ENU at world origin).
+    mPfd.Position = Canavar::Engine::Wgs84::ToWorld(mPfd.Latitude, mPfd.Longitude, mPfd.Altitude);
 }
 
 void Canavar::Simulator::Aircraft::ProcessInputs()

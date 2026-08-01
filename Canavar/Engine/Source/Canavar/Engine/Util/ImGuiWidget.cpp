@@ -2,6 +2,7 @@
 
 #include "Canavar/Engine/Camera/Camera.h"
 #include "Canavar/Engine/Camera/FreeCamera.h"
+#include "Canavar/Engine/Camera/GlobeCamera.h"
 #include "Canavar/Engine/Camera/PersecutorCamera.h"
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/Core/Constants.h"
@@ -12,6 +13,7 @@
 #include "Canavar/Engine/Light/DirectionalLight.h"
 #include "Canavar/Engine/Light/Light.h"
 #include "Canavar/Engine/Light/PointLight.h"
+#include "Canavar/Engine/Manager/LineOfSightAnalyzer.h"
 #include "Canavar/Engine/Manager/Renderer.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
 #include "Canavar/Engine/Model/PbrMaterial.h"
@@ -52,6 +54,7 @@ Canavar::Engine::ImGuiWidget::ImGuiWidget(Renderer *pRenderer)
     // Retrieve the NodeManager and CameraManager from the renderer for later use
     mNodeManager = mRenderer->GetNodeManager();
     mCameraManager = mRenderer->GetCameraManager();
+    mLosAnalyzer = mRenderer->GetLineOfSightAnalyzer();
 
     // Register this ImGuiWidget as an event receiver to handle input events
     mRenderer->AddEventReceiver(this);
@@ -235,6 +238,7 @@ void Canavar::Engine::ImGuiWidget::DrawImGuiWidgets(float Ifps)
     DrawSkyProperties();
     DrawHazeProperties();
     DrawTerrainProperties();
+    DrawLineOfSightAnalyzerProperties();
     DrawPostProcessPanel();
     DrawRendererProperties();
     DrawCinematicPathPanel();
@@ -270,6 +274,12 @@ void Canavar::Engine::ImGuiWidget::DrawMenuBar()
             if (ImGui::MenuItem("Free Camera"))
             {
                 const auto pNode = mNodeManager->CreateNode<FreeCamera>();
+                SetSelectedNode(pNode);
+            }
+
+            if (ImGui::MenuItem("Globe Camera"))
+            {
+                const auto pNode = mNodeManager->CreateNode<GlobeCamera>();
                 SetSelectedNode(pNode);
             }
 
@@ -486,7 +496,6 @@ void Canavar::Engine::ImGuiWidget::DrawStats(float)
 void Canavar::Engine::ImGuiWidget::DrawNodeTree(Node *pNode)
 {
     const bool HasChildren = !pNode->GetChildren().empty();
-
     ImGuiTreeNodeFlags Flags = HasChildren ? //
                                    (ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick)
                                            : (ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen);
@@ -497,7 +506,7 @@ void Canavar::Engine::ImGuiWidget::DrawNodeTree(Node *pNode)
     }
 
     const auto *pNodeId = reinterpret_cast<void *>(static_cast<intptr_t>(pNode->GetNodeId()));
-    const bool Open = ImGui::TreeNodeEx(pNodeId, Flags, "[%s]  %s", pNode->GetNodeTypeName(), pNode->GetNodeUniqueName().c_str());
+    const bool Open = ImGui::TreeNodeEx(pNodeId, Flags, "%s [%s] [#%d]", pNode->GetNodeName().c_str(), pNode->GetNodeTypeName(), pNode->GetNodeId());
 
     if (ImGui::IsItemClicked())
     {
@@ -583,6 +592,10 @@ void Canavar::Engine::ImGuiWidget::DrawNodeProperties()
         DrawObjectTransform(pPrimitive);
         DrawPrimitiveModelProperties(pPrimitive);
     }
+    else if (auto *pObject = dynamic_cast<Object *>(mSelectedNode))
+    {
+        DrawObjectTransform(pObject);
+    }
 
     // ── Delete button ─────────────────────────────────────────────────────────
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.70f, 0.10f, 0.10f, 1.0f));
@@ -631,7 +644,7 @@ void Canavar::Engine::ImGuiWidget::DrawHierarchyProperties(Node *pNode)
         ImGui::Text("Children (%d):", static_cast<int>(Children.size()));
         for (Node *pChild : Children)
         {
-            ImGui::BulletText("%s", pChild->GetNodeUniqueName().c_str());
+            ImGui::BulletText("%s", pChild->GetNodeName().c_str());
         }
     }
 
@@ -1067,6 +1080,14 @@ void Canavar::Engine::ImGuiWidget::DrawMeshProperties(TexturedModel *pModel)
 
 bool Canavar::Engine::ImGuiWidget::OnMousePressed(QMouseEvent *pEvent)
 {
+    if (pEvent->button() == Qt::LeftButton && !ImGui::GetIO().WantCaptureMouse)
+    {
+        if (mLosAnalyzerUpdateFromMousePosition && mLosAnalyzer->IsEnabled())
+        {
+            mLosMouseLmbDown = true;
+        }
+    }
+
     if (!mMeshPickingMode)
     {
         return false;
@@ -1091,6 +1112,159 @@ bool Canavar::Engine::ImGuiWidget::OnMousePressed(QMouseEvent *pEvent)
     }
 
     return false; // Do not consume the event so camera/other handlers still work.
+}
+
+bool Canavar::Engine::ImGuiWidget::OnMouseReleased(QMouseEvent *pEvent)
+{
+    if (pEvent->button() == Qt::LeftButton)
+    {
+        mLosMouseLmbDown = false;
+    }
+    return false;
+}
+
+bool Canavar::Engine::ImGuiWidget::OnMouseMoved(QMouseEvent *pEvent)
+{
+    if (mLosMouseLmbDown && mLosAnalyzerUpdateFromMousePosition && mLosAnalyzer->IsEnabled())
+    {
+        const auto NodeInfo = mRenderer->QueryNodeInfo(pEvent->pos().x(), pEvent->pos().y());
+
+        if (NodeInfo.NodeId == mRenderer->GetTerrain()->GetNodeId())
+        {
+            const auto WorldPos = mRenderer->QueryWorldPosition(pEvent->pos().x(), pEvent->pos().y());
+            mLosAnalyzer->SetObserverPosition(WorldPos);
+        }
+    }
+
+    return false;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Line of Sight Analyzer Properties
+// ─────────────────────────────────────────────────────────────────────────────
+
+void Canavar::Engine::ImGuiWidget::DrawLineOfSightAnalyzerProperties()
+{
+    if (!ImGui::CollapsingHeader("Line of Sight Analyzer##DrawLineOfSightAnalyzerProperties"))
+    {
+        return;
+    }
+
+    // Enabled
+    {
+        bool Enabled = mLosAnalyzer->IsEnabled();
+        if (ImGui::Checkbox("Enabled##DrawLineOfSightAnalyzerProperties", &Enabled))
+        {
+            mLosAnalyzer->SetEnabled(Enabled);
+        }
+    }
+
+    ImGui::BeginDisabled(!mLosAnalyzer->IsEnabled());
+
+    ImGui::SeparatorText("Observer");
+
+    // Observer Position
+    {
+        const auto &Pos = mLosAnalyzer->GetObserverPosition();
+        float Vector[3] = { Pos.x(), Pos.y(), Pos.z() };
+        if (ImGui::DragFloat3("Position##DrawLineOfSightAnalyzerProperties", Vector, 1.0f))
+        {
+            mLosAnalyzer->SetObserverPosition(QVector3D(Vector[0], Vector[1], Vector[2]));
+        }
+
+        float ObserverHeight = mLosAnalyzer->GetObserverHeight();
+        if (ImGui::DragFloat("Height##DrawLineOfSightAnalyzerProperties", &ObserverHeight, 0.1f, 0.0f, 100.0f))
+        {
+            mLosAnalyzer->SetObserverHeight(ObserverHeight);
+        }
+
+        ImGui::Checkbox("Track on LMB Hold##DrawLineOfSightAnalyzerProperties", &mLosAnalyzerUpdateFromMousePosition);
+        if (mLosAnalyzerUpdateFromMousePosition)
+        {
+            ImGui::SameLine();
+            ImGui::TextDisabled(mLosMouseLmbDown ? "(tracking)" : "(hold LMB)");
+        }
+    }
+
+    ImGui::SeparatorText("Range");
+
+    // Min / Max LOS Distance
+    {
+        float MinDist = mLosAnalyzer->GetMinLosDistance();
+        if (ImGui::DragFloat("Min Distance##DrawLineOfSightAnalyzerProperties", &MinDist, 1.0f, 0.1f, mLosAnalyzer->GetMaxLosDistance() - 1.0f))
+        {
+            mLosAnalyzer->SetMinLosDistance(MinDist);
+        }
+    }
+    {
+        float MaxDist = mLosAnalyzer->GetMaxLosDistance();
+        if (ImGui::DragFloat("Max Distance##DrawLineOfSightAnalyzerProperties", &MaxDist, 10.0f, mLosAnalyzer->GetMinLosDistance() + 1.0f, 1'000'000.0f))
+        {
+            mLosAnalyzer->SetMaxLosDistance(MaxDist);
+        }
+    }
+
+    ImGui::SeparatorText("Appearance");
+
+    // Bias
+    {
+        float Bias = mLosAnalyzer->GetBias();
+        if (ImGui::DragFloat("Bias##DrawLineOfSightAnalyzerProperties", &Bias, 0.0001f, 0.0f, 1.0f, "%.4f"))
+        {
+            mLosAnalyzer->SetBias(Bias);
+        }
+    }
+
+    // Visible area
+    {
+        float Opacity = mLosAnalyzer->GetVisibilityOpacity();
+        if (ImGui::SliderFloat("Visible Opacity##DrawLineOfSightAnalyzerProperties", &Opacity, 0.0f, 1.0f))
+        {
+            mLosAnalyzer->SetVisibilityOpacity(Opacity);
+        }
+    }
+
+    // Shadow (occluded) area
+    {
+        const auto &ShadowCol = mLosAnalyzer->GetShadowColor();
+        float Col[3] = { ShadowCol.x(), ShadowCol.y(), ShadowCol.z() };
+        if (ImGui::ColorEdit3("Shadow Color##DrawLineOfSightAnalyzerProperties", Col))
+        {
+            mLosAnalyzer->SetShadowColor(QVector3D(Col[0], Col[1], Col[2]));
+        }
+    }
+    {
+        float ShadowOpacity = mLosAnalyzer->GetShadowOpacity();
+        if (ImGui::SliderFloat("Shadow Opacity##DrawLineOfSightAnalyzerProperties", &ShadowOpacity, 0.0f, 1.0f))
+        {
+            mLosAnalyzer->SetShadowOpacity(ShadowOpacity);
+        }
+    }
+
+    ImGui::EndDisabled();
+
+    ImGui::SeparatorText("Debug");
+
+    // Depth map debug view
+    ImGui::Checkbox("Debug Depth Map##DrawLineOfSightAnalyzerProperties", &mLosDebugViewEnabled);
+
+    if (mLosDebugViewEnabled)
+    {
+        if (mLosAnalyzer->IsEnabled())
+        {
+            static const char *FaceNames[] = { "+X", "-X", "+Y", "-Y", "+Z", "-Z" };
+            ImGui::Combo("Face##DrawLineOfSightAnalyzerProperties", &mLosDebugFaceIndex, FaceNames, IM_ARRAYSIZE(FaceNames));
+
+            mLosAnalyzer->RenderDebugFace(mLosDebugFaceIndex);
+
+            const float PreviewSize = ImGui::GetContentRegionAvail().x;
+            ImGui::Image(ImTextureRef((ImTextureID) (GLuint64) mLosAnalyzer->GetDebugTexture()), ImVec2(PreviewSize, PreviewSize));
+        }
+        else
+        {
+            ImGui::TextDisabled("(Enable Line of Sight Analyzer to see the depth map)");
+        }
+    }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1176,7 +1350,7 @@ void Canavar::Engine::ImGuiWidget::DrawTerrainProperties()
         ImGui::Checkbox("Enabled##DrawTerrainProperties", &pTerrain->GetEnabled_NonConst());
 
         // ── Noise ────────────────────────────────────────────────────────────────────
-        ImGui::Text("Noise");
+        ImGui::SeparatorText("Noise");
         ImGui::SliderInt("Octaves##DrawTerrainProperties", &pTerrain->GetOctaves_NonConst(), 1, 16);
         ImGui::DragFloat("Amplitude##DrawTerrainProperties", &pTerrain->GetAmplitude_NonConst(), 1.0f, 0.0f, 10000.0f);
         ImGui::DragFloat("Frequency##DrawTerrainProperties", &pTerrain->GetFrequency_NonConst(), 0.001f, 0.0f, 1.0f, "%.4f");
@@ -1184,11 +1358,11 @@ void Canavar::Engine::ImGuiWidget::DrawTerrainProperties()
         ImGui::DragFloat("Lacunarity##DrawTerrainProperties", &pTerrain->GetLacunarity_NonConst(), 0.01f, 0.0f, 32.0f);
 
         // ── Tessellation ──────────────────────────────────────────────────────────
-        ImGui::Text("Tessellation");
+        ImGui::SeparatorText("Tessellation");
         ImGui::SliderFloat("Multiplier##DrawTerrainProperties", &pTerrain->GetTessellationMultiplier_NonConst(), 1.0f, 64.0f);
 
         // ── Lighting ─────────────────────────────────────────────────────────────
-        ImGui::Text("Lighting");
+        ImGui::SeparatorText("Lighting");
         ImGui::SliderFloat("Ambient##DrawTerrainProperties", &pTerrain->GetAmbient_NonConst(), 0.0f, 1.0f);
         ImGui::SliderFloat("Diffuse##DrawTerrainProperties", &pTerrain->GetDiffuse_NonConst(), 0.0f, 1.0f);
         ImGui::SliderFloat("Specular##DrawTerrainProperties", &pTerrain->GetSpecular_NonConst(), 0.0f, 1.0f);

@@ -1,12 +1,16 @@
 #include "Terrain.h"
 
 #include "Canavar/Engine/Manager/LightManager.h"
+#include "Canavar/Engine/Manager/LineOfSightAnalyzer.h"
 #include "Canavar/Engine/Manager/Renderer.h"
 #include "Canavar/Engine/Util/Chronometer.h"
+#include "Canavar/Engine/Util/Wgs84.h"
 
 Canavar::Engine::Terrain::Terrain(Renderer *pRenderer)
     : mRenderer(pRenderer)
 {
+    mLineOfSightAnalyzer = mRenderer->GetLineOfSightAnalyzer();
+
     initializeOpenGLFunctions();
     SetNodeName("Terrain");
     Generate();
@@ -187,11 +191,11 @@ GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &F
 
     glTextureStorage3D(Id, Miplevels, GL_RGBA8, Widths[0], Heights[0], Filepaths.size());
 
-    for (int i = 0; i < Filepaths.size(); i++)
+    for (int I = 0; I < Filepaths.size(); I++)
     {
-        auto w = Widths[i];
-        auto h = Heights[i];
-        glTextureSubImage3D(Id, 0, 0, 0, i, w, h, 1, GL_RGBA, GL_UNSIGNED_BYTE, Images[i].constBits());
+        const auto W = Widths[I];
+        const auto H = Heights[I];
+        glTextureSubImage3D(Id, 0, 0, 0, I, W, H, 1, GL_RGBA, GL_UNSIGNED_BYTE, Images[I].constBits());
     }
 
     glGenerateTextureMipmap(Id);
@@ -220,7 +224,7 @@ void Canavar::Engine::Terrain::TranslateTiles(const QVector2D &Translation)
 
 void Canavar::Engine::Terrain::CalculateTilePositions(PerspectiveCamera *pCamera)
 {
-    const auto CurrentTilePosition = WhichTile(pCamera->GetPosition());
+    const auto CurrentTilePosition = WhichTile(pCamera->GetWorldPosition());
 
     if (CurrentTilePosition != mPreviousTilePosition)
     {
@@ -256,9 +260,11 @@ void Canavar::Engine::Terrain::Render()
     glBindTextureUnit(1, mNormalTexture);
     glBindTextureUnit(2, mDisplacementTexture);
 
+    mTerrainShader->SetUniform("uLogarithmicDepthBuffer", 1);
     mTerrainShader->SetUniform("uViewProjectionMatrix", pCamera->GetViewProjectionMatrix());
     mTerrainShader->SetUniform("uFarPlane", pCamera->GetZFar());
-    mTerrainShader->SetUniform("uCameraPosition", pCamera->GetPosition());
+    mTerrainShader->SetUniform("uEarthRadius", static_cast<float>(Wgs84::SemiMajorAxis));
+    mTerrainShader->SetUniform("uCameraPosition", pCamera->GetWorldPosition());
 
     mTerrainShader->SetUniform("uNodeId", GetNodeId());
     mTerrainShader->SetUniform("uTessellationMultiplier", mTessellationMultiplier);
@@ -280,9 +286,23 @@ void Canavar::Engine::Terrain::Render()
     mTerrainShader->SetUniformArray("uTextureSizes", mTextureSizes.data(), mTextureSizes.size(), 1);
     mTerrainShader->SetUniformArray("uTextureDisplacementWeights", mTextureDisplacementWeights.data(), mTextureDisplacementWeights.size(), 1);
 
-    glBindVertexArray(mVAO);
-    glDrawElementsInstanced(GL_PATCHES, mIndices.size(), GL_UNSIGNED_INT, 0, mTilePositions.size());
-    glBindVertexArray(0);
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.Enabled", static_cast<int>(mLineOfSightAnalyzer->IsEnabled()));
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ObserverPosition", mLineOfSightAnalyzer->GetObserverPosition());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.FarPlane", mLineOfSightAnalyzer->GetFarPlane());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.Bias", mLineOfSightAnalyzer->GetBias());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.VisibilityOpacity", mLineOfSightAnalyzer->GetVisibilityOpacity());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ShadowColor", mLineOfSightAnalyzer->GetShadowColor());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ShadowOpacity", mLineOfSightAnalyzer->GetShadowOpacity());
+    mTerrainShader->SetSampler("uLineOfSightAnalyzer.DepthMap", 3, mLineOfSightAnalyzer->GetDepthMap(), GL_TEXTURE_CUBE_MAP);
+
+    RenderPatches();
 
     mTerrainShader->Unbind();
+}
+
+void Canavar::Engine::Terrain::RenderPatches()
+{
+    glBindVertexArray(mVAO);
+    glDrawElementsInstanced(GL_PATCHES, mIndices.size(), GL_UNSIGNED_INT, nullptr, mTilePositions.size());
+    glBindVertexArray(0);
 }

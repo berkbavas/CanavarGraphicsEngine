@@ -1,5 +1,6 @@
 #include "Renderer.h"
 
+#include "Canavar/Engine/Core/OpenGLStateGuard.h"
 #include "Canavar/Engine/Util/Chronometer.h"
 
 Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
@@ -23,6 +24,7 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mTexturedModelRenderer = std::make_unique<TexturedModelRenderer>(this);
     mPrimitiveModelRenderer = std::make_unique<PrimitiveModelRenderer>(this);
     mBoundingBoxRenderer = std::make_unique<BoundingBoxRenderer>(this);
+    mLineOfSightAnalyzer = std::make_unique<LineOfSightAnalyzer>(this);
 
     mManagers.append(mNodeManager.get());
     mManagers.append(mLightManager.get());
@@ -30,6 +32,7 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mManagers.append(mTexturedModelRenderer.get());
     mManagers.append(mPrimitiveModelRenderer.get());
     mManagers.append(mBoundingBoxRenderer.get());
+    mManagers.append(mLineOfSightAnalyzer.get());
 
     mGizmo = std::make_unique<Gizmo>(this);
 
@@ -180,6 +183,9 @@ void Canavar::Engine::Renderer::RenderToFramebuffer(Framebuffer *pFramebuffer, P
 {
     Chronometer Chronometer("Renderer::RenderToFramebuffer");
 
+    // Save the current OpenGL state to restore it later
+    OpenGLStateGuard StateGuard(this);
+
     // Setup OpenGL state for rendering
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
@@ -212,7 +218,7 @@ void Canavar::Engine::Renderer::RenderToFramebuffer(Framebuffer *pFramebuffer, P
         pManager->RenderOverlay(RenderPass::Opaque, pCamera);
     }
 
-    // Re-enable depth testing for the transparent pass
+    // // Re-enable depth testing for the transparent pass
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE); // Disable depth writing for transparent objects
     glEnable(GL_BLEND);
@@ -422,6 +428,7 @@ void Canavar::Engine::Renderer::CreateGlobalNodes()
     mSky = mNodeManager->CreateNode<Sky>();
     mHaze = mNodeManager->CreateNode<Haze>();
     mTerrain = mNodeManager->CreateNode<Terrain>(this);
+    mLineOfSightAnalyzer->SetTerrain(mTerrain);
 }
 
 void Canavar::Engine::Renderer::ApplyPostProcessEffects()
@@ -562,6 +569,11 @@ Canavar::Engine::CameraManager *Canavar::Engine::Renderer::GetCameraManager() co
 Canavar::Engine::BoundingBoxRenderer *Canavar::Engine::Renderer::GetBoundingBoxRenderer() const
 {
     return mBoundingBoxRenderer.get();
+}
+
+Canavar::Engine::LineOfSightAnalyzer *Canavar::Engine::Renderer::GetLineOfSightAnalyzer() const
+{
+    return mLineOfSightAnalyzer.get();
 }
 
 Canavar::Engine::Sky *Canavar::Engine::Renderer::GetSky() const

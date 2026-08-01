@@ -51,25 +51,25 @@ struct PointLight
     float Quadratic;
 };
 
+struct LineOfSightAnalyzer
+{
+    int Enabled;
+    samplerCube DepthMap;
+    vec3 ObserverPosition;
+    float FarPlane;
+    float Bias;
+    float VisibilityOpacity;
+    vec3 ShadowColor;
+    float ShadowOpacity;
+};
+
 layout(binding = 0) uniform sampler2DArray uAlbedos;
 layout(binding = 1) uniform sampler2DArray uNormals;
 layout(binding = 2) uniform sampler2DArray uDisplacement;
 
-in vec3 fsWorldPosition;
-in vec2 fsTextureCoords;
-in vec3 fsNormal;
-in vec3 fsTangent;
-in vec3 fsBitangent;
-in mat3 fsTangentMatrix;
-in float fsLogZ;
-
-layout(location = 0) out vec4 oFragColor;
-layout(location = 1) out vec4 oFragLocalPosition;
-layout(location = 2) out vec4 oFragWorldPosition;
-layout(location = 3) out vec4 oFragNodeInfo;
-
 uniform vec3 uCameraPosition;
 uniform float uFarPlane;
+uniform float uEarthRadius;
 
 uniform float uTextureStartHeights[4];
 uniform float uTextureBlends[4];
@@ -87,6 +87,21 @@ uniform DirectionalLight uDirectionalLights[8]; // First element is the Sun
 uniform int uNumDirectionalLights;
 
 uniform int uNodeId;
+
+uniform LineOfSightAnalyzer uLineOfSightAnalyzer;
+
+in vec3 fsWorldPosition;
+in vec2 fsTextureCoords;
+in vec3 fsNormal;
+in vec3 fsTangent;
+in vec3 fsBitangent;
+in mat3 fsTangentMatrix;
+in float fsLogZ;
+
+layout(location = 0) out vec4 oFragColor;
+layout(location = 1) out vec4 oFragLocalPosition;
+layout(location = 2) out vec4 oFragWorldPosition;
+layout(location = 3) out vec4 oFragNodeInfo;
 
 /**
  * Functions
@@ -144,7 +159,9 @@ float[4] GetTextureWeightsByDisplacement(vec3[4] t, float[4] a)
 
 float[4] TerrainBlending(vec3 WorldPos, vec3 Normal)
 {
-    float Height = WorldPos.y;
+    // Recover actual elevation: undo the curvature drop applied in the tessellation stage.
+    float D2 = WorldPos.x * WorldPos.x + WorldPos.z * WorldPos.z;
+    float Height = WorldPos.y + D2 / (2.0 * uEarthRadius);
 
     // A completely flat terrain has slope=0
     float Slope = max(1 - dot(Normal, vec3(0, 1, 0)), 0.0f);
@@ -285,6 +302,58 @@ vec3 ProcessHaze(float Distance, vec3 Color)
     return Result;
 }
 
+vec3 GetVisibleColor(float DistanceRatio)
+{
+    // Heat Map (Blue -> Cyan -> Green -> Yellow -> Red)
+
+    float T = DistanceRatio * 4.0;
+    if (T < 1.0)
+        return mix(vec3(0, 0, 1), vec3(0, 1, 1), T);
+    else if (T < 2.0)
+        return mix(vec3(0, 1, 1), vec3(0, 1, 0), T - 1.0);
+    else if (T < 3.0)
+        return mix(vec3(0, 1, 0), vec3(1, 1, 0), T - 2.0);
+    else
+        return mix(vec3(1, 1, 0), vec3(1, 0, 0), T - 3.0);
+}
+
+vec3 ApplyLineOfSightAnalyzer(vec3 Color)
+{
+    if (uLineOfSightAnalyzer.Enabled == 0)
+    {
+        return Color;
+    }
+
+    const vec3 FragmentToObserver = fsWorldPosition - uLineOfSightAnalyzer.ObserverPosition;
+    const float CurrentDepth = length(FragmentToObserver);
+
+    // Outside of analysis range — no overlay
+    if (CurrentDepth > uLineOfSightAnalyzer.FarPlane)
+    {
+        return Color;
+    }
+
+    // Dot stipple pattern in screen space
+    const float DotPeriod = 6.0;
+    const float DotRadius = 2.2;
+    vec2 Cell = mod(gl_FragCoord.xy, DotPeriod);
+    if (length(Cell - vec2(DotPeriod * 0.5)) > DotRadius)
+    {
+        return Color;
+    }
+
+    const float ClosestDepth = texture(uLineOfSightAnalyzer.DepthMap, normalize(FragmentToObserver)).r * uLineOfSightAnalyzer.FarPlane;
+
+    if (CurrentDepth - uLineOfSightAnalyzer.Bias * uLineOfSightAnalyzer.FarPlane < ClosestDepth)
+    {
+        const float DistanceRatio = CurrentDepth / uLineOfSightAnalyzer.FarPlane;
+        const vec3 LosColor = GetVisibleColor(DistanceRatio);
+        return mix(Color, LosColor, uLineOfSightAnalyzer.VisibilityOpacity);
+    }
+
+    return mix(Color, uLineOfSightAnalyzer.ShadowColor, uLineOfSightAnalyzer.ShadowOpacity);
+}
+
 void main()
 {
     vec3 OutColor = vec3(0.0f);
@@ -316,6 +385,7 @@ void main()
     vec3 Result = vec3(0.0f);
     Result += ProcessDirectionalLights(Color, Normal, LightOut);
     Result += ProcessPointLights(Color, Normal, LightOut);
+    Result = ApplyLineOfSightAnalyzer(Result);
     Result = ProcessHaze(Distance, Result);
 
     oFragColor = vec4(Result, 1.0f);

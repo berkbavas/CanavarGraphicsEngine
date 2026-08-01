@@ -1,5 +1,6 @@
 #include "NodeManager.h"
 
+#include "Canavar/Engine/Camera/GlobeCamera.h"
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
 #include "Canavar/Engine/GlobalNode/Haze/Haze.h"
 #include "Canavar/Engine/GlobalNode/Sky/Sky.h"
@@ -387,6 +388,13 @@ bool Canavar::Engine::NodeManager::ImportNodes(const std::string &FilePath)
             SApplyCameraProps(pCam, NodeObj);
             pNode = pCam;
         }
+        else if (TypeName == "GlobeCamera")
+        {
+            GlobeCamera *pCam = CreateNode<GlobeCamera>();
+            SApplyObjectProps(pCam, NodeObj);
+            SApplyCameraProps(pCam, NodeObj);
+            pNode = pCam;
+        }
         else if (TypeName == "DummyCamera")
         {
             DummyCamera *pCam = CreateNode<DummyCamera>();
@@ -528,6 +536,17 @@ static QJsonObject SWriteFreeCameraProps(const Canavar::Engine::FreeCamera *pCam
 {
     QJsonObject O;
     O["node_type_name"] = "FreeCamera";
+    O["angular_speed"] = (double) pCam->GetAngularSpeed();
+    O["linear_speed"] = (double) pCam->GetLinearSpeed();
+    SWriteObjectProps(O, pCam);
+    SWritePerspCameraProps(O, pCam);
+    return O;
+}
+
+static QJsonObject SWriteGlobeCameraProps(const Canavar::Engine::GlobeCamera *pCam)
+{
+    QJsonObject O;
+    O["node_type_name"] = "GlobeCamera";
     O["angular_speed"] = (double) pCam->GetAngularSpeed();
     O["linear_speed"] = (double) pCam->GetLinearSpeed();
     SWriteObjectProps(O, pCam);
@@ -680,6 +699,8 @@ bool Canavar::Engine::NodeManager::ExportNodes(const std::string &FilePath)
             NodeObj = SWritePointLightProps(pPointLight);
         else if (auto *pFreeCamera = dynamic_cast<FreeCamera *>(pNode))
             NodeObj = SWriteFreeCameraProps(pFreeCamera);
+        else if (auto *pGlobeCamera = dynamic_cast<GlobeCamera *>(pNode))
+            NodeObj = SWriteGlobeCameraProps(pGlobeCamera);
         else if (auto *pPersecutor = dynamic_cast<PersecutorCamera *>(pNode))
             NodeObj = SWritePersecutorCameraProps(pPersecutor);
         else if (auto *pDummyCamera = dynamic_cast<DummyCamera *>(pNode))

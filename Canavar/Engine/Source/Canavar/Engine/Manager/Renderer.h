@@ -13,6 +13,7 @@
 #include "Canavar/Engine/Manager/BoundingBoxRenderer.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/LightManager.h"
+#include "Canavar/Engine/Manager/LineOfSightAnalyzer.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
 #include "Canavar/Engine/Manager/PrimitiveModelRenderer.h"
 #include "Canavar/Engine/Manager/TexturedModelRenderer.h"
@@ -56,6 +57,7 @@ namespace Canavar::Engine
         LightManager* GetLightManager() const;
         CameraManager* GetCameraManager() const;
         BoundingBoxRenderer* GetBoundingBoxRenderer() const;
+        LineOfSightAnalyzer* GetLineOfSightAnalyzer() const;
 
         // Accessors for global nodes
         Sky* GetSky() const;
@@ -139,6 +141,7 @@ namespace Canavar::Engine
         TexturedModelRendererPtr mTexturedModelRenderer{ nullptr };
         PrimitiveModelRendererPtr mPrimitiveModelRenderer{ nullptr };
         BoundingBoxRendererPtr mBoundingBoxRenderer{ nullptr };
+        LineOfSightAnalyzerPtr mLineOfSightAnalyzer{ nullptr };
 
         ShaderPtr mScreenShader{ nullptr };
         QuadPtr mQuad{ nullptr };

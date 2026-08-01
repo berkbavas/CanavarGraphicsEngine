@@ -3,6 +3,7 @@
 #include "Canavar/Engine/Node/Node.h"
 #include "Canavar/Engine/Object/AABB.h"
 #include "Canavar/Engine/Util/Macros.h"
+#include "Canavar/Engine/Util/Wgs84.h"
 
 #include <QMatrix3x3>
 #include <QMatrix4x4>
@@ -35,6 +36,8 @@ namespace Canavar::Engine
         void SetRotation(const QQuaternion& NewRotation);
         void SetPosition(const QVector3D& NewPosition);
         void SetPosition(float X, float Y, float Z);
+        void SetGeodeticPosition(double LatDeg, double LonDeg, double AltMeters);
+        Wgs84::GeoPoint GetGeodeticPosition() const;
         void SetScale(const QVector3D& NewScale);
         void SetScale(float X, float Y, float Z);
         void SetScale(float UniformScale);

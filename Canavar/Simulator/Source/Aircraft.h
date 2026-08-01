@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Canavar/Engine/Util/Logger.h"
+#include "Canavar/Engine/Util/Wgs84.h"
 #include "Command.h"
-#include "Converter.h"
 #include "PrimaryFlightData.h"
 
 #include <QKeyEvent>
@@ -32,6 +32,7 @@ namespace Canavar::Simulator
         void DrawGui();
         bool OnKeyPressed(QKeyEvent* pEvent);
         bool OnKeyReleased(QKeyEvent* pEvent);
+        void OnLeaveEvent(QEvent* pEvent);
         void Tick(float Ifps);
         bool IsHolding() const;
 
@@ -55,8 +56,6 @@ namespace Canavar::Simulator
         std::shared_ptr<JSBSim::FGPropagate> mPropagate{ nullptr };
         std::shared_ptr<JSBSim::FGPropulsion> mPropulsion{ nullptr };
         std::shared_ptr<JSBSim::FGAuxiliary> mAuxiliary{ nullptr };
-
-        std::unique_ptr<Converter> mConverter{ nullptr };
 
         PrimaryFlightData mPfd;
 

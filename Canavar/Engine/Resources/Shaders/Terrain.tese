@@ -6,6 +6,8 @@ layout(triangles, equal_spacing, ccw) in;
 
 uniform mat4 uViewProjectionMatrix;
 uniform float uFarPlane;
+uniform float uEarthRadius;          // WGS-84 semi-major axis for curvature correction
+uniform int uLogarithmicDepthBuffer; // 0 = Disabled, 1 = Enabled
 
 // Noise
 struct Noise
@@ -23,6 +25,7 @@ in vec3 teWorldPosition[];
 in vec2 teTextureCoords[];
 in vec3 teNormal[];
 
+out vec3 gsWorldPosition;
 out vec3 fsWorldPosition;
 out vec2 fsTextureCoords;
 out vec3 fsNormal;
@@ -170,9 +173,10 @@ float TerrainHeight(vec2 Position)
 vec3 ComputeNormal(vec3 WorldPos)
 {
     vec2 eps = vec2(0.1, 0.0);
-    return normalize(vec3(TerrainHeight(WorldPos.xz - eps.xy) - TerrainHeight(WorldPos.xz + eps.xy), //
-                          2 * eps.x,
-                          TerrainHeight(WorldPos.xz - eps.yx) - TerrainHeight(WorldPos.xz + eps.yx)));
+    // Include curvature slope: d/dx[-(x²+z²)/(2R)] = -x/R, contributing +2xe/R to the difference.
+    float dx = (TerrainHeight(WorldPos.xz - eps.xy) - TerrainHeight(WorldPos.xz + eps.xy)) + 2.0 * WorldPos.x * eps.x / uEarthRadius;
+    float dz = (TerrainHeight(WorldPos.xz - eps.yx) - TerrainHeight(WorldPos.xz + eps.yx)) + 2.0 * WorldPos.z * eps.x / uEarthRadius;
+    return normalize(vec3(dx, 2.0 * eps.x, dz));
 }
 
 void main()
@@ -184,6 +188,14 @@ void main()
     // Displace the vertex along the normal
     const float Displacement = TerrainHeight(fsWorldPosition.xz);
     fsWorldPosition += vec3(0.0f, 1.0f, 0.0f) * Displacement;
+
+    // Drop the tile down to follow Earth's curvature (parabolic approximation).
+    // Horizontal distance squared from camera origin:
+    float D2 = fsWorldPosition.x * fsWorldPosition.x + fsWorldPosition.z * fsWorldPosition.z;
+    fsWorldPosition.y -= D2 / (2.0 * uEarthRadius);
+
+    gsWorldPosition = fsWorldPosition;
+
     fsNormal = ComputeNormal(fsWorldPosition);
     fsTangent = normalize(cross(fsNormal, vec3(0.0f, 1.0f, 0.0f)));
     fsBitangent = normalize(cross(fsTangent, fsNormal));
@@ -191,7 +203,11 @@ void main()
 
     gl_Position = uViewProjectionMatrix * vec4(fsWorldPosition, 1.0f);
 
-    float Coef = 2.0f / log2(uFarPlane + 1.0f);
-    gl_Position.z = log2(max(1e-6, 1.0f + gl_Position.w)) * Coef - 1.0f;
-    fsLogZ = 1.0f + gl_Position.w;
+    if (uLogarithmicDepthBuffer == 1)
+    {
+        // Logarithmic depth buffer
+        float Coef = 2.0f / log2(uFarPlane + 1.0f);
+        gl_Position.z = log2(max(1e-6, 1.0f + gl_Position.w)) * Coef - 1.0f;
+        fsLogZ = 1.0f + gl_Position.w;
+    }
 }

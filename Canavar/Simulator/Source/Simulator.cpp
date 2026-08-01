@@ -1,5 +1,7 @@
 #include "Simulator.h"
 
+#include "Canavar/Engine/Camera/FreeCamera.h"
+#include "Canavar/Engine/Camera/GlobeCamera.h"
 #include "Canavar/Engine/Core/OpenGLWidget.h"
 #include "Canavar/Engine/Manager/CameraManager.h"
 #include "Canavar/Engine/Manager/NodeManager.h"
@@ -57,6 +59,7 @@ void Canavar::Simulator::Simulator::Initialize()
     mNodeManager->ImportNodes("Resources/f16.json");
 
     mFreeCamera = mNodeManager->FindNodeByType<Canavar::Engine::FreeCamera>();
+    mGlobeCamera = mNodeManager->CreateNode<Canavar::Engine::GlobeCamera>();
     mDummyCamera = mNodeManager->FindNodeByType<Canavar::Engine::DummyCamera>();
     mPersecutorCamera = mNodeManager->FindNodeByType<Canavar::Engine::PersecutorCamera>();
 
@@ -106,6 +109,11 @@ bool Canavar::Simulator::Simulator::OnKeyPressed(QKeyEvent* pEvent)
         mCameraManager->SetActiveCamera(mDummyCamera);
         return true;
     }
+    else if (pEvent->key() == Qt::Key_4)
+    {
+        mCameraManager->SetActiveCamera(mGlobeCamera);
+        return true;
+    }
 
     return mAircraft->OnKeyPressed(pEvent);
 }
@@ -113,4 +121,10 @@ bool Canavar::Simulator::Simulator::OnKeyPressed(QKeyEvent* pEvent)
 bool Canavar::Simulator::Simulator::OnKeyReleased(QKeyEvent* pEvent)
 {
     return mAircraft->OnKeyReleased(pEvent);
+}
+
+bool Canavar::Simulator::Simulator::OnLeaveEvent(QEvent* pEvent)
+{
+    mAircraft->OnLeaveEvent(pEvent);
+    return false;
 }

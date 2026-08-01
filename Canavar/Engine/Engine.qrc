@@ -26,5 +26,8 @@
         <file>Resources/Shaders/BoundingBox.vert</file>
         <file>Resources/Shaders/BoundingBox.frag</file>
         <file>Resources/Font/OpenSans/OpenSans-VariableFont_wdth,wght.ttf</file>
+        <file>Resources/Shaders/LineOfSightAnalyzer.frag</file>
+        <file>Resources/Shaders/LineOfSightAnalyzer.geom</file>
+        <file>Resources/Shaders/LineOfSightAnalyzerDebug.frag</file>
     </qresource>
 </RCC>
