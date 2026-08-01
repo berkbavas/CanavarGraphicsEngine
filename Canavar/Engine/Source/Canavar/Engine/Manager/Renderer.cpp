@@ -519,6 +519,8 @@ void Canavar::Engine::Renderer::PaintPass()
 
 QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
 {
+    Chronometer Chronometer("Renderer::QueryLocalPosition");
+
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT1);
@@ -532,6 +534,8 @@ QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
 
 QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
 {
+    Chronometer Chronometer("Renderer::QueryWorldPosition");
+
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT2);
@@ -545,6 +549,8 @@ QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
 
 Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int X, int Y)
 {
+    Chronometer Chronometer("Renderer::QueryNodeInfo");
+
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
     glReadBuffer(GL_COLOR_ATTACHMENT3);
