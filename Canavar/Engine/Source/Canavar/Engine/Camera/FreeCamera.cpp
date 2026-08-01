@@ -46,6 +46,9 @@ void Canavar::Engine::FreeCamera::Reset()
 {
     mMouse.Reset();
     mPressedKeys.clear();
+    mYaw = 0.0f;
+    mPitch = 0.0f;
+    ApplyRotation();
 }
 
 bool Canavar::Engine::FreeCamera::OnKeyPressed(QKeyEvent* pEvent)

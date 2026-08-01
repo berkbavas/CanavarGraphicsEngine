@@ -8,12 +8,14 @@ uniform mat4 uVP;
 uniform mat3 uNormalMatrix;
 uniform float uFar;
 
-out vec3 fsNormal;
 out vec3 fsFragWorldPosition;
+out vec3 fsFragLocalPosition;
+out vec3 fsNormal;
 out float fsFlogZ;
 
 void main()
 {
+    fsFragLocalPosition = aPosition;
     const vec4 WorldPos = uModelMatrix * vec4(aPosition, 1.0f);
     fsFragWorldPosition = WorldPos.xyz;
     fsNormal = normalize(uNormalMatrix * aNormal);

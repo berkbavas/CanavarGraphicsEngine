@@ -25,15 +25,6 @@ QVector3D Canavar::Engine::Camera::ComputeRayFromScreen(const QPointF &Point) co
     return WorldPosition;
 }
 
-void Canavar::Engine::Camera::SetDirection(const QVector3D &Direction, const QVector3D &Up)
-{
-    QMatrix4x4 ViewMatrix;
-    ViewMatrix.lookAt(QVector3D(0, 0, 0), Direction.normalized(), Up.normalized());
-
-    QQuaternion Rotation = QQuaternion::fromRotationMatrix(ViewMatrix.toGenericMatrix<3, 3>());
-    SetRotation(Rotation);
-}
-
 QVector2D Canavar::Engine::Camera::ProjectWorldToScreenSpace(const QVector3D &Pos3D) const
 {
     QMatrix4x4 ViewProjectionMatrix = GetViewProjectionMatrix();

@@ -45,6 +45,7 @@ void Canavar::Engine::Sky::Render(PerspectiveCamera *pActiveCamera, DirectionalL
     mSkyShader->SetUniform("uScaleHeightR", mScaleHeightR);
     mSkyShader->SetUniform("uScaleHeightM", mScaleHeightM);
     mSkyShader->SetUniform("uMieG", mMieG);
+    mSkyShader->SetUniform("uNodeId", GetNodeId());
     mQuad->Render();
     mSkyShader->Unbind();
 

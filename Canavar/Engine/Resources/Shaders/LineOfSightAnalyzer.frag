@@ -7,7 +7,6 @@ in vec4 fsWorldPosition;
 
 void main()
 {
-    const vec3 FragmentToObserver = fsWorldPosition.xyz - uObserverPosition;
-    const float Depth = length(FragmentToObserver) / uFarPlane;
-    gl_FragDepth = Depth;   
+    const float Depth = length(uObserverPosition - fsWorldPosition.xyz) / uFarPlane;
+    gl_FragDepth = Depth;
 }

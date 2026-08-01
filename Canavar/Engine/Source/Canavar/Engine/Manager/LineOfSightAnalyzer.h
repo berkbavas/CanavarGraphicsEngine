@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Canavar/Engine/Camera/FreeCamera.h"
+#include "Canavar/Engine/Camera/DummyCamera.h"
 #include "Canavar/Engine/Core/CubicFramebuffer.h"
+#include "Canavar/Engine/Core/Framebuffer.h"
 #include "Canavar/Engine/Core/Quad.h"
 #include "Canavar/Engine/Core/Shader.h"
 #include "Canavar/Engine/Manager/Manager.h"
@@ -27,29 +28,28 @@ namespace Canavar::Engine
         void Update(float Ifps) override;
         void SetTerrain(Terrain *pTerrain);
 
+        QVector3D GetObserverPosition() const;
         float GetVisibilityOpacity() const { return mVisibilityOpacity; }
-        float GetMinLosDistance() const { return mMinLosDistance; }
         float GetMaxLosDistance() const { return mMaxLosDistance; }
-        const QVector3D &GetObserverPosition() const { return mObserverPosition; }
+        const QVector3D &GetObserverPositionOnTerrain() const { return mObserverPositionOnTerrain; }
+        float GetObserverHeightOnTerrain() const { return mObserverHeightOnTerrain; }
         float GetBias() const { return mBias; }
         float GetFarPlane() const;
         bool IsEnabled() const { return mEnabled; }
         GLuint GetDepthMap() const;
         float GetShadowOpacity() const { return mShadowOpacity; }
         const QVector3D &GetShadowColor() const { return mShadowColor; }
-        float GetObserverHeight() const { return mObserverHeight; }
-        GLuint GetDebugTexture() const { return mDebugTexture; }
-        int GetDebugTextureSize() const { return mDebugTextureSize; }
+        GLuint GetDebugTexture() const { return mDebugFramebuffer->GetTexture(); }
+        int GetDebugTextureSize() const { return mDebugFramebuffer->GetWidth(); }
+        void SetObserverPositionOnTerrain(const QVector3D &Position);
+        void SetObserverHeightOnTerrain(float Height);
 
-        void SetMinLosDistance(float Distance);
         void SetMaxLosDistance(float Distance);
-        void SetObserverPosition(const QVector3D &Position);
         void SetBias(float Bias);
         void SetEnabled(bool Enabled);
         void SetVisibilityOpacity(float Opacity);
         void SetShadowOpacity(float Opacity);
         void SetShadowColor(const QVector3D &Color);
-        void SetObserverHeight(float Height);
         void RenderDebugFace(int FaceIndex);
 
       private:
@@ -66,22 +66,20 @@ namespace Canavar::Engine
 
         QuadPtr mDebugQuad{ nullptr };
         ShaderPtr mDebugShader{ nullptr };
-        GLuint mDebugFBO{ 0 };
-        GLuint mDebugTexture{ 0 };
-        static constexpr int mDebugTextureSize{ 512 };
+        FramebufferPtr mDebugFramebuffer{ nullptr };
+
         bool mRenderDebug{ false };
         int mLosDebugFaceIndex{ 0 };
 
-        float mMinLosDistance{ 10.0f };
         float mMaxLosDistance{ 500.0f };
-        QVector3D mObserverPosition{ 0, 0, 0 };
-        float mObserverHeight{ 10.0f };
+        QVector3D mObserverPositionOnTerrain{ 0, 0, 0 };
+        float mObserverHeightOnTerrain{ 10.0f };
         float mBias{ 0.01f };
         float mVisibilityOpacity{ 0.35f };
         float mShadowOpacity{ 0.3f };
         QVector3D mShadowColor{ 0.0f, 0.0f, 0.0f };
 
-        std::vector<FreeCameraPtr> mObserverCameras;
+        std::vector<DummyCameraPtr> mObserverCameras;
 
         int mWidth{ 4096 };
         int mHeight{ 4096 };

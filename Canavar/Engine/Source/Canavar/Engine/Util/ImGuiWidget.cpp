@@ -1080,35 +1080,28 @@ void Canavar::Engine::ImGuiWidget::DrawMeshProperties(TexturedModel *pModel)
 
 bool Canavar::Engine::ImGuiWidget::OnMousePressed(QMouseEvent *pEvent)
 {
-    if (pEvent->button() == Qt::LeftButton && !ImGui::GetIO().WantCaptureMouse)
-    {
-        if (mLosAnalyzerUpdateFromMousePosition && mLosAnalyzer->IsEnabled())
-        {
-            mLosMouseLmbDown = true;
-        }
-    }
-
-    if (!mMeshPickingMode)
+    if (ImGui::GetIO().WantCaptureMouse)
     {
         return false;
     }
 
-    if (pEvent->button() != Qt::LeftButton)
+    if (pEvent->button() == Qt::LeftButton && mLosAnalyzerUpdateFromMousePosition && mLosAnalyzer->IsEnabled())
+    {
+        mLosMouseLmbDown = true;
+    }
+
+    if (!mMeshPickingMode || !mSelectedNode || pEvent->button() != Qt::LeftButton)
     {
         return false;
     }
 
-    if (!mSelectedNode || ImGui::GetIO().WantCaptureMouse)
-    {
-        return false;
-    }
-
-    const auto Info = mRenderer->QueryNodeInfo(pEvent->pos().x(), pEvent->pos().y());
+    const auto Info = mRenderer->QueryNodeInfo(pEvent->position());
 
     // Only select a mesh if the click landed on the currently selected TexturedModel.
     if (Info.NodeId == mSelectedNode->GetNodeId())
     {
         mSelectedMeshId = Info.MeshId;
+        return true; // Consume the event so camera/other handlers do not also process it.
     }
 
     return false; // Do not consume the event so camera/other handlers still work.
@@ -1120,6 +1113,7 @@ bool Canavar::Engine::ImGuiWidget::OnMouseReleased(QMouseEvent *pEvent)
     {
         mLosMouseLmbDown = false;
     }
+
     return false;
 }
 
@@ -1127,12 +1121,11 @@ bool Canavar::Engine::ImGuiWidget::OnMouseMoved(QMouseEvent *pEvent)
 {
     if (mLosMouseLmbDown && mLosAnalyzerUpdateFromMousePosition && mLosAnalyzer->IsEnabled())
     {
-        const auto NodeInfo = mRenderer->QueryNodeInfo(pEvent->pos().x(), pEvent->pos().y());
+        const auto &[WorldPos, NodeId] = mRenderer->QueryWorldPosition(pEvent->position());
 
-        if (NodeInfo.NodeId == mRenderer->GetTerrain()->GetNodeId())
+        if (NodeId == mRenderer->GetTerrain()->GetNodeId())
         {
-            const auto WorldPos = mRenderer->QueryWorldPosition(pEvent->pos().x(), pEvent->pos().y());
-            mLosAnalyzer->SetObserverPosition(WorldPos);
+            mLosAnalyzer->SetObserverPositionOnTerrain(WorldPos);
         }
     }
 
@@ -1166,19 +1159,16 @@ void Canavar::Engine::ImGuiWidget::DrawLineOfSightAnalyzerProperties()
     // Observer Position
     {
         const auto &Pos = mLosAnalyzer->GetObserverPosition();
-        float Vector[3] = { Pos.x(), Pos.y(), Pos.z() };
-        if (ImGui::DragFloat3("Position##DrawLineOfSightAnalyzerProperties", Vector, 1.0f))
-        {
-            mLosAnalyzer->SetObserverPosition(QVector3D(Vector[0], Vector[1], Vector[2]));
-        }
+        ImGui::Text("Position: (%.3f, %.3f, %.3f)", Pos.x(), Pos.y(), Pos.z());
 
-        float ObserverHeight = mLosAnalyzer->GetObserverHeight();
-        if (ImGui::DragFloat("Height##DrawLineOfSightAnalyzerProperties", &ObserverHeight, 0.1f, 0.0f, 100.0f))
+        float ObserverHeight = mLosAnalyzer->GetObserverHeightOnTerrain();
+        if (ImGui::DragFloat("Observer Height##DrawLineOfSightAnalyzerProperties", &ObserverHeight, 0.1f, 0.0f, 1000.0f))
         {
-            mLosAnalyzer->SetObserverHeight(ObserverHeight);
+            mLosAnalyzer->SetObserverHeightOnTerrain(ObserverHeight);
         }
 
         ImGui::Checkbox("Track on LMB Hold##DrawLineOfSightAnalyzerProperties", &mLosAnalyzerUpdateFromMousePosition);
+        
         if (mLosAnalyzerUpdateFromMousePosition)
         {
             ImGui::SameLine();
@@ -1188,17 +1178,10 @@ void Canavar::Engine::ImGuiWidget::DrawLineOfSightAnalyzerProperties()
 
     ImGui::SeparatorText("Range");
 
-    // Min / Max LOS Distance
-    {
-        float MinDist = mLosAnalyzer->GetMinLosDistance();
-        if (ImGui::DragFloat("Min Distance##DrawLineOfSightAnalyzerProperties", &MinDist, 1.0f, 0.1f, mLosAnalyzer->GetMaxLosDistance() - 1.0f))
-        {
-            mLosAnalyzer->SetMinLosDistance(MinDist);
-        }
-    }
+    // Max LOS Distance
     {
         float MaxDist = mLosAnalyzer->GetMaxLosDistance();
-        if (ImGui::DragFloat("Max Distance##DrawLineOfSightAnalyzerProperties", &MaxDist, 10.0f, mLosAnalyzer->GetMinLosDistance() + 1.0f, 1'000'000.0f))
+        if (ImGui::DragFloat("Max Distance##DrawLineOfSightAnalyzerProperties", &MaxDist, 10.0f, 1.0f, 1'000'000.0f))
         {
             mLosAnalyzer->SetMaxLosDistance(MaxDist);
         }

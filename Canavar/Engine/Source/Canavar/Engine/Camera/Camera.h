@@ -20,7 +20,6 @@ namespace Canavar::Engine
         virtual QVector3D ProjectScreenToWorldSpace(const QPointF &Point, float Depth) const;
         virtual float GetDepthOfPoint(const QVector3D &Point) const;
         virtual QVector3D ComputeRayFromScreen(const QPointF &Point) const;
-        void SetDirection(const QVector3D &Direction, const QVector3D &Up = QVector3D(0, 1, 0));
 
         QMatrix4x4 GetViewProjectionMatrix() const;
         QMatrix4x4 GetRotationMatrix() const;

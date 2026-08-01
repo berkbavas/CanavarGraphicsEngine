@@ -10,9 +10,17 @@ out vec4 fsWorldPosition;
 
 void main()
 {
+    // Render the triangle to each face of the cubemap.
+    // 0: +X
+    // 1: -X
+    // 2: +Y
+    // 3: -Y
+    // 4: +Z
+    // 5: -Z
+
     for (int Face = 0; Face < 6; ++Face)
     {
-        gl_Layer = Face;            // Built-in variable that specifies to which face we render.
+        gl_Layer = Face;                        // Built-in variable that specifies to which face we render.
         for (int Index = 0; Index < 3; ++Index) // For each triangle's vertices
         {
             fsWorldPosition = vec4(gsWorldPosition[Index], 1.0f);

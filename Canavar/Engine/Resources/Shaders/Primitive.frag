@@ -1,14 +1,17 @@
 #version 430 core
 
-in vec3 fsNormal;
-in vec3 fsFragWorldPosition;
-in float fsFlogZ;
+
 
 uniform vec3 uColor;
 uniform float uOpacity;
 uniform int uNodeId;
 uniform float uFar;
 uniform vec3 uCameraPosition;
+
+in vec3 fsFragWorldPosition;
+in vec3 fsFragLocalPosition;
+in vec3 fsNormal;
+in float fsFlogZ;
 
 layout(location = 0) out vec4 oFragColor;
 layout(location = 1) out vec4 oFragLocalPosition;

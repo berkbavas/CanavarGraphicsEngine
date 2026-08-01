@@ -324,8 +324,8 @@ vec3 ApplyLineOfSightAnalyzer(vec3 Color)
         return Color;
     }
 
-    const vec3 FragmentToObserver = fsWorldPosition - uLineOfSightAnalyzer.ObserverPosition;
-    const float CurrentDepth = length(FragmentToObserver);
+    const vec3 ObserverToFragment = fsWorldPosition - uLineOfSightAnalyzer.ObserverPosition;
+    const float CurrentDepth = length(ObserverToFragment);
 
     // Outside of analysis range — no overlay
     if (CurrentDepth > uLineOfSightAnalyzer.FarPlane)
@@ -333,7 +333,7 @@ vec3 ApplyLineOfSightAnalyzer(vec3 Color)
         return Color;
     }
 
-    const float ClosestDepth = texture(uLineOfSightAnalyzer.DepthMap, normalize(FragmentToObserver)).r * uLineOfSightAnalyzer.FarPlane;
+    const float ClosestDepth = texture(uLineOfSightAnalyzer.DepthMap, normalize(ObserverToFragment)).r * uLineOfSightAnalyzer.FarPlane;
 
     if (CurrentDepth - uLineOfSightAnalyzer.Bias * uLineOfSightAnalyzer.FarPlane < ClosestDepth)
     {
@@ -382,9 +382,9 @@ void main()
     oFragColor = vec4(Result, 1.0f);
 
     // Note that the terrain has no model matrix so its local and world coordinates are equal.
-    oFragLocalPosition = vec4(fsWorldPosition, 1.0f);
-    oFragWorldPosition = vec4(fsWorldPosition, 1.0f);
-    oFragNodeInfo = vec4(uNodeId, 0, 0, 1);
+    oFragLocalPosition = vec4(fsWorldPosition, float(uNodeId));
+    oFragWorldPosition = vec4(fsWorldPosition, float(uNodeId));
+    oFragNodeInfo = vec4(float(uNodeId), 0.0f, 0.0f, 1.0f);
 
-    gl_FragDepth = log2(fsLogZ) / log2(uFarPlane + 1.0);
+    gl_FragDepth = log2(fsLogZ) / log2(uFarPlane + 1.0f);
 }

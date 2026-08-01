@@ -8,6 +8,8 @@ namespace Canavar::Engine
     {
       public:
         explicit OpenGLStateGuard(QOpenGLFunctions_4_5_Core *pOpenGLFunctions);
+        OpenGLStateGuard(const OpenGLStateGuard &) = delete;
+        OpenGLStateGuard &operator=(const OpenGLStateGuard &) = delete;
         ~OpenGLStateGuard();
 
       private:

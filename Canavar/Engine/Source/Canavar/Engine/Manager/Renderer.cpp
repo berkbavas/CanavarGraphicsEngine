@@ -517,7 +517,7 @@ void Canavar::Engine::Renderer::PaintPass()
     }
 }
 
-QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
+std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
 {
     Chronometer Chronometer("Renderer::QueryLocalPosition");
 
@@ -529,10 +529,10 @@ QVector3D Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    return QVector3D(Pixel[0], Pixel[1], Pixel[2]);
+    return { QVector3D(Pixel[0], Pixel[1], Pixel[2]), static_cast<int>(Pixel[3]) };
 }
 
-QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
+std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
 {
     Chronometer Chronometer("Renderer::QueryWorldPosition");
 
@@ -544,7 +544,7 @@ QVector3D Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    return QVector3D(Pixel[0], Pixel[1], Pixel[2]);
+    return { QVector3D(Pixel[0], Pixel[1], Pixel[2]), static_cast<int>(Pixel[3]) };
 }
 
 Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int X, int Y)
@@ -559,7 +559,22 @@ Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    return { static_cast<int>(Pixel[0]), static_cast<int>(Pixel[1]), static_cast<int>(Pixel[2]) };
+    return { static_cast<int>(Pixel[0]), static_cast<int>(Pixel[1]), static_cast<int>(Pixel[2]), static_cast<int>(Pixel[3]) };
+}
+
+std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryLocalPosition(const QPointF &Position)
+{
+    return QueryLocalPosition(static_cast<int>(Position.x()), static_cast<int>(Position.y()));
+}
+
+std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryWorldPosition(const QPointF &Position)
+{
+    return QueryWorldPosition(static_cast<int>(Position.x()), static_cast<int>(Position.y()));
+}
+
+Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(const QPointF &Position)
+{
+    return QueryNodeInfo(static_cast<int>(Position.x()), static_cast<int>(Position.y()));
 }
 
 Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() const

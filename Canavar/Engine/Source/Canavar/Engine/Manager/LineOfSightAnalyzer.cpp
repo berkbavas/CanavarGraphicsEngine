@@ -31,22 +31,11 @@ void Canavar::Engine::LineOfSightAnalyzer::Initialize()
 
     mDebugQuad = std::make_unique<Quad>();
 
-    glGenFramebuffers(1, &mDebugFBO);
-    glGenTextures(1, &mDebugTexture);
-    glBindTexture(GL_TEXTURE_2D, mDebugTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mDebugTextureSize, mDebugTextureSize, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindFramebuffer(GL_FRAMEBUFFER, mDebugFBO);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mDebugTexture, 0);
+    QOpenGLFramebufferObjectFormat Format;
+    Format.setAttachment(QOpenGLFramebufferObject::NoAttachment);
+    Format.setSamples(0);
 
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    {
-        CGE_EXIT_FAILURE("LineOfSightAnalyzer: Debug framebuffer is not complete!");
-    }
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    mDebugFramebuffer = std::make_unique<Framebuffer>(512, 512, Format);
 
     CreateObserverCameras();
 
@@ -86,10 +75,10 @@ void Canavar::Engine::LineOfSightAnalyzer::Update(float)
     }
 
     mShader->SetUniform("uLogarithmicDepthBuffer", 0); // Disable logarithmic depth buffer for line of sight analysis
-    mShader->SetUniform("uObserverPosition", mObserverCameras.at(0)->GetPosition());
-    mShader->SetUniform("uFarPlane", mObserverCameras.at(0)->GetZFar());
+    mShader->SetUniform("uObserverPosition", GetObserverPosition());
+    mShader->SetUniform("uFarPlane", mMaxLosDistance);
     mShader->SetUniform("uWidth", mTerrain->GetWidth());
-    mShader->SetUniform("uCameraPosition", mRenderer->GetActiveCamera()->GetWorldPosition());
+    mShader->SetUniform("uCameraPosition", GetObserverPosition());
     mShader->SetUniform("uTessellationMultiplier", mTerrain->GetTessellationMultiplier());
     mShader->SetUniform("uEarthRadius", static_cast<float>(Wgs84::SemiMajorAxis));
     mShader->SetUniform("uNoise.Octaves", mTerrain->GetOctaves());
@@ -110,6 +99,11 @@ void Canavar::Engine::LineOfSightAnalyzer::SetTerrain(Terrain *pTerrain)
     mIsDirty = true;
 }
 
+QVector3D Canavar::Engine::LineOfSightAnalyzer::GetObserverPosition() const
+{
+    return mObserverPositionOnTerrain + QVector3D(0, mObserverHeightOnTerrain, 0);
+}
+
 float Canavar::Engine::LineOfSightAnalyzer::GetFarPlane() const
 {
     return mObserverCameras.empty() ? 0.0f : mObserverCameras.at(0)->GetZFar();
@@ -128,8 +122,10 @@ void Canavar::Engine::LineOfSightAnalyzer::RenderDebugFace(int FaceIndex)
 
 void Canavar::Engine::LineOfSightAnalyzer::RenderDebugFaceInner(int FaceIndex)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, mDebugFBO);
-    glViewport(0, 0, mDebugTextureSize, mDebugTextureSize);
+    mDebugFramebuffer->Bind();
+    glViewport(0, 0, mDebugFramebuffer->GetWidth(), mDebugFramebuffer->GetHeight());
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glDisable(GL_DEPTH_TEST);
 
     mDebugShader->Bind();
@@ -139,24 +135,24 @@ void Canavar::Engine::LineOfSightAnalyzer::RenderDebugFaceInner(int FaceIndex)
     mDebugShader->Unbind();
 
     glEnable(GL_DEPTH_TEST);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    mDebugFramebuffer->Unbind();
 }
 
-void Canavar::Engine::LineOfSightAnalyzer::SetMinLosDistance(float Distance)
+void Canavar::Engine::LineOfSightAnalyzer::SetObserverPositionOnTerrain(const QVector3D &Position)
 {
-    mMinLosDistance = Distance;
+    mObserverPositionOnTerrain = Position;
+    mIsDirty = true;
+}
+
+void Canavar::Engine::LineOfSightAnalyzer::SetObserverHeightOnTerrain(float Height)
+{
+    mObserverHeightOnTerrain = Height;
     mIsDirty = true;
 }
 
 void Canavar::Engine::LineOfSightAnalyzer::SetMaxLosDistance(float Distance)
 {
     mMaxLosDistance = Distance;
-    mIsDirty = true;
-}
-
-void Canavar::Engine::LineOfSightAnalyzer::SetObserverPosition(const QVector3D &Position)
-{
-    mObserverPosition = Position;
     mIsDirty = true;
 }
 
@@ -171,7 +167,7 @@ void Canavar::Engine::LineOfSightAnalyzer::SetEnabled(bool Enabled)
     mEnabled = Enabled;
     mIsDirty = true;
 
-    mEnabled ? mObserverSphere->SetVisible(true) : mObserverSphere->SetVisible(false);
+    mObserverSphere->SetVisible(mEnabled);
 }
 
 void Canavar::Engine::LineOfSightAnalyzer::SetVisibilityOpacity(float Opacity)
@@ -190,45 +186,37 @@ void Canavar::Engine::LineOfSightAnalyzer::SetShadowColor(const QVector3D &Color
     mShadowColor = Color;
 }
 
-void Canavar::Engine::LineOfSightAnalyzer::SetObserverHeight(float Height)
-{
-    mObserverHeight = Height;
-    mIsDirty = true;
-}
-
 void Canavar::Engine::LineOfSightAnalyzer::UpdateObserverCameras()
 {
-    const auto ObserverPositionWithHeight = mObserverPosition + QVector3D(0, mObserverHeight, 0);
-
     for (int i = 0; i < mObserverCameras.size(); i++)
     {
-        mObserverCameras.at(i)->SetPosition(ObserverPositionWithHeight);
-        mObserverCameras.at(i)->SetZNear(mMinLosDistance);
+        mObserverCameras.at(i)->SetPosition(GetObserverPosition());
+        mObserverCameras.at(i)->SetZNear(1.0f);
         mObserverCameras.at(i)->SetZFar(mMaxLosDistance);
     }
 
-    mObserverSphere->SetPosition(ObserverPositionWithHeight);
+    mObserverSphere->SetPosition(GetObserverPosition());
 }
 
 void Canavar::Engine::LineOfSightAnalyzer::CreateObserverCameras()
 {
     for (int i = 0; i < 6; i++)
     {
-        mObserverCameras.push_back(std::make_unique<FreeCamera>());
+        mObserverCameras.push_back(std::make_unique<DummyCamera>());
         mObserverCameras.at(i)->Resize(mWidth, mHeight);
         mObserverCameras.at(i)->SetVerticalFov(90.0f);
-        mObserverCameras.at(i)->SetZNear(mMinLosDistance);
+        mObserverCameras.at(i)->SetZNear(1.0f);
         mObserverCameras.at(i)->SetZFar(mMaxLosDistance);
+        mObserverCameras.at(i)->SetPosition(GetObserverPosition());
     }
 
-    const auto RollFix = QQuaternion::fromAxisAndAngle(QVector3D(0, 0, 1), 180);
-
-    mObserverCameras.at(0)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), -90) * RollFix);
-    mObserverCameras.at(1)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 90) * RollFix);
-    mObserverCameras.at(2)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90));
-    mObserverCameras.at(3)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), -90));
-    mObserverCameras.at(4)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 180) * RollFix);
-    mObserverCameras.at(5)->SetRotation(RollFix);
+    // Rotations must match OpenGL cubemap sampling convention (up=-Y for ±X, ±Z faces).
+    mObserverCameras.at(0)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 180.0f) * QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), -90.0f)); // +X
+    mObserverCameras.at(1)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 180.0f) * QQuaternion::fromAxisAndAngle(QVector3D(0, 1, 0), 90.0f));  // -X
+    mObserverCameras.at(2)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 90.0f));                                                              // +Y
+    mObserverCameras.at(3)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), -90.0f));                                                             // -Y
+    mObserverCameras.at(4)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 180.0f));                                                             // +Z
+    mObserverCameras.at(5)->SetRotation(QQuaternion::fromAxisAndAngle(QVector3D(0, 0, 1), 180.0f));                                                             // -Z
 }
 
 bool Canavar::Engine::LineOfSightAnalyzer::ShouldRender() const

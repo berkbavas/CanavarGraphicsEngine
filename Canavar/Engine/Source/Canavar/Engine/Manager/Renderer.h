@@ -91,11 +91,16 @@ namespace Canavar::Engine
             int NodeId;
             int MeshId;
             int PrimitiveId;
+            int Valid; // 1 if valid, 0 if invalid (e.g., no object at that pixel)
         };
 
-        QVector3D QueryLocalPosition(int X, int Y);
-        QVector3D QueryWorldPosition(int X, int Y);
+        std::pair<QVector3D, int> QueryLocalPosition(int X, int Y);
+        std::pair<QVector3D, int> QueryWorldPosition(int X, int Y);
         NodeInfo QueryNodeInfo(int X, int Y);
+
+        std::pair<QVector3D, int> QueryLocalPosition(const QPointF& Position);
+        std::pair<QVector3D, int> QueryWorldPosition(const QPointF& Position);
+        NodeInfo QueryNodeInfo(const QPointF& Position);
 
         void AddEventReceiver(EventReceiver* pEventReceiver);
         void RemoveEventReceiver(EventReceiver* pEventReceiver);

@@ -440,8 +440,8 @@ void main()
         }
     }
 
-    oFragLocalPosition = vec4(fsFragLocalPosition, 1.0f);
-    oFragWorldPosition = vec4(fsFragWorldPosition, 1.0f);
+    oFragLocalPosition = vec4(fsFragLocalPosition, float(uNodeId));
+    oFragWorldPosition = vec4(fsFragWorldPosition, float(uNodeId));
     oNodeInfo = vec4(float(uNodeId), float(uMeshId), float(gl_PrimitiveID), 1.0f);
 
     gl_FragDepth = log2(fsFlogZ) / log2(uFar + 1.0f);
