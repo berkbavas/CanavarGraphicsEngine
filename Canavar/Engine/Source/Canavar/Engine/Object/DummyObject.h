@@ -7,7 +7,7 @@ namespace Canavar::Engine
     class DummyObject : public Object
     {
       public:
-        DummyObject() = default;
+        DummyObject();
         virtual ~DummyObject() = default;
 
         const char* GetNodeTypeName() const override { return "DummyObject"; }

@@ -27,13 +27,10 @@ namespace Canavar::Engine
 
         void Enter(Object *pTargetObject);
         void Exit();
-
         bool OnMousePressed(QMouseEvent *pEvent) override;
         bool OnMouseReleased(QMouseEvent *pEvent) override;
         bool OnMouseMoved(QMouseEvent *pEvent) override;
-
         void SetRotation(const QQuaternion &Rotation);
-
         QVector3D GetPosition() const;
         QQuaternion GetRotation() const;
 
@@ -49,7 +46,6 @@ namespace Canavar::Engine
         void UpdateGizmoVisuals();
         void UpdateGizmoVisualsTransformations();
         void UpdateGizmoVisualsAppearance();
-
         bool CalculateMouseRaySphereIntersection(const QPointF &MousePos, QVector3D &OutIntersectionPoint) const;
         bool CalculateMouseRayViewPlaneIntersection(const QPointF &MousePos, QVector3D &OutIntersectionPoint) const;
         Axis DetermineActiveAxis(const QVector3D &IntersectionPoint) const;
@@ -67,7 +63,7 @@ namespace Canavar::Engine
         QVector3D mPreviousIntersectionPoint{ 0, 0, 0 };
 
         // Traits of the gizmo
-        float mSphereRadius{ 1.0f };           // Radius of the gizmo's interaction sphere
+        float mSphereRadius{ 1.0f };            // Radius of the gizmo's interaction sphere
         float mAxisSelectionThreshold{ 0.85f }; // Threshold for selecting an axis based on the angle between the ray and the axis direction
 
         Object *mTargetObject{ nullptr };

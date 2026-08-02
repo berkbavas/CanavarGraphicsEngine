@@ -12,9 +12,9 @@ Canavar::Engine::CubicFramebuffer::CubicFramebuffer(int Width, int Height)
     glGenTextures(1, &mDepthMap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, mDepthMap);
 
-    for (unsigned int i = 0; i < 6; ++i)
+    for (unsigned int Index = 0; Index < 6; ++Index)
     {
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, //
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + Index, //
                      0,
                      GL_DEPTH_COMPONENT,
                      Width,

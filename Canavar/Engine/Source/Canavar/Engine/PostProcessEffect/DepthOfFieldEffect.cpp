@@ -29,6 +29,5 @@ void Canavar::Engine::DepthOfFieldEffect::ApplyEffect(Framebuffer* pInput, Frame
     mShader->SetUniform("uResolution", QVector2D(static_cast<float>(pInput->GetWidth()), static_cast<float>(pInput->GetHeight())));
     mQuad->Render();
     mShader->Unbind();
-
     pOutput->Unbind();
 }

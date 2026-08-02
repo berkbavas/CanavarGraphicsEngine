@@ -4,7 +4,6 @@
 
 namespace Canavar::Engine
 {
-
     // Static storage
     Wgs84::GeoPoint Wgs84::sOrigin{};
     double Wgs84::sOriginEcef[3]{};

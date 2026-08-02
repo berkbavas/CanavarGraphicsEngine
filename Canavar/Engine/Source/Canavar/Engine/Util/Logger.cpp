@@ -68,6 +68,29 @@ void Canavar::Engine::Logger::QtMessageOutputCallback(QtMsgType Type, const QMes
     }
 }
 
+std::string Canavar::Engine::Logger::GetLogLevelString(LogLevel LogLevel)
+{
+    switch (LogLevel)
+    {
+    case LogLevel::ALL:
+        return "ALL";
+    case LogLevel::NONE:
+        return "NONE";
+    case LogLevel::TRACE:
+        return "TRACE";
+    case LogLevel::DEBUG:
+        return "DEBUG";
+    case LogLevel::INFO:
+        return "INFO";
+    case LogLevel::WARNING:
+        return "WARN";
+    case LogLevel::FATAL:
+        return "FATAL";
+    default:
+        return "N/A";
+    }
+}
+
 bool Canavar::Engine::Logger::IsLogEnabledFor(LogLevel LogLevel)
 {
     return mLogLevel <= LogLevel;

@@ -24,5 +24,4 @@ namespace Canavar::Engine
         QVector3D mMin;
         QVector3D mMax;
     };
-
 }

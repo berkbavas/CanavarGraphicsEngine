@@ -1,6 +1,7 @@
 #include "Sky.h"
 
 #include "Canavar/Engine/Camera/PerspectiveCamera.h"
+#include "Canavar/Engine/Core/OpenGLStateGuard.h"
 #include "Canavar/Engine/Light/DirectionalLight.h"
 #include "Canavar/Engine/Util/Chronometer.h"
 
@@ -26,6 +27,8 @@ void Canavar::Engine::Sky::Render(PerspectiveCamera *pActiveCamera, DirectionalL
     {
         return;
     }
+
+    OpenGLStateGuard StateGuard(this);
 
     // Disable depth testing to ensure the sky is rendered behind all other objects
     glDisable(GL_DEPTH_TEST);

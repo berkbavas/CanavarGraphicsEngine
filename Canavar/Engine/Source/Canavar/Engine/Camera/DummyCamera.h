@@ -7,13 +7,13 @@ namespace Canavar::Engine
     class DummyCamera : public PerspectiveCamera
     {
       public:
-        DummyCamera() = default;
+        DummyCamera();
         virtual ~DummyCamera() = default;
 
         const char* GetNodeTypeName() const override { return "DummyCamera"; }
 
-        void Update(float) override {}
-        void Reset() override {}
+        void Update(float) override;
+        void Reset() override;
     };
 
     using DummyCameraPtr = std::unique_ptr<DummyCamera>;

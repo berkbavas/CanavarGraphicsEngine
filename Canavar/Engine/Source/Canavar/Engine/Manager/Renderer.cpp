@@ -69,10 +69,6 @@ void Canavar::Engine::Renderer::Initialize()
 
     initializeOpenGLFunctions();
 
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_POLYGON_OFFSET_FILL);
-    glPolygonOffset(1.0f, 1.0f);
-
     for (Manager *pManager : mManagers)
     {
         pManager->Initialize();

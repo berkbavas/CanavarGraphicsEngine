@@ -46,8 +46,6 @@ void Canavar::Engine::LineOfSightAnalyzer::Initialize()
 
 void Canavar::Engine::LineOfSightAnalyzer::Update(float)
 {
-    OpenGLStateGuard StateGuard(this);
-
     if (mRenderDebug)
     {
         RenderDebugFaceInner(mLosDebugFaceIndex);
@@ -58,6 +56,8 @@ void Canavar::Engine::LineOfSightAnalyzer::Update(float)
     {
         return;
     }
+
+    OpenGLStateGuard StateGuard(this);
 
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
@@ -128,6 +128,8 @@ void Canavar::Engine::LineOfSightAnalyzer::RenderDebugFace(int FaceIndex)
 
 void Canavar::Engine::LineOfSightAnalyzer::RenderDebugFaceInner(int FaceIndex)
 {
+    OpenGLStateGuard StateGuard(this);
+
     mDebugFramebuffer->Bind();
     glViewport(0, 0, mDebugFramebuffer->GetWidth(), mDebugFramebuffer->GetHeight());
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
