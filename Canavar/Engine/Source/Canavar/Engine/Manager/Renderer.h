@@ -99,10 +99,12 @@ namespace Canavar::Engine
         std::pair<QVector3D, int> QueryLocalPosition(int X, int Y);
         std::pair<QVector3D, int> QueryWorldPosition(int X, int Y);
         NodeInfo QueryNodeInfo(int X, int Y);
+        std::array<float, 4> QueryGBufferData(int X, int Y, GLenum Attachment);
 
         std::pair<QVector3D, int> QueryLocalPosition(const QPointF& Position);
         std::pair<QVector3D, int> QueryWorldPosition(const QPointF& Position);
         NodeInfo QueryNodeInfo(const QPointF& Position);
+        std::array<float, 4> QueryGBufferData(const QPointF& Position, GLenum Attachment);
 
         void AddEventReceiver(EventReceiver* pEventReceiver);
         void RemoveEventReceiver(EventReceiver* pEventReceiver);

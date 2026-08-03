@@ -7,6 +7,8 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     : mOpenGLWidget(pOpenGLWidget)
     , mRenderingContext(pOpenGLWidget)
 {
+    CGE_EXIT_FAILURE_IF(mOpenGLWidget == nullptr, "Renderer::Renderer: OpenGLWidget pointer is null. Renderer requires a valid OpenGLWidget.");
+
     connect(mOpenGLWidget, &OpenGLWidget::Initialized, this, &Renderer::Initialize);
     connect(mOpenGLWidget, &OpenGLWidget::Resized, this, &Renderer::Resize);
     connect(mOpenGLWidget, &OpenGLWidget::Render, this, &Renderer::Render);
@@ -44,20 +46,20 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
     mFramebufferFormats[Multisample].setMipmap(true);
     mFramebufferFormats[Multisample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormats[Multisample].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-    mFramebufferExtraColorAttachments[Multisample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F }; // World, Local, NodeInfo
+    mFramebufferExtraColorAttachments[Multisample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F }; // Extra: Local, World, NodeInfo
 
     mFramebufferFormats[Singlesample].setSamples(0);
     mFramebufferFormats[Singlesample].setMipmap(false);
     mFramebufferFormats[Singlesample].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-    mFramebufferExtraColorAttachments[Singlesample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F }; // World, Local, NodeInfo
+    mFramebufferExtraColorAttachments[Singlesample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F }; // Extra: Local, World, NodeInfo
 
     mFramebufferFormats[Ping].setSamples(0);
     mFramebufferFormats[Ping].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-    mFramebufferExtraColorAttachments[Ping] = {};
+    mFramebufferExtraColorAttachments[Ping] = {}; // No extra attachments for post-processing ping framebuffer
 
     mFramebufferFormats[Pong].setSamples(0);
     mFramebufferFormats[Pong].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
-    mFramebufferExtraColorAttachments[Pong] = {};
+    mFramebufferExtraColorAttachments[Pong] = {}; // No extra attachments for post-processing pong framebuffer
 }
 
 void Canavar::Engine::Renderer::Initialize()
@@ -410,17 +412,6 @@ void Canavar::Engine::Renderer::CreateDirectionalLights()
     // Create a primary directional light (the sun) and additional directional lights in various directions for ambient lighting
     mSun = mNodeManager->CreateNode<DirectionalLight>();
     mSun->SetDirection(QVector3D(-1, -1, -1).normalized());
-
-    // QVector3D Directions[5] = { UP, LEFT, RIGHT, FORWARD, BACKWARD };
-
-    // for (const QVector3D &Direction : Directions)
-    // {
-    //     DirectionalLight *pLight = mNodeManager->CreateNode<DirectionalLight>();
-    //     pLight->SetAmbient(0.125f);
-    //     pLight->SetDiffuse(0.5f);
-    //     pLight->SetRadiance(4.0f);
-    //     pLight->SetDirection(Direction);
-    // }
 }
 
 void Canavar::Engine::Renderer::CreateGlobalNodes()
@@ -535,46 +526,35 @@ void Canavar::Engine::Renderer::PaintPass()
 std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryLocalPosition(int X, int Y)
 {
     Chronometer Chronometer("Renderer::QueryLocalPosition");
-
-    const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
-    glReadBuffer(GL_COLOR_ATTACHMENT1);
-    const int FbX = static_cast<int>(X);
-    const int FbY = static_cast<int>(mHeight - 1 - Y);
-    GLfloat Pixel[4] = {};
-    glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    const auto Pixel = QueryGBufferData(X, Y, GL_COLOR_ATTACHMENT1);
     return { QVector3D(Pixel[0], Pixel[1], Pixel[2]), static_cast<int>(Pixel[3]) };
 }
 
 std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryWorldPosition(int X, int Y)
 {
     Chronometer Chronometer("Renderer::QueryWorldPosition");
-
-    const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
-    glReadBuffer(GL_COLOR_ATTACHMENT2);
-    const int FbX = static_cast<int>(X);
-    const int FbY = static_cast<int>(mHeight - 1 - Y);
-    GLfloat Pixel[4] = {};
-    glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
-    glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    const auto Pixel = QueryGBufferData(X, Y, GL_COLOR_ATTACHMENT2);
     return { QVector3D(Pixel[0], Pixel[1], Pixel[2]), static_cast<int>(Pixel[3]) };
 }
 
 Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(int X, int Y)
 {
     Chronometer Chronometer("Renderer::QueryNodeInfo");
+    const auto Pixel = QueryGBufferData(X, Y, GL_COLOR_ATTACHMENT3);
+    return { static_cast<int>(Pixel[0]), static_cast<int>(Pixel[1]), static_cast<int>(Pixel[2]), static_cast<int>(Pixel[3]) };
+}
 
+std::array<float, 4> Canavar::Engine::Renderer::QueryGBufferData(int X, int Y, GLenum Attachment)
+{
     const Framebuffer *pFramebuffer = mFramebuffers.at(Singlesample).get();
     glBindFramebuffer(GL_READ_FRAMEBUFFER, pFramebuffer->GetHandle());
-    glReadBuffer(GL_COLOR_ATTACHMENT3);
+    glReadBuffer(Attachment);
     const int FbX = static_cast<int>(X);
     const int FbY = static_cast<int>(mHeight - 1 - Y);
     GLfloat Pixel[4] = {};
     glReadPixels(FbX, FbY, 1, 1, GL_RGBA, GL_FLOAT, Pixel);
     glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    return { static_cast<int>(Pixel[0]), static_cast<int>(Pixel[1]), static_cast<int>(Pixel[2]), static_cast<int>(Pixel[3]) };
+    return { Pixel[0], Pixel[1], Pixel[2], Pixel[3] };
 }
 
 std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryLocalPosition(const QPointF &Position)
@@ -590,6 +570,11 @@ std::pair<QVector3D, int> Canavar::Engine::Renderer::QueryWorldPosition(const QP
 Canavar::Engine::Renderer::NodeInfo Canavar::Engine::Renderer::QueryNodeInfo(const QPointF &Position)
 {
     return QueryNodeInfo(static_cast<int>(Position.x()), static_cast<int>(Position.y()));
+}
+
+std::array<float, 4> Canavar::Engine::Renderer::QueryGBufferData(const QPointF &Position, GLenum Attachment)
+{
+    return QueryGBufferData(static_cast<int>(Position.x()), static_cast<int>(Position.y()), Attachment);
 }
 
 Canavar::Engine::LightManager *Canavar::Engine::Renderer::GetLightManager() const

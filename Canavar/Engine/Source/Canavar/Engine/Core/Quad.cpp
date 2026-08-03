@@ -1,14 +1,25 @@
 #include "Quad.h"
 
+#include <QVector2D>
+
 Canavar::Engine::Quad::Quad()
 {
+    struct Vertex
+    {
+        QVector2D Position;
+        QVector2D TexCoord;
+    };
+
     // Vertex data for a full-screen quad (two triangles) with positions and texture coordinates
-    constexpr float VERTICES[24] = { -1.0f, +1.0f, 0.0f, 1.0f, //
-                                     -1.0f, -1.0f, 0.0f, 0.0f, //
-                                     +1.0f, -1.0f, 1.0f, 0.0f, //
-                                     -1.0f, +1.0f, 0.0f, 1.0f, //
-                                     +1.0f, -1.0f, 1.0f, 0.0f, //
-                                     +1.0f, +1.0f, 1.0f, 1.0f };
+    const Vertex Vertices[6] = {
+        { QVector2D(-1.0f, -1.0f), QVector2D(0.0f, 0.0f) }, // Bottom-left
+        { QVector2D(1.0f, -1.0f), QVector2D(1.0f, 0.0f) },  // Bottom-right
+        { QVector2D(-1.0f, 1.0f), QVector2D(0.0f, 1.0f) },  // Top-left
+        { QVector2D(1.0f, -1.0f), QVector2D(1.0f, 0.0f) },  // Bottom-right
+        { QVector2D(1.0f, 1.0f), QVector2D(1.0f, 1.0f) },   // Top-right
+        { QVector2D(-1.0f, 1.0f), QVector2D(0.0f, 1.0f) }   // Top-left
+    };
+
     initializeOpenGLFunctions();
 
     glGenVertexArrays(1, &mVAO);
@@ -16,12 +27,12 @@ Canavar::Engine::Quad::Quad()
 
     glGenBuffers(1, &mVBO);
     glBindBuffer(GL_ARRAY_BUFFER, mVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(VERTICES), VERTICES, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) 0);
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void *) (2 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) offsetof(Vertex, TexCoord));
     glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
