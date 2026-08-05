@@ -9,8 +9,6 @@
 Canavar::Engine::Terrain::Terrain(Renderer *pRenderer)
     : mRenderer(pRenderer)
 {
-    mLineOfSightAnalyzer = mRenderer->GetLineOfSightAnalyzer();
-
     initializeOpenGLFunctions();
     SetNodeName("Terrain");
     Generate();
@@ -161,7 +159,7 @@ GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &F
 
     for (int i = 0; i < Filepaths.size(); i++)
     {
-        auto Filepath = Filepaths[i];
+        const auto Filepath = Filepaths[i];
 
         QImage Image(QString::fromStdString(Filepath));
         if (Image.isNull())
@@ -172,13 +170,8 @@ GLuint Canavar::Engine::Terrain::Load2DArray(const std::array<std::string, 4> &F
         // Convert to RGBA8888 format for OpenGL compatibility
         // This is necessary because OpenGL expects images in RGBA format (4 byte per pixel)
         Images[i] = Image.convertToFormat(QImage::Format_RGBA8888);
-
-        int Width = Image.width();
-        int Height = Image.height();
-        const uint8_t *pData = Image.constBits();
-
-        Widths[i] = Width;
-        Heights[i] = Height;
+        Widths[i] = Image.width();
+        Heights[i] = Image.height();
     }
 
     GLuint Id;
@@ -242,11 +235,12 @@ void Canavar::Engine::Terrain::Render(PerspectiveCamera *pCamera)
         return;
     }
 
-    const auto pLightManager = mRenderer->GetLightManager();
-    const auto pHaze = mRenderer->GetHaze();
-
     // Update tile positions based on the camera's current position
     CalculateTilePositions(pCamera);
+
+    const auto pLightManager = mRenderer->GetLightManager();
+    const auto pHaze = mRenderer->GetHaze();
+    const auto pLineOfSightAnalyzer = mRenderer->GetLineOfSightAnalyzer();
 
     // Set light uniforms for the terrain shader
     pLightManager->SetDirectionalLightsUniforms(mTerrainShader.get());
@@ -285,14 +279,14 @@ void Canavar::Engine::Terrain::Render(PerspectiveCamera *pCamera)
     mTerrainShader->SetUniformArray("uTextureSizes", mTextureSizes.data(), mTextureSizes.size(), 1);
     mTerrainShader->SetUniformArray("uTextureDisplacementWeights", mTextureDisplacementWeights.data(), mTextureDisplacementWeights.size(), 1);
 
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.Enabled", static_cast<int>(mLineOfSightAnalyzer->IsEnabled()));
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ObserverPosition", mLineOfSightAnalyzer->GetObserverPosition());
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.FarPlane", mLineOfSightAnalyzer->GetFarPlane());
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.Bias", mLineOfSightAnalyzer->GetBias());
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.VisibilityOpacity", mLineOfSightAnalyzer->GetVisibilityOpacity());
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ShadowColor", mLineOfSightAnalyzer->GetShadowColor());
-    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ShadowOpacity", mLineOfSightAnalyzer->GetShadowOpacity());
-    mTerrainShader->SetSampler("uLineOfSightAnalyzer.DepthMap", 3, mLineOfSightAnalyzer->GetDepthMap(), GL_TEXTURE_CUBE_MAP);
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.Enabled", static_cast<int>(pLineOfSightAnalyzer->IsEnabled()));
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ObserverPosition", pLineOfSightAnalyzer->GetObserverPosition());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.FarPlane", pLineOfSightAnalyzer->GetFarPlane());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.Bias", pLineOfSightAnalyzer->GetBias());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.VisibilityOpacity", pLineOfSightAnalyzer->GetVisibilityOpacity());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ShadowColor", pLineOfSightAnalyzer->GetShadowColor());
+    mTerrainShader->SetUniform("uLineOfSightAnalyzer.ShadowOpacity", pLineOfSightAnalyzer->GetShadowOpacity());
+    mTerrainShader->SetSampler("uLineOfSightAnalyzer.DepthMap", 3, pLineOfSightAnalyzer->GetDepthMap(), GL_TEXTURE_CUBE_MAP);
 
     RenderPatches();
 

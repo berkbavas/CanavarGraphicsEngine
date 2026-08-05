@@ -50,6 +50,7 @@ Canavar::Engine::Renderer::Renderer(OpenGLWidget *pOpenGLWidget)
 
     mFramebufferFormats[Singlesample].setSamples(0);
     mFramebufferFormats[Singlesample].setMipmap(false);
+    mFramebufferFormats[Singlesample].setAttachment(QOpenGLFramebufferObject::Attachment::Depth);
     mFramebufferFormats[Singlesample].setInternalTextureFormat(QOpenGLTexture::RGBA32F);
     mFramebufferExtraColorAttachments[Singlesample] = { GL_RGBA32F, GL_RGBA32F, GL_RGBA32F }; // Extra: Local, World, NodeInfo
 
@@ -160,11 +161,19 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     // Update all managers before rendering
     UpdateManagers(Ifps);
 
-    // Render the scene to the multisample framebuffer using the active camera
-    RenderToFramebuffer(mFramebuffers[Multisample].get(), mCameraManager->GetActiveCamera());
+    if (mAntialiasingEnabled)
+    {
+        // Render the scene to the multisample framebuffer using the active camera
+        RenderToFramebuffer(mFramebuffers[Multisample].get(), mCameraManager->GetActiveCamera());
 
-    // Blit multisample framebuffer to singlesample framebuffer
-    BlitFramebuffer();
+        // Blit multisample framebuffer to singlesample framebuffer
+        BlitFramebuffer();
+    }
+    else
+    {
+        // Render the scene directly to the singlesample framebuffer using the active camera
+        RenderToFramebuffer(mFramebuffers[Singlesample].get(), mCameraManager->GetActiveCamera());
+    }
 
     // Apply post-processing effects to the rendered scene.
     // Note: The order of effects in the mPostProcessEffects map determines the order in which they are applied.
@@ -178,6 +187,7 @@ void Canavar::Engine::Renderer::Render(float Ifps)
     PaintPass();
 
     // ImGui rendering should be done after the main render pass to ensure it appears on top of everything else.
+    QOpenGLFramebufferObject::bindDefault();
     emit PostRender(Ifps);
 }
 
@@ -481,6 +491,7 @@ void Canavar::Engine::Renderer::BlitFramebuffer()
 {
     Chronometer Chronometer("Renderer::BlitFramebuffer");
 
+    mFramebuffers[Multisample]->BlitDepthTo(mFramebuffers[Singlesample].get());
     mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT0);
     mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT1);
     mFramebuffers[Multisample]->BlitColorBufferTo(mFramebuffers[Singlesample].get(), GL_COLOR_ATTACHMENT2);
@@ -491,9 +502,13 @@ void Canavar::Engine::Renderer::ResolveFinalPass()
 {
     Chronometer Chronometer("Renderer::ResolveFinalPass");
 
+    OpenGLStateGuard StateGuard(this);
+
     QOpenGLFramebufferObject::bindDefault();
     glViewport(0, 0, mWidth * mDevicePixelRatio, mHeight * mDevicePixelRatio);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
 
     mScreenShader->Bind();
     mScreenShader->SetSampler("uColorTexture", 0, mFramebuffers[Pong]->GetTexture());
@@ -516,6 +531,8 @@ void Canavar::Engine::Renderer::UpdateManagers(float Ifps)
 void Canavar::Engine::Renderer::PaintPass()
 {
     Chronometer Chronometer("Renderer::PaintPass");
+
+    QOpenGLFramebufferObject::bindDefault();
 
     for (Manager *pManager : mManagers)
     {

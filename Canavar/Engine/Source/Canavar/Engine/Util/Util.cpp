@@ -27,7 +27,7 @@ QVector3D Canavar::Engine::Util::GenerateRandomVector(float X, float Y, float Z)
 
 float Canavar::Engine::Util::GenerateRandom(float Bound)
 {
-    return mGenerator.bounded(Bound);
+    return sGenerator.bounded(Bound);
 }
 
 bool Canavar::Engine::Util::WriteTextToFile(const QString& Path, const QByteArray& Content)
@@ -127,4 +127,4 @@ const char* Canavar::Engine::Util::GetGlErrorString(GLenum Error)
     }
 }
 
-QRandomGenerator Canavar::Engine::Util::mGenerator = QRandomGenerator::securelySeeded();
+QRandomGenerator Canavar::Engine::Util::sGenerator = QRandomGenerator::securelySeeded();

@@ -71,14 +71,6 @@ void Canavar::Engine::Framebuffer::Release()
     mFramebuffer->release();
 }
 
-void Canavar::Engine::Framebuffer::ClearDepthBuffer()
-{
-    mFramebuffer->bind();
-    glDrawBuffers(static_cast<GLsizei>(mDrawBuffers.size()), mDrawBuffers.data());
-    glClear(GL_DEPTH_BUFFER_BIT);
-    mFramebuffer->release();
-}
-
 QOpenGLFramebufferObject *Canavar::Engine::Framebuffer::GetFramebufferObject() const
 {
     return mFramebuffer.get();
@@ -92,6 +84,12 @@ const QOpenGLFramebufferObjectFormat &Canavar::Engine::Framebuffer::GetFramebuff
 GLuint Canavar::Engine::Framebuffer::GetTexture() const
 {
     return mFramebuffer ? mFramebuffer->texture() : 0;
+}
+
+GLuint Canavar::Engine::Framebuffer::GetTexture(GLuint Attachment) const
+{
+    const auto Textures = mFramebuffer ? mFramebuffer->textures() : QList<GLuint>();
+    return Textures.at(Attachment - GL_COLOR_ATTACHMENT0); // Return the texture for the specified attachment index
 }
 
 QList<GLuint> Canavar::Engine::Framebuffer::GetTextures() const
@@ -124,6 +122,9 @@ void Canavar::Engine::Framebuffer::BlitDepthTo(Framebuffer *pTargetFramebuffer)
     glBindFramebuffer(GL_READ_FRAMEBUFFER, GetHandle());
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pTargetFramebuffer->GetHandle());
 
+    glReadBuffer(GL_NONE);
+    glDrawBuffer(GL_NONE);
+
     glBlitFramebuffer(0,
                       0,
                       mWidth,
@@ -138,13 +139,20 @@ void Canavar::Engine::Framebuffer::BlitDepthTo(Framebuffer *pTargetFramebuffer)
 
 void Canavar::Engine::Framebuffer::BlitColorBufferTo(Framebuffer *pTargetFramebuffer, GLuint Attachment)
 {
-    QOpenGLFramebufferObject::blitFramebuffer( //
-        pTargetFramebuffer->GetFramebufferObject(),
-        pTargetFramebuffer->GetViewport(),
-        mFramebuffer.get(),
-        GetViewport(),
-        GL_COLOR_BUFFER_BIT,
-        GL_LINEAR,
-        Attachment - GL_COLOR_ATTACHMENT0,
-        Attachment - GL_COLOR_ATTACHMENT0);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, GetHandle());
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pTargetFramebuffer->GetHandle());
+
+    glReadBuffer(Attachment);
+    glDrawBuffer(Attachment);
+
+    glBlitFramebuffer(0,
+                      0,
+                      mWidth,
+                      mHeight, // Source bounds
+                      0,
+                      0,
+                      pTargetFramebuffer->GetWidth(),
+                      pTargetFramebuffer->GetHeight(), // Destination bounds
+                      GL_COLOR_BUFFER_BIT,
+                      GL_LINEAR);
 }

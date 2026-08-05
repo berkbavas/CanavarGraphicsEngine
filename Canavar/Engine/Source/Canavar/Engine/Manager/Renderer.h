@@ -189,6 +189,7 @@ namespace Canavar::Engine
 
         DEFINE_MEMBER(QVector3D, ClearColor, QVector3D(0.0f, 0.0f, 0.0f));
         DEFINE_MEMBER_PTR_CONST(DirectionalLight, Sun);
+        DEFINE_MEMBER(bool, AntialiasingEnabled, true);
     };
 
     using RendererPtr = std::unique_ptr<Renderer>;

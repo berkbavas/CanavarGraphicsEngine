@@ -13,7 +13,6 @@ namespace Canavar::Engine
 {
     class Renderer;
     class PerspectiveCamera;
-    class LineOfSightAnalyzer;
 
     class Terrain : public GlobalNode, protected QOpenGLFunctions_4_5_Core
     {
@@ -36,7 +35,6 @@ namespace Canavar::Engine
         void CalculateTilePositions(PerspectiveCamera* pCamera);
 
         Renderer* mRenderer{ nullptr };
-        LineOfSightAnalyzer* mLineOfSightAnalyzer{ nullptr };
         ShaderPtr mTerrainShader{ nullptr };
 
         QVector<QVector2D> mTilePositions;

@@ -336,6 +336,7 @@ bool Canavar::Engine::NodeManager::ImportNodes(const std::string &FilePath)
         Node *pNode;
         QString ParentUuid;
     };
+
     QVector<PendingChild> PendingChildren;
 
     for (const QJsonValue &Val : NodesArray)
@@ -661,7 +662,9 @@ static void SWriteCommonProps(QJsonObject &O, const Canavar::Engine::Node *pNode
     {
         auto It = UuidMap.find(pNode->GetParent());
         if (It != UuidMap.end())
+        {
             O["parent_uuid"] = It.value();
+        }
     }
 }
 
@@ -673,6 +676,7 @@ bool Canavar::Engine::NodeManager::ExportNodes(const std::string &FilePath)
 {
     // Fill a map of Node pointers to their UUID strings for easy lookup when writing parent UUIDs.
     QMap<const Node *, QString> UuidMap;
+
     for (const auto &pNodePtr : mNodes)
     {
         const Node *pRawNode = pNodePtr.get();

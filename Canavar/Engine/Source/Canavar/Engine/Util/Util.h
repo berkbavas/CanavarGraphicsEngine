@@ -23,13 +23,7 @@ namespace Canavar::Engine
         static QJsonDocument ReadJson(const QString& Path);
         static const char* GetGlErrorString(GLenum Error);
 
-        template<typename T, typename S>
-        static bool Contains(const std::vector<T>& Vector, const S& Value)
-        {
-            return std::find(Vector.begin(), Vector.end(), std::dynamic_pointer_cast<T>(Value)) != Vector.end();
-        }
-
       private:
-        static QRandomGenerator mGenerator;
+        static QRandomGenerator sGenerator;
     };
 }

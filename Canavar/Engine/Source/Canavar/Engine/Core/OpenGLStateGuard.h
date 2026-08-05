@@ -119,6 +119,10 @@ namespace Canavar::Engine
             GLboolean DitherEnabled{ GL_TRUE };
         };
 
+        void SaveState();
+        void RestoreState();
+        void ApplyDefaultState();
+
         QOpenGLFunctions_4_5_Core *mGl{ nullptr };
 
         FramebufferState mFramebuffer;

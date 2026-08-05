@@ -3,6 +3,16 @@
 Canavar::Engine::OpenGLStateGuard::OpenGLStateGuard(QOpenGLFunctions_4_5_Core *pOpenGLFunctions)
     : mGl(pOpenGLFunctions)
 {
+    SaveState();
+}
+
+Canavar::Engine::OpenGLStateGuard::~OpenGLStateGuard()
+{
+    RestoreState();
+}
+
+void Canavar::Engine::OpenGLStateGuard::SaveState()
+{
     // Framebuffer
     mGl->glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &mFramebuffer.Binding);
     mGl->glGetIntegerv(GL_VIEWPORT, mFramebuffer.Viewport);
@@ -90,7 +100,7 @@ Canavar::Engine::OpenGLStateGuard::OpenGLStateGuard(QOpenGLFunctions_4_5_Core *p
     mMisc.DitherEnabled = mGl->glIsEnabled(GL_DITHER);
 }
 
-Canavar::Engine::OpenGLStateGuard::~OpenGLStateGuard()
+void Canavar::Engine::OpenGLStateGuard::RestoreState()
 {
     // Framebuffer
     mGl->glBindFramebuffer(GL_FRAMEBUFFER, mFramebuffer.Binding);
@@ -162,4 +172,70 @@ Canavar::Engine::OpenGLStateGuard::~OpenGLStateGuard()
     // Misc
     mMisc.SeamlessCubeMapEnabled ? mGl->glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : mGl->glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
     mMisc.DitherEnabled ? mGl->glEnable(GL_DITHER) : mGl->glDisable(GL_DITHER);
+}
+
+void Canavar::Engine::OpenGLStateGuard::ApplyDefaultState()
+{
+    // Depth
+    mGl->glEnable(GL_DEPTH_TEST);
+    mGl->glDepthFunc(GL_LESS);
+    mGl->glDepthMask(GL_TRUE);
+    mGl->glDepthRange(0.0, 1.0);
+
+    // Blend
+    mGl->glDisable(GL_BLEND);
+    mGl->glBlendFunc(GL_ONE, GL_ZERO);
+    mGl->glBlendEquation(GL_FUNC_ADD);
+    mGl->glBlendColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Rasterizer
+    mGl->glDisable(GL_CULL_FACE);
+    mGl->glCullFace(GL_BACK);
+    mGl->glFrontFace(GL_CCW);
+    mGl->glDisable(GL_POLYGON_OFFSET_FILL);
+    mGl->glPolygonOffset(0.0f, 0.0f);
+    mGl->glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    mGl->glDisable(GL_DEPTH_CLAMP);
+    mGl->glDisable(GL_RASTERIZER_DISCARD);
+
+    // Stencil
+    mGl->glDisable(GL_STENCIL_TEST);
+    mGl->glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
+    mGl->glStencilMask(0xFFFFFFFF);
+    mGl->glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+    // Color
+    mGl->glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    mGl->glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    // Primitive
+    mGl->glDisable(GL_LINE_SMOOTH);
+    mGl->glHint(GL_LINE_SMOOTH_HINT, GL_DONT_CARE);
+    mGl->glLineWidth(1.0f);
+    mGl->glDisable(GL_PROGRAM_POINT_SIZE);
+    mGl->glDisable(GL_POLYGON_SMOOTH);
+
+    // Scissor
+    mGl->glDisable(GL_SCISSOR_TEST);
+    mGl->glScissor(0, 0, 800, 600); // Default scissor box
+
+    // Sample
+    mGl->glEnable(GL_MULTISAMPLE);
+    mGl->glDisable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    mGl->glDisable(GL_SAMPLE_ALPHA_TO_ONE);
+    mGl->glSampleCoverage(1.0f, GL_FALSE);
+
+    // Pixel Store
+    mGl->glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    mGl->glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+    mGl->glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+    mGl->glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+    mGl->glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    mGl->glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+    mGl->glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+    mGl->glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+
+    // Misc
+    mGl->glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+    mGl->glEnable(GL_DITHER);
 }

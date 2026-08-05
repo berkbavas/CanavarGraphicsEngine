@@ -1168,7 +1168,7 @@ void Canavar::Engine::ImGuiWidget::DrawLineOfSightAnalyzerProperties()
         }
 
         ImGui::Checkbox("Track on LMB Hold##DrawLineOfSightAnalyzerProperties", &mLosAnalyzerUpdateFromMousePosition);
-        
+
         if (mLosAnalyzerUpdateFromMousePosition)
         {
             ImGui::SameLine();
@@ -1548,6 +1548,7 @@ void Canavar::Engine::ImGuiWidget::DrawRendererProperties()
 {
     if (ImGui::CollapsingHeader("Renderer##DrawRendererProperties"))
     {
+        ImGui::Checkbox("Antialiasing Enabled##DrawRendererProperties", &mRenderer->GetAntialiasingEnabled_NonConst());
         ImGui::Checkbox("Render Bounding Boxes##DrawRendererProperties", &mRenderer->GetBoundingBoxRenderer()->GetRenderBoundingBoxes_NonConst());
         if (ImGui::Checkbox("Gizmo Enabled##DrawRendererProperties", &mGizmoEnabled))
         {

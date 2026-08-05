@@ -51,7 +51,4 @@ void Canavar::Engine::Sky::Render(PerspectiveCamera *pActiveCamera, DirectionalL
     mSkyShader->SetUniform("uNodeId", GetNodeId());
     mQuad->Render();
     mSkyShader->Unbind();
-
-    // Re-enable depth testing for subsequent rendering
-    glEnable(GL_DEPTH_TEST);
 }
