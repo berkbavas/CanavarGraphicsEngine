@@ -45,12 +45,7 @@ namespace Canavar::Engine
             mProgram->setUniformValueArray(Location, Values.constData(), Values.size());
         }
 
-        void SetUniformArray(const QString& Name, const GLfloat* pValues, int Count, int TupleSize)
-        {
-            const auto Location = GetUniformLocation(Name);
-            mProgram->setUniformValueArray(Location, pValues, Count, TupleSize);
-        }
-
+        void SetUniformArray(const QString& Name, const GLfloat* pValues, int Count, int TupleSize);
         void SetSampler(const QString& Name, GLuint Unit, GLuint TextureId, GLuint Target = GL_TEXTURE_2D);
 
       private:

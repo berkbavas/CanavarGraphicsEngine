@@ -19,6 +19,7 @@ Canavar::Simulator::Simulator::Simulator()
     connect(mRenderer, &Canavar::Engine::Renderer::Initialized, this, &Simulator::Initialize);
     connect(mRenderer, &Canavar::Engine::Renderer::Updated, this, &Simulator::Update);
     connect(mRenderer, &Canavar::Engine::Renderer::PostRender, this, &Simulator::OnPostRender);
+
     mRenderer->AddEventReceiver(this);
     mAircraft = new Aircraft;
     mImGuiWidget = new Canavar::Engine::ImGuiWidget(mRenderer);

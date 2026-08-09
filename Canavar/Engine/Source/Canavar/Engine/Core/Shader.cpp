@@ -102,6 +102,12 @@ QString Canavar::Engine::Shader::GetShaderTypeString(QOpenGLShader::ShaderTypeBi
     }
 }
 
+void Canavar::Engine::Shader::SetUniformArray(const QString& Name, const GLfloat* pValues, int Count, int TupleSize)
+{
+    const auto Location = GetUniformLocation(Name);
+    mProgram->setUniformValueArray(Location, pValues, Count, TupleSize);
+}
+
 void Canavar::Engine::Shader::SetSampler(const QString& Name, GLuint Unit, GLuint TextureId, GLuint Target)
 {
     SetUniform(Name, Unit);
